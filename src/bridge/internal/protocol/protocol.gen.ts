@@ -285,6 +285,7 @@ export interface Metric {
   step?: string;
   speed?: string;
   screen?: string;
+  assisted?: boolean;
   n?: number /* int64 */;
 }
 export interface Ping {

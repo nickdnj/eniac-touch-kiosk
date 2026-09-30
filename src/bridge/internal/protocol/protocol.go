@@ -235,8 +235,9 @@ type Metric struct {
 	Mission string `json:"mission,omitempty"`
 	Step    string `json:"step,omitempty"`
 	Speed   string `json:"speed,omitempty"`
-	Screen  string `json:"screen,omitempty"`
-	N       *int64 `json:"n,omitempty"`
+	Screen   string `json:"screen,omitempty"`
+	Assisted *bool  `json:"assisted,omitempty"`
+	N        *int64 `json:"n,omitempty"`
 }
 
 type Ping struct {

@@ -397,7 +397,7 @@ stateDiagram-v2
 | `button` | `b`: `init`\|`clear`\|`read` | `armed`, `running`, `result` | Must be listed in the mission's `run.buttons`. **INIT and CLEAR are rejected with `BUSY` unless `run.state` is `idle`** (a server-side guard for UX-07). READ runs the withheld line if the mission binds one. | M1 (init, clear), M2 (read) |
 | `set_speed` | `speed` (a name from the mission's `speeds`) | `armed`+ | Sends `s cy.rate N` / `s cy.op …` | M1 |
 | `end_session` | `reason`: `idle`\|`menu`\|`restart`\|`done` | any | Tears down the core. Records metrics. | M1 |
-| `metric` | `ev` (whitelisted name), `mission`, `step`, `speed`, `screen`, `n` (each optional, whitelisted per event) | any | Appends to JSONL. Never influences the core. | M1 (write only) |
+| `metric` | `ev` (whitelisted name), `mission`, `step`, `speed`, `screen`, `assisted`, `n` (each optional, whitelisted per event; for `setup_skipped` the `step` is recorded as `atStep`) | any | Appends to JSONL. Never influences the core. Bridge event names (`mission_complete`, `error_*`, `core_restart`, `session_*`) are `NOT_ALLOWED` from the UI. | M1 (write only) |
 | `ping` | none | any | Replies `pong`. Updates `kioskClient` last-seen. | M1 |
 | `admin_*` | Over HTTP, not ws; section 8.4 | | | M3 |
 
@@ -995,4 +995,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | 0.1 | 2026-09-30 | Nick DeMarco with AI assistance | Initial architecture from the PRD v0.1, the UX spec v0.1 (F2 needs folded in), and a code read plus local runs of upstream `c4b94f2` |
-| 0.2 | 2026-09-30 | software-developer agent (M1 bridge) | 5.9.2: `content:`, `selftest:` and `summary` added to the mission schema; `[FC]` review metadata. 5.9.5 rule 4 defined per terminal, ignoring trunk ends. Greek/ASCII canonicalization note. | 5.3-5.6 (#8): generated TS types live next to the Go types; `hello.config.admin.tapZone` shape; `frame.seq` monotonic across sessions; `health.detail`; `pong`; `metric` gains optional `speed` and `screen` (the 8.3 events `speed{m,speed}` and `idle_reset{screen}` need them). | 5.4/5.6 (#11): `state.session` and `state.machine` are `null` without a session; CLEAR also starts `busy`. |
+| 0.2 | 2026-09-30 | software-developer agent (M1 bridge) | 5.9.2: `content:`, `selftest:` and `summary` added to the mission schema; `[FC]` review metadata. 5.9.5 rule 4 defined per terminal, ignoring trunk ends. Greek/ASCII canonicalization note. | 5.3-5.6 (#8): generated TS types live next to the Go types; `hello.config.admin.tapZone` shape; `frame.seq` monotonic across sessions; `health.detail`; `pong`; `metric` gains optional `speed` and `screen` (the 8.3 events `speed{m,speed}` and `idle_reset{screen}` need them). | 5.4/5.6 (#11): `state.session` and `state.machine` are `null` without a session; CLEAR also starts `busy`. | 5.6 (#12): `metric.assisted` (for `step_done{m,step,assisted}`). |
