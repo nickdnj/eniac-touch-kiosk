@@ -223,6 +223,7 @@ export class App {
       this.missions = null; // unknown, not "none available"
     }
     this.evaluate();
+    if (this.view.name === "picker" && !this.errorCode) this.show({ name: "picker" });
   }
 
   // ------------------------------------------------------------------ flow
@@ -328,7 +329,7 @@ export class App {
   show(view: View): void {
     // Waking and mission views need the compiled mission; wait for it.
     if (view.name === "mission" && !this.mission) {
-      this.view = { name: "waking", entry: view.entry };
+      if (this.view.name !== "waking") this.show({ name: "waking", entry: view.entry });
       return;
     }
     this.screen?.unmount?.();

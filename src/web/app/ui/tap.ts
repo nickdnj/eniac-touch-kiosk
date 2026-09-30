@@ -30,9 +30,15 @@ export interface DispatcherOptions {
   onEmpty?: (p: TapPoint) => void;
 }
 
+/** A finger that travels further than this (app px) is a swipe, not a tap. */
+export const MOVE_CANCEL_PX = 40;
+
 export function installTapDispatcher(root: HTMLElement, o: DispatcherOptions): void {
   let active: number | null = null;
   let downEl: Element | null = null;
+  let downAt: TapPoint = { x: 0, y: 0 };
+  // A second finger (pinch, two-finger swipe) cancels the first finger's tap.
+  let cancelled = false;
 
   const findTap = (el: Element | null): Element | null => {
     const t = el?.closest("[data-tap]") ?? null;
@@ -46,9 +52,15 @@ export function installTapDispatcher(root: HTMLElement, o: DispatcherOptions): v
       if (active !== null || !e.isPrimary) {
         e.preventDefault();
         e.stopImmediatePropagation();
+        if (active !== null) {
+          cancelled = true;
+          downEl?.classList.remove("pressed");
+        }
         return;
       }
       active = e.pointerId;
+      cancelled = false;
+      downAt = o.toApp(e.clientX, e.clientY);
       o.onActivity?.();
       downEl = findTap(e.target as Element);
       if (downEl && !isDisabled(downEl)) downEl.classList.add("pressed");
@@ -62,8 +74,9 @@ export function installTapDispatcher(root: HTMLElement, o: DispatcherOptions): v
     const el = downEl;
     downEl = null;
     el?.classList.remove("pressed");
-    if (!fire) return;
+    if (!fire || cancelled) return;
     const p = o.toApp(e.clientX, e.clientY);
+    if (Math.hypot(p.x - downAt.x, p.y - downAt.y) > MOVE_CANCEL_PX) return; // a swipe or drag
     const under = document.elementFromPoint(e.clientX, e.clientY);
     const upEl = findTap(under);
     if (el && upEl === el) {

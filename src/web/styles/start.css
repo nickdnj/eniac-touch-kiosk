@@ -1,0 +1,64 @@
+/* S1 start, S2 picker, S0 waking (#22), S9 still there (#23), S10 error (#24). */
+
+/* S1: dark, honest, no machine drawn (UX 7.1 stand-in). */
+.start {
+  background: radial-gradient(ellipse at 50% 40%, #1a1d22 0%, #0b0c0e 70%);
+}
+.start-title { position: absolute; left: 136px; top: 60px; font-size: 120px; line-height: 140px; font-weight: 700; letter-spacing: 12px; color: var(--jack-block); }
+.start-sub { position: absolute; left: 136px; top: 216px; font-size: 40px; line-height: 52px; color: #C9C2A8; max-width: 1400px; }
+.start-pill {
+  position: absolute;
+  left: 600px;
+  top: 800px;
+  width: 720px;
+  height: 120px;
+  border-radius: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--ink);
+  background: var(--card);
+  box-shadow: 0 0 0 6px rgba(244, 239, 227, 0.2);
+  animation: pill-pulse 1s ease-in-out infinite;
+}
+@keyframes pill-pulse { 50% { box-shadow: 0 0 0 18px rgba(244, 239, 227, 0.08); transform: scale(1.02); } }
+
+/* S2: mission cards (UX 7.2). */
+.picker .header { padding-left: 136px; }
+.mission-cards { position: absolute; left: 0; right: 0; top: 184px; display: flex; justify-content: center; gap: 64px; }
+.mission-card {
+  width: 544px;
+  height: 640px;
+  background: var(--card);
+  color: var(--ink);
+  border-radius: var(--radius-card);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+}
+.mission-card.pressed { transform: scale(0.99); }
+.mc-top { display: flex; align-items: center; justify-content: space-between; }
+.mc-badge {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+  font-weight: 700;
+}
+.mc-here { font-size: 28px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; border: 3px solid var(--ink); border-radius: 8px; padding: 4px 16px; }
+.mc-title { font-size: 48px; line-height: 56px; font-weight: 700; margin-top: 16px; }
+.mc-meta { font-size: 24px; color: #4a4e57; min-height: 30px; }
+.mc-teaser { font-size: 28px; line-height: 40px; flex: 1; }
+.mc-start { width: 480px; align-self: center; }
+
+.waking .waiting, .boot .waiting { height: 1032px; }

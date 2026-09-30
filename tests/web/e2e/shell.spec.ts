@@ -38,6 +38,8 @@ test("pinch, swipe, long-press, selection and a second touch do nothing", async 
   await touch("touchStart", [{ x: 900, y: 50, id: 4 }]);
   await touch("touchMove", [{ x: 900, y: 900, id: 4 }]);
   await touch("touchEnd", []);
+  // A pinch's first finger and a swipe are not taps: still on S1.
+  await expect(view(page)).toHaveAttribute("data-view", "start");
   // Long-press.
   await touch("touchStart", [{ x: 960, y: 300, id: 5 }]);
   await page.waitForTimeout(1200);

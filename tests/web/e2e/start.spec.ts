@@ -1,0 +1,68 @@
+// #22: S1 start, S2 picker and S0 waking stand-ins (UX 7.1, 7.2; FR-23, FR-31).
+
+import { test, expect } from "@playwright/test";
+import { fresh, sent, tap, tapSlow, view } from "./helpers.ts";
+
+test("S1 shows the title, the pill and the credit, and no machine", async ({ page }) => {
+  await fresh(page);
+  await expect(view(page)).toHaveAttribute("data-view", "start");
+  await expect(page.locator(".start-title")).toHaveText("ENIAC");
+  await expect(page.locator(".start-sub")).toHaveText("The room-sized computer of 1946. Now you program it.");
+  const pill = (await page.locator(".start-pill").boundingBox())!;
+  expect([Math.round(pill.width), Math.round(pill.height)]).toEqual([720, 120]);
+  await expect(page.locator("#footer")).toBeVisible();
+  await expect(page.locator(".lamp")).toHaveCount(0);
+});
+
+test("touchstart alone sends nothing; the action fires on release", async ({ page }) => {
+  await fresh(page);
+  await expect(view(page)).toHaveAttribute("data-view", "start");
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: 960, y: 500, id: 1 }] } as any);
+  await page.waitForTimeout(300);
+  await expect(view(page)).toHaveAttribute("data-view", "start");
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] } as any);
+  await expect(view(page)).toHaveAttribute("data-view", "picker");
+});
+
+test("the first touch only leaves S1; a stray second tap never starts a mission (FR-31)", async ({ page }) => {
+  await fresh(page);
+  await expect(view(page)).toHaveAttribute("data-view", "start");
+  const start = (await page.locator(".start-pill").boundingBox())!;
+  // Double tap on the pill, which overlaps the picker's card and Start area.
+  await page.touchscreen.tap(start.x + 360, start.y + 10);
+  await page.waitForTimeout(120);
+  await page.touchscreen.tap(start.x + 360, start.y + 10);
+  await expect(view(page)).toHaveAttribute("data-view", "picker");
+  await page.waitForTimeout(500);
+  expect((await sent(page)).some((m) => m.t === "start_mission")).toBe(false);
+});
+
+test("S2 shows available missions only, with Start here and a 96 px Start; S0 while waking", async ({ page }) => {
+  await fresh(page);
+  await tap(page, page.locator(".screen.start"));
+  await expect(view(page)).toHaveAttribute("data-view", "picker");
+  await expect(page.locator(".mission-card")).toHaveCount(1);
+  await expect(page.locator(".mission-card .mc-title")).toHaveText("Squares");
+  await expect(page.locator(".mc-here")).toHaveText("Start here");
+  await expect(page.locator(".mc-meta")).toHaveText("You wire 7 steps");
+  const b = (await page.locator(".mc-start").boundingBox())!;
+  expect(b.height).toBeGreaterThanOrEqual(96);
+  expect(b.width).toBeGreaterThanOrEqual(480);
+  await page.waitForTimeout(650);
+  await tap(page, page.locator(".mc-start"));
+  // S0 never shows stale lamps.
+  await expect(page.locator(".screen.waking, .screen.mission")).toHaveCount(1);
+  if (await page.locator(".screen.waking").count()) await expect(page.locator(".lamp.on")).toHaveCount(0);
+  await expect(view(page)).toHaveAttribute("data-view", "mission");
+  await expect(page.locator(".step-card h2")).toHaveText("Mission 1: Squares");
+  expect((await sent(page)).filter((m) => m.t === "start_mission")).toHaveLength(1);
+});
+
+test("the whole mission card is a target too", async ({ page }) => {
+  await fresh(page);
+  await tap(page, page.locator(".screen.start"));
+  await page.waitForTimeout(650);
+  await tapSlow(page, page.locator(".mission-card .mc-title"));
+  await expect(view(page)).toHaveAttribute("data-view", /waking|mission/);
+});

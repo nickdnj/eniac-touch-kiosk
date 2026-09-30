@@ -8,10 +8,14 @@ import { missionScreen } from "./screens/mission.ts";
 import { runScreenFactory } from "./screens/run.ts";
 import { autopressControls } from "./run/controls.ts";
 import { resultScreen } from "./screens/result.ts";
+import { pickerScreen, startScreen, wakingScreen } from "./screens/start.ts";
 import { injectDefs } from "./panels/load.ts";
 
 const screens: Record<string, ScreenFactory> = {
   boot: bootScreen,
+  start: startScreen,
+  picker: pickerScreen,
+  waking: wakingScreen,
   mission: missionScreen,
   run: runScreenFactory({ extras: autopressControls }),
   result: resultScreen,
