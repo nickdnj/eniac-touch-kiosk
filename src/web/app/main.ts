@@ -4,6 +4,7 @@
 
 import { App, type ScreenFactory } from "./app.ts";
 import { bootScreen } from "./screens/boot.ts";
+import { injectDefs } from "./panels/load.ts";
 
 const screens: Record<string, ScreenFactory> = {
   boot: bootScreen,
@@ -11,6 +12,7 @@ const screens: Record<string, ScreenFactory> = {
 
 const root = document.getElementById("app");
 if (root) {
+  injectDefs();
   const app = new App(root, screens);
   app.start();
   (window as unknown as { __eniac?: App }).__eniac = app;
