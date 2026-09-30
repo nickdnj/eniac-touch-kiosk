@@ -337,3 +337,40 @@ export interface DivState {
   progff: string;
   flags: string;
 }
+export interface Healthz {
+  status: 'ok' | 'degraded' | 'down';
+  version: string;
+  upstream: HealthzUpstream;
+  core: HealthzCore;
+  bridge: HealthzBridge;
+  kiosk: HealthzKiosk;
+  session?: HealthzSession;
+}
+export interface HealthzUpstream {
+  commit: string;
+  patches: string[];
+}
+export interface HealthzCore {
+  state: string;
+  pid?: number /* int */;
+  uptimeS?: number /* int64 */;
+  restarts5m: number /* int */;
+  restartsTotal: number /* int */;
+  lastError?: HealthzError;
+}
+export interface HealthzError {
+  code: string;
+  detail?: string;
+  at: string;
+}
+export interface HealthzBridge {
+  uptimeS: number /* int64 */;
+}
+export interface HealthzKiosk {
+  clientConnected: boolean;
+  lastPingAgoS?: number /* int64 */;
+}
+export interface HealthzSession {
+  mission: string;
+  state: string;
+}
