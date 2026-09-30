@@ -7,7 +7,7 @@ import type { App, Screen } from "../app.ts";
 import type { ButtonName, ServerMsg } from "../protocol.ts";
 import { accumulatorRunGrid, cyclingPanel } from "../panels/art.ts";
 import { LampRenderer } from "../lamps/render.ts";
-import { CaptionTracker, fill } from "../run/captions.ts";
+import { CaptionTracker, fill, settledVars } from "../run/captions.ts";
 import { h, svgFromString } from "../ui/dom.ts";
 import { onTap, setDisabled } from "../ui/tap.ts";
 import { button, confirm } from "../ui/overlays.ts";
@@ -50,8 +50,8 @@ export function runScreenFactory(hooks: RunHooks = {}) {
 
 function runScreen(app: App, hooks: RunHooks): Screen {
   const mission = app.mission!;
-  const run = mission.screens?.run;
-  const captions = run ? new CaptionTracker(run) : null;
+  const run = mission.content.run;
+  const captions = new CaptionTracker(run);
   const watch = mission.run.watch;
   let speed = mission.run.defaultSpeed;
   let pending = false;
@@ -88,7 +88,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
       h(
         "div",
         { class: "acc-head" },
-        h("div", { class: "acc-title" }, h("span", {}, `ACCUMULATOR ${n}`), h("span", { class: "acc-role" }, run?.labels[n] ?? "")),
+        h("div", { class: "acc-title" }, h("span", {}, `ACCUMULATOR ${n}`)),
         h("div", { class: "readout" }, h("span", { class: "readout-label" }, COPY.run.helper), ro),
       ),
       svgFromString(accumulatorRunGrid(Number(n)).markup),
@@ -103,7 +103,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   // Rail.
   const prompt = h("h2", { class: "run-prompt" });
   const captionEl = h("p", { class: "run-caption" });
-  const hint = h("p", { class: "run-hint hidden" }, run?.fasterHint ?? "");
+  const hint = h("p", { class: "run-hint hidden" }, run.extras.hint ?? "");
   const card = h("div", { class: "run-card" }, prompt, captionEl, hint);
   const initBtn = h(
     "div",
@@ -124,7 +124,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     speedBtns[sp] = b;
     speedRow.append(b);
   }
-  const showMe = button(COPY.run.showMe, "primary show-me hidden", () => goResult());
+  const showMe = button(run.extras.showResult, "primary show-me hidden", () => goResult());
   const rail = h("div", { class: "rail run-rail" }, card, initBtn, clearBtn, h("div", { class: "speed-label" }, COPY.run.speed), speedRow);
   rail.style.left = `${RAIL.x}px`;
   rail.style.top = `${RAIL.y}px`;
@@ -145,9 +145,9 @@ function runScreen(app: App, hooks: RunHooks): Screen {
       btn.setAttribute("aria-pressed", String(sp === speed));
       btn.classList.toggle("selected", sp === speed);
     }
-    prompt.textContent = captions ? captions.prompt(b) : "";
-    captionEl.textContent = caption || (presses === 0 && !b ? run?.initHelp ?? "" : "");
-    const extras = presses >= (run?.extrasAfterPress ?? 3);
+    prompt.textContent = captions.prompt(b);
+    captionEl.textContent = caption || (presses === 0 && !b ? captions.sub() : "");
+    const extras = presses >= run.extras.afterPress;
     hint.classList.toggle("hidden", !extras || speed !== mission.run.defaultSpeed);
     showMe.classList.toggle("hidden", !extras && !app.checkpoints.has(mission.result));
     rail.classList.toggle("extras", extras);
@@ -191,7 +191,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     if (b === "init") {
       presses++;
       caption = "";
-      captions?.onPress(settledNow());
+      captions.onPress();
     }
     refreshButtons();
     return true;
@@ -201,6 +201,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     if (sp === speed) return;
     speed = sp;
     app.send({ t: "set_speed", speed: sp });
+    app.metric({ t: "metric", ev: "speed", mission: mission.id, speed: sp });
     refreshButtons();
   }
 
@@ -224,6 +225,8 @@ function runScreen(app: App, hooks: RunHooks): Screen {
       if (m.state === "busy") {
         pending = false;
         if (pendingTimer) clearTimeout(pendingTimer);
+        const c = captions.onRun("busy", app.mirror.machine);
+        if (c) caption = c;
       } else {
         pending = false;
         const settled = m.settled ?? {};
@@ -231,13 +234,11 @@ function runScreen(app: App, hooks: RunHooks): Screen {
           app.tape = [];
           presses = 0;
           caption = "";
-          captions?.onClear();
+          captions.onClear();
           for (const fn of clearListeners) fn();
-        } else if (lastButton === "init" && run && watch.every((w) => typeof settled[w] === "number")) {
-          const vars: Record<string, number> = {};
-          for (const w of watch) vars[w] = settled[w];
-          app.tape.push({ x: settled[watch[0]], sq: settled[watch[1]], text: fill(run.tapeRow, vars) });
-          const c = captions?.onIdle(app.mirror.machine, settled);
+        } else if (lastButton === "init" && watch.every((w) => typeof settled[w] === "number")) {
+          app.tape.push({ x: settled[watch[0]], sq: settled[watch[1]], text: fill(run.tape, settledVars(settled)) });
+          const c = captions.onRun("idle", app.mirror.machine, settled);
           if (c) caption = c;
         }
         lastButton = null;
@@ -281,7 +282,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     onMachine: (units) => {
       renderer.invalidate(units);
       if (units === null || units.some((u) => u.startsWith("acc."))) refreshReadouts();
-      const c = captions?.onMachine(app.mirror.machine);
+      const c = captions.onMachine(app.mirror.machine);
       if (c) {
         caption = c;
         refreshButtons();

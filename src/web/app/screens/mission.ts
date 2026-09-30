@@ -9,7 +9,7 @@ import { hitTest } from "../mission/hit.ts";
 import { unitOf, termId } from "../mission/ids.ts";
 import { Workbench } from "../stage/workbench.ts";
 import { StepWindows } from "../stage/windows.ts";
-import { roomPlanSvg } from "../stage/roomplan.ts";
+import { roomPlanSvg, unitsForPlan } from "../stage/roomplan.ts";
 import { PICKER, RAIL, STAGE } from "../stage/layout.ts";
 import { LampRenderer } from "../lamps/render.ts";
 import { h, s, svgFromString, wait } from "../ui/dom.ts";
@@ -24,7 +24,8 @@ const REDUCE_MOTION = false; // UX 9.5: staff setting; wired to config in M3
 
 export function missionScreen(app: App, view: View): Screen {
   const mission = app.mission!;
-  const screens = mission.screens;
+  const content = mission.content;
+  const planUnits = unitsForPlan(mission.units);
   const runner = new Runner(mission, () => app.now(), app.mirror.session?.applied ?? []);
   let phase: Phase = view.entry === "step1" ? "step" : "briefing";
   let windows: StepWindows | null = null;
@@ -185,28 +186,27 @@ export function missionScreen(app: App, view: View): Screen {
     closeWindows();
     workbench.spotlight(null);
     scrim.classList.remove("on");
-    altView.replaceChildren(svgFromString(roomPlanSvg(screens?.briefing.units ?? [])), h("div", { class: "alt-caption" }, COPY.rail.roomPlan));
+    altView.replaceChildren(svgFromString(roomPlanSvg(planUnits)), h("div", { class: "alt-caption" }, COPY.rail.roomPlan));
     altView.classList.add("on");
-    setCard("none", screens?.briefing.headline ?? mission.title, screens?.briefing.body ?? "");
-    showMore(!!screens?.briefing.more);
-    setMain(COPY.rail.letsGo, "filled");
+    setCard("none", content.briefing.headline, content.briefing.body);
+    showMore(!!content.briefing.more);
+    setMain(content.briefing.buttons?.[0] ?? COPY.rail.letsGo, "filled");
   }
 
   function renderPlan(): void {
     closeWindows();
-    const p = screens?.plan;
+    const p = content.plan;
     altView.replaceChildren(
       h(
         "div",
         { class: "plan" },
-        h("div", { class: "plan-boxes" }, h("div", { class: "plan-box" }, p?.boxes[0] ?? ""), h("div", { class: "plan-box" }, p?.boxes[1] ?? "")),
-        h("div", { class: "plan-math" }, p?.math ?? ""),
+        h("div", { class: "plan-math" }, p.math ?? ""),
       ),
     );
     altView.classList.add("on");
-    setCard("none", p?.headline ?? "", p?.body ?? "");
-    showMore(!!p?.more);
-    setMain(COPY.rail.next, "filled");
+    setCard("none", p.headline, p.body);
+    showMore(!!p.more);
+    setMain(p.buttons?.[0] ?? COPY.rail.next, "filled");
   }
 
   function renderStep(): void {
@@ -274,10 +274,10 @@ export function missionScreen(app: App, view: View): Screen {
     const switchesTotal = items.length - cablesTotal;
     const cc = h("span", { class: "count" }, "0");
     const sc = h("span", { class: "count" }, "0");
-    setCard("none", screens?.rest.headline ?? "", screens?.rest.body ?? "", [
+    setCard("none", content.rest.headline, content.rest.body, [
       h("div", { class: "counters" }, h("div", { class: "counter" }, cc, h("span", {}, ` ${COPY.rail.cables(cablesTotal).replace(/^\d+ /, "")}`)), h("div", { class: "counter" }, sc, h("span", {}, ` ${COPY.rail.switches(switchesTotal).replace(/^\d+ /, "")}`))),
     ]);
-    setMain(COPY.rail.continue, "hidden");
+    setMain(content.rest.buttons?.[0] ?? COPY.rail.continue, "hidden");
     card.dataset.cables = String(cablesTotal);
     card.dataset.switches = String(switchesTotal);
     if (restDone) return finishRest(cablesTotal, switchesTotal, cc, sc);
@@ -307,7 +307,7 @@ export function missionScreen(app: App, view: View): Screen {
       else workbench.setSwitch(c.switch, c.value);
     }
     if (setupComplete) {
-      setMain(COPY.rail.continue, "filled");
+      setMain(content.rest.buttons?.[0] ?? COPY.rail.continue, "filled");
       mainBtn.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250 });
     }
   }
@@ -387,7 +387,7 @@ export function missionScreen(app: App, view: View): Screen {
       if (c && c.kind === "plug") workbench.setPending(c, false);
     }
     setFeedback("ok", assistedNow ? `${COPY.rail.doneForYou}. ${st.text.done}` : st.text.done);
-    setMain(runner.isLast ? COPY.rail.finish : COPY.rail.next, "filled");
+    setMain(runner.isLast ? (st.text.button ?? COPY.rail.finish) : COPY.rail.next, "filled");
     skipBtn.classList.toggle("hidden", runner.isLast);
     renderDots();
   }
@@ -455,7 +455,7 @@ export function missionScreen(app: App, view: View): Screen {
     const st = runner.step!;
     const units = windows.ids.map(unitOf).filter((u) => u !== "trunks");
     closeWindows();
-    const plan = screens?.briefing.units ?? [];
+    const plan = planUnits;
     altView.replaceChildren(svgFromString(roomPlanSvg(plan, units)), h("div", { class: "alt-caption" }, COPY.rail.roomPlan));
     altView.classList.add("on");
     await wait(1600);
@@ -465,8 +465,8 @@ export function missionScreen(app: App, view: View): Screen {
   }
 
   function openMore(): void {
-    if (phase === "briefing") return tellMore(app, screens?.briefing.headline ?? "", screens?.briefing.more ?? "");
-    if (phase === "plan") return tellMore(app, screens?.plan.headline ?? "", screens?.plan.more ?? "");
+    if (phase === "briefing") return tellMore(app, content.briefing.headline, content.briefing.more ?? "");
+    if (phase === "plan") return tellMore(app, content.plan.headline, content.plan.more ?? "");
     const st = runner.step;
     if (st) tellMore(app, st.text.headline, st.text.more ?? "");
   }
@@ -488,11 +488,12 @@ export function missionScreen(app: App, view: View): Screen {
       const st = runner.step;
       if (st && runner.ack(m.step, m.assisted)) {
         acked = true;
+        app.metric({ t: "metric", ev: "step_done", mission: mission.id, step: m.step, assisted: m.assisted });
         maybeShowDone();
       }
     } else if (m.t === "setup_complete") {
       setupComplete = true;
-      if (phase === "rest" && restDone) setMain(COPY.rail.continue, "filled");
+      if (phase === "rest" && restDone) setMain(content.rest.buttons?.[0] ?? COPY.rail.continue, "filled");
     } else if (m.t === "session" && (m.state === "armed" || m.state === "running")) {
       setupComplete = true;
     }

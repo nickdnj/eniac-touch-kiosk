@@ -63,6 +63,8 @@ export class App {
   /** Watched accumulator values when the result checkpoint fired. */
   answerAt: Record<string, number> | null = null;
   errorCode: string | null = null;
+  /** A mission the bridge listed failed to load (E-MISSION until the next hello). */
+  missionBroken = false;
   scale = 1;
   private offset = { x: 0, y: 0 };
   private screen: Screen | null = null;
@@ -70,7 +72,6 @@ export class App {
   readonly overlay: HTMLElement;
   private helloSeen = false;
   private linkDown = false;
-  private errorSince = 0;
   private pendingMetrics: ClientMsg[] = [];
   private expectingSession = false;
   private screens: Record<string, ScreenFactory>;
@@ -166,8 +167,10 @@ export class App {
     switch (m.t) {
       case "hello":
         this.helloSeen = true;
+        this.missionBroken = false;
         this.config = m.config;
         this.idle.setConfig(m.config.idle);
+        this.applyTapZone(m.config.admin?.tapZone);
         this.mirror.onHealth(m.health);
         this.loadMissions();
         break;
@@ -224,18 +227,28 @@ export class App {
 
   // ------------------------------------------------------------------ flow
 
-  /** Error precedence (FR-50) and recovery (FR-51). */
+  /** Sizes the inert admin corner from hello.config.admin.tapZone (UX 7). */
+  private applyTapZone(z: { widthPx: number; heightPx: number } | undefined): void {
+    const el = this.root.querySelector<HTMLElement>("#admin-zone");
+    if (!el || !z) return;
+    el.style.width = `${z.widthPx}px`;
+    el.style.height = `${z.heightPx}px`;
+  }
+
+  /**
+   * Error precedence (FR-50) and recovery (FR-51). error_* metrics are
+   * bridge-owned (architecture 8.3: NOT_ALLOWED from the UI), so none are
+   * sent here; a UI-only E-LINK outage is therefore not logged (see PR).
+   */
   private evaluate(): void {
     let code: string | null = null;
     if (this.linkDown) code = "E-LINK";
     else if (this.helloSeen && this.mirror.health.core === "down") code = this.mirror.health.code ?? "E-CORE-DOWN";
-    else if (this.missions && !this.missions.some((x) => x.available)) code = "E-MISSION";
+    else if (this.missionBroken || (this.missions && !this.missions.some((x) => x.available))) code = "E-MISSION";
 
     if (code && !this.errorCode) {
       this.errorCode = code;
-      this.errorSince = this.now();
       this.idle.stop();
-      this.metric({ t: "metric", ev: "error_enter", code });
       this.show({ name: "error" });
       return;
     }
@@ -244,8 +257,6 @@ export class App {
       return;
     }
     if (!code && this.errorCode) {
-      const durS = Math.round((this.now() - this.errorSince) / 1000);
-      this.metric({ t: "metric", ev: "error_exit", code: this.errorCode, n: durS });
       this.errorCode = null;
       this.resetVisitor();
       this.show({ name: "start" });
@@ -281,6 +292,11 @@ export class App {
       this.mission = await fetchMission(id);
     } catch {
       this.mission = null;
+      // The bridge offered it but it can't be loaded or run: show S10, never a half-built screen.
+      this.missionBroken = true;
+      this.send({ t: "end_session", reason: "restart" });
+      this.evaluate();
+      return;
     }
     this.afterSession();
   }
@@ -299,7 +315,7 @@ export class App {
   }
 
   private idleExpired(): void {
-    this.metric({ t: "metric", ev: "idle_reset", step: this.view.name });
+    this.metric({ t: "metric", ev: "idle_reset", screen: this.view.name });
     this.endSession("idle");
     this.overlayHooks.onIdleDismiss?.();
     this.show({ name: "start" });

@@ -22,14 +22,15 @@ export function autopressControls(ctx: RunContext): HTMLElement[] {
   const watch = mission.run.watch;
   let mode: "keep" | "skip" | null = null;
 
-  const keep = h("div", { class: "btn keep-btn", role: "button" }, COPY.run.keepPressing);
-  const skip = h("div", { class: "btn skip-answer-btn", role: "button" }, COPY.run.skipAnswer);
+  const extras = mission.content.run.extras;
+  const keep = h("div", { class: "btn keep-btn", role: "button" }, extras.keepPressing);
+  const skip = h("div", { class: "btn skip-answer-btn", role: "button" }, extras.skipToAnswer);
 
   const auto = new AutoPress({
     clock: { setTimeout: (f, ms) => setTimeout(f, ms), clearTimeout: (t) => clearTimeout(t as number) },
     press: () => ctx.pressInit(),
     gapMs: () => (mode === "skip" ? GAP_MS.skip : (GAP_MS[ctx.getSpeed()] ?? 600)),
-    answerCheckpoint: mission.result,
+    answerCheckpoint: extras.stopAt || mission.result,
     isDone: (settled) => {
       const at = app.answerAt;
       return !!at && typeof settled[watch[0]] === "number" && typeof at[watch[0]] === "number" && settled[watch[0]] >= at[watch[0]];
@@ -37,12 +38,13 @@ export function autopressControls(ctx: RunContext): HTMLElement[] {
     onStop: (reason: StopReason) => {
       const was = mode;
       mode = null;
-      keep.textContent = COPY.run.keepPressing;
+      keep.textContent = extras.keepPressing;
       keep.classList.remove("running");
       if (was === "skip" && reason === "answer") ctx.goResult();
     },
   });
-  if (app.checkpoints.has(mission.result)) auto.onCheckpoint(mission.result);
+  const stopAt = extras.stopAt || mission.result;
+  if (app.checkpoints.has(stopAt)) auto.onCheckpoint(stopAt);
   auto.setBusy(ctx.isBusy());
 
   onTap(keep, () => {

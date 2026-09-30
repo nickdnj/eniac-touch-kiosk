@@ -11,6 +11,23 @@ export interface PlanUnit {
   panel: number; // 1..40 around the U
 }
 
+/**
+ * Where each unit stands in the room (panel 1..40 around the U) and its
+ * name. This is machine layout knowledge, not mission copy (UX F4: the
+ * constant transmitter is about 30 panels from accumulators 1 and 2).
+ */
+export const UNIT_PANELS: Record<string, { label: string; panel: number }> = {
+  i: { label: "Initiating Unit", panel: 1 },
+  a1: { label: "Accumulator 1", panel: 6 },
+  a2: { label: "Accumulator 2", panel: 7 },
+  c: { label: "Constant Transmitter", panel: 34 },
+};
+
+/** Plan markers for a mission's `units` (in the order listed). */
+export function unitsForPlan(units: string[]): PlanUnit[] {
+  return units.filter((u) => UNIT_PANELS[u]).map((u) => ({ id: u, ...UNIT_PANELS[u] }));
+}
+
 const X0 = 300, Y0 = 150, SIDE = 36, BACK = 56, DEPTH = 50;
 const RIGHT_X = X0 + DEPTH + 10 + 8 * BACK + 10;
 

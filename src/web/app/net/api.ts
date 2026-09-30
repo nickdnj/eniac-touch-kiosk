@@ -1,6 +1,7 @@
 // Mission API (architecture 5.7). Same origin as the page.
 
-import type { CompiledMission, MissionSummary } from "../protocol.ts";
+import type { CompiledMission, MissionCompiled, MissionSummary } from "../protocol.ts";
+import { toView } from "../mission/view.ts";
 
 export async function fetchMissions(): Promise<MissionSummary[]> {
   const r = await fetch("/api/missions", { cache: "no-store" });
@@ -11,5 +12,5 @@ export async function fetchMissions(): Promise<MissionSummary[]> {
 export async function fetchMission(id: string): Promise<CompiledMission> {
   const r = await fetch(`/api/missions/${encodeURIComponent(id)}`, { cache: "no-store" });
   if (!r.ok) throw new Error(`mission ${id}: HTTP ${r.status}`);
-  return (await r.json()) as CompiledMission;
+  return toView((await r.json()) as MissionCompiled);
 }

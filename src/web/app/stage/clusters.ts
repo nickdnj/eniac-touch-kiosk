@@ -120,6 +120,46 @@ export const DIAL_CLUSTERS: DialCluster[] = [
   },
 ];
 
+const GREEK_NAMES: Record<string, string> = { "α": "alpha", "β": "beta", "γ": "gamma", "δ": "delta", "ε": "epsilon" };
+const UNIT_NAMES: Record<string, string> = { a: "Accumulator", c: "Constant Transmitter", i: "Initiating Unit" };
+
+/**
+ * Plain-language name for a target's label chip (UX 4.3 step 6), e.g.
+ * "Accumulator 1 OUT (A)". Generic machine vocabulary, not mission copy.
+ */
+export function plainLabel(id: string): string {
+  const t = id.slice(id.indexOf(":") + 1);
+  if (id.startsWith("trunk:")) return t.includes("-") ? `Program trunk ${t}` : `Trunk ${t}`;
+  if (id === "jack:c.o") return "Constant Transmitter OUT";
+  if (id === "jack:i.io") return "GO output (initiating pulse)";
+  let m = /^a(\d+)\.(.+)$/.exec(t);
+  if (m) {
+    const [, n, j] = m;
+    const acc = `Accumulator ${n}`;
+    if (id.startsWith("sw:")) {
+      const r = /^rp(\d+)$/.exec(j);
+      if (r) return `Program ${r[1]} repeat`;
+      const o = /^op(\d+)$/.exec(j);
+      if (o) return `${acc} program ${o[1]} operation`;
+    }
+    if (GREEK_NAMES[j]) return `${acc} input ${j} (${GREEK_NAMES[j]})`;
+    if (j === "A") return `${acc} OUT (A)`;
+    if (j === "S") return `${acc} OUT (S)`;
+    const p = /^(\d+)([io])$/.exec(j);
+    if (p) return `${acc} program ${p[1]} ${p[2] === "i" ? "in" : "out"}`;
+  }
+  m = /^c\.([jk])(\d+)$/.exec(t);
+  if (m) return `${m[1].toUpperCase()} constant, digit ${m[2]}`;
+  const unit = UNIT_NAMES[t.split(".")[0]];
+  return unit ? `${unit} ${t.split(".").slice(1).join(".")}` : t;
+}
+
+/** Plain labels for picker choices ("2 times" for repeat switches). */
+export function choiceLabel(swId: string, family: string | undefined, v: string): string | null {
+  if ((family && family.includes("rp")) || /\.rp\d+$/.test(swId)) return `${v} ${v === "1" ? "time" : "times"}`;
+  return null;
+}
+
 export function jackClusterFor(id: string): JackCluster | null {
   return JACK_CLUSTERS.find((c) => c.jacks.some((j) => j.id === id)) ?? null;
 }

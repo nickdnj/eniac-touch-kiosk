@@ -44,6 +44,7 @@ const machine = (): MachineState => ({
   acc: { "1": { sign: "P", digits: "0000000003", value: 3, carry: "0000000000", rep: 0, prog: "000000000000" } },
   ct: "0".repeat(30),
 });
+const drawn = (m: Mirror): MachineState | null => m.machine;
 const sess = (id: string, state: SessionInfo["state"] = "setup"): SessionInfo => ({ id, mission: "squares", mode: "visitor", state, applied: [], remaining: 7 });
 
 test("mirror renders only for the current session while core and link are up", () => {
@@ -52,7 +53,7 @@ test("mirror renders only for the current session while core and link are up", (
   m.onHealth({ core: "up" });
   assert.equal(m.machine, null, "no session yet");
   m.onState(sess("a"), 5, machine(), { state: "idle", inits: 0 });
-  assert.equal(m.machine?.acc["1"].value, 3);
+  assert.equal(drawn(m)?.acc["1"].value, 3);
   m.onHealth({ core: "down", code: "E-CORE-DOWN" });
   assert.equal(m.machine, null, "core down blanks");
   m.onHealth({ core: "up" });
@@ -66,7 +67,7 @@ test("mirror drops frames from before the snapshot and after a session change", 
   m.onState(sess("a"), 10, machine(), { state: "idle", inits: 0 });
   assert.equal(m.onFrame(9, { acc: { "1": { value: 99 } } }), null);
   assert.deepEqual(m.onFrame(11, { acc: { "1": { value: 4 } } }), ["acc.1"]);
-  assert.equal(m.machine?.acc["1"].value, 4);
+  assert.equal(drawn(m)?.acc["1"].value, 4);
   m.onSession(sess("b"));
   assert.equal(m.machine, null, "new session: nothing to draw until its state arrives");
   assert.equal(m.onFrame(12, { acc: { "1": { value: 5 } } }), null);

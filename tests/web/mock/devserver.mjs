@@ -12,7 +12,7 @@ import { readFile, stat } from "node:fs/promises";
 import { dirname, extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { MockBridge, SQUARES } from "./bridge.mjs";
+import { MockBridge, SQUARES, defaultConfig } from "./bridge.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(here, "..", "..", "..", "src", "web");
@@ -37,7 +37,7 @@ export function startDevServer({ port = PORT, host = HOST } = {}) {
   const bridge = new MockBridge();
   if (process.env.MOCK_IDLE) {
     const [setupS, runS, countdownS] = process.env.MOCK_IDLE.split(",").map(Number);
-    bridge.config = { idle: { setupS, runS, countdownS } };
+    bridge.config = { ...defaultConfig(), idle: { setupS, runS, countdownS } };
   }
 
   const json = (res, code, body) => {

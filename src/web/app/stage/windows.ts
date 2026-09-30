@@ -12,7 +12,7 @@ import { h, s, svgFromString, wait } from "../ui/dom.ts";
 import { onTap } from "../ui/tap.ts";
 import { squareAt, type HitRect } from "../mission/hit.ts";
 import { stepTargets } from "../mission/runner.ts";
-import { dialClusterFor, jackClusterFor, type JackCluster } from "./clusters.ts";
+import { choiceLabel, dialClusterFor, jackClusterFor, plainLabel, type JackCluster } from "./clusters.ts";
 import { DIAL_HIT, JACK_HIT, PICKER, WIN_LEFT, WIN_RIGHT, WIN_SWITCH } from "./layout.ts";
 import { COPY } from "../copy.ts";
 
@@ -55,7 +55,7 @@ export class StepWindows {
   constructor(step: MissionStep, values: Record<string, string>) {
     this.step = step;
     this.ids = stepTargets(step);
-    this.labels = step.text.labels ?? {};
+    this.labels = Object.fromEntries(this.ids.map((id) => [id, plainLabel(id)]));
     this.el = h("div", { class: "windows" });
     this.overlay = svgFromString(`<svg xmlns="http://www.w3.org/2000/svg" class="win-overlay" viewBox="0 0 1920 1080" width="1920" height="1080"></svg>`);
     if (step.kind === "plug") {
@@ -282,7 +282,7 @@ export class StepWindows {
     sheet.style.width = `${PICKER.w}px`;
     const row = h("div", { class: "picker-row" });
     for (const c of st.choices) {
-      const lab = st.choiceLabels?.[c];
+      const lab = choiceLabel(this.ids[0], st.family, c);
       const b = h("div", { class: "pick", role: "button", "data-value": c }, h("span", { class: "pick-v" }, c), lab ? h("span", { class: "pick-l" }, lab) : null);
       onTap(b, () => onPick(c));
       row.append(b);

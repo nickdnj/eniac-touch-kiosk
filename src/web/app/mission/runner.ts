@@ -3,7 +3,7 @@
 // step IDs (apply_step) and anonymous wrong_tap metrics ever leave it.
 
 import type { ClientMsg, CompiledMission, MissionStep } from "../protocol.ts";
-import { switchId, termId } from "./ids.ts";
+import { kindOf, switchId, termId, termOf } from "./ids.ts";
 
 export type Phase = "source" | "dest" | "dial" | "pick" | "pending" | "done";
 export type StepStatus = "todo" | "done" | "assisted" | "skipped";
@@ -35,9 +35,9 @@ export const LADDER_TEXT = {
   level2: "Look for the glowing ring.",
   level3: "Want us to do this one?",
   defaults: {
-    wrongSource: "Start with the glowing jack marked 1.",
-    wrongDest: "That one does not match. Try the other glowing jack.",
-    wrongTarget: "Try the glowing one.",
+    wrongFrom: "Start with the glowing jack marked 1.",
+    wrongTo: "That one does not match. Try the other glowing jack.",
+    wrongSwitch: "Try the glowing one.",
     wrongValue: "Not that one. Try again.",
   } as Record<string, string>,
 };
@@ -107,12 +107,31 @@ export class Runner {
     return null;
   }
 
+  /**
+   * Which authored hint to show (architecture 5.9.2 content note): the
+   * decoy's own byTarget text, else wrongKind if a data jack was tapped for
+   * a program one (or the reverse), else the class hint for this phase
+   * (wrongFrom / wrongTo / wrongSwitch / wrongValue), else a generic line.
+   */
+  private hintFor(id: string | null, classKey: string): string {
+    const s = this.step!;
+    const h = s.text.hints ?? {};
+    if (id && h.byTarget?.[termOf(id)]) return h.byTarget[termOf(id)];
+    if (id && s.kind === "plug" && h.wrongKind) {
+      const [from, to] = stepTargets(s);
+      const expected = classKey === "wrongFrom" ? from : to;
+      if (kindOf(id) !== kindOf(expected)) return h.wrongKind;
+    }
+    const cls = (h as Record<string, unknown>)[classKey];
+    if (typeof cls === "string" && cls) return cls;
+    return LADDER_TEXT.defaults[classKey] ?? "";
+  }
+
   private wrongTap(id: string | null, classKey: string, snapBack: boolean): TapResult {
     this.wrong++;
-    const hints = this.step!.text.hints ?? {};
     let text: string;
     if (this.wrong === 1) {
-      const specific = (id && hints[id]) || hints[classKey] || LADDER_TEXT.defaults[classKey] || "";
+      const specific = this.hintFor(id, classKey);
       text = `${LADDER_TEXT.notQuite} ${specific}`.trim();
     } else if (this.wrong === 2) text = LADDER_TEXT.level2;
     else text = LADDER_TEXT.level3;
@@ -143,7 +162,7 @@ export class Runner {
           this.phase = "dest";
           return { feedback: { kind: "ok-source", id }, send: [] };
         }
-        return this.wrongTap(id, "wrongSource", false);
+        return this.wrongTap(id, "wrongFrom", false);
       }
       // Destination phase: the source stays armed whatever happens.
       if (id === second) {
@@ -151,13 +170,13 @@ export class Runner {
         return { feedback: { kind: "ok", id, assisted: false }, send: [this.applyMsg(false)] };
       }
       if (id === first) return { feedback: { kind: "neutral" }, send: [] };
-      return this.wrongTap(id, "wrongDest", true);
+      return this.wrongTap(id, "wrongTo", true);
     }
     if (id === first) {
       this.phase = "pick";
       return { feedback: { kind: "open-picker", id }, send: [] };
     }
-    return this.wrongTap(id, "wrongTarget", false);
+    return this.wrongTap(id, "wrongSwitch", false);
   }
 
   /** A value chosen in the switch picker. */

@@ -1,8 +1,9 @@
 {
-  "_comment": "DEV/TEST FIXTURE ONLY. Hand-compiled from docs/ux-spec.md 8.1 and docs/architecture.md 5.9.3-5.9.4 until the bridge serves GET /api/missions/squares (#10). Never bundled: the production UI only fetches missions from the bridge.",
+  "_comment": "DEV/TEST FIXTURE ONLY, never bundled. The compiled mission (architecture 5.9.3, mission.gen.ts `Compiled`) as the bridge serves it from GET /api/missions/squares, hand-compiled from missions/squares.yaml @ origin/m1-bridge 12484c0 (steps, text, content, run, checkpoints) and sq.e per docs/ux-spec.md 8.1.1 (config). tests/web/contract.test.ts compares it with missions/squares.yaml when that file is present.",
   "id": "squares",
   "title": "Squares",
   "order": 1,
+  "summary": "Make ENIAC count in squares.",
   "ordered": true,
   "config": [
     { "kind": "plug", "from": "c.o", "to": "1", "cable": "data", "owner": "step:const-to-trunk1" },
@@ -38,13 +39,12 @@
       "text": {
         "headline": "Dial in the number 1",
         "body": "This is the Constant Transmitter. It holds a number that you set with dials. Tap the glowing dial and choose 1.",
-        "done": "Now it holds the number 1, ready to send.",
         "more": "ENIAC had dials like these for numbers that never change, called constants. A number was up to 10 digits long.",
+        "done": "Now it holds the number 1, ready to send.",
         "hints": {
           "wrongValue": "Not that number. We need a 1.",
-          "wrongTarget": "That is a different digit of the number. Try the glowing one."
-        },
-        "labels": { "sw:c.j1": "J constant, digit 1" }
+          "wrongSwitch": "That is a different digit of the number. Try the glowing one."
+        }
       }
     },
     {
@@ -52,13 +52,12 @@
       "text": {
         "headline": "Put the 1 on the number highway",
         "body": "Numbers travel through cables on a data trunk, like cars on a highway. Tap the OUT jack. Then tap Trunk 1. Now the 1 can travel.",
-        "done": "The cable is in. The 1 is on Trunk 1.",
         "more": "On the real ENIAC, trunks were long tubes of wires that ran along the machine. Cables plug units into them.",
+        "done": "The cable is in. The 1 is on Trunk 1.",
         "hints": {
-          "wrongSource": "That is a jack for signals. We want OUT, the number exit.",
-          "wrongDest": "That is a different trunk. Choose Trunk 1."
-        },
-        "labels": { "jack:c.o": "Constant Transmitter OUT", "trunk:1": "Trunk 1" }
+          "wrongFrom": "That is a jack for signals. We want OUT, the number exit.",
+          "wrongTo": "That is a different trunk. Choose Trunk 1."
+        }
       }
     },
     {
@@ -66,15 +65,12 @@
       "text": {
         "headline": "Send the 1 to Accumulator 1",
         "body": "Accumulators are ENIAC's adding machines. Each one holds a number and shows it in glowing neon lamps. Tap Trunk 1. Then tap the alpha jack, written with the Greek letter α.",
-        "done": "Accumulator 1 can now take in the 1.",
         "more": "ENIAC had 20 accumulators. Each held a 10-digit number and could add. They were its memory and its adders in one.",
+        "done": "Accumulator 1 can now take in the 1.",
         "hints": {
-          "wrongSource": "That is a different trunk. Start with Trunk 1.",
-          "wrongDest": "That is a different input. Look for the α, called alpha.",
-          "jack:a1.5i": "That one takes signals, not numbers.",
-          "jack:a1.6i": "That one takes signals, not numbers."
-        },
-        "labels": { "trunk:1": "Trunk 1", "jack:a1.α": "Accumulator 1 input α (alpha)" }
+          "wrongTo": "That is a different input. Look for the α, called alpha.",
+          "wrongKind": "That one takes signals, not numbers."
+        }
       }
     },
     {
@@ -82,31 +78,27 @@
       "text": {
         "headline": "Connect Accumulator 1 to Accumulator 2",
         "body": "Accumulator 1 will hold the number. Accumulator 2 will hold its square. Plug the A output of Accumulator 1 into the β input (say beta) of Accumulator 2.",
-        "done": "Now Accumulator 1 can pass its number to Accumulator 2.",
         "more": "A is the output that sends a number as it is. S sends its opposite, which is how ENIAC subtracted.",
+        "done": "Now Accumulator 1 can pass its number to Accumulator 2.",
         "hints": {
-          "jack:a1.S": "S is for subtracting. We want A.",
-          "wrongSource": "That is an input. We want A, the output.",
-          "jack:a2.α": "That input is for a different job. Try β, beta.",
-          "wrongDest": "That is a different input. Try β, beta."
-        },
-        "labels": { "jack:a1.A": "Accumulator 1 OUT (A)", "jack:a2.β": "Accumulator 2 input β (beta)" }
+          "byTarget": {
+            "a1.S": "S is for subtracting. We want A.",
+            "a2.α": "That input is for a different job. Try β, beta."
+          }
+        }
       }
     },
     {
       "id": "a1-twice", "kind": "switch", "switch": "a1.rp6", "value": "2", "family": "acc.rp",
       "choices": ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
-      "choiceLabels": { "1": "1 time", "2": "2 times", "3": "3 times", "4": "4 times", "5": "5 times", "6": "6 times", "7": "7 times", "8": "8 times", "9": "9 times" },
       "text": {
         "headline": "Send the number twice",
         "body": "Our trick adds the number two times. So Accumulator 1 must send it two times. Tap the glowing switch and pick 2.",
-        "done": "Accumulator 1 will now send its number 2 times.",
         "more": "Every ENIAC job had a repeat switch. Here, Accumulator 2 also has to listen twice. That is one of the 10 switches we set for you.",
+        "done": "Accumulator 1 will now send its number 2 times.",
         "hints": {
-          "wrongValue": "We need the number to go twice. Pick 2.",
-          "wrongTarget": "That switch is for a different program. Try the glowing one."
-        },
-        "labels": { "sw:a1.rp6": "Program 6 repeat" }
+          "wrongValue": "We need the number to go twice. Pick 2."
+        }
       }
     },
     {
@@ -114,13 +106,12 @@
       "text": {
         "headline": "Wire up the START button",
         "body": "When does it begin? The Initiating Unit has the GO button. Its signal travels on a program trunk, a highway for signals. Tap the GO output. Then tap program trunk 1-1.",
-        "done": "Now the GO button is wired in.",
         "more": "The Initiating Unit is where you press the button that starts the machine. It can also start the card reader and the card punch.",
+        "done": "Now the GO button is wired in.",
         "hints": {
-          "wrongSource": "That one belongs to another job. We want the initiating pulse output.",
-          "wrongDest": "Try program trunk 1-1."
-        },
-        "labels": { "jack:i.io": "GO output (initiating pulse)", "trunk:1-1": "Program trunk 1-1" }
+          "wrongFrom": "That one belongs to another job. We want the initiating pulse output.",
+          "wrongTo": "Try program trunk 1-1."
+        }
       }
     },
     {
@@ -128,14 +119,15 @@
       "text": {
         "headline": "Say what happens next",
         "body": "When Accumulator 2 finishes adding twice, it sends a signal. That signal tells everyone to add 1. Tap the 6-out jack on Accumulator 2. Then tap program trunk 1-3.",
-        "done": "One job finishing now starts the next job. That is how ENIAC ran a whole program!",
         "more": "Every job on ENIAC ended with a signal, and that signal started the next job. Chaining those signals together was programming.",
+        "done": "One job finishing now starts the next job. That is how ENIAC ran a whole program!",
+        "button": "Finish wiring",
         "hints": {
-          "jack:a2.5o": "That jack is for the later step. We want 6, out.",
-          "wrongSource": "That one belongs to another job. We want 6, out.",
-          "wrongDest": "Try program trunk 1-3."
-        },
-        "labels": { "jack:a2.6o": "Accumulator 2 program 6 out", "trunk:1-3": "Program trunk 1-3" }
+          "byTarget": {
+            "a2.5o": "That jack is for the later step. We want 6, out.",
+            "1-2": "Try program trunk 1-3."
+          }
+        }
       }
     }
   ],
@@ -144,71 +136,74 @@
   "run": { "buttons": ["init", "clear"], "speeds": ["slow", "full"], "defaultSpeed": "slow", "watch": ["1", "2"] },
   "checkpoints": ["first-square", "answer"],
   "result": "answer",
-  "credits": ["Brian L. Stuart, programs/sq.e and doc/example.tex"],
-  "screens": {
+  "content": {
     "briefing": {
       "headline": "Mission 1: Squares",
       "body": "A square is a number times itself. 3 x 3 = 9. ENIAC can make a whole table of squares, and you will wire it up. No typing. In 1946, programming meant plugging in cables!",
       "more": "ENIAC was finished in 1945 and shown to the public on February 15, 1946. It had about 18,000 vacuum tubes. There was no keyboard for programs. People set cables and switches, a bit like an old telephone switchboard.",
-      "units": [
-        { "id": "i", "label": "Initiating Unit", "panel": 1 },
-        { "id": "a1", "label": "Accumulator 1", "panel": 6 },
-        { "id": "a2", "label": "Accumulator 2", "panel": 7 },
-        { "id": "c", "label": "Constant Transmitter", "panel": 34 }
-      ]
+      "buttons": ["Let's go"]
     },
     "plan": {
       "headline": "Here is the trick",
       "body": "To get the next square, add the number two times, then add 1. Start with 3 x 3 = 9. Add 3, add 3, add 1. You get 16, which is 4 x 4. ENIAC is great at adding!",
+      "math": "9 + 3 + 3 + 1 = 16",
       "more": "This is Brian Stuart's example. Stuart's notes say this is faster than multiplying, because each new square needs only additions. The multiplier is a whole other unit of ENIAC, and this trick does not need it.",
-      "boxes": ["Acc 1 = the number", "Acc 2 = its square"],
-      "math": "9 + 3 + 3 + 1 = 16"
+      "buttons": ["Next step", "Skip setup"]
     },
     "rest": {
       "headline": "The rest is done for you",
-      "body": "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. We will place the last ones now."
+      "body": "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. We will place the last ones now: 8 cables and 10 switches.",
+      "buttons": ["Continue"]
     },
     "run": {
-      "labels": { "1": "x", "2": "x squared" },
-      "promptBusy": "Watch the lamps",
-      "promptLater": "Keep going!",
-      "initHelp": "INIT is the Initiating Pulse, ENIAC's GO button.",
-      "fasterHint": "Want it faster? Try Full.",
-      "tapeRow": "{1} x {1} = {2}",
-      "extrasAfterPress": 3,
+      "before": { "headline": "Press INIT", "sub": "INIT is the Initiating Pulse, ENIAC's GO button." },
       "presses": [
         {
-          "prompt": "Press INIT",
+          "press": 1,
+          "headline": "Watch the lamps",
           "captions": [
-            { "when": { "accProg": { "acc": "1", "prog": 6 } }, "text": "Accumulator 1 sends its number: {before.1}, twice." },
-            { "when": { "ct": 26 }, "text": "Now everyone adds 1." },
-            { "when": { "idle": true }, "text": "{1} x {1} = {2}" }
+            { "text": "Accumulator 1 sends its number: 0, twice.", "trigger": { "accProg": { "acc": "1", "program": 6 } } },
+            { "text": "Now everyone adds 1.", "trigger": { "accProg": { "acc": "1", "program": 5 } } },
+            { "text": "1 x 1 = 1", "trigger": { "run": "idle" } }
           ]
         },
         {
-          "prompt": "Press INIT again",
+          "press": 2,
+          "headline": "Press INIT again",
           "captions": [
-            { "when": { "accProg": { "acc": "1", "prog": 6 } }, "text": "Accumulator 1 sends its {before.1}, two times." },
-            { "when": { "ct": 26 }, "text": "Now add 1." },
-            { "when": { "idle": true }, "text": "{1} x {1} = {2}" }
+            { "text": "Accumulator 1 sends its 1, two times.", "trigger": { "accProg": { "acc": "1", "program": 6 } } },
+            { "text": "Now add 1.", "trigger": { "accProg": { "acc": "1", "program": 5 } } },
+            { "text": "2 x 2 = 4", "trigger": { "run": "idle" } }
           ]
         },
         {
-          "prompt": "Again!",
+          "press": 3,
+          "headline": "Again!",
           "captions": [
-            { "when": { "accProg": { "acc": "1", "prog": 6 } }, "text": "Send {before.1}, twice." },
-            { "when": { "ct": 26 }, "text": "Add 1." },
-            { "when": { "idle": true }, "text": "{1} x {1} = {2}" }
+            { "text": "Send 2, twice.", "trigger": { "accProg": { "acc": "1", "program": 6 } } },
+            { "text": "Add 1.", "trigger": { "accProg": { "acc": "1", "program": 5 } } },
+            { "text": "3 x 3 = 9", "trigger": { "run": "idle" } }
           ]
         }
-      ]
+      ],
+      "tape": "{a1} x {a1} = {a2}",
+      "extras": {
+        "afterPress": 3,
+        "keepPressing": "Keep pressing for me",
+        "showResult": "Show me what happened",
+        "skipToAnswer": "Skip to the answer",
+        "hint": "Want it faster? Try Full.",
+        "stopAt": "answer"
+      }
     },
     "result": {
       "headline": "You made a table of squares!",
       "body": "Each new square is the old square, plus the number twice, plus 1. Like 9 + 3 + 3 + 1 = 16. ENIAC did it by adding, and you wired it.",
       "takeaway": "The cables were the program.",
       "takeawaySub": "To make ENIAC do something new, people plugged in different cables.",
-      "more": "One addition took ENIAC 1/5,000 of a second. We slowed things down so you could see the steps. Brian Stuart's simulator follows the real machine pulse by pulse."
+      "more": "One addition took ENIAC 1/5,000 of a second. We slowed things down so you could see the steps. Brian Stuart's simulator follows the real machine pulse by pulse.",
+      "buttons": ["Next: Primes", "Try again", "Menu"]
     }
-  }
+  },
+  "credits": ["Brian L. Stuart, programs/sq.e and doc/example.tex"]
 }

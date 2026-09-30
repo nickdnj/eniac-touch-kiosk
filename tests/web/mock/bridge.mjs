@@ -16,7 +16,15 @@ export const SQUARES = JSON.parse(readFileSync(join(here, "missions", "squares.j
 delete SQUARES._comment;
 
 const WL = new Set(["start_mission", "apply_step", "skip_setup", "button", "set_speed", "end_session", "metric", "ping"]);
-const METRICS = new Set(["wrong_tap", "setup_skipped", "skip_to_answer", "idle_reset", "error_enter", "error_exit"]);
+// UI metric whitelist (architecture 8.3, protocol.gen.ts Metric.ev); bridge-owned names are NOT_ALLOWED.
+const METRICS = new Set(["wrong_tap", "step_done", "speed", "skip_to_answer", "setup_skipped", "idle_reset"]);
+
+export function defaultConfig() {
+  return {
+    idle: { setupS: 90, runS: 180, countdownS: 15 },
+    admin: { tapZone: { corner: "top-left", widthPx: 120, heightPx: 96, taps: 5 } },
+  };
+}
 
 function zeroAcc() {
   return { sign: "P", digits: "0000000000", value: 0, carry: "0000000000", rep: 0, prog: "000000000000" };
@@ -44,9 +52,10 @@ export class MockBridge {
   constructor() {
     this.clients = new Set();
     this.log = [];
-    this.config = { idle: { setupS: 90, runS: 180, countdownS: 15 } };
-    this.health = { core: "up" };
+    this.config = defaultConfig();
+    this.health = { core: "up", kioskClient: true };
     this.session = null;
+    this.seq = 0; // monotonic for the life of the bridge (architecture 5.4 v0.2)
     this.speedMs = { slow: 200, full: 8 };
     this.missionsAvailable = true;
     this.refuseUntil = 0;
@@ -87,8 +96,8 @@ export class MockBridge {
     return {
       t: "state",
       session: this.sessionInfo(),
-      seq: s ? s.seq : 0,
-      machine: s ? s.machine : initialMachine(),
+      seq: this.seq,
+      machine: s && s.state !== "starting" ? s.machine : null,
       cards: [],
       run: s ? { state: s.run, inits: s.inits } : { state: "idle", inits: 0 },
     };
@@ -100,10 +109,7 @@ export class MockBridge {
         id: "squares",
         title: SQUARES.title,
         order: 1,
-        summary: "Make ENIAC count in squares.",
-        teaser: "Make ENIAC count in squares.",
-        minutes: 3,
-        stepCount: SQUARES.steps.length,
+        summary: SQUARES.summary,
         buttons: SQUARES.run.buttons,
         available: this.missionsAvailable,
         ...(this.missionsAvailable ? {} : { reason: "mock: disabled" }),
@@ -156,7 +162,7 @@ export class MockBridge {
           this.broadcast({ t: "step_applied", re: m.id, step: m.step, assisted: !!m.assisted, remaining });
           if (remaining === 0) {
             s.state = "armed";
-            this.broadcast({ t: "setup_complete", skipped: 0 });
+            this.broadcast({ t: "setup_complete", re: m.id, skipped: 0 });
             this.sendSession();
           }
         }, 15);
@@ -170,7 +176,7 @@ export class MockBridge {
         }
         return this.later(() => {
           s.state = "armed";
-          this.broadcast({ t: "setup_complete", skipped: left.length });
+          this.broadcast({ t: "setup_complete", re: m.id, skipped: left.length });
           this.sendSession();
         }, 20);
       }
@@ -205,7 +211,6 @@ export class MockBridge {
       applied: [],
       machine: initialMachine(),
       pending: {},
-      seq: 1,
       run: "idle",
       inits: 0,
       speed: SQUARES.run.defaultSpeed,
@@ -245,8 +250,8 @@ export class MockBridge {
     if (!s || s.state === "starting" || this.health.core !== "up") return;
     const pos = (s.machine.cycle.pos + 1) % 40;
     this.patch({ cycle: { pos } });
-    s.seq++;
-    this.broadcast({ t: "frame", seq: s.seq, d: s.pending });
+    this.seq++;
+    this.broadcast({ t: "frame", seq: this.seq, d: s.pending });
     s.pending = {};
   }
 
@@ -332,19 +337,19 @@ export class MockBridge {
   fault({ code = "E-CORE-DOWN", recoverAfterMs = 4000, final = false } = {}) {
     this.endSession(true);
     let attempt = 1;
-    this.health = { core: "down", code, attempt, of: 3, final };
+    this.health = { core: "down", code, detail: "mock", attempt, of: 3, final, kioskClient: true };
     this.broadcast({ t: "health", ...this.health });
     if (final) return;
     const retry = () => {
       if (attempt < 3 && recoverAfterMs > 2500) {
         attempt++;
-        this.health = { core: "down", code, attempt, of: 3, final: false };
+        this.health = { core: "down", code, detail: "mock", attempt, of: 3, final: false, kioskClient: true };
         this.broadcast({ t: "health", ...this.health });
       }
     };
     this.later(retry, Math.min(2000, recoverAfterMs / 2));
     this.later(() => {
-      this.health = { core: "up" };
+      this.health = { core: "up", kioskClient: true };
       this.broadcast({ t: "health", ...this.health });
       this.broadcast(this.stateMsg());
     }, recoverAfterMs);
@@ -366,8 +371,8 @@ export class MockBridge {
     this.timers.clear();
     this.endSession(true);
     this.log = [];
-    this.health = { core: "up" };
-    this.config = { idle: { setupS: 90, runS: 180, countdownS: 15 } };
+    this.health = { core: "up", kioskClient: true };
+    this.config = defaultConfig();
     this.missionsAvailable = true;
     this.refuseUntil = 0;
     this.speedMs = { slow: 200, full: 8 };

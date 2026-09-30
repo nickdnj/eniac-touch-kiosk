@@ -6,7 +6,7 @@
 // Timers and the socket constructor are injectable so the logic is
 // testable under node --test with fake timers.
 
-import { PROTOCOL_VERSION, type ClientMsg, type HelloMsg, type ServerMsg } from "../protocol.ts";
+import { PROTOCOL_VERSION, type ClientMsg, type Hello, type ServerMsg } from "../protocol.ts";
 
 export interface SocketLike {
   readyState: number;
@@ -146,7 +146,7 @@ export class Link {
     };
   }
 
-  private mismatch(h: HelloMsg): boolean {
+  private mismatch(h: Hello): boolean {
     if (h.protocol !== PROTOCOL_VERSION) return true;
     if (this.o.build !== undefined && h.build !== this.o.build) return true;
     return false;

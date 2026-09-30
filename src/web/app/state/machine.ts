@@ -75,25 +75,26 @@ export class Mirror {
     this.session = s && s.state !== "none" ? s : null;
     if (changed) {
       // A new (or no) session: old machine data belongs to someone else.
+      // seq is NOT reset: it is monotonic for the life of the bridge, so a
+      // late frame from the old session can never pass the seq check.
       this.machineState = null;
       this.run = { state: "idle", inits: 0 };
-      this.seq = 0;
     }
   }
 
-  /** Full snapshot. Ignored unless it belongs to the current session. */
-  onState(session: SessionInfo | null, seq: number, machine: MachineState, run: RunInfo): void {
+  /** Full snapshot. `session`/`machine` are null when there is no session. */
+  onState(session: SessionInfo | null, seq: number, machine: MachineState | null, run: RunInfo): void {
     this.onSession(session);
-    if (!this.session) return;
+    this.seq = seq; // a bridge restart may lower it; the snapshot is the new base
+    if (!this.session || !machine) return;
     this.machineState = machine;
-    this.seq = seq;
     this.run = run;
   }
 
   /** Delta. Returns touched units, or null if the frame was dropped. */
   onFrame(seq: number, d: MergePatch): string[] | null {
-    if (!this.session || !this.machineState) return null;
     if (seq <= this.seq) return null; // stale or duplicate
+    if (!this.session || !this.machineState) return null;
     this.seq = seq;
     this.machineState = applyMergePatch(this.machineState, d) as MachineState;
     return touchedUnits(d);

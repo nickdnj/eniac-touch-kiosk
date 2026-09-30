@@ -4,9 +4,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Runner, DEBOUNCE_MS, stepTargets } from "../../src/web/app/mission/runner.ts";
 import { hitTest, squareAt, distToRect } from "../../src/web/app/mission/hit.ts";
-import type { ClientMsg, CompiledMission } from "../../src/web/app/protocol.ts";
+import type { ClientMsg, CompiledMission, MissionCompiled } from "../../src/web/app/protocol.ts";
+import { toView } from "../../src/web/app/mission/view.ts";
 
-const mission: CompiledMission = JSON.parse(readFileSync(join(import.meta.dirname, "mock", "missions", "squares.json"), "utf8"));
+const mission: CompiledMission = toView(JSON.parse(readFileSync(join(import.meta.dirname, "mock", "missions", "squares.json"), "utf8")) as MissionCompiled);
 
 function mk(applied: string[] = []) {
   let t = 1000;
