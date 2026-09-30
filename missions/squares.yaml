@@ -1,0 +1,194 @@
+# Mission 1: Squares. Architecture 5.9 (schema 1, plus the M1 `content:` block).
+# Copy is from docs/ux-spec.md 8.1.4. [FC] tags from the UX spec are kept in
+# `review.factCheck` (never shown); those fields must clear the fact-check
+# gate (test plan 12) before the floor.
+#
+# sq.e at the pinned commit spells the accumulator inputs in Greek (α, β);
+# `line` uses the file's own text. ASCII spellings (alpha) would match too.
+schema: 1
+id: squares
+title: "Squares"
+order: 1
+summary: "Make ENIAC count in squares."
+program: sq.e
+programSha256: "462e103f309fc74acf3b2bc1ca6084aff26b4183a8ec63768808cdecc83fe6f0"
+includes: {}
+ordered: true
+
+steps:
+  - id: j1-one
+    line: "s c.j1 1"
+    expect: { switch: c.j1, value: "1" }
+    choices: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    text:
+      headline: "Dial in the number 1"
+      body: "This is the Constant Transmitter. It holds a number that you set with dials. Tap the glowing dial and choose 1."
+      more: "ENIAC had dials like these for numbers that never change, called constants. A number was up to 10 digits long."
+      done: "Now it holds the number 1, ready to send."
+      hints:
+        wrongValue: "Not that number. We need a 1."
+        wrongSwitch: "That is a different digit of the number. Try the glowing one."
+      review: { factCheck: [more], source: "ux-spec 8.1.4 step 1" }
+
+  - id: const-to-trunk1
+    line: "p c.o 1"
+    expect: { from: c.o, to: "1" }
+    text:
+      headline: "Put the 1 on the number highway"
+      body: "Numbers travel through cables on a data trunk, like cars on a highway. Tap the OUT jack. Then tap Trunk 1. Now the 1 can travel."
+      more: "On the real ENIAC, trunks were long tubes of wires that ran along the machine. Cables plug units into them."
+      done: "The cable is in. The 1 is on Trunk 1."
+      hints:
+        wrongFrom: "That is a jack for signals. We want OUT, the number exit."
+        wrongTo: "That is a different trunk. Choose Trunk 1."
+      review: { factCheck: [more], source: "ux-spec 8.1.4 step 2" }
+
+  - id: trunk1-to-a1
+    line: "p 1 a1.α"
+    expect: { from: "1", to: a1.α }
+    text:
+      headline: "Send the 1 to Accumulator 1"
+      body: "Accumulators are ENIAC's adding machines. Each one holds a number and shows it in glowing neon lamps. Tap Trunk 1. Then tap the alpha jack, written with the Greek letter α."
+      more: "ENIAC had 20 accumulators. Each held a 10-digit number and could add. They were its memory and its adders in one."
+      done: "Accumulator 1 can now take in the 1."
+      hints:
+        wrongTo: "That is a different input. Look for the α, called alpha."
+        wrongKind: "That one takes signals, not numbers."
+      review: { factCheck: [more], source: "ux-spec 8.1.4 step 3" }
+
+  - id: a1-to-a2
+    line: "p a1.A a2.β"
+    expect: { from: a1.A, to: a2.β }
+    text:
+      headline: "Connect Accumulator 1 to Accumulator 2"
+      body: "Accumulator 1 will hold the number. Accumulator 2 will hold its square. Plug the A output of Accumulator 1 into the β input (say beta) of Accumulator 2."
+      more: "A is the output that sends a number as it is. S sends its opposite, which is how ENIAC subtracted."
+      done: "Now Accumulator 1 can pass its number to Accumulator 2."
+      hints:
+        byTarget:
+          a1.S: "S is for subtracting. We want A."
+          a2.α: "That input is for a different job. Try β, beta."
+      review: { factCheck: [more], source: "ux-spec 8.1.4 step 4" }
+
+  - id: a1-twice
+    line: "s a1.rp6 2"
+    expect: { switch: a1.rp6, value: "2" }
+    choices: ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    text:
+      headline: "Send the number twice"
+      body: "Our trick adds the number two times. So Accumulator 1 must send it two times. Tap the glowing switch and pick 2."
+      more: "Every ENIAC job had a repeat switch. Here, Accumulator 2 also has to listen twice. That is one of the 10 switches we set for you."
+      done: "Accumulator 1 will now send its number 2 times."
+      hints:
+        wrongValue: "We need the number to go twice. Pick 2."
+      review: { factCheck: [more], source: "ux-spec 8.1.4 step 5" }
+
+  - id: init-to-1-1
+    line: "p i.io 1-1"
+    expect: { from: i.io, to: 1-1 }
+    text:
+      headline: "Wire up the START button"
+      body: "When does it begin? The Initiating Unit has the GO button. Its signal travels on a program trunk, a highway for signals. Tap the GO output. Then tap program trunk 1-1."
+      more: "The Initiating Unit is where you press the button that starts the machine. It can also start the card reader and the card punch."
+      done: "Now the GO button is wired in."
+      hints:
+        wrongFrom: "That one belongs to another job. We want the initiating pulse output."
+        wrongTo: "Try program trunk 1-1."
+      review: { factCheck: [more], source: "ux-spec 8.1.4 step 6" }
+
+  - id: a2-6o-to-1-3
+    line: "p a2.6o 1-3"
+    expect: { from: a2.6o, to: 1-3 }
+    text:
+      headline: "Say what happens next"
+      body: "When Accumulator 2 finishes adding twice, it sends a signal. That signal tells everyone to add 1. Tap the 6-out jack on Accumulator 2. Then tap program trunk 1-3."
+      more: "Every job on ENIAC ended with a signal, and that signal started the next job. Chaining those signals together was programming."
+      done: "One job finishing now starts the next job. That is how ENIAC ran a whole program!"
+      button: "Finish wiring"
+      hints:
+        byTarget:
+          a2.5o: "That jack is for the later step. We want 6, out."
+          1-2: "Try program trunk 1-3."
+      review: { factCheck: [more], source: "ux-spec 8.1.4 step 7" }
+
+withheld: []                     # sq.e has no b lines
+
+run:
+  buttons: [init, clear]
+  watch: ["1", "2"]
+  idle: { quietMs: auto }        # max(120 ms, 3 x addition time)
+  speeds:
+    slow: { rate: 100 }          # 200 ms per addition; untuned until spike #33
+    full: { rate: 0 }            # unthrottled
+  defaultSpeed: slow
+
+checkpoints:
+  - id: first-square
+    when: { acc: "2", eq: 1 }
+  - id: answer
+    when: { acc: "1", eq: 12 }   # UX: "Skip to the answer (x=12)"
+result: answer
+
+selftest:                        # architecture 5.9.5 rule 8
+  inits: 3
+  expect: { "1": 3, "2": 9 }
+
+content:
+  briefing:                      # S3, step 0a
+    headline: "Mission 1: Squares"
+    body: "A square is a number times itself. 3 x 3 = 9. ENIAC can make a whole table of squares, and you will wire it up. No typing. In 1946, programming meant plugging in cables!"
+    more: "ENIAC was finished in 1945 and shown to the public on February 15, 1946. It had about 18,000 vacuum tubes. There was no keyboard for programs. People set cables and switches, a bit like an old telephone switchboard."
+    buttons: ["Let's go"]
+    review: { factCheck: [body, more], source: "ux-spec 8.1.4 0a (body: [FC: 1946])" }
+  plan:                          # step 0b
+    headline: "Here is the trick"
+    body: "To get the next square, add the number two times, then add 1. Start with 3 x 3 = 9. Add 3, add 3, add 1. You get 16, which is 4 x 4. ENIAC is great at adding!"
+    math: "9 + 3 + 3 + 1 = 16"
+    more: "This is Brian Stuart's example. Stuart's notes say this is faster than multiplying, because each new square needs only additions. The multiplier is a whole other unit of ENIAC, and this trick does not need it."
+    buttons: ["Next step", "Skip setup"]
+    review: { factCheck: [more], source: "ux-spec 8.1.4 0b" }
+  rest:                          # S5
+    headline: "The rest is done for you"
+    body: "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. We will place the last ones now: 8 cables and 10 switches."
+    buttons: ["Continue"]
+    review: { factCheck: [body], source: "ux-spec 8.1.4 S5 ([FC] after 'took days.')" }
+  run:                           # S6
+    before: { headline: "Press INIT", sub: "INIT is the Initiating Pulse, ENIAC's GO button." }
+    presses:
+      - press: 1
+        headline: "Watch the lamps"
+        captions:
+          - { text: "Accumulator 1 sends its number: 0, twice.", trigger: { accProg: { acc: "1", program: 6 } } }
+          - { text: "Now everyone adds 1.", trigger: { accProg: { acc: "1", program: 5 } } }
+          - { text: "1 x 1 = 1", trigger: { run: idle } }
+      - press: 2
+        headline: "Press INIT again"
+        captions:
+          - { text: "Accumulator 1 sends its 1, two times.", trigger: { accProg: { acc: "1", program: 6 } } }
+          - { text: "Now add 1.", trigger: { accProg: { acc: "1", program: 5 } } }
+          - { text: "2 x 2 = 4", trigger: { run: idle } }
+      - press: 3
+        headline: "Again!"
+        captions:
+          - { text: "Send 2, twice.", trigger: { accProg: { acc: "1", program: 6 } } }
+          - { text: "Add 1.", trigger: { accProg: { acc: "1", program: 5 } } }
+          - { text: "3 x 3 = 9", trigger: { run: idle } }
+    tape: "{a1} x {a1} = {a2}"
+    extras:
+      afterPress: 3
+      keepPressing: "Keep pressing for me"
+      showResult: "Show me what happened"
+      skipToAnswer: "Skip to the answer"
+      hint: "Want it faster? Try Full."
+      stopAt: answer
+  result:                        # S7
+    headline: "You made a table of squares!"
+    body: "Each new square is the old square, plus the number twice, plus 1. Like 9 + 3 + 3 + 1 = 16. ENIAC did it by adding, and you wired it."
+    takeaway: "The cables were the program."
+    takeawaySub: "To make ENIAC do something new, people plugged in different cables."
+    more: "One addition took ENIAC 1/5,000 of a second. We slowed things down so you could see the steps. Brian Stuart's simulator follows the real machine pulse by pulse."
+    buttons: ["Next: Primes", "Try again", "Menu"]
+    review: { factCheck: [more], source: "ux-spec 8.1.4 S7" }
+
+credits:
+  - "Brian L. Stuart, programs/sq.e and doc/example.tex"

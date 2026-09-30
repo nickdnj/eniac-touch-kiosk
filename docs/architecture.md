@@ -509,7 +509,29 @@ checkpoints:                    # predicates over MachineState, evaluated by the
 result: answer                  # the checkpoint that means "mission complete" (metrics, FR-60)
 
 credits: ["Brian L. Stuart, programs/sq.e and doc/example.tex"]
+
+selftest: { inits: 3, expect: { "1": 3, "2": 9 } }   # rule 8 (M1 addition)
+
+content:                        # M1 addition (#10): the non-step copy
+  briefing: { headline, body, more, buttons }         # S3 / step 0a
+  plan:     { headline, body, math, more, buttons }   # step 0b
+  rest:     { headline, body, buttons }               # S5 "the rest is done for you"
+  run:                                                # S6 rail
+    before:  { headline: "Press INIT", sub: "…" }
+    presses:                                          # per INIT press
+      - press: 1
+        headline: "Watch the lamps"
+        captions:                                     # fire in the UI on real lamp state (UX F2)
+          - { text: "…", trigger: { accProg: { acc: "1", program: 6 } } }   # that program FF lit
+          - { text: "1 x 1 = 1", trigger: { run: idle } }                   # run: idle|busy
+    tape: "{a1} x {a1} = {a2}"                        # notebook tape line; {aN} = settled value
+    extras: { afterPress: 3, keepPressing, showResult, skipToAnswer, hint, stopAt: answer }
+  result:   { headline, body, takeaway, takeawaySub, more, buttons }       # S7
 ```
+
+**Content block (M1 amendment, #10).** The 5.9.2 schema had no home for the briefing, the plan step, the S5 card, the run-rail captions or the result copy. They live in `content:`, are copied verbatim into the compiled mission (5.9.3) and are linted like step copy (rule 7). Caption `trigger`s are evaluated **by the UI** against MachineState and `run` events; the bridge only validates their shape. Every text block (step `text` and each `content` card) may carry `review: {factCheck: [fields], source}`: the UX spec's `[FC]` tags live there, are never sent to the UI, and `[FC]` in shown text fails validation. Step `text.hints` has the keys `wrongFrom`, `wrongTo`, `wrongKind`, `wrongSwitch`, `wrongValue` and `byTarget` (canonical `.e` term → text); the UI picks which one to show. `summary` (one line for the mission picker) is also an M1 addition.
+
+**Greek and ASCII (M1, #9).** At the pinned commit `sq.e` spells the accumulator inputs in Greek (`p 1 a1.α`, `s a1.op5 α`). The core also accepts `a`/`alpha` and so on. The loader matches on a canonical form (Greek) and always sends the file's original text; compiled missions use the Greek form.
 
 **Predicate grammar** (M1: `acc`+`eq|gte`; M2: the rest): `{acc: n, eq|gte|lte: int}`, `{punchCount: {gte: n}}`, `{punchField: {index: i, eq: "02801"}}`, `{init: {bit: n, eq: 0|1}}`, `{mp: {stage: s, eq: k}}`, `{all: [...]}`, `{any: [...]}`.
 
@@ -564,7 +586,7 @@ The preset is the other 18 lines. `withheld: []`, because `sq.e` has no `b` line
 1. The program and include sha256 values match. Every `line` matches exactly one command.
 2. Steps are only `p` or `s` lines. Withheld lines are only `b` or `f` lines.
 3. **Multiset check:** preset ∪ steps ∪ withheld == the original command lines (nothing lost or duplicated).
-4. No preset line touches the same jack or switch as a step. Otherwise the order of application would matter.
+4. **Per terminal, ignoring trunk ends:** no preset line plugs the same unit jack (for example `a1.A`, `c.o`, `i.io`) or sets the same switch as a step. Otherwise the order of application would matter. Trunk ends are exempt because trunks are shared by design: in `sq.e`, trunks `1`, `1-1` and `1-3` carry both step and preset cables. *(Amended in M1, #10; the original wording "no preset line touches the same jack or switch as a step" rejected `sq.e` itself.)*
 5. Switch values are in the **catalog** (from upstream `*ctl` accepted values; for example acc `op`: `α β γ δ ε A S AS 0`; `rp`: `1-9`; `cc`: `0 C`; constant `j`/`k` digits: `0-9`; `sNN`: `[A-K](l|r|lr)`). `choices` ⊆ catalog and contains the value.
 6. Every step target has a matching element ID in the SVG panel kit (`jack:c.o`, `sw:c.j1`, …; section 6).
 7. Copy lint: headline and body length, and word counts (FR-22).
@@ -972,3 +994,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | 0.1 | 2026-09-30 | Nick DeMarco with AI assistance | Initial architecture from the PRD v0.1, the UX spec v0.1 (F2 needs folded in), and a code read plus local runs of upstream `c4b94f2` |
+| 0.2 | 2026-09-30 | software-developer agent (M1 bridge) | 5.9.2: `content:`, `selftest:` and `summary` added to the mission schema; `[FC]` review metadata. 5.9.5 rule 4 defined per terminal, ignoring trunk ends. Greek/ASCII canonicalization note. |

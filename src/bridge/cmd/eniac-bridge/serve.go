@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"eniac-kiosk/bridge/internal/config"
+	"eniac-kiosk/bridge/internal/mission"
 	"eniac-kiosk/bridge/internal/server"
 )
 
@@ -39,9 +40,22 @@ func runServe(args []string) int {
 		fmt.Fprintln(os.Stderr, "eniac-bridge serve: --dev needs a binary built with -tags devserver (make dev)")
 		return 1
 	}
+	list, err := mission.LoadDir(cfg.Paths.Missions, cfg.Paths.Upstream)
+	if err != nil {
+		log.Error("missions", "err", err)
+		return 1
+	}
+	for _, m := range list {
+		if m.Available {
+			log.Info("mission available", "id", m.File.ID)
+		} else {
+			log.Warn("mission unavailable", "id", m.File.ID, "reason", m.Reason)
+		}
+	}
+	reg := mission.NewRegistry(list)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	if err := server.Run(ctx, server.Options{Config: cfg, Dev: *dev, Log: log}); err != nil {
+	if err := server.Run(ctx, server.Options{Config: cfg, Dev: *dev, Log: log, Missions: reg}); err != nil {
 		log.Error("serve failed", "err", err)
 		return 1
 	}

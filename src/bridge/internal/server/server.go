@@ -11,17 +11,23 @@ import (
 	"time"
 
 	"eniac-kiosk/bridge/internal/config"
+	"eniac-kiosk/bridge/internal/mission"
 )
 
 type Options struct {
 	Config config.Config
-	Dev    bool
-	Log    *slog.Logger
+	Dev      bool
+	Log      *slog.Logger
+	Missions *mission.Registry
 }
 
 // Run serves until ctx is cancelled.
 func Run(ctx context.Context, o Options) error {
 	mux := http.NewServeMux()
+	if o.Missions != nil {
+		mux.Handle("/api/missions", o.Missions.Handler())
+		mux.Handle("/api/missions/", o.Missions.Handler())
+	}
 	if o.Dev {
 		mux.Handle("/", DevWebHandler(o.Config.Paths.WebSrc))
 	} else {
