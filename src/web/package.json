@@ -1,0 +1,26 @@
+{
+  "name": "eniac-kiosk-web",
+  "private": true,
+  "description": "Kiosk web UI. Node is dev-only tooling here: it is never on the Pi and never in a release.",
+  "type": "module",
+  "scripts": {
+    "postinstall": "node scripts/link-tests.mjs",
+    "dev": "node ../../tests/web/mock/devserver.mjs",
+    "build": "node scripts/build.mjs",
+    "gen:panels": "node scripts/gen-panels.ts",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "node --test \"../../tests/web/**/*.test.ts\"",
+    "e2e": "playwright test -c ../../tests/web/playwright.config.ts",
+    "screenshots": "SCREENSHOTS=1 playwright test -c ../../tests/web/playwright.config.ts screenshots"
+  },
+  "devDependencies": {
+    "@fontsource/atkinson-hyperlegible": "5.3.0",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@playwright/test": "1.63.0",
+    "@types/node": "^24.0.0",
+    "@types/ws": "^8.18.0",
+    "esbuild": "0.28.2",
+    "typescript": "^5.9.0",
+    "ws": "8.22.0"
+  }
+}
