@@ -34,4 +34,4 @@ The goal is a touch-first version of the ENIAC simulator for a museum kiosk. It 
 
 1. **Front end:** a new web front end. A Go websocket bridge wraps the simulator core, and the UI renders in Chromium like the other museum kiosks. The Tk `eniactk` stays upstream only, for reference.
 2. **Guided flow:** guided missions, a progression of squares → primes → the 1946 trajectory demo. Each mission walks through its key plugging and switch steps with explanations, then READ → INIT → watch the lamps and cards.
-3. **Hardware:** a new dedicated Pi 5 with a touchscreen. The trial install on the Model 4 kiosk gets removed before the floor.
+3. **Hardware:** a new dedicated Pi 5 with a touchscreen in production. Development and testing run on the Model 4 kiosk's Pi 5 for now, through the trial install. It has to come off that box before the floor.
