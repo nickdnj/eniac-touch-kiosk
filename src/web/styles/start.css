@@ -27,7 +27,7 @@
 @keyframes pill-pulse { 50% { box-shadow: 0 0 0 18px rgba(244, 239, 227, 0.08); transform: scale(1.02); } }
 
 /* S2: mission cards (UX 7.2). */
-.picker .header { padding-left: 136px; }
+.mission-picker .header { padding-left: 136px; }
 .mission-cards { position: absolute; left: 0; right: 0; top: 184px; display: flex; justify-content: center; gap: 64px; }
 .mission-card {
   width: 544px;

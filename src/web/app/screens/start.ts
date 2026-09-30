@@ -39,7 +39,7 @@ export function pickerScreen(app: App): Screen {
   if (!list.length) cards.append(h("div", { class: "waiting" }, h("span", { class: "spinner" }), COPY.waitingMachine));
   const el = h(
     "div",
-    { class: "screen picker" },
+    { class: "screen mission-picker" },
     h("div", { class: "header" }, h("span", { class: "screen-title" }, COPY.picker.title)),
     cards,
   );
