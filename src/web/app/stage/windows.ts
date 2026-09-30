@@ -9,6 +9,7 @@ import type { MissionStep, SwitchStep } from "../protocol.ts";
 import { dial, jack, panelFace, jackBlock, ACC_RP, DIGITS, text, C } from "../panels/art.ts";
 import { setDial } from "../panels/load.ts";
 import { h, s, svgFromString, wait } from "../ui/dom.ts";
+import { play } from "../ui/anim.ts";
 import { onTap } from "../ui/tap.ts";
 import { squareAt, type HitRect } from "../mission/hit.ts";
 import { stepTargets } from "../mission/runner.ts";
@@ -201,7 +202,8 @@ export class StepWindows {
     this.overlay.append(g);
     setTimeout(() => g.remove(), 600);
     this.wins[p.win].svg.querySelectorAll(`[id="${id}"]`).forEach((el) =>
-      (el as SVGElement).animate(
+      void play(
+        el,
         [{ transform: "translateX(0)" }, { transform: "translateX(-6px)" }, { transform: "translateX(6px)" }, { transform: "translateX(-6px)" }, { transform: "translateX(6px)" }, { transform: "translateX(0)" }],
         { duration: 300 },
       ),
@@ -220,7 +222,7 @@ export class StepWindows {
       s("circle", { cx: p.x + r * 0.72, cy: p.y - r * 0.72, r: 20, class: "ok-dot" }),
       s("path", { d: `M${p.x + r * 0.72 - 10} ${p.y - r * 0.72}l7 7l13 -14`, class: "ok-check" }),
     );
-    g.animate([{ transform: "scale(1.15)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: 200, easing: "ease-out" });
+    void play(g, [{ transform: "scale(1.15)", opacity: 0 }, { transform: "scale(1)", opacity: 1 }], { duration: 200, easing: "ease-out" });
     (g as SVGElement).style.transformOrigin = `${p.x}px ${p.y}px`;
     this.overlay.append(g);
   }
@@ -242,7 +244,7 @@ export class StepWindows {
 
   /** Wrong destination: the floating end snaps back (source stays armed). */
   snapBack(): void {
-    this.preview?.animate([{ opacity: 1 }, { opacity: 0.2 }, { opacity: 1 }], { duration: 300 });
+    if (this.preview) void play(this.preview, [{ opacity: 1 }, { opacity: 0.2 }, { opacity: 1 }], { duration: 300 });
   }
 
   /** Right destination: the cable draws across the windows (600 ms). */
@@ -257,11 +259,12 @@ export class StepWindows {
     const c = s("path", { d, class: "cable-core" }) as SVGPathElement;
     g.append(o, c);
     this.overlay.append(g);
-    const anims = [o, c].map((p) => {
-      const len = p.getTotalLength();
-      return p.animate([{ strokeDasharray: `${len} ${len}`, strokeDashoffset: len }, { strokeDasharray: `${len} ${len}`, strokeDashoffset: 0 }], { duration: ms, easing: "ease-in-out" });
-    });
-    await Promise.all(anims.map((x) => x.finished));
+    await Promise.all(
+      [o, c].map((p) => {
+        const len = p.getTotalLength();
+        return play(p, [{ strokeDasharray: `${len} ${len}`, strokeDashoffset: len }, { strokeDasharray: `${len} ${len}`, strokeDashoffset: 0 }], { duration: ms, easing: "ease-in-out" });
+      }),
+    );
   }
 
   // ------------------------------------------------------------------ switch picker (UX 7.3)
@@ -290,14 +293,14 @@ export class StepWindows {
     sheet.append(row);
     this.el.append(sheet);
     this.picker = sheet;
-    sheet.animate([{ transform: "translateY(60px)", opacity: 0 }, { transform: "translateY(0)", opacity: 1 }], { duration: 250, easing: "ease-out" });
+    void play(sheet, [{ transform: "translateY(60px)", opacity: 0 }, { transform: "translateY(0)", opacity: 1 }], { duration: 250, easing: "ease-out" });
   }
 
   pickerWrong(value: string): void {
     const b = this.picker?.querySelector(`[data-value="${value}"]`);
     if (!b) return;
     b.classList.add("wrong");
-    (b as HTMLElement).animate([{ transform: "translateX(0)" }, { transform: "translateX(-6px)" }, { transform: "translateX(6px)" }, { transform: "translateX(0)" }], { duration: 300 });
+    void play(b, [{ transform: "translateX(0)" }, { transform: "translateX(-6px)" }, { transform: "translateX(6px)" }, { transform: "translateX(0)" }], { duration: 300 });
     setTimeout(() => b.classList.remove("wrong"), 600);
   }
 
@@ -314,7 +317,7 @@ export class StepWindows {
 
   slideIn(reduceMotion: boolean): void {
     this.el.querySelectorAll<HTMLElement>(".win").forEach((w, i) =>
-      w.animate(reduceMotion ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: `translateY(40px) scale(.96)` }, { opacity: 1, transform: "none" }], {
+      void play(w, reduceMotion ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 0, transform: `translateY(40px) scale(.96)` }, { opacity: 1, transform: "none" }], {
         duration: 400,
         delay: i * 80,
         easing: "ease-in-out",
@@ -324,7 +327,7 @@ export class StepWindows {
   }
 
   async close(): Promise<void> {
-    await this.el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" }).finished;
+    await play(this.el, [{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: "forwards" });
     this.el.remove();
   }
 }

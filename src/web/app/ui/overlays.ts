@@ -3,6 +3,7 @@
 import type { App } from "../app.ts";
 import { h } from "./dom.ts";
 import { onTap } from "./tap.ts";
+import { play } from "./anim.ts";
 import { COPY } from "../copy.ts";
 
 export function button(label: string, cls: string, fn: () => void, attrs: Record<string, string> = {}): HTMLElement {
@@ -36,7 +37,8 @@ export function confirm(app: App, text: string, yes: string): Promise<boolean> {
 export function tellMore(app: App, headline: string, body: string): void {
   app.idle.pause();
   const close = () => {
-    panel.animate([{ transform: "translateX(0)" }, { transform: "translateX(1000px)" }], { duration: 250, easing: "ease-in" }).finished.then(() => scrim.remove());
+    scrim.classList.add("inert");
+    void play(panel, [{ transform: "translateX(0)" }, { transform: "translateX(1000px)" }], { duration: 250, easing: "ease-in", fill: "forwards" }).then(() => scrim.remove());
     app.idle.resume();
   };
   const panel = h(
@@ -48,5 +50,5 @@ export function tellMore(app: App, headline: string, body: string): void {
   );
   const scrim = h("div", { class: "scrim tellmore-scrim" }, panel);
   app.overlay.append(scrim);
-  panel.animate([{ transform: "translateX(1000px)" }, { transform: "translateX(0)" }], { duration: 300, easing: "ease-out" });
+  void play(panel, [{ transform: "translateX(1000px)" }, { transform: "translateX(0)" }], { duration: 300, easing: "ease-out" });
 }

@@ -13,6 +13,7 @@ import { roomPlanSvg, unitsForPlan } from "../stage/roomplan.ts";
 import { PICKER, RAIL, STAGE } from "../stage/layout.ts";
 import { LampRenderer } from "../lamps/render.ts";
 import { h, s, svgFromString, wait } from "../ui/dom.ts";
+import { after, finishAll, play } from "../ui/anim.ts";
 import { onTap, setDisabled, type TapPoint } from "../ui/tap.ts";
 import { button, confirm, tellMore } from "../ui/overlays.ts";
 import { switchDefault } from "../panels/art.ts";
@@ -29,12 +30,12 @@ export function missionScreen(app: App, view: View): Screen {
   const runner = new Runner(mission, () => app.now(), app.mirror.session?.applied ?? []);
   let phase: Phase = view.entry === "step1" ? "step" : "briefing";
   let windows: StepWindows | null = null;
-  let busyAnim = false;
+  let animGen = 0; // bumps to cancel a running success choreography
   let acked = false;
-  let animDone = false;
   let assistedNow = false;
   let setupComplete = false;
   let restDone = false;
+  const restTimers: ReturnType<typeof setTimeout>[] = [];
   let skippedSteps: MissionStep[] = [];
   const switchValues: Record<string, string> = {};
 
@@ -217,7 +218,6 @@ export function missionScreen(app: App, view: View): Screen {
     }
     const st = runner.step!;
     acked = false;
-    animDone = false;
     assistedNow = false;
     setCard(st.kind === "plug" ? "cable" : "dial", st.text.headline, st.text.body, [button(COPY.rail.showWhere, "link show-where", () => showWhere())]);
     showMore(!!st.text.more);
@@ -281,22 +281,32 @@ export function missionScreen(app: App, view: View): Screen {
     card.dataset.cables = String(cablesTotal);
     card.dataset.switches = String(switchesTotal);
     if (restDone) return finishRest(cablesTotal, switchesTotal, cc, sc);
-    void (async () => {
-      let nc = 0, ns = 0;
-      for (const c of items.filter((x) => x.kind === "plug")) {
-        if (c.kind !== "plug") continue;
-        await workbench.addCable(c, { animate: true, ms: 250 });
-        cc.textContent = String(++nc);
-      }
-      for (const c of items.filter((x) => x.kind === "switch")) {
-        if (c.kind !== "switch") continue;
-        workbench.setSwitch(c.switch, c.value, true);
-        sc.textContent = String(++ns);
-        await wait(150);
-      }
-      restDone = true;
-      finishRest(cablesTotal, switchesTotal, cc, sc);
-    })();
+    // One fixed timeline (UX 7.4, about 5 s whatever remains): cables are
+    // staggered, then the dials click. Counters follow elapsed time and the
+    // screen completes on a single timer, so nothing waits on animation
+    // frames or on the bridge (the core already has the preset).
+    const cables = items.filter((x): x is Extract<typeof x, { kind: "plug" }> => x.kind === "plug");
+    const switches = items.filter((x): x is Extract<typeof x, { kind: "switch" }> => x.kind === "switch");
+    const cableGap = Math.min(250, 2500 / Math.max(1, cables.length));
+    const switchGap = Math.min(150, 1500 / Math.max(1, switches.length));
+    const swStart = cables.length * cableGap + 200;
+    const total = swStart + switches.length * switchGap + 300;
+    cables.forEach((c, i) => void workbench.addCable(c, { animate: true, ms: 400, delay: Math.round(i * cableGap) }));
+    switches.forEach((c, i) => restTimers.push(setTimeout(() => workbench.setSwitch(c.switch, c.value, true), swStart + i * switchGap)));
+    const t0 = performance.now();
+    const tick = setInterval(() => {
+      const e = performance.now() - t0;
+      cc.textContent = String(Math.min(cables.length, Math.floor(e / cableGap) + 1));
+      sc.textContent = String(e < swStart ? 0 : Math.min(switches.length, Math.floor((e - swStart) / switchGap) + 1));
+    }, 100);
+    restTimers.push(tick);
+    restTimers.push(
+      setTimeout(() => {
+        clearInterval(tick);
+        restDone = true;
+        finishRest(cablesTotal, switchesTotal, cc, sc);
+      }, total),
+    );
   }
 
   function finishRest(cables: number, switches: number, cc: HTMLElement, sc: HTMLElement): void {
@@ -308,7 +318,7 @@ export function missionScreen(app: App, view: View): Screen {
     }
     if (setupComplete) {
       setMain(content.rest.buttons?.[0] ?? COPY.rail.continue, "filled");
-      mainBtn.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250 });
+      void play(mainBtn, [{ opacity: 0 }, { opacity: 1 }], { duration: 250 });
     }
   }
 
@@ -328,6 +338,7 @@ export function missionScreen(app: App, view: View): Screen {
     }
     // step phase
     if (runner.phase === "done") {
+      settleStep();
       if (runner.isLast) {
         runner.next();
         phase = "rest";
@@ -338,7 +349,6 @@ export function missionScreen(app: App, view: View): Screen {
   }
 
   function doItForMe(): void {
-    if (busyAnim) return;
     const st = runner.step;
     if (!st) return;
     const res = runner.doItForMe();
@@ -347,41 +357,58 @@ export function missionScreen(app: App, view: View): Screen {
     assistedNow = true;
     setDisabled(mainBtn, true);
     setFeedback(null);
-    void playSuccess(st, true);
+    playSuccess(st, true);
   }
 
-  async function playSuccess(st: MissionStep, assisted: boolean): Promise<void> {
-    busyAnim = true;
+  /**
+   * The success choreography (cable across the windows, windows close, the
+   * cable draws into the Workbench) runs in the background. The step is
+   * complete when the bridge acks it (usually < 20 ms); Next step is live
+   * from then on and jumps any remaining animation to its end.
+   */
+  function playSuccess(st: MissionStep, assisted: boolean): void {
+    const gen = ++animGen;
     const w = windows;
     updateGuide();
-    if (w) {
-      if (st.kind === "plug") {
-        const [a, b] = w.ids;
-        w.ok(a);
-        await w.drawCable(a, b, st.cable, assisted ? 900 : 600);
-        w.ok(b);
-      } else {
-        w.closePicker();
-        w.turnDial(w.ids[0], st.value);
-        w.ok(w.ids[0]);
-        await wait(300);
+    void (async () => {
+      if (w) {
+        if (st.kind === "plug") {
+          const [a, b] = w.ids;
+          w.ok(a);
+          await w.drawCable(a, b, st.cable, assisted ? 900 : 600);
+          w.ok(b);
+        } else {
+          w.closePicker();
+          w.turnDial(w.ids[0], st.value);
+          w.ok(w.ids[0]);
+          await after(300);
+        }
+        await after(250);
+        if (gen !== animGen) return;
+        await w.close();
+        if (windows === w) windows = null;
       }
-      await wait(250);
-      await w.close();
-      if (windows === w) windows = null;
-    }
-    scrim.classList.remove("on");
+      if (gen !== animGen) return;
+      scrim.classList.remove("on");
+      workbench.spotlight(null);
+      leader.replaceChildren();
+      await applyToWorkbench(st, true, !acked);
+    })();
+  }
+
+  /** Jump the current step's choreography to its end state at once. */
+  function settleStep(): void {
+    animGen++;
+    finishAll();
+    const st = mission.steps[runner.index];
+    closeWindows();
     workbench.spotlight(null);
-    leader.replaceChildren();
-    await applyToWorkbench(st, true, !acked);
-    busyAnim = false;
-    animDone = true;
-    maybeShowDone();
+    if (st && runner.status[runner.index] !== "todo") void applyToWorkbench(st, false);
   }
 
   function maybeShowDone(): void {
     const st = mission.steps[runner.index];
-    if (!acked || !animDone || !st) return;
+    if (!acked || !st) return;
     if (st.kind === "plug") {
       const c = configFor(st);
       if (c && c.kind === "plug") workbench.setPending(c, false);
@@ -393,7 +420,7 @@ export function missionScreen(app: App, view: View): Screen {
   }
 
   function stageTap(p: TapPoint): void {
-    if (phase !== "step" || !windows || busyAnim) return ripple(p);
+    if (phase !== "step" || !windows) return ripple(p);
     if (windows.pickerOpen && p.y >= PICKER.y) return; // picker buttons handle themselves
     const id = hitTest(p, windows.targets, runner.activeTargets);
     const res = runner.tap(id);
@@ -402,7 +429,7 @@ export function missionScreen(app: App, view: View): Screen {
   }
 
   function onPick(v: string): void {
-    if (!windows || busyAnim) return;
+    if (!windows) return;
     const res = runner.pick(v);
     res.send.forEach((m) => app.send(m));
     if (res.feedback.kind === "wrong") windows.pickerWrong(v);
@@ -436,13 +463,15 @@ export function missionScreen(app: App, view: View): Screen {
       case "ok":
         setFeedback(null);
         setDisabled(mainBtn, true);
-        void playSuccess(runner.step!, false);
+        playSuccess(runner.step!, false);
         return;
     }
   }
 
+  /** Always available during setup, including mid-transition (no dead taps). */
   function skipSetup(): void {
-    if (phase === "rest" || runner.phase === "pending" || busyAnim) return;
+    if (phase === "rest") return;
+    settleStep();
     const { send, stepsLeft } = runner.skipAll();
     skippedSteps = stepsLeft;
     send.forEach((m) => (m.t === "metric" ? app.metric(m) : app.send(m)));
@@ -451,7 +480,7 @@ export function missionScreen(app: App, view: View): Screen {
   }
 
   async function showWhere(): Promise<void> {
-    if (!windows || busyAnim) return;
+    if (!windows) return;
     const st = runner.step!;
     const units = windows.ids.map(unitOf).filter((u) => u !== "trunks");
     closeWindows();
@@ -509,6 +538,8 @@ export function missionScreen(app: App, view: View): Screen {
     },
     unmount: () => {
       renderer.dispose();
+      for (const t of restTimers) clearTimeout(t);
+      animGen++;
       closeWindows();
     },
     onMessage,

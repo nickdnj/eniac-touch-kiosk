@@ -15,6 +15,7 @@ export class LampRenderer {
   private units = new Set<string>();
   private modeEls: Element[] = [];
   private raf = 0;
+  private fallback: ReturnType<typeof setTimeout> | null = null;
   private getMachine: () => MachineState | null;
 
   constructor(root: Element, getMachine: () => MachineState | null) {
@@ -30,16 +31,25 @@ export class LampRenderer {
     this.invalidate(null);
   }
 
-  /** Mark units dirty (null = all) and schedule a render. */
+  /**
+   * Mark units dirty (null = all) and schedule a render on the next frame,
+   * with a timer fallback so throttled frames never leave lamps stale.
+   */
   invalidate(units: string[] | null): void {
     if (units === null) for (const u of this.units) this.dirty.add(u);
     else for (const u of units) if (this.units.has(u)) this.dirty.add(u);
-    if (!this.raf && this.dirty.size) this.raf = requestAnimationFrame(() => this.flush());
+    if (!this.raf && this.dirty.size) {
+      this.raf = requestAnimationFrame(() => this.flush());
+      this.fallback = setTimeout(() => this.flush(), 100);
+    }
   }
 
   /** Synchronous render (used by tests and on mount). */
   flush(): void {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.fallback) clearTimeout(this.fallback);
     this.raf = 0;
+    this.fallback = null;
     const m = this.getMachine();
     for (const u of this.dirty) {
       const next = m ? unitLamps(u, m) : new Set<string>();
@@ -55,7 +65,9 @@ export class LampRenderer {
 
   dispose(): void {
     if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.fallback) clearTimeout(this.fallback);
     this.raf = 0;
+    this.fallback = null;
   }
 
   private set(id: string, on: boolean): void {

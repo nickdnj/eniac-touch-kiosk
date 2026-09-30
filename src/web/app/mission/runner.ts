@@ -223,6 +223,9 @@ export class Runner {
 
   /** "Skip setup": marks the rest skipped and returns what to send. */
   skipAll(): { send: ClientMsg[]; stepsLeft: MissionStep[] } {
+    // An apply already in flight reaches the (ordered) bridge before
+    // skip_setup, so that step counts as the visitor's, not as skipped.
+    if (this.phase === "pending" && !this.finished) this.status[this.index] = "done";
     const left: MissionStep[] = [];
     this.mission.steps.forEach((s, i) => {
       if (this.status[i] === "todo") {

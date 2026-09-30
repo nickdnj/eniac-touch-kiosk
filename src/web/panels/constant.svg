@@ -281,7 +281,9 @@
 <circle cx="36" cy="232" r="11.3" fill="#050506"/>
 <circle cx="36" cy="232" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 36 232)">
+<g class="dial-spin">
 <path d="M36 222.3L36 229.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="36" y="256" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">10</text>
@@ -289,7 +291,9 @@
 <circle cx="61.3" cy="232" r="11.3" fill="#050506"/>
 <circle cx="61.3" cy="232" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 61.3 232)">
+<g class="dial-spin">
 <path d="M61.3 222.3L61.3 229.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="61.3" y="256" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">9</text>
@@ -297,7 +301,9 @@
 <circle cx="86.6" cy="232" r="11.3" fill="#050506"/>
 <circle cx="86.6" cy="232" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 86.6 232)">
+<g class="dial-spin">
 <path d="M86.6 222.3L86.6 229.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="86.6" y="256" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">8</text>
@@ -305,7 +311,9 @@
 <circle cx="111.9" cy="232" r="11.3" fill="#050506"/>
 <circle cx="111.9" cy="232" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 111.9 232)">
+<g class="dial-spin">
 <path d="M111.9 222.3L111.9 229.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="111.9" y="256" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">7</text>
@@ -313,7 +321,9 @@
 <circle cx="137.2" cy="232" r="11.3" fill="#050506"/>
 <circle cx="137.2" cy="232" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 137.2 232)">
+<g class="dial-spin">
 <path d="M137.2 222.3L137.2 229.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="137.2" y="256" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">6</text>
@@ -321,7 +331,9 @@
 <circle cx="162.5" cy="232" r="11.3" fill="#050506"/>
 <circle cx="162.5" cy="232" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 162.5 232)">
+<g class="dial-spin">
 <path d="M162.5 222.3L162.5 229.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="162.5" y="256" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">5</text>
@@ -329,7 +341,9 @@
 <circle cx="187.8" cy="232" r="11.3" fill="#050506"/>
 <circle cx="187.8" cy="232" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 187.8 232)">
+<g class="dial-spin">
 <path d="M187.8 222.3L187.8 229.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="187.8" y="256" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">4</text>
@@ -337,7 +351,9 @@
 <circle cx="213.1" cy="232" r="11.3" fill="#050506"/>
 <circle cx="213.1" cy="232" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 213.1 232)">
+<g class="dial-spin">
 <path d="M213.1 222.3L213.1 229.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="213.1" y="256" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">3</text>
@@ -345,7 +361,9 @@
 <circle cx="238.4" cy="232" r="11.3" fill="#050506"/>
 <circle cx="238.4" cy="232" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 238.4 232)">
+<g class="dial-spin">
 <path d="M238.4 222.3L238.4 229.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="238.4" y="256" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">2</text>
@@ -353,7 +371,9 @@
 <circle cx="263.7" cy="232" r="11.3" fill="#050506"/>
 <circle cx="263.7" cy="232" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 263.7 232)">
+<g class="dial-spin">
 <path d="M263.7 222.3L263.7 229.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="263.7" y="256" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">1</text>
@@ -362,7 +382,9 @@
 <circle cx="36" cy="300" r="11.3" fill="#050506"/>
 <circle cx="36" cy="300" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 36 300)">
+<g class="dial-spin">
 <path d="M36 290.3L36 297.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="36" y="324" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">10</text>
@@ -370,7 +392,9 @@
 <circle cx="61.3" cy="300" r="11.3" fill="#050506"/>
 <circle cx="61.3" cy="300" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 61.3 300)">
+<g class="dial-spin">
 <path d="M61.3 290.3L61.3 297.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="61.3" y="324" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">9</text>
@@ -378,7 +402,9 @@
 <circle cx="86.6" cy="300" r="11.3" fill="#050506"/>
 <circle cx="86.6" cy="300" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 86.6 300)">
+<g class="dial-spin">
 <path d="M86.6 290.3L86.6 297.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="86.6" y="324" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">8</text>
@@ -386,7 +412,9 @@
 <circle cx="111.9" cy="300" r="11.3" fill="#050506"/>
 <circle cx="111.9" cy="300" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 111.9 300)">
+<g class="dial-spin">
 <path d="M111.9 290.3L111.9 297.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="111.9" y="324" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">7</text>
@@ -394,7 +422,9 @@
 <circle cx="137.2" cy="300" r="11.3" fill="#050506"/>
 <circle cx="137.2" cy="300" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 137.2 300)">
+<g class="dial-spin">
 <path d="M137.2 290.3L137.2 297.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="137.2" y="324" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">6</text>
@@ -402,7 +432,9 @@
 <circle cx="162.5" cy="300" r="11.3" fill="#050506"/>
 <circle cx="162.5" cy="300" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 162.5 300)">
+<g class="dial-spin">
 <path d="M162.5 290.3L162.5 297.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="162.5" y="324" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">5</text>
@@ -410,7 +442,9 @@
 <circle cx="187.8" cy="300" r="11.3" fill="#050506"/>
 <circle cx="187.8" cy="300" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 187.8 300)">
+<g class="dial-spin">
 <path d="M187.8 290.3L187.8 297.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="187.8" y="324" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">4</text>
@@ -418,7 +452,9 @@
 <circle cx="213.1" cy="300" r="11.3" fill="#050506"/>
 <circle cx="213.1" cy="300" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 213.1 300)">
+<g class="dial-spin">
 <path d="M213.1 290.3L213.1 297.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="213.1" y="324" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">3</text>
@@ -426,7 +462,9 @@
 <circle cx="238.4" cy="300" r="11.3" fill="#050506"/>
 <circle cx="238.4" cy="300" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 238.4 300)">
+<g class="dial-spin">
 <path d="M238.4 290.3L238.4 297.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="238.4" y="324" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">2</text>
@@ -434,7 +472,9 @@
 <circle cx="263.7" cy="300" r="11.3" fill="#050506"/>
 <circle cx="263.7" cy="300" r="10.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 263.7 300)">
+<g class="dial-spin">
 <path d="M263.7 290.3L263.7 297.9" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="263.7" y="324" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">1</text>
@@ -443,7 +483,9 @@
 <circle cx="42" cy="378" r="9.2" fill="#050506"/>
 <circle cx="42" cy="378" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 42 378)">
+<g class="dial-spin">
 <path d="M42 370.2L42 376.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="42" y="398" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">1</text>
@@ -451,7 +493,9 @@
 <circle cx="66" cy="378" r="9.2" fill="#050506"/>
 <circle cx="66" cy="378" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 66 378)">
+<g class="dial-spin">
 <path d="M66 370.2L66 376.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="66" y="398" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">2</text>
@@ -459,7 +503,9 @@
 <circle cx="90" cy="378" r="9.2" fill="#050506"/>
 <circle cx="90" cy="378" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 90 378)">
+<g class="dial-spin">
 <path d="M90 370.2L90 376.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="90" y="398" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">3</text>
@@ -467,7 +513,9 @@
 <circle cx="114" cy="378" r="9.2" fill="#050506"/>
 <circle cx="114" cy="378" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 114 378)">
+<g class="dial-spin">
 <path d="M114 370.2L114 376.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="114" y="398" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">4</text>
@@ -475,7 +523,9 @@
 <circle cx="138" cy="378" r="9.2" fill="#050506"/>
 <circle cx="138" cy="378" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 138 378)">
+<g class="dial-spin">
 <path d="M138 370.2L138 376.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="138" y="398" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">5</text>
@@ -483,7 +533,9 @@
 <circle cx="162" cy="378" r="9.2" fill="#050506"/>
 <circle cx="162" cy="378" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 162 378)">
+<g class="dial-spin">
 <path d="M162 370.2L162 376.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="162" y="398" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">6</text>
@@ -491,7 +543,9 @@
 <circle cx="186" cy="378" r="9.2" fill="#050506"/>
 <circle cx="186" cy="378" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 186 378)">
+<g class="dial-spin">
 <path d="M186 370.2L186 376.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="186" y="398" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">7</text>
@@ -499,7 +553,9 @@
 <circle cx="210" cy="378" r="9.2" fill="#050506"/>
 <circle cx="210" cy="378" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 210 378)">
+<g class="dial-spin">
 <path d="M210 370.2L210 376.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="210" y="398" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">8</text>
@@ -507,7 +563,9 @@
 <circle cx="234" cy="378" r="9.2" fill="#050506"/>
 <circle cx="234" cy="378" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 234 378)">
+<g class="dial-spin">
 <path d="M234 370.2L234 376.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="234" y="398" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">9</text>
@@ -515,7 +573,9 @@
 <circle cx="258" cy="378" r="9.2" fill="#050506"/>
 <circle cx="258" cy="378" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 258 378)">
+<g class="dial-spin">
 <path d="M258 370.2L258 376.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="258" y="398" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">10</text>
@@ -523,7 +583,9 @@
 <circle cx="42" cy="416" r="9.2" fill="#050506"/>
 <circle cx="42" cy="416" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 42 416)">
+<g class="dial-spin">
 <path d="M42 408.2L42 414.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="42" y="436" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">11</text>
@@ -531,7 +593,9 @@
 <circle cx="66" cy="416" r="9.2" fill="#050506"/>
 <circle cx="66" cy="416" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 66 416)">
+<g class="dial-spin">
 <path d="M66 408.2L66 414.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="66" y="436" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">12</text>
@@ -539,7 +603,9 @@
 <circle cx="90" cy="416" r="9.2" fill="#050506"/>
 <circle cx="90" cy="416" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 90 416)">
+<g class="dial-spin">
 <path d="M90 408.2L90 414.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="90" y="436" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">13</text>
@@ -547,7 +613,9 @@
 <circle cx="114" cy="416" r="9.2" fill="#050506"/>
 <circle cx="114" cy="416" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 114 416)">
+<g class="dial-spin">
 <path d="M114 408.2L114 414.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="114" y="436" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">14</text>
@@ -555,7 +623,9 @@
 <circle cx="138" cy="416" r="9.2" fill="#050506"/>
 <circle cx="138" cy="416" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 138 416)">
+<g class="dial-spin">
 <path d="M138 408.2L138 414.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="138" y="436" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">15</text>
@@ -563,7 +633,9 @@
 <circle cx="162" cy="416" r="9.2" fill="#050506"/>
 <circle cx="162" cy="416" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 162 416)">
+<g class="dial-spin">
 <path d="M162 408.2L162 414.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="162" y="436" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">16</text>
@@ -571,7 +643,9 @@
 <circle cx="186" cy="416" r="9.2" fill="#050506"/>
 <circle cx="186" cy="416" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 186 416)">
+<g class="dial-spin">
 <path d="M186 408.2L186 414.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="186" y="436" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">17</text>
@@ -579,7 +653,9 @@
 <circle cx="210" cy="416" r="9.2" fill="#050506"/>
 <circle cx="210" cy="416" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 210 416)">
+<g class="dial-spin">
 <path d="M210 408.2L210 414.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="210" y="436" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">18</text>
@@ -587,7 +663,9 @@
 <circle cx="234" cy="416" r="9.2" fill="#050506"/>
 <circle cx="234" cy="416" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 234 416)">
+<g class="dial-spin">
 <path d="M234 408.2L234 414.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="234" y="436" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">19</text>
@@ -595,7 +673,9 @@
 <circle cx="258" cy="416" r="9.2" fill="#050506"/>
 <circle cx="258" cy="416" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 258 416)">
+<g class="dial-spin">
 <path d="M258 408.2L258 414.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="258" y="436" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">20</text>
@@ -603,7 +683,9 @@
 <circle cx="42" cy="454" r="9.2" fill="#050506"/>
 <circle cx="42" cy="454" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 42 454)">
+<g class="dial-spin">
 <path d="M42 446.2L42 452.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="42" y="474" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">21</text>
@@ -611,7 +693,9 @@
 <circle cx="66" cy="454" r="9.2" fill="#050506"/>
 <circle cx="66" cy="454" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 66 454)">
+<g class="dial-spin">
 <path d="M66 446.2L66 452.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="66" y="474" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">22</text>
@@ -619,7 +703,9 @@
 <circle cx="90" cy="454" r="9.2" fill="#050506"/>
 <circle cx="90" cy="454" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 90 454)">
+<g class="dial-spin">
 <path d="M90 446.2L90 452.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="90" y="474" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">23</text>
@@ -627,7 +713,9 @@
 <circle cx="114" cy="454" r="9.2" fill="#050506"/>
 <circle cx="114" cy="454" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 114 454)">
+<g class="dial-spin">
 <path d="M114 446.2L114 452.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="114" y="474" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">24</text>
@@ -635,7 +723,9 @@
 <circle cx="138" cy="454" r="9.2" fill="#050506"/>
 <circle cx="138" cy="454" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 138 454)">
+<g class="dial-spin">
 <path d="M138 446.2L138 452.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="138" y="474" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">25</text>
@@ -643,7 +733,9 @@
 <circle cx="162" cy="454" r="9.2" fill="#050506"/>
 <circle cx="162" cy="454" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 162 454)">
+<g class="dial-spin">
 <path d="M162 446.2L162 452.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="162" y="474" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">26</text>
@@ -651,7 +743,9 @@
 <circle cx="186" cy="454" r="9.2" fill="#050506"/>
 <circle cx="186" cy="454" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 186 454)">
+<g class="dial-spin">
 <path d="M186 446.2L186 452.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="186" y="474" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">27</text>
@@ -659,7 +753,9 @@
 <circle cx="210" cy="454" r="9.2" fill="#050506"/>
 <circle cx="210" cy="454" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 210 454)">
+<g class="dial-spin">
 <path d="M210 446.2L210 452.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="210" y="474" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">28</text>
@@ -667,7 +763,9 @@
 <circle cx="234" cy="454" r="9.2" fill="#050506"/>
 <circle cx="234" cy="454" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 234 454)">
+<g class="dial-spin">
 <path d="M234 446.2L234 452.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="234" y="474" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">29</text>
@@ -675,7 +773,9 @@
 <circle cx="258" cy="454" r="9.2" fill="#050506"/>
 <circle cx="258" cy="454" r="8.5" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>
 <g class="dial-pointer" transform="rotate(-135 258 454)">
+<g class="dial-spin">
 <path d="M258 446.2L258 452.3" stroke="#F4EFE3" stroke-width="1.6" stroke-linecap="round"/>
+</g>
 </g>
 </g>
 <text x="258" y="474" font-family="Atkinson Hyperlegible, sans-serif" font-size="7" font-weight="400" fill="#8A8E96" text-anchor="middle">30</text>

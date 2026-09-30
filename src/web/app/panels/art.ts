@@ -153,7 +153,7 @@ export function dial(id: string, x: number, y: number, r: number, positions: str
   }
   out += `<circle cx="${n1(x)}" cy="${n1(y)}" r="${n1(r * 1.08)}" fill="#050506"/>`;
   out += `<circle cx="${n1(x)}" cy="${n1(y)}" r="${n1(r)}" fill="url(#g-knob)" stroke="#000" stroke-width="1"/>`;
-  out += `<g class="dial-pointer" transform="rotate(${n1(a)} ${n1(x)} ${n1(y)})"><path d="M${n1(x)} ${n1(y - r * 0.92)}L${n1(x)} ${n1(y - r * 0.2)}" stroke="#F4EFE3" stroke-width="${n1(Math.max(1.6, r * 0.14))}" stroke-linecap="round"/></g>`;
+  out += `<g class="dial-pointer" transform="rotate(${n1(a)} ${n1(x)} ${n1(y)})"><g class="dial-spin"><path d="M${n1(x)} ${n1(y - r * 0.92)}L${n1(x)} ${n1(y - r * 0.2)}" stroke="#F4EFE3" stroke-width="${n1(Math.max(1.6, r * 0.14))}" stroke-linecap="round"/></g></g>`;
   out += `</g>`;
   return out;
 }

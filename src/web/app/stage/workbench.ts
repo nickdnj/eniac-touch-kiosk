@@ -13,6 +13,7 @@ import {
   type Panel,
 } from "../panels/art.ts";
 import { setDial } from "../panels/load.ts";
+import { play } from "../ui/anim.ts";
 import { h, s, svgFromString } from "../ui/dom.ts";
 import { termId, switchId, unitOf } from "../mission/ids.ts";
 import { STAGE, WB } from "./layout.ts";
@@ -27,6 +28,8 @@ interface Placed {
 export interface CableOpts {
   animate?: boolean;
   ms?: number;
+  /** Start the draw-in later (S5 staggers all cables on one timeline). */
+  delay?: number;
   pending?: boolean;
 }
 
@@ -196,22 +199,26 @@ export class Workbench {
     }
     this.cableLayer.append(g);
     this.cables.set(key, g);
+    // The cable is already fully drawn; the draw-in is decoration (ui/anim.ts).
     if (!o.animate) return Promise.resolve();
     const ms = o.ms ?? 600;
-    const anims: Animation[] = [];
+    const delay = o.delay ?? 0;
+    const runs: Promise<void>[] = [];
     for (const p of [outline, core] as SVGPathElement[]) {
       const len = p.getTotalLength();
-      anims.push(
-        p.animate([{ strokeDasharray: `${len} ${len}`, strokeDashoffset: len }, { strokeDasharray: `${len} ${len}`, strokeDashoffset: 0 }], {
+      runs.push(
+        play(p, [{ strokeDasharray: `${len} ${len}`, strokeDashoffset: len }, { strokeDasharray: `${len} ${len}`, strokeDashoffset: 0 }], {
           duration: ms,
+          delay,
           easing: "ease-in-out",
+          fill: "backwards",
         }),
       );
     }
-    g.querySelectorAll(".cable-tag, .cable-plug").forEach((t) =>
-      anims.push((t as SVGElement).animate([{ opacity: 0 }, { opacity: 0, offset: 0.8 }, { opacity: 1 }], { duration: ms })),
+    g.querySelectorAll(".cable-tag, .cable-plug, .cable-hub, .cable-hub-ring").forEach((t) =>
+      runs.push(play(t, [{ opacity: 0 }, { opacity: 0, offset: 0.8 }, { opacity: 1 }], { duration: ms, delay, fill: "backwards" })),
     );
-    return Promise.all(anims.map((a) => a.finished)).then(() => undefined);
+    return Promise.all(runs).then(() => undefined);
   }
 
   setPending(item: Extract<ConfigItem, { kind: "plug" }>, pending: boolean): void {
@@ -229,7 +236,7 @@ export class Workbench {
     if (reduceMotion || !unit) return;
     const x = WB.cardX[unit] ?? STAGE.w / 2 - CARD_W / 2;
     const ox = x + CARD_W / 2;
-    this.el.animate([{ transform: "scale(1)", transformOrigin: `${ox}px 420px` }, { transform: "scale(1.06)", transformOrigin: `${ox}px 420px`, offset: 0.5 }, { transform: "scale(1)", transformOrigin: `${ox}px 420px` }], {
+    void play(this.el, [{ transform: "scale(1)", transformOrigin: `${ox}px 420px` }, { transform: "scale(1.06)", transformOrigin: `${ox}px 420px`, offset: 0.5 }, { transform: "scale(1)", transformOrigin: `${ox}px 420px` }], {
       duration: 800,
       easing: "ease-in-out",
     });

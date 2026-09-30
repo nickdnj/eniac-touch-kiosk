@@ -2,6 +2,7 @@
 
 import { DEFS, dialAngle } from "./art.ts";
 import { svgFromString } from "../ui/dom.ts";
+import { play } from "../ui/anim.ts";
 
 /** Shared gradients, injected once (never display:none, or Chrome drops them). */
 export function injectDefs(): void {
@@ -17,7 +18,12 @@ function currentAngle(g: Element): number {
   return m ? Number(m[1]) : 0;
 }
 
-/** Turns a dial's pointer to `value` (UX 9.1: 250 ms). animate=false jumps. */
+/**
+ * Turns a dial's pointer to `value`. The pointer's final angle is set
+ * immediately; the 250 ms turn (UX 9.1) is a decorative counter-rotation of
+ * the inner `.dial-spin` group, so the dial is right even if no frame ever
+ * runs.
+ */
 export function setDial(root: Element, swId: string, value: string, animate = true, ms = 250): void {
   root.querySelectorAll(`[id="${swId}"]`).forEach((g) => {
     const positions = (g.getAttribute("data-positions") ?? "").split("|");
@@ -27,17 +33,11 @@ export function setDial(root: Element, swId: string, value: string, animate = tr
     const to = dialAngle(positions, value);
     const from = currentAngle(g);
     g.setAttribute("data-value", value);
-    if (!animate || from === to) {
-      ptr.setAttribute("transform", `rotate(${to} ${cx} ${cy})`);
-      return;
-    }
-    const t0 = performance.now();
-    const step = (t: number) => {
-      const k = Math.min(1, (t - t0) / ms);
-      const e = 1 - Math.pow(1 - k, 3);
-      ptr.setAttribute("transform", `rotate(${from + (to - from) * e} ${cx} ${cy})`);
-      if (k < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
+    ptr.setAttribute("transform", `rotate(${to} ${cx} ${cy})`);
+    const spin = g.querySelector<SVGGElement>(".dial-spin");
+    if (!animate || from === to || !spin) return;
+    spin.style.transformBox = "view-box";
+    spin.style.transformOrigin = `${cx}px ${cy}px`;
+    void play(spin, [{ transform: `rotate(${from - to}deg)` }, { transform: "rotate(0deg)" }], { duration: ms, easing: "ease-out" });
   });
 }
