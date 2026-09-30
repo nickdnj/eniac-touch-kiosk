@@ -33,9 +33,15 @@ func TestRecoveryWithFakeCore(t *testing.T) {
 	preset := filepath.Join(dir, "preset.e")
 	os.WriteFile(preset, []byte("p c.o 1\n"), 0o600)
 	opts := func(mode string, n int) core.Options {
+		// Generous ready timeout (tests run in parallel with real cores);
+		// slow-start sleeps longer than its own short timeout.
+		ready := 5 * time.Second
+		if mode == "slow-start" {
+			ready = 500 * time.Millisecond
+		}
 		return core.Options{CorePath: testenv.Fakecore(t), VlinkExe: self, Runtime: dir,
 			SessionDir: filepath.Join(dir, "s", mode), Preset: preset, Server: srv, InitialRate: 0,
-			ReadyTimeout: 500 * time.Millisecond, ExtraEnv: []string{"FAKECORE_MODE=" + mode, "FAKECORE_AFTER=" + itoa(n)}}
+			ReadyTimeout: ready, ExtraEnv: []string{"FAKECORE_MODE=" + mode, "FAKECORE_AFTER=" + itoa(n)}}
 	}
 	attempt := 0
 	health := make(chan protocol.Health, 16)

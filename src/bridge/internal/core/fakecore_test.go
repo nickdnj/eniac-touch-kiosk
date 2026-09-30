@@ -44,7 +44,7 @@ func (f *fakeRun) opts(env ...string) Options {
 	preset := filepath.Join(f.dir, "preset.e")
 	os.WriteFile(preset, []byte("p c.o 1\n"), 0o600)
 	return Options{CorePath: testenv.Fakecore(f.t), VlinkExe: self, Runtime: f.dir, SessionDir: filepath.Join(f.dir, "s"),
-		Preset: preset, Server: f.srv, InitialRate: 100, ReadyTimeout: time.Second, AckTimeout: 300 * time.Millisecond,
+		Preset: preset, Server: f.srv, InitialRate: 100, ReadyTimeout: 5 * time.Second, AckTimeout: 300 * time.Millisecond,
 		ExtraEnv: append(env, "FAKECORE_STDIN_LOG="+f.log),
 		OnStatus: func(l string) {
 			f.lines.Add(1)
@@ -99,7 +99,9 @@ func (f *fakeRun) checkAllowList() {
 
 func TestFakeSlowStartIsStartFault(t *testing.T) {
 	f := fake(t)
-	_, err := Start(context.Background(), f.opts("FAKECORE_MODE=slow-start", "FAKECORE_AFTER=2000"))
+	o := f.opts("FAKECORE_MODE=slow-start", "FAKECORE_AFTER=2000")
+	o.ReadyTimeout = time.Second
+	_, err := Start(context.Background(), o)
 	var x Fault
 	if !errors.As(err, &x) || x.Code != CodeStart {
 		t.Fatalf("got %v", err)
@@ -215,7 +217,9 @@ func TestFakeGarbageSurvives(t *testing.T) {
 // session never becomes ready and no status line reaches it.
 func TestFakeStaleTokenRefused(t *testing.T) {
 	f := fake(t)
-	_, err := Start(context.Background(), f.opts("FAKECORE_MODE=stale-token"))
+	o := f.opts("FAKECORE_MODE=stale-token")
+	o.ReadyTimeout = time.Second
+	_, err := Start(context.Background(), o)
 	var x Fault
 	if !errors.As(err, &x) || x.Code != CodeStart {
 		t.Fatalf("got %v", err)
