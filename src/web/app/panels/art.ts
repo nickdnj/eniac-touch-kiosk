@@ -286,7 +286,7 @@ export function constantPanel(standalone = false): Panel {
   const W = CARD_W, H = CARD_H;
   const g = emptyGeom(W, H);
   let b = panelFace(W, H);
-  b += plate(14, 14, W - 28, 52, ["CONSTANT TRANSMITTER"], 19);
+  b += plate(14, 14, W - 28, 52, ["CONSTANT", "TRANSMITTER"], 19);
 
   // Program lamps ct.1..30.
   b += recess(12, 76, W - 24, 112);
@@ -440,7 +440,15 @@ function rail(name: string, w: number, h: number, title: string, trunks: string[
   trunks.forEach((t, i) => {
     const y = y0 + i * pitch;
     const id = `trunk:${t}`;
-    b += `<g id="${esc(id)}" class="trunk"><rect x="64" y="${y - 3.5}" width="${w - 76}" height="7" rx="3.5" fill="url(#g-rail)" stroke="#1a1c20" stroke-width="1"/>`;
+    // A recessed channel, a heavy metal bus bar, and a row of cream-collared
+    // sockets along it (where cables can land), like the real trunk trays.
+    b += `<g id="${esc(id)}" class="trunk">`;
+    b += `<rect x="62" y="${y - 6.5}" width="${w - 72}" height="13" rx="6.5" fill="#050506" stroke="#26292e" stroke-width="1"/>`;
+    b += `<rect x="64" y="${y - 5}" width="${w - 76}" height="10" rx="5" fill="url(#g-rail)" stroke="#1a1c20" stroke-width="1"/>`;
+    b += `<path d="M66 ${y - 3}H${w - 14}" stroke="#C8CDD4" stroke-width="1" opacity=".55"/>`;
+    for (let x = 84; x < w - 14; x += 34) {
+      b += `<circle cx="${x}" cy="${y}" r="4.6" fill="${C.jackBlock}" stroke="#6d6450" stroke-width="1"/><circle cx="${x}" cy="${y}" r="2.4" fill="#0b0b0c"/>`;
+    }
     b += `<rect x="12" y="${y - 6.5}" width="44" height="13" rx="3" fill="${C.jackBlock}" stroke="#8f8566"/>`;
     b += text(34, y + 4, t, { size: 11, fill: C.ink, mono: true });
     b += `</g>`;

@@ -114,7 +114,7 @@ export class Workbench {
     return best + (n % 2 === 0 ? 1 : -1) * Math.ceil(n / 2) * 7;
   }
 
-  private route(item: Extract<ConfigItem, { kind: "plug" }>): { d: string; ends: { x: number; y: number; tag: string }[] } | null {
+  private route(item: Extract<ConfigItem, { kind: "plug" }>): { d: string; ends: { x: number; y: number; tag: string; hub?: boolean }[] } | null {
     const a = termId(item.from), b = termId(item.to);
     const aIsTrunk = a.startsWith("trunk:"), bIsTrunk = b.startsWith("trunk:");
     if (aIsTrunk && bIsTrunk) return null;
@@ -143,7 +143,7 @@ export class Workbench {
         d: `M${x} ${j.y}C${x} ${j.y + 40} ${x + 4} ${ty - 40} ${x + 4} ${ty}`,
         ends: [
           { x: j.x, y: j.y - 26, tag: name },
-          { x: x + 4, y: ty, tag: "" },
+          { x: x + 4, y: ty, tag: "", hub: true },
         ],
       };
     }
@@ -153,7 +153,7 @@ export class Workbench {
       d: `M${j.x} ${j.y}C${j.x} ${j.y + 70} ${g} ${j.y + 70} ${g} ${j.y - 10}L${g} ${ty}`,
       ends: [
         { x: j.x, y: j.y - 28, tag: name },
-        { x: g, y: ty, tag: "" },
+        { x: g, y: ty, tag: "", hub: true },
       ],
     };
   }
@@ -176,7 +176,8 @@ export class Workbench {
     const core = s("path", { d: r.d, class: "cable-core" });
     g.append(outline, core);
     for (const e of r.ends) {
-      g.append(s("circle", { cx: e.x, cy: e.y, r: 7, class: "cable-plug" }));
+      if (e.hub) g.append(s("circle", { cx: e.x, cy: e.y, r: 12, class: "cable-hub" }), s("circle", { cx: e.x, cy: e.y, r: 12, class: "cable-hub-ring" }));
+      g.append(s("circle", { cx: e.x, cy: e.y, r: e.hub ? 6.5 : 7, class: "cable-plug" }));
     }
     for (const e of r.ends) {
       if (!e.tag) continue;

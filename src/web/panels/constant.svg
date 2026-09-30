@@ -61,7 +61,8 @@
 <path d="M284.8 669.2L291.2 666.8" stroke="#202226" stroke-width="1.4"/>
 <rect x="14" y="14" width="272" height="52" rx="4" fill="#0E0F11" stroke="#4a4e57" stroke-width="1.2"/>
 <rect x="17" y="17" width="266" height="46" rx="3" fill="none" stroke="#24262b" stroke-width="1"/>
-<text x="150" y="46.8" font-family="Atkinson Hyperlegible, sans-serif" font-size="19" font-weight="700" fill="#D9D0B0" text-anchor="middle" letter-spacing="1.5">CONSTANT TRANSMITTER</text>
+<text x="150" y="36.9" font-family="Atkinson Hyperlegible, sans-serif" font-size="19" font-weight="700" fill="#D9D0B0" text-anchor="middle" letter-spacing="1.5">CONSTANT</text>
+<text x="150" y="56.8" font-family="Atkinson Hyperlegible, sans-serif" font-size="19" font-weight="700" fill="#D9D0B0" text-anchor="middle" letter-spacing="1.5">TRANSMITTER</text>
 <rect x="12" y="76" width="276" height="112" rx="6" fill="#0B0C0E" stroke="#000" stroke-width="1"/>
 <path d="M14 186H286" stroke="#2c2f35" stroke-width="1"/>
 <text x="24" y="94" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="700" fill="#8A8E96" text-anchor="start" letter-spacing="1">PROGRAM</text>

@@ -29,6 +29,11 @@
 .cable.program .cable-outline { stroke-width: 9; }
 .cable.program .cable-core { stroke: var(--cable-prog); stroke-width: 5; stroke-dasharray: 16 6 3 6; }
 .cable .cable-plug { fill: #1B1D21; stroke: #F4EFE3; stroke-width: 3; }
+/* Where a cable lands on a trunk: a cream collar and a coloured ring. */
+.cable .cable-hub { fill: var(--jack-block); stroke: #1B1D21; stroke-width: 2; }
+.cable .cable-hub-ring { fill: none; stroke-width: 3; }
+.cable.data .cable-hub-ring { stroke: var(--cable-data); }
+.cable.program .cable-hub-ring { stroke: var(--cable-prog); }
 .cable.data .cable-plug { stroke: var(--cable-data); }
 .cable.program .cable-plug { stroke: var(--cable-prog); }
 .cable.pending { opacity: 0.6; }
