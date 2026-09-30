@@ -132,10 +132,13 @@ func (r *Recovery) backoff(n int) time.Duration {
 }
 
 func (r *Recovery) loop(last core.Fault) {
+	stopped := false
 	defer func() {
-		r.mu.Lock()
-		r.running = false
-		r.mu.Unlock()
+		if !stopped {
+			r.mu.Lock()
+			r.running = false
+			r.mu.Unlock()
+		}
 	}()
 	for {
 		r.mu.Lock()
@@ -165,8 +168,13 @@ func (r *Recovery) loop(last core.Fault) {
 		r.mu.Unlock()
 		err := r.o.Probe(r.ctx)
 		if err == nil {
+			// Clear running before the callbacks so that a fault reported
+			// from inside them (or right after) starts a new loop instead
+			// of being absorbed by this one on its way out.
 			r.mu.Lock()
 			r.failures, r.final, r.down = nil, false, false
+			r.running = false
+			stopped = true
 			r.mu.Unlock()
 			r.o.Log.Info("core: recovered")
 			r.o.OnHealth(protocol.Health{T: "health", Core: protocol.CoreUp})
