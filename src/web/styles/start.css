@@ -63,6 +63,25 @@
 
 .waking .waiting, .boot .waiting { height: 1032px; }
 
+/* S10 "ENIAC is resting" (UX 7.9): static silhouette, no lamps. */
+.error { background: #0b0c0e; }
+.error .silhouette { position: absolute; left: 315px; top: 200px; }
+.err-text {
+  position: absolute;
+  left: 260px;
+  right: 260px;
+  top: 300px;
+  padding: 56px 64px;
+  background: rgba(11, 12, 14, 0.88);
+  border: 2px solid #2c2f35;
+  border-radius: var(--radius-card);
+}
+.err-text .screen-title { margin: 0 0 16px; color: var(--card); }
+.err-body { font-size: 48px; line-height: 60px; margin: 0 0 32px; color: var(--card); }
+.err-body.staff { font-size: 40px; line-height: 52px; color: var(--jack-block); }
+.err-trying { font-size: 28px; line-height: 40px; margin: 0; color: #9AA0A8; }
+.err-code { position: absolute; left: 32px; top: 980px; font-size: 24px; font-family: var(--font-mono); color: #9AA0A8; }
+
 /* S9 "Still there?" (UX 7.8): 1000x520 over a 70 % scrim. */
 .still-scrim { z-index: 45; }
 .still {

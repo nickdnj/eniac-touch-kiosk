@@ -10,6 +10,7 @@ import { autopressControls } from "./run/controls.ts";
 import { resultScreen } from "./screens/result.ts";
 import { pickerScreen, startScreen, wakingScreen } from "./screens/start.ts";
 import { installStillThere } from "./screens/still.ts";
+import { errorScreen } from "./screens/error.ts";
 import { injectDefs } from "./panels/load.ts";
 
 const screens: Record<string, ScreenFactory> = {
@@ -17,6 +18,7 @@ const screens: Record<string, ScreenFactory> = {
   start: startScreen,
   picker: pickerScreen,
   waking: wakingScreen,
+  error: errorScreen,
   mission: missionScreen,
   run: runScreenFactory({ extras: autopressControls }),
   result: resultScreen,

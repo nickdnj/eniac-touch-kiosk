@@ -254,7 +254,10 @@ export class App {
       return;
     }
     if (code && this.errorCode) {
-      this.errorCode = code; // code may change (e.g. E-LINK -> E-CORE-DOWN)
+      if (code !== this.errorCode) {
+        this.errorCode = code; // code may change (e.g. E-LINK -> E-CORE-DOWN)
+        this.screen?.onMachine?.(null);
+      }
       return;
     }
     if (!code && this.errorCode) {
