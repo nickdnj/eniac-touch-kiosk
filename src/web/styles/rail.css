@@ -1,0 +1,67 @@
+/* Step rail, header and overlays (#18; UX 5.1, 5.3, 5.5, 7.3). */
+
+.rail { position: absolute; width: 488px; height: 904px; }
+.step-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 488px;
+  height: 588px;
+  padding: 24px 28px;
+  background: var(--card);
+  color: var(--ink);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+.card-top { display: flex; align-items: center; justify-content: space-between; height: 40px; font-size: 24px; font-weight: 700; letter-spacing: 1px; color: #4a4e57; }
+.step-card h2 { font-size: 40px; line-height: 46px; font-weight: 700; margin: 12px 0 16px; }
+.step-card .card-body { font-size: 28px; line-height: 40px; margin: 0; }
+.step-card .show-where { margin-top: 12px; min-height: 64px; font-size: 28px; }
+.feedback { display: flex; align-items: flex-start; gap: 12px; margin-top: 12px; font-size: 26px; line-height: 34px; font-weight: 700; padding: 10px 12px; border-radius: 10px; }
+.feedback .fb-icon { flex: none; width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 22px; }
+.feedback.ok { background: #e3f3ec; }
+.feedback.ok .fb-icon { background: var(--ok); }
+.feedback.wrong { background: var(--wrong-banner); color: #fff; }
+.feedback.wrong .fb-icon { background: #fff; color: var(--wrong-banner); }
+.counters { display: flex; gap: 32px; margin-top: 24px; }
+.counter { font-size: 28px; font-weight: 700; }
+.counter .count { font-family: var(--font-mono); font-size: 64px; color: var(--ink); }
+
+.rail .more-btn { position: absolute; left: 0; top: 604px; width: 488px; min-height: 64px; border-color: var(--card); color: var(--card); background: transparent; }
+.rail .main-btn { position: absolute; left: 0; top: 720px; width: 488px; background: var(--card); color: var(--ink); border-color: var(--card); }
+.rail .main-btn.outline { background: transparent; color: var(--card); border-color: var(--card); }
+.rail .main-btn.pulse { background: var(--card); color: var(--ink); }
+.rail .skip-btn { position: absolute; left: 0; top: 832px; width: 488px; min-height: 64px; color: #C9C2A8; }
+.hidden { visibility: hidden; pointer-events: none; }
+
+/* Header progress (UX 7.3). */
+.hdr-progress { display: flex; align-items: center; gap: 16px; font-size: 24px; font-weight: 700; color: #C9C2A8; }
+.dots { display: inline-flex; gap: 10px; }
+.dot { width: 20px; height: 20px; border-radius: 50%; border: 3px solid #6b6f78; }
+.dot.current { border-color: var(--guide); box-shadow: 0 0 0 3px #000 inset; }
+.dot.done { background: var(--ok); border-color: var(--ok); }
+.dot.assisted { border-color: var(--ok); background: transparent; box-shadow: inset 0 0 0 3px #0D0E10; }
+.dot.skipped { border-style: dashed; }
+.header .hdr-missions { width: 280px; }
+.header .hdr-startover { width: 296px; }
+
+/* Overlays. */
+.scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; }
+.dialog { background: var(--card); color: var(--ink); border-radius: 16px; padding: 48px; width: 1000px; }
+.dialog p { font-size: 40px; line-height: 52px; font-weight: 700; margin: 0 0 40px; }
+.dialog-actions { display: flex; gap: 32px; }
+.dialog-actions .btn { flex: 1; }
+.tellmore-scrim { justify-content: flex-end; align-items: center; background: rgba(0, 0, 0, 0.5); }
+.tellmore {
+  width: 1000px;
+  height: 700px;
+  background: var(--card);
+  color: var(--ink);
+  border-radius: 16px 0 0 16px;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+}
+.tellmore h2 { font-size: 40px; line-height: 48px; margin: 0 0 24px; }
+.tellmore p { font-size: 26px; line-height: 38px; margin: 0; flex: 1; }
+.tellmore .btn { align-self: flex-start; width: 320px; }
