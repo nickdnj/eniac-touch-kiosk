@@ -149,7 +149,7 @@ graph LR
 | `internal/econfig` | `.e` tokenizer (comments, `l` includes, `f` lines); jack grammar; **switch catalog** (valid positions per switch family, taken from upstream `*ctl` functions). | M1 (acc, constant, init, cycling, trunks); M2 (MP, FT, printer, multiplier, divider) |
 | `internal/mission` | Load YAML; validate against the pinned `.e`; generate the preset file; compile the mission JSON served to the UI; evaluate checkpoint predicates. | M1 |
 | `internal/session` | Session state machine (5.5); action whitelist; run control (speed, buttons); orphan-session reaping. | M1 |
-| `internal/protocol` | Go types for every websocket message. **Source of truth.** `tygo` generates `src/web/app/protocol.gen.ts`. | M1 |
+| `internal/protocol` | Go types for every websocket message (and `/healthz`). **Source of truth.** `tygo` generates `src/bridge/internal/protocol/protocol.gen.ts` (and `internal/mission/mission.gen.ts` for the mission API); a Go test fails if they are stale. The web app imports them from there. | M1 |
 | `internal/server` | Static files, `/api/missions`, `/api/missions/{id}`, `/healthz`, `/ws`, Origin checks | M1 (loopback `/healthz`), M3 (LAN health port, admin API) |
 | `internal/metrics` | JSONL writer, retention, rollups, CSV export | M3 (M1 writes the raw JSONL only) |
 | `internal/health` | CPU temperature (`/sys/class/thermal`), `vcgencmd get_throttled`, sd_notify watchdog | M3 |
@@ -320,17 +320,18 @@ This is the complete list. Nothing else is ever written.
 
 | `t` | When | Payload | M |
 |---|---|---|---|
-| `hello` | On connect | `protocol`, `build` (version + upstream commit), `config` (`idle.setupS`, `idle.runS`, `idle.countdownS`, `admin.tapZone`), `health` (as below) | M1 |
+| `hello` | On connect | `protocol`, `build` (version + upstream commit), `config` (`idle.setupS`, `idle.runS`, `idle.countdownS`, `admin.tapZone` = `{corner: "top-left", widthPx: 120, heightPx: 96, taps: 5}`), `health` (as below) | M1 |
 | `state` | After `hello`, on every new session, and on resync | `session` (below), `seq`, `machine` (full MachineState), `cards` (last 20), `run` (below) | M1 |
-| `frame` | ≤ 30 Hz while a session exists and something changed | `seq`, `d`: a **JSON Merge Patch** against MachineState | M1 |
+| `frame` | ≤ 30 Hz while a session exists and something changed | `seq`, `d`: a **JSON Merge Patch** against MachineState. `seq` increases monotonically for the life of the bridge (not per session); apply a frame only if its `seq` is greater than the last `state`/`frame` applied | M1 |
 | `session` | Session state change | `id`, `mission`, `mode` (`visitor`/`docent`/`attract`), `state` (5.5), `applied` (step IDs), `remaining` (count) | M1 |
 | `step_applied` | After the core acked a step line | `re`, `step`, `assisted` (bool), `remaining` | M1 |
 | `setup_complete` | All steps applied (normally, or via `skip_setup`) | `skipped` (count of steps the bridge applied) | M1 |
 | `run` | `busy` ↔ `idle` transitions | `state`: `busy`\|`idle`; `inits` (INIT presses this session); `settled` (on idle only: decoded values of the mission's `watch` accumulators, for example `{"1":3,"2":9}`) | M1 |
 | `checkpoint` | A mission predicate became true (edge-triggered, once) | `id` | M1 |
 | `punch` | Each card, in order, never coalesced | `n` (1-based card number), `text` (80 chars), `fields` (16 × 5-char strings) | M2 |
-| `health` | Change, and every 5 s | `core`: `starting`\|`up`\|`down`; `code` (5.8); `attempt`, `of`; `final` (retry budget exhausted); `kioskClient` (bool) | M1 |
+| `health` | Change, and every 5 s | `core`: `starting`\|`up`\|`down`; `code` (5.8); `detail` (for example `hang-cmd`); `attempt`, `of`; `final` (retry budget exhausted); `kioskClient` (bool) | M1 |
 | `error` | A rejected client action | `re`, `code` (`BUSY`, `BAD_STATE`, `UNKNOWN_STEP`, `NOT_ALLOWED`, `BAD_MESSAGE`), `message` | M1 |
+| `pong` | Reply to `ping` | `re` | M1 |
 
 **MachineState (JSON).** Everything is 1-based, and the keys are the `.e` unit numbers. Bit and digit vectors are strings, which keeps merge-patches small and exact. Arrays are never used, because merge-patch replaces arrays wholesale.
 
@@ -396,7 +397,7 @@ stateDiagram-v2
 | `button` | `b`: `init`\|`clear`\|`read` | `armed`, `running`, `result` | Must be listed in the mission's `run.buttons`. **INIT and CLEAR are rejected with `BUSY` unless `run.state` is `idle`** (a server-side guard for UX-07). READ runs the withheld line if the mission binds one. | M1 (init, clear), M2 (read) |
 | `set_speed` | `speed` (a name from the mission's `speeds`) | `armed`+ | Sends `s cy.rate N` / `s cy.op …` | M1 |
 | `end_session` | `reason`: `idle`\|`menu`\|`restart`\|`done` | any | Tears down the core. Records metrics. | M1 |
-| `metric` | `ev` (whitelisted name), `mission`, `step`, `n` | any | Appends to JSONL. Never influences the core. | M1 (write only) |
+| `metric` | `ev` (whitelisted name), `mission`, `step`, `speed`, `screen`, `n` (each optional, whitelisted per event) | any | Appends to JSONL. Never influences the core. | M1 (write only) |
 | `ping` | none | any | Replies `pong`. Updates `kioskClient` last-seen. | M1 |
 | `admin_*` | Over HTTP, not ws; section 8.4 | | | M3 |
 
@@ -740,7 +741,7 @@ TypeScript gives the protocol types (`protocol.gen.ts`, generated from the Go st
 ```
 index.html                 single page; CSP: default-src 'self'; connect-src ws://127.0.0.1:8740
 app/main.ts                boot: fetch missions, open ws, router
-app/protocol.gen.ts        generated from src/bridge/internal/protocol (do not edit)
+(protocol types: import src/bridge/internal/protocol/protocol.gen.ts and internal/mission/mission.gen.ts; generated, do not edit)
 app/net/ws.ts              connect, reconnect (backoff 250 ms -> 2 s), ping 5 s, E-LINK after 5 s down
 app/state/machine.ts       merge-patch apply, session tracking (pure)
 app/lamps/derive.ts        state -> lamp IDs per unit (pure)
@@ -994,4 +995,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | 0.1 | 2026-09-30 | Nick DeMarco with AI assistance | Initial architecture from the PRD v0.1, the UX spec v0.1 (F2 needs folded in), and a code read plus local runs of upstream `c4b94f2` |
-| 0.2 | 2026-09-30 | software-developer agent (M1 bridge) | 5.9.2: `content:`, `selftest:` and `summary` added to the mission schema; `[FC]` review metadata. 5.9.5 rule 4 defined per terminal, ignoring trunk ends. Greek/ASCII canonicalization note. |
+| 0.2 | 2026-09-30 | software-developer agent (M1 bridge) | 5.9.2: `content:`, `selftest:` and `summary` added to the mission schema; `[FC]` review metadata. 5.9.5 rule 4 defined per terminal, ignoring trunk ends. Greek/ASCII canonicalization note. | 5.3-5.6 (#8): generated TS types live next to the Go types; `hello.config.admin.tapZone` shape; `frame.seq` monotonic across sessions; `health.detail`; `pong`; `metric` gains optional `speed` and `screen` (the 8.3 events `speed{m,speed}` and `idle_reset{screen}` need them). |

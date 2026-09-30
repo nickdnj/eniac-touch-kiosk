@@ -75,11 +75,13 @@ type Admin struct {
 	TapZone           TapZone `yaml:"tapZone"`
 }
 
-// TapZone is the hidden 5-tap admin corner (UX F5). Sent to the UI in hello.
+// TapZone is the hidden 5-tap admin corner (UX F5; UX 7 common frame: the
+// top-left 120x96). Sent to the UI in hello.config.admin.tapZone.
 type TapZone struct {
-	Corner string `yaml:"corner" json:"corner"`
-	SizePx int    `yaml:"sizePx" json:"sizePx"`
-	Taps   int    `yaml:"taps" json:"taps"`
+	Corner   string `yaml:"corner"`
+	WidthPx  int    `yaml:"widthPx"`
+	HeightPx int    `yaml:"heightPx"`
+	Taps     int    `yaml:"taps"`
 }
 
 type Metrics struct {
@@ -144,7 +146,7 @@ func Default() Config {
 			SlowRetry: Duration(10 * time.Minute),
 		},
 		Idle:    Idle{SetupS: 90, RunS: 180, CountdownS: 15},
-		Admin:   Admin{SessionTimeoutS: 120, AllowPowerActions: true, AllowUpdates: true, TapZone: TapZone{Corner: "top-left", SizePx: 96, Taps: 5}},
+		Admin:   Admin{SessionTimeoutS: 120, AllowPowerActions: true, AllowUpdates: true, TapZone: TapZone{Corner: "top-left", WidthPx: 120, HeightPx: 96, Taps: 5}},
 		Metrics: Metrics{RetentionDays: 400},
 		Paths: Paths{
 			Release: "/opt/eniac-kiosk/current",
