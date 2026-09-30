@@ -94,7 +94,7 @@ These facts from upstream `c4b94f2` shape the requirements below.
 - **Display protocol:** with `-v prog`, the core spawns `prog` as a child. It streams line-based status to the child's stdin: `ad`/`ac`/`ar`/`af` accumulators, `cy`, `cm`, `init`, `mps`/`mpd`/`mpi`, `ft*`, `ct`, `m`, `d`, `punch`, `up`. It accepts `ready` (timed updates about every 30 ms) or `update` (handshake) and `refresh` from the child. **Any other line from the child is executed as a command.** The bridge can therefore stand in for `eniactk` without changing the core.
 - **Speed:** `s cy.op co|1a|1p` selects continuous, one-addition or one-pulse mode. `s cy.rate N` throttles the cycle rate, and `0` means unthrottled. This is what makes slow-motion and fast-forward possible.
 - **Programs:**
-  - `sq.e`: 13 cables and 12 switches. It computes successive squares by adding odd numbers into accumulator 2 and loops indefinitely. Results show **on the accumulator lamps only**, because it has no punch wiring. Start with INIT.
+  - `sq.e`: 13 cables and 12 switches. It computes the next square each time INIT is pressed (Acc 1: x→x+1, Acc 2: x²→(x+1)²), so each INIT press produces one step. Verified by running it: 1/1, 2/4, 3/9, 4/16. `sq2.e` is the looping variant. Results show **on the accumulator lamps only**, because it has no punch wiring. Start with INIT.
   - `sieve.e`: 268 cables and 286 switches. Based on Lehmer's July 1946 runs, as reconstructed by De Mol and Bullynck. It **punches a card for each prime from 3 to 2801**. Start with INIT.
   - `trajdemo.e`: 297 cables and 443 switches. It reads `demo.card` (the constants card) via READ, then runs a sequence of parts, one per INIT: 97367 added to itself 5000 times; the same at a 100 Hz clock; multiplier demos; a squares-and-cubes table that is printed; sine and cosine of 100 angles; and an artillery trajectory. It punches cards.
 - **Known bug:** `src/mult.go:66` formats the multiplier stage as `"%2d "`, which breaks space-split parsing. The fix is `"%d "`.
@@ -171,7 +171,7 @@ Priorities: **P0** = MVP, **P1** = before the floor, **P2** = nice to have.
 |---|---|---|
 | FR-50 | If the core or bridge is down, or the websocket is disconnected for more than 5 s, the screen shows an **error state**: "ENIAC is resting. Please let a docent know," plus a small status code. It never shows canned lamps, recorded runs or fake cards. | P0 |
 | FR-51 | The error state retries automatically (FR-05). It returns to attract on recovery without staff action. | P0 |
-| FR-52 | After the retry budget is exhausted, the error state stays up and shows the staff recovery instruction from the runbook (for example, "Staff: hold the top-left corner and choose Restart"). | P1 |
+| FR-52 | After the retry budget is exhausted, the error state stays up and shows the staff recovery instruction from the runbook (for example, "Staff: tap the top-left corner 5 times and choose Restart"). | P1 |
 
 ### 4.6 Metrics
 
