@@ -29,3 +29,9 @@ The goal is a touch-first version of the ENIAC simulator for a museum kiosk. It 
 1. **Front end:** patch `eniactk` (Tk: bigger buttons, fonts and a help panel) or write a new web front end? A web front end would talk to the Go core over a websocket and render in Chromium like the other museum kiosks. Tk is quickest; web fits the kiosk family and touch better.
 2. **Guided flow:** decide what "programming the ENIAC" means for a visitor. Options are a scripted walkthrough of a real .e setup (plugging trays, setting switches, with each step shown), then READ → INIT → watch the lamps and the punched cards; or a set of guided missions (squares, primes, the 1946 trajectory demo).
 3. **Hardware:** which box it ends up on. It shouldn't be the Model 4 kiosk long-term.
+
+## Decisions (first session, 2026-09-30)
+
+1. **Front end:** a new web front end. A Go websocket bridge wraps the simulator core, and the UI renders in Chromium like the other museum kiosks. The Tk `eniactk` stays upstream only, for reference.
+2. **Guided flow:** guided missions, a progression of squares → primes → the 1946 trajectory demo. Each mission walks through its key plugging and switch steps with explanations, then READ → INIT → watch the lamps and cards.
+3. **Hardware:** a new dedicated Pi 5 with a touchscreen. The trial install on the Model 4 kiosk gets removed before the floor.
