@@ -1,0 +1,29 @@
+{
+  "provisionedFrom": "/Users/nickd/Workspaces/AgentArchitect",
+  "kind": "project",
+  "team": "software-project",
+  "teams": [
+    "software-project"
+  ],
+  "projectType": "software",
+  "projectName": "ENIAC Touch Kiosk",
+  "agents": [
+    "dev-planning",
+    "legal",
+    "marketing",
+    "product-requirements",
+    "qa-strategy",
+    "sales",
+    "software-architecture",
+    "software-developer",
+    "ux-design",
+    "wiki-ingest"
+  ],
+  "skills": [
+    "software-project"
+  ],
+  "mcp": [],
+  "provisionedAt": "2026-09-30",
+  "aaCommit": "0969395ce937edc59bf5aafb8f4d7275ba1162ef",
+  "syncedAt": "2026-09-30"
+}
