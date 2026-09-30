@@ -446,7 +446,7 @@ function rail(name: string, w: number, h: number, title: string, trunks: string[
     b += `</g>`;
     g.trunks[id] = { y, x0: 64, x1: w - 12 };
   });
-  return { name, markup: wrapSvg(w, h, b, standalone, `rail rail-${name}`), geom: g };
+  return { name, markup: wrapSvg(w, h, b, standalone, `trunkrail ${name}`), geom: g };
 }
 
 export const STAGE_W = 1360;
