@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"eniac-kiosk/bridge/internal/core"
 	"eniac-kiosk/bridge/internal/econfig"
@@ -31,9 +32,11 @@ func TestCatalogAcceptedByRealCore(t *testing.T) {
 	}
 	defer srv.Close()
 	self, _ := os.Executable()
+	faults := make(chan core.Fault, 8)
 	start := func() *core.Core {
 		c, err := core.Start(context.Background(), core.Options{CorePath: corePath, VlinkExe: self, Runtime: rt,
-			SessionDir: filepath.Join(dir, "s"), Preset: filepath.Join(rt, "programs", "sq.e"), Server: srv, InitialRate: -1})
+			SessionDir: filepath.Join(dir, "s"), Preset: filepath.Join(rt, "programs", "sq.e"), Server: srv, InitialRate: -1,
+			OnFault: func(f core.Fault) { faults <- f }})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -83,10 +86,23 @@ func TestCatalogAcceptedByRealCore(t *testing.T) {
 		}
 		c.Close()
 		c = start()
+		for len(faults) > 0 {
+			<-faults
+		}
 		cmd, _ := core.StepLine("s " + bad[0] + " " + bad[1])
 		_, err := c.Do(cmd)
 		var ce *core.CmdError
-		if !errors.As(err, &ce) {
+		if errors.As(err, &ce) {
+			continue
+		}
+		// Under load the error line can land after Do's settle window; the
+		// core then raises an asynchronous E-CORE-CMD fault instead.
+		select {
+		case f := <-faults:
+			if f.Code != core.CodeCmd {
+				t.Errorf("s %s %s: fault %v, want E-CORE-CMD", bad[0], bad[1], f)
+			}
+		case <-time.After(2 * time.Second):
 			t.Errorf("real core accepted s %s %s (%v)", bad[0], bad[1], err)
 		}
 	}
