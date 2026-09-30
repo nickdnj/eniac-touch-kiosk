@@ -82,7 +82,7 @@ type State struct {
 	T       string        `json:"t" tstype:"'state'"`
 	Session *Session      `json:"session" tstype:"Session | null"`
 	Seq     uint64        `json:"seq"`
-	Machine map[string]any `json:"machine" tstype:"MachineState"`
+	Machine map[string]any `json:"machine" tstype:"MachineState | null"` // null when there is no session
 	Cards   []Card        `json:"cards"`
 	Run     RunInfo       `json:"run"`
 }

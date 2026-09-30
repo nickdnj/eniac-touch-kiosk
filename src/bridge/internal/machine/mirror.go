@@ -52,6 +52,15 @@ func NewMirror(drops *status.DropLog) *Mirror {
 // SetClock replaces time.Now (tests).
 func (m *Mirror) SetClock(now func() time.Time) { m.now = now }
 
+// SetSeq sets the sequence number of the current snapshot. The bridge keeps
+// seq monotonic across sessions, so a new session's mirror starts where the
+// previous one ended.
+func (m *Mirror) SetSeq(n uint64) {
+	m.mu.Lock()
+	m.seq = n
+	m.mu.Unlock()
+}
+
 // ApplyLine parses and applies one raw status line. Malformed lines are
 // dropped (and logged, rate-limited); they never panic (FR-04).
 func (m *Mirror) ApplyLine(line string) {

@@ -321,7 +321,7 @@ This is the complete list. Nothing else is ever written.
 | `t` | When | Payload | M |
 |---|---|---|---|
 | `hello` | On connect | `protocol`, `build` (version + upstream commit), `config` (`idle.setupS`, `idle.runS`, `idle.countdownS`, `admin.tapZone` = `{corner: "top-left", widthPx: 120, heightPx: 96, taps: 5}`), `health` (as below) | M1 |
-| `state` | After `hello`, on every new session, and on resync | `session` (below), `seq`, `machine` (full MachineState), `cards` (last 20), `run` (below) | M1 |
+| `state` | After `hello`, on every new session, and on resync | `session` (below, `null` when there is none), `seq`, `machine` (full MachineState, `null` when there is no session: nothing to render, no demo fallback), `cards` (last 20), `run` (below) | M1 |
 | `frame` | ≤ 30 Hz while a session exists and something changed | `seq`, `d`: a **JSON Merge Patch** against MachineState. `seq` increases monotonically for the life of the bridge (not per session); apply a frame only if its `seq` is greater than the last `state`/`frame` applied | M1 |
 | `session` | Session state change | `id`, `mission`, `mode` (`visitor`/`docent`/`attract`), `state` (5.5), `applied` (step IDs), `remaining` (count) | M1 |
 | `step_applied` | After the core acked a step line | `re`, `step`, `assisted` (bool), `remaining` | M1 |
@@ -404,7 +404,7 @@ stateDiagram-v2
 **"Keep pressing for me" and "Skip to the answer"** (UX 8.1.4) are **UI-side loops** over `button {b:"init"}`: wait for `run: idle`, check the `settled` values, press again. "Skip to the answer" first sends `set_speed {speed:"full"}`. The mission's `checkpoints` tell the UI when to stop (Squares: `a1 == 12`). The bridge's `BUSY` guard means a UI bug can't stack INITs.
 
 **Idle detection** (`run.state`). This is UX F2(a):
-- `busy` starts when the bridge sends `b i` or `b r`.
+- `busy` starts when the bridge sends `b i` or `b r`, and also `b c` (M1, #11), so that after CLEAR the UI gets an `idle` event whose `settled` values are the cleared ones (0 / 0 for Squares; verified on the Mac that `b c` clears both accumulators even though `sq.e` sets no `cc` switch).
 - `idle` is declared when **all** of these hold:
   1. no MachineState change other than `cycle` for `quiet` ms, where `quiet = max(120, 3 × additionTime)` and `additionTime = 20000 / rate` ms (the core sleeps `500000/rate` µs in each of the 40 pulse slots of an addition cycle; at rate 0 → 120 ms);
   2. every `acc[*].prog` is all zeros;
@@ -995,4 +995,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | 0.1 | 2026-09-30 | Nick DeMarco with AI assistance | Initial architecture from the PRD v0.1, the UX spec v0.1 (F2 needs folded in), and a code read plus local runs of upstream `c4b94f2` |
-| 0.2 | 2026-09-30 | software-developer agent (M1 bridge) | 5.9.2: `content:`, `selftest:` and `summary` added to the mission schema; `[FC]` review metadata. 5.9.5 rule 4 defined per terminal, ignoring trunk ends. Greek/ASCII canonicalization note. | 5.3-5.6 (#8): generated TS types live next to the Go types; `hello.config.admin.tapZone` shape; `frame.seq` monotonic across sessions; `health.detail`; `pong`; `metric` gains optional `speed` and `screen` (the 8.3 events `speed{m,speed}` and `idle_reset{screen}` need them). |
+| 0.2 | 2026-09-30 | software-developer agent (M1 bridge) | 5.9.2: `content:`, `selftest:` and `summary` added to the mission schema; `[FC]` review metadata. 5.9.5 rule 4 defined per terminal, ignoring trunk ends. Greek/ASCII canonicalization note. | 5.3-5.6 (#8): generated TS types live next to the Go types; `hello.config.admin.tapZone` shape; `frame.seq` monotonic across sessions; `health.detail`; `pong`; `metric` gains optional `speed` and `screen` (the 8.3 events `speed{m,speed}` and `idle_reset{screen}` need them). | 5.4/5.6 (#11): `state.session` and `state.machine` are `null` without a session; CLEAR also starts `busy`. |

@@ -127,7 +127,7 @@ export interface State {
   t: 'state';
   session?: Session | null;
   seq: number /* uint64 */;
-  machine: MachineState;
+  machine: MachineState | null; // null when there is no session
   cards: Card[];
   run: RunInfo;
 }
