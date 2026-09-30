@@ -362,6 +362,8 @@ export class MockBridge {
   }
 
   reset() {
+    for (const t of this.timers) clearTimeout(t);
+    this.timers.clear();
     this.endSession(true);
     this.log = [];
     this.health = { core: "up" };
