@@ -9,6 +9,7 @@ import { runScreenFactory } from "./screens/run.ts";
 import { autopressControls } from "./run/controls.ts";
 import { resultScreen } from "./screens/result.ts";
 import { pickerScreen, startScreen, wakingScreen } from "./screens/start.ts";
+import { installStillThere } from "./screens/still.ts";
 import { injectDefs } from "./panels/load.ts";
 
 const screens: Record<string, ScreenFactory> = {
@@ -25,6 +26,7 @@ const root = document.getElementById("app");
 if (root) {
   injectDefs();
   const app = new App(root, screens);
+  installStillThere(app);
   app.start();
   (window as unknown as { __eniac?: App }).__eniac = app;
 }

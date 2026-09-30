@@ -62,3 +62,26 @@
 .mc-start { width: 480px; align-self: center; }
 
 .waking .waiting, .boot .waiting { height: 1032px; }
+
+/* S9 "Still there?" (UX 7.8): 1000x520 over a 70 % scrim. */
+.still-scrim { z-index: 45; }
+.still {
+  width: 1000px;
+  height: 520px;
+  background: var(--card);
+  color: var(--ink);
+  border-radius: var(--radius-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+.still .screen-title { margin: 0; }
+.still-count { display: flex; align-items: center; gap: 24px; font-size: 40px; font-weight: 700; }
+.still-count .count { position: relative; width: 120px; height: 120px; display: inline-flex; align-items: center; justify-content: center; }
+.count-ring { position: absolute; inset: 0; }
+.count-track { fill: none; stroke: #d8d1bd; stroke-width: 10; }
+.count-arc { fill: none; stroke: var(--ink); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+.count-num { position: relative; font-family: var(--font-mono); font-size: 48px; font-weight: 700; }
+.still .still-here { width: 480px; min-height: 120px; font-size: 40px; }
