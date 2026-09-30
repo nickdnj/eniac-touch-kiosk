@@ -60,6 +60,8 @@ export class App {
   tape: TapeRow[] = [];
   /** Which checkpoints fired in this session. */
   checkpoints = new Set<string>();
+  /** Watched accumulator values when the result checkpoint fired. */
+  answerAt: Record<string, number> | null = null;
   errorCode: string | null = null;
   scale = 1;
   private offset = { x: 0, y: 0 };
@@ -196,6 +198,15 @@ export class App {
         break;
       case "checkpoint":
         this.checkpoints.add(m.id);
+        if (this.mission && m.id === this.mission.result) {
+          const mach = this.mirror.machine;
+          const at: Record<string, number> = {};
+          for (const w of this.mission.run.watch) {
+            const v = mach?.acc?.[w]?.value;
+            if (typeof v === "number") at[w] = v;
+          }
+          this.answerAt = at;
+        }
         break;
     }
     this.evaluate();
@@ -283,6 +294,7 @@ export class App {
   resetVisitor(): void {
     this.tape = [];
     this.checkpoints.clear();
+    this.answerAt = null;
     this.expectingSession = false;
   }
 

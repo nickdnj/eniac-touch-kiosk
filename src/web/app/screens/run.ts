@@ -29,6 +29,8 @@ export interface RunContext {
   onRunMsg: (fn: (m: ServerMsg) => void) => void;
   goResult: () => void;
   isBusy: () => boolean;
+  getSpeed: () => string;
+  onClear: (fn: () => void) => void;
 }
 
 /** Snail (Slow) and bolt (Full) glyphs, drawn so no emoji font is needed. */
@@ -59,6 +61,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   let caption = "";
   let presses = 0;
   const runListeners: ((m: ServerMsg) => void)[] = [];
+  const clearListeners: (() => void)[] = [];
 
   // ------------------------------------------------------------------ DOM
   const el = h("div", { class: "screen run" });
@@ -173,9 +176,9 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   }
 
   /** Sends INIT or CLEAR: debounced, never while busy (UX-07, 9.3). */
-  function press(b: ButtonName): boolean {
+  function press(b: ButtonName, auto = false): boolean {
     const t = app.now();
-    if (busy() || t - lastPress < INIT_DEBOUNCE_MS || app.mirror.machine === null) return false;
+    if (busy() || (!auto && t - lastPress < INIT_DEBOUNCE_MS) || app.mirror.machine === null) return false;
     if (app.send({ t: "button", b }) === null) return false;
     lastPress = t;
     lastButton = b;
@@ -229,6 +232,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
           presses = 0;
           caption = "";
           captions?.onClear();
+          for (const fn of clearListeners) fn();
         } else if (lastButton === "init" && run && watch.every((w) => typeof settled[w] === "number")) {
           const vars: Record<string, number> = {};
           for (const w of watch) vars[w] = settled[w];
@@ -248,11 +252,13 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   const extrasEls =
     hooks.extras?.({
       app,
-      pressInit: () => press("init"),
+      pressInit: () => press("init", true),
       setSpeed,
       onRunMsg: (fn) => runListeners.push(fn),
       goResult,
       isBusy: busy,
+      getSpeed: () => speed,
+      onClear: (fn) => clearListeners.push(fn),
     }) ?? [];
   const extrasBox = h("div", { class: "run-extras" }, ...extrasEls, showMe);
   rail.append(extrasBox);

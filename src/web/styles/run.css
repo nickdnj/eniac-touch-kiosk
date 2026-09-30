@@ -62,6 +62,8 @@
 .run-extras .btn { width: 488px; min-height: 64px; background: transparent; color: var(--card); border-color: var(--card); }
 .run-extras .btn.primary { min-height: 96px; background: var(--card); color: var(--ink); }
 .run-extras .btn.hidden { display: none; }
+.run-rail:not(.extras) .keep-btn { display: none; }
+.keep-btn.running { background: var(--card); color: var(--ink); }
 
 /* S7 Result. */
 .result-tape {
