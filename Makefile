@@ -16,7 +16,7 @@ LDFLAGS := -X eniac-kiosk/bridge/internal/buildinfo.Version=$(VERSION) \
 WEB_TESTS = $(shell find tests/web -name '*.test.ts' 2>/dev/null)
 
 .PHONY: help upstream upstream-unpatched bridge bridge-dev web dev test test-go vet tsc test-web \
-        test-upstream test-realcore fuzz protogen missions-check selftest
+        test-upstream test-realcore fuzz protogen missions-check selftest goldens
 
 help:
 	@grep -E '^## ' Makefile | sed 's/^## //'
@@ -92,3 +92,12 @@ protogen:
 ## selftest            boot the Squares preset headless, apply all steps, INIT x3, expect 3 / 9
 selftest: $(HOSTCORE)
 	cd $(BRIDGE) && go run ./cmd/eniac-bridge selftest --config ../../deploy/config/config.dev.yaml
+
+## goldens             re-record tests/golden from the real core (after an upstream bump)
+goldens: bridge
+	B=build/$(HOSTOS)-$(HOSTARCH)/eniac-bridge; C=deploy/config/config.dev.yaml; \
+	$$B record --config $$C --program sq.e --inits 3 --rate 100 --settle 2.5s --name sq-3inits --out tests/golden && \
+	$$B record --config $$C --program sq.e --inits 12 --rate 0 --settle 300ms --name sq-12inits --out tests/golden && \
+	$$B record --config $$C --program $(CURDIR)/tests/golden/neg-sign.e --inits 1 --rate 0 --settle 500ms --name neg-sign --out tests/golden && \
+	$$B record --config $$C --program trajdemo.e --inits 0 --rate 0 --seconds 10s --freeze --name traj-patched --out tests/golden && \
+	$$B record --config $$C --program trajdemo.e --inits 0 --rate 0 --seconds 10s --freeze --unpatched --core build/unpatched/eniac-core --name traj-unpatched-m --out tests/golden
