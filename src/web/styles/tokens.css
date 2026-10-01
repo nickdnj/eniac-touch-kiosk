@@ -55,6 +55,13 @@
   --tile-corner: #009E73;
   --tile-total: #F4EFE3;
   --tile-off: #3A3D42;
+  /* Primes "sharing evenly" figures (stage/primesfig.ts): own names, same
+     Okabe-Ito set. A tile, a leftover tile, a "fits!" call, a prime. */
+  --share-tile: #FFB000;
+  --share-left: #D55E00;
+  --share-fit: #CC79A7;
+  --share-prime: #009E73;
+  --share-off: #3A3D42;
   --font-ui: "Atkinson Hyperlegible", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --space-1: 8px;

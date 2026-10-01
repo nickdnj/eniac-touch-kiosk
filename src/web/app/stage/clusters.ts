@@ -12,8 +12,8 @@ export interface DialCluster {
   key: string;
   title: string;
   dials: { id: string; label: string }[];
-  /** Family used by the picker prompt. */
-  family: "digit" | "repeat";
+  /** Family used by the picker prompt and the dial positions. */
+  family: "digit" | "repeat" | "printer";
 }
 
 const accIn = (a: string, n: string): JackCluster => ({
@@ -121,7 +121,89 @@ export const DIAL_CLUSTERS: DialCluster[] = [
 ];
 
 const GREEK_NAMES: Record<string, string> = { "α": "alpha", "β": "beta", "γ": "gamma", "δ": "delta", "ε": "epsilon" };
-const UNIT_NAMES: Record<string, string> = { a: "Accumulator", c: "Constant Transmitter", i: "Initiating Unit" };
+const UNIT_NAMES: Record<string, string> = { a: "Accumulator", c: "Constant Transmitter", i: "Initiating Unit", p: "Master Programmer", pr: "Printer" };
+
+// ------------------------------------------------------------------ generated clusters (M2)
+// Real neighbours, generated from the target's own name when no fixed
+// cluster above holds it: program trunks on the same tray, an accumulator's
+// program jacks, one Master Programmer stepper, a run of printer fields.
+
+const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+
+function generatedJackCluster(id: string): JackCluster | null {
+  let m = /^trunk:(\d+)-(\d+)$/.exec(id);
+  if (m) {
+    const tray = Number(m[1]), line = Number(m[2]);
+    const first = Math.max(1, Math.min(line - 2, 11 - 4));
+    return { key: `prog-${tray}-${first}`, title: "PROGRAM TRUNKS", jacks: range(first, first + 4).map((l) => ({ id: `trunk:${tray}-${l}`, label: `${tray}-${l}` })) };
+  }
+  m = /^trunk:(\d+)$/.exec(id);
+  if (m) {
+    const n = Number(m[1]);
+    const first = Math.max(1, Math.min(n - 1, 20 - 2));
+    return { key: `data-${first}`, title: "DATA TRUNKS (AT THIS UNIT)", jacks: range(first, first + 2).map((t) => ({ id: `trunk:${t}`, label: `Trunk ${t}` })) };
+  }
+  m = /^jack:a(\d+)\.(\d+)[io]$/.exec(id);
+  if (m) {
+    const a = `a${m[1]}`, p = Number(m[2]);
+    const first = Math.max(5, Math.min(p <= 6 ? 5 : p - 2, 10));
+    const ps = range(first, first + 2);
+    return {
+      key: `${a}-prog-${first}`,
+      title: `ACCUMULATOR ${m[1]}: PROGRAM JACKS`,
+      jacks: [...ps.map((q) => ({ id: `jack:${a}.${q}i`, label: `${q} in` })), ...ps.map((q) => ({ id: `jack:${a}.${q}o`, label: `${q} out` }))],
+    };
+  }
+  m = /^jack:a(\d+)\.(.+)$/.exec(id);
+  if (m && GREEK_NAMES[m[2]]) return accIn(`a${m[1]}`, m[1]);
+  m = /^jack:p\.([A-HJK])(i|di|cdi|\do)$/.exec(id);
+  if (m) {
+    const X = m[1];
+    return {
+      key: `p-${X}`,
+      title: `MASTER PROGRAMMER: STEPPER ${X}`,
+      jacks: [
+        { id: `jack:p.${X}i`, label: `${X} in` },
+        { id: `jack:p.${X}di`, label: `${X} DI` },
+        { id: `jack:p.${X}cdi`, label: `${X} CDI` },
+        { id: `jack:p.${X}1o`, label: `${X} 1 out` },
+        { id: `jack:p.${X}2o`, label: `${X} 2 out` },
+        { id: `jack:p.${X}3o`, label: `${X} 3 out` },
+      ],
+    };
+  }
+  return null;
+}
+
+function generatedDialCluster(id: string): DialCluster | null {
+  let m = /^sw:c\.([jk])(\d+)$/.exec(id);
+  if (m) {
+    const K = m[1].toUpperCase();
+    return { key: `c-${m[1]}`, title: `CONSTANT TRANSMITTER: ${K} DIALS`, family: "digit", dials: [6, 5, 4, 3, 2, 1].map((d) => ({ id: `sw:c.${m![1]}${d}`, label: `digit ${d}` })) };
+  }
+  m = /^sw:pr\.(\d+)$/.exec(id);
+  if (m) {
+    const f = Number(m[1]);
+    const first = Math.max(1, Math.min(f - 2, 16 - 5));
+    return { key: `pr-${first}`, title: "PRINTER: FIELD SWITCHES", family: "printer", dials: range(first, first + 5).map((k) => ({ id: `sw:pr.${k}`, label: `field ${k}` })) };
+  }
+  m = /^sw:a(\d+)\.rp(\d+)$/.exec(id);
+  if (m) {
+    const p = Number(m[2]);
+    const first = Math.max(5, Math.min(p - 1, 12 - 5));
+    return { key: `a${m[1]}-rp`, title: `ACCUMULATOR ${m[1]}: REPEAT SWITCHES`, family: "repeat", dials: range(first, first + 5).map((q) => ({ id: `sw:a${m![1]}.rp${q}`, label: `prog ${q}` })) };
+  }
+  return null;
+}
+
+/** Plain names of the Initiating Unit's jacks (UX 8.2.5, 8.3.5 copy uses PI, PO, Ro, Pi). */
+const INIT_NAMES: Record<string, string> = {
+  "i.io": "GO output (initiating pulse)",
+  "i.pi": "Initiating Unit PI (punch start)",
+  "i.po": "Initiating Unit PO (punch done)",
+  "i.ri": "Initiating Unit Ri (reader start)",
+  "i.ro": "Initiating Unit Ro (reader done)",
+};
 
 /**
  * Plain-language name for a target's label chip (UX 4.3 step 6), e.g.
@@ -131,7 +213,11 @@ export function plainLabel(id: string): string {
   const t = id.slice(id.indexOf(":") + 1);
   if (id.startsWith("trunk:")) return t.includes("-") ? `Program trunk ${t}` : `Trunk ${t}`;
   if (id === "jack:c.o") return "Constant Transmitter OUT";
-  if (id === "jack:i.io") return "GO output (initiating pulse)";
+  if (INIT_NAMES[t] && id.startsWith("jack:")) return INIT_NAMES[t];
+  let mp = /^p\.([A-HJK])(i|di|cdi|(\d)o)$/.exec(t);
+  if (mp) return `Master Programmer ${mp[1]} ${mp[2] === "i" ? "in" : mp[2] === "di" ? "DI" : mp[2] === "cdi" ? "CDI" : `${mp[3]} out`}`;
+  mp = /^pr\.(\d+)$/.exec(t);
+  if (mp) return `Printer field ${mp[1]}`;
   let m = /^a(\d+)\.(.+)$/.exec(t);
   if (m) {
     const [, n, j] = m;
@@ -157,13 +243,14 @@ export function plainLabel(id: string): string {
 /** Plain labels for picker choices ("2 times" for repeat switches). */
 export function choiceLabel(swId: string, family: string | undefined, v: string): string | null {
   if ((family && family.includes("rp")) || /\.rp\d+$/.test(swId)) return `${v} ${v === "1" ? "time" : "times"}`;
+  if ((family && family.startsWith("pr.")) || /^sw:pr\./.test(swId)) return v === "P" ? "Punch" : v === "0" ? "Leave blank" : null;
   return null;
 }
 
 export function jackClusterFor(id: string): JackCluster | null {
-  return JACK_CLUSTERS.find((c) => c.jacks.some((j) => j.id === id)) ?? null;
+  return JACK_CLUSTERS.find((c) => c.jacks.some((j) => j.id === id)) ?? generatedJackCluster(id);
 }
 
 export function dialClusterFor(id: string): DialCluster | null {
-  return DIAL_CLUSTERS.find((c) => c.dials.some((d) => d.id === id)) ?? null;
+  return DIAL_CLUSTERS.find((c) => c.dials.some((d) => d.id === id)) ?? generatedDialCluster(id);
 }

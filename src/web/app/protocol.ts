@@ -119,8 +119,24 @@ export interface SwitchStep {
 }
 export type MissionStep = PlugStep | SwitchStep;
 
+export type CardPane = M.CardPane;
+export type PlotSpec = M.Plot;
+export type ReadContent = M.ReadContent;
+export type LiveLine = M.LiveLine;
+export type CardsCopy = M.CardsCopy;
+export type PlotCopy = M.PlotCopy;
+
 export interface CompiledMission extends Omit<MissionCompiled, "config" | "steps" | "run"> {
   config: ConfigItem[];
   steps: MissionStep[];
-  run: { buttons: ButtonName[]; speeds: string[]; defaultSpeed: string; watch: string[] };
+  run: {
+    buttons: ButtonName[];
+    speeds: string[];
+    defaultSpeed: string;
+    watch: string[];
+    initOnce?: boolean;
+    initAfter?: string;
+    cards?: CardPane;
+    plot?: PlotSpec;
+  };
 }

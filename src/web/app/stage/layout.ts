@@ -7,7 +7,8 @@ export const RAIL = { x: 1408, y: 112, w: 488, h: 904 };
 export const WB = {
   dataRail: { x: 0, y: 4 },
   cardsY: 82,
-  cardX: { i: 20, c: 360, a1: 700, a2: 1040 } as Record<string, number>,
+  /** Left edge of card 1..4 (Squares: i, c, a1, a2). */
+  cardXs: [20, 360, 700, 1040],
   programRail: { x: 0, y: 768 },
   captionY: 876,
 };

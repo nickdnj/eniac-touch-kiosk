@@ -107,6 +107,71 @@
   .tile, .tile-label, .tiles-eq .term { transition: none; }
 }
 
+/* Primes figures (app/stage/primesfig.ts): sharing evenly. State is set by
+   class on timers; transitions are decoration only. */
+.share .share-floor { position: absolute; left: 0; top: 0; width: 1360px; height: 620px; }
+.share-tile {
+  position: absolute; width: 64px; height: 64px; border-radius: 8px; box-sizing: border-box;
+  background: var(--share-off); opacity: 0; transform: scale(0.3);
+  transition: left 500ms ease-in-out, top 500ms ease-in-out, opacity 300ms, transform 300ms, background 300ms;
+}
+.share-tile.on { opacity: 1; transform: none; background: var(--share-tile); box-shadow: 0 0 16px rgba(255, 176, 0, 0.35); }
+.share-tile.on.fit { border: 4px solid var(--card); }
+.share-tile.on.left { background: var(--share-left); border: 5px dashed var(--card); box-shadow: 0 0 22px rgba(213, 94, 0, 0.7); }
+.share-tile.on.prime { background: var(--share-prime); box-shadow: 0 0 18px rgba(0, 158, 115, 0.6); }
+.share-badge-slot { position: absolute; left: 0; right: 0; top: 560px; display: flex; justify-content: center; }
+.share-badge {
+  display: inline-flex; align-items: center; gap: 12px; padding: 6px 24px; border-radius: 999px;
+  font-size: 36px; font-weight: 700; background: #15181c; border: 4px solid; color: var(--card);
+}
+.share-badge .glyph { font-size: 40px; }
+.share-badge.fits { border-color: var(--ok); }
+.share-badge.fits .glyph { color: var(--ok); }
+.share-badge.x { border-color: var(--share-left); }
+.share-badge.x .glyph { color: var(--share-left); }
+.share-badge.prime { border-color: var(--share-prime); }
+.share-badge.prime .glyph { color: var(--guide); }
+.share .share-caption { position: absolute; left: 0; right: 0; top: 660px; text-align: center; }
+.share-briefing.still .share-floor { display: flex; justify-content: center; align-items: center; gap: 140px; height: 640px; }
+.share-still { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+.share-floor.small { position: relative; }
+.share-still-cap { font-size: 32px; font-weight: 700; color: var(--card); max-width: 520px; text-align: center; }
+.share.still .share-tile { transition: none; }
+
+.fig-slowed { position: absolute; left: 24px; top: 16px; font-size: 24px; color: var(--muted); }
+.share-plan .cand { position: absolute; left: 60px; top: 70px; right: 300px; height: 170px; display: flex; flex-direction: column; gap: 14px; opacity: 0; transition: opacity 300ms; }
+.share-plan .cand.on { opacity: 1; }
+.cand-num { font-size: 40px; font-weight: 700; color: var(--card); }
+.cand-tiles { display: flex; gap: 8px; }
+.cand-tile { width: 40px; height: 40px; border-radius: 6px; background: var(--share-tile); }
+.cand[data-fate="out"] .cand-tile { background: var(--share-off); }
+.cand[data-fate="prime"] .cand-tile { background: var(--share-prime); }
+.cand-fate { min-height: 56px; }
+.cand-fate .share-badge { font-size: 28px; padding: 2px 20px; }
+.checkers { position: absolute; left: 60px; top: 280px; display: flex; gap: 20px; align-items: stretch; }
+.checker { width: 240px; height: 330px; box-sizing: border-box; padding: 14px 16px; border: 4px solid #3A3D42; border-radius: 14px; background: #15181c; display: flex; flex-direction: column; gap: 10px; }
+.checker.trying { border-color: var(--share-tile); }
+.checker.fit { border-color: var(--share-fit); }
+.checker-title { font-size: 28px; font-weight: 700; color: var(--card); }
+.checker-floor { position: relative; flex: 1; }
+.chk-tile { position: absolute; width: 22px; height: 22px; border-radius: 4px; background: var(--share-tile); }
+.chk-tile.left { background: var(--share-left); outline: 3px dashed var(--card); }
+.checker-badge .share-badge { font-size: 24px; padding: 2px 14px; gap: 8px; }
+.checker-badge .share-badge .glyph { font-size: 28px; }
+.fits-chip { display: inline-flex; align-items: center; gap: 8px; padding: 4px 16px; border-radius: 999px; background: var(--share-fit); color: var(--ink); font-size: 28px; font-weight: 700; }
+.fits-chip .bell { width: 28px; height: 28px; }
+.checker-more { align-self: center; width: 180px; font-size: 28px; line-height: 36px; color: var(--muted); }
+.share-group { position: absolute; border: 3px solid var(--card); border-radius: 12px; opacity: .7; }
+.fig-punch { position: absolute; left: 1080px; top: 70px; width: 240px; height: 540px; box-sizing: border-box; padding: 16px; border: 3px solid #3A3D42; border-radius: 14px; background: #15181c; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.fig-punch-title { font-size: 28px; font-weight: 700; color: var(--card); }
+.fig-card { width: 180px; height: 70px; background: var(--card); color: var(--ink); clip-path: polygon(16px 0, 100% 0, 100% 100%, 0 100%, 0 16px); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 40px; font-weight: 700; }
+.share-math { position: absolute; left: 60px; right: 300px; top: 660px; font-size: 44px; line-height: 56px; color: var(--share-tile); opacity: 0; transition: opacity 400ms; }
+.share-math.on { opacity: 1; }
+.share.still .share-math { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .share-tile, .share-plan .cand, .share-math { transition: none; }
+}
+
 /* Windows live in app coordinates inside the stage. */
 .win-host { position: absolute; left: -24px; top: -112px; width: 1920px; height: 1080px; pointer-events: none; }
 .windows { position: absolute; inset: 0; }

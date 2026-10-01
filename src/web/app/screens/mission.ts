@@ -7,10 +7,11 @@ import type { ConfigItem, MissionStep, ServerMsg } from "../protocol.ts";
 import { Runner, type Feedback } from "../mission/runner.ts";
 import { hitTest } from "../mission/hit.ts";
 import { unitOf, termId } from "../mission/ids.ts";
-import { Workbench } from "../stage/workbench.ts";
+import { Workbench, workbenchPlan } from "../stage/workbench.ts";
 import { StepWindows } from "../stage/windows.ts";
 import { roomPlanSvg, unitsForPlan } from "../stage/roomplan.ts";
 import { TileFigure } from "../stage/tiles.ts";
+import { CheckersFigure, SharingFigure, type Figure } from "../stage/primesfig.ts";
 import { PICKER, RAIL, STAGE } from "../stage/layout.ts";
 import { LampRenderer } from "../lamps/render.ts";
 import { h, s, svgFromString, wait } from "../ui/dom.ts";
@@ -21,6 +22,36 @@ import { switchDefault } from "../panels/art.ts";
 import { COPY } from "../copy.ts";
 
 type Phase = "briefing" | "plan" | "step" | "rest";
+
+/**
+ * Pure: the S5 timeline for n cables and m switches. Up to 40 cables they
+ * are staggered one by one (Squares, UX 7.4); more come in 8 waves of 600 ms
+ * (Primes 264, Trajectory 293). Up to 60 switches click one by one; more
+ * click in 8 blocks (Trajectory's 711 drag-table dials included). The whole
+ * screen takes at most about 8 s.
+ */
+export function restPlan(n: number, m: number) {
+  const waves = n > 40;
+  const cableGap = waves ? 600 : Math.min(250, 2500 / Math.max(1, n));
+  const perWave = Math.max(1, Math.ceil(n / 8));
+  const cableAt = (i: number) => (waves ? Math.floor(i / perWave) * cableGap : Math.round(i * cableGap));
+  const cableMs = waves ? 600 : 400;
+  const cablesEnd = n === 0 ? 0 : cableAt(n - 1) + (waves ? cableMs : cableGap);
+  const swStart = cablesEnd + 200;
+  const blocksOf = m > 60;
+  const swGap = blocksOf ? 250 : Math.min(150, 1500 / Math.max(1, m));
+  const perBlock = Math.max(1, Math.ceil(m / 8));
+  const switchAt = (i: number) => swStart + (blocksOf ? Math.floor(i / perBlock) * swGap : Math.round(i * swGap));
+  const total = (m === 0 ? swStart : switchAt(m - 1) + swGap) + 300;
+  return {
+    cableMs,
+    cableAt,
+    switchAt,
+    total,
+    cablesBy: (e: number) => Math.min(n, waves ? Math.min(Math.floor(e / cableGap) + 1, 8) * perWave : Math.floor(e / cableGap) + 1),
+    switchesBy: (e: number) => (e < swStart ? 0 : Math.min(m, blocksOf ? (Math.floor((e - swStart) / swGap) + 1) * perBlock : Math.floor((e - swStart) / swGap) + 1)),
+  };
+}
 
 const REDUCE_MOTION = false; // UX 9.5: staff setting; wired to config in M3
 
@@ -36,7 +67,7 @@ export function missionScreen(app: App, view: View): Screen {
   const runner = new Runner(mission, () => app.now(), app.mirror.session?.applied ?? []);
   let phase: Phase = view.entry === "step1" ? "step" : "briefing";
   let windows: StepWindows | null = null;
-  let figure: TileFigure | null = null; // Squares tiles on the briefing / plan stage
+  let figure: Figure | null = null; // the mission's explanation figure on the briefing / plan stage
   let animGen = 0; // bumps to cancel a running success choreography
   let acked = false;
   let assistedNow = false;
@@ -63,7 +94,7 @@ export function missionScreen(app: App, view: View): Screen {
   const stage = h("div", { class: "stage", "aria-label": "machine" });
   stage.style.left = `${STAGE.x}px`;
   stage.style.top = `${STAGE.y}px`;
-  const workbench = new Workbench();
+  const workbench = new Workbench(workbenchPlan(mission));
   const wbWrap = h("div", { class: "wb-wrap" }, workbench.el);
   const scrim = h("div", { class: "stage-scrim" });
   const altView = h("div", { class: "alt-view" });
@@ -195,8 +226,9 @@ export function missionScreen(app: App, view: View): Screen {
     closeWindows();
     workbench.spotlight(null);
     scrim.classList.remove("on");
-    if (mission.id === "squares") {
-      startFigure(TileFigure.briefing());
+    const fig = briefingFigure();
+    if (fig) {
+      startFigure(fig);
     } else {
       altView.replaceChildren(svgFromString(roomPlanSvg(planUnits)), h("div", { class: "alt-caption" }, COPY.rail.roomPlan));
     }
@@ -209,7 +241,7 @@ export function missionScreen(app: App, view: View): Screen {
   function renderPlan(): void {
     closeWindows();
     const p = content.plan;
-    const fig = mission.id === "squares" ? TileFigure.plan(p.math ?? "", reduceMotion()) : null;
+    const fig = planFigure(p.math ?? "");
     if (fig) startFigure(fig);
     else altView.replaceChildren(h("div", { class: "plan" }, h("div", { class: "plan-math" }, p.math ?? "")));
     altView.classList.add("on");
@@ -218,8 +250,21 @@ export function missionScreen(app: App, view: View): Screen {
     setMain(p.buttons?.[0] ?? COPY.rail.next, "filled");
   }
 
-  /** Shows a tile figure: looping, or finished at once with reduced motion. */
-  function startFigure(fig: TileFigure): void {
+  /** The briefing figure for this mission (UX 8.1.4 tiles, 8.2.3 sharing evenly), or null for the room plan. */
+  function briefingFigure(): Figure | null {
+    if (mission.id === "squares") return TileFigure.briefing();
+    if (mission.id === "primes") return new SharingFigure(reduceMotion());
+    return null;
+  }
+
+  function planFigure(math: string): Figure | null {
+    if (mission.id === "squares") return TileFigure.plan(math, reduceMotion());
+    if (mission.id === "primes") return new CheckersFigure(math, reduceMotion());
+    return null;
+  }
+
+  /** Shows a figure: looping, or finished at once with reduced motion. */
+  function startFigure(fig: Figure): void {
     figure = fig;
     altView.replaceChildren(fig.el);
     if (reduceMotion()) fig.showFinal();
@@ -305,23 +350,28 @@ export function missionScreen(app: App, view: View): Screen {
     card.dataset.cables = String(cablesTotal);
     card.dataset.switches = String(switchesTotal);
     if (restDone) return finishRest(cablesTotal, switchesTotal, cc, sc);
-    // One fixed timeline (UX 7.4, about 5 s whatever remains): cables are
-    // staggered, then the dials click. Counters follow elapsed time and the
-    // screen completes on a single timer, so nothing waits on animation
-    // frames or on the bridge (the core already has the preset).
+    // One fixed timeline (UX 7.4: about 5 s; UX 8.2.5 / 8.3.5: large presets
+    // in waves and blocks, at most about 8 s): cables, then the dials.
+    // Counters follow elapsed time and the screen completes on a single
+    // timer, so nothing waits on animation frames or on the bridge (the
+    // core already has the preset).
     const cables = items.filter((x): x is Extract<typeof x, { kind: "plug" }> => x.kind === "plug");
     const switches = items.filter((x): x is Extract<typeof x, { kind: "switch" }> => x.kind === "switch");
-    const cableGap = Math.min(250, 2500 / Math.max(1, cables.length));
-    const switchGap = Math.min(150, 1500 / Math.max(1, switches.length));
-    const swStart = cables.length * cableGap + 200;
-    const total = swStart + switches.length * switchGap + 300;
-    cables.forEach((c, i) => void workbench.addCable(c, { animate: true, ms: 400, delay: Math.round(i * cableGap) }));
-    switches.forEach((c, i) => restTimers.push(setTimeout(() => workbench.setSwitch(c.switch, c.value, true), swStart + i * switchGap)));
+    const plan = restPlan(cables.length, switches.length);
+    cables.forEach((c, i) => void workbench.addCable(c, { animate: true, ms: plan.cableMs, delay: plan.cableAt(i) }));
+    // Dials click one by one (Squares) or in blocks (hundreds of switches).
+    const blocks = new Map<number, typeof switches>();
+    switches.forEach((c, i) => {
+      const at = plan.switchAt(i);
+      blocks.set(at, [...(blocks.get(at) ?? []), c]);
+    });
+    for (const [at, list] of blocks) restTimers.push(setTimeout(() => list.forEach((c) => workbench.setSwitch(c.switch, c.value, true)), at));
+    const total = plan.total;
     const t0 = performance.now();
     const tick = setInterval(() => {
       const e = performance.now() - t0;
-      cc.textContent = String(Math.min(cables.length, Math.floor(e / cableGap) + 1));
-      sc.textContent = String(e < swStart ? 0 : Math.min(switches.length, Math.floor((e - swStart) / switchGap) + 1));
+      cc.textContent = String(plan.cablesBy(e));
+      sc.textContent = String(plan.switchesBy(e));
     }, 100);
     restTimers.push(tick);
     restTimers.push(

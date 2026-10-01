@@ -92,3 +92,69 @@
 .result-actions .btn { min-height: 96px; background: transparent; color: var(--card); border-color: var(--card); width: 360px; }
 .result-actions .btn.main { width: 720px; background: var(--card); color: var(--ink); }
 .result-right .more-btn { background: transparent; color: var(--card); border-color: var(--card); width: 360px; }
+
+/* S6 card stage (Primes, UX 8.2.5; app/run/stackstage.ts). */
+.stack-stage { position: absolute; inset: 0; }
+.stack-left { position: absolute; left: 16px; top: 8px; width: 856px; display: flex; flex-direction: column; gap: 10px; }
+.pane-title { font-size: 24px; line-height: 30px; font-weight: 700; color: #9AA0A8; letter-spacing: 1px; text-transform: uppercase; }
+.testing { height: 124px; box-sizing: border-box; display: flex; align-items: center; gap: 24px; padding: 0 16px; background: #15181c; border: 2px solid #2c2f35; border-radius: 10px; }
+.testing-text { display: flex; flex-direction: column; width: 200px; }
+.testing-sub { font-size: 24px; color: #9AA0A8; }
+.testing-value {
+  flex: 1; height: 84px; padding: 0 20px; background: #000; color: #fff; border: 2px solid #34383f; border-radius: 8px;
+  font-family: var(--font-mono); font-weight: 500; font-size: 72px; line-height: 84px; text-align: right;
+}
+.testing .panel { flex: none; height: 116px; width: auto; }
+.checker-grid { display: grid; grid-template-columns: repeat(7, 112px); gap: 10px 12px; margin-top: 6px; }
+.gcheck {
+  position: relative; width: 112px; height: 162px; box-sizing: border-box; overflow: hidden;
+  border: 3px solid #34383f; border-radius: 10px; background: #15181c;
+  display: flex; flex-direction: column; align-items: center;
+}
+.gcheck-k { font-size: 30px; line-height: 32px; font-weight: 700; color: var(--card); }
+.gcheck .panel { width: 96px; height: auto; }
+.gcheck-acc { font-size: 24px; line-height: 26px; color: #9AA0A8; }
+.gcheck-call {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 40px; display: none; align-items: center; justify-content: center; gap: 4px;
+  background: var(--cable-prog); color: var(--ink); font-size: 24px; font-weight: 700;
+}
+.gcheck-call .bell { width: 22px; height: 22px; }
+.gcheck.fits { border-color: var(--cable-prog); box-shadow: 0 0 16px rgba(204, 121, 167, 0.6); }
+.gcheck.fits .gcheck-call { display: flex; }
+.bars-pane { position: relative; }
+.bars { display: flex; align-items: flex-end; gap: 4px; border-bottom: 2px solid #34383f; margin-top: 4px; }
+.bar { height: 0; background: var(--lamp-on); border-radius: 3px 3px 0 0; transition: height 250ms ease-out; }
+.bar-ticks { position: relative; height: 30px; }
+.bar-tick { position: absolute; top: 2px; font-size: 24px; color: #9AA0A8; font-family: var(--font-mono); }
+.ft-strips { display: grid; grid-template-columns: repeat(2, 420px); gap: 8px 16px; }
+@media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
+
+/* Punched-cards pane, stack style (UX 8.2.5). */
+.stack-stage .card-pane { position: absolute; left: 880px; top: 8px; width: 480px; }
+.card-pane .pane-title { margin-bottom: 6px; }
+.card-slot { height: 150px; overflow: hidden; }
+.card-big { position: relative; }
+.card-big .card-art { display: block; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)); }
+.card-empty { width: 100%; height: 100%; box-sizing: border-box; border: 3px dashed #4a4e57; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #9AA0A8; }
+.card-label { font-size: 28px; line-height: 40px; font-weight: 700; color: var(--card); min-height: 40px; margin-top: 4px; }
+.card-rows { display: flex; flex-direction: column; }
+.card-row {
+  height: 30px; box-sizing: border-box; background: var(--card); color: var(--ink); border-bottom: 1px solid #b9ae8c;
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px); padding-left: 16px;
+  font-family: var(--font-mono); font-size: 24px; line-height: 30px;
+}
+.card-row:nth-child(n+6) { opacity: .9; }
+.card-row:nth-child(n+12) { opacity: .75; }
+.card-count { font-size: 32px; line-height: 44px; font-weight: 700; color: var(--card); margin-top: 8px; white-space: pre; }
+.init-btn.used .spinner { display: none; }
+
+/* S7 for card missions: live cards, bars and the live line. */
+.result-cards { position: absolute; left: 64px; top: 128px; width: 896px; height: 772px; box-sizing: border-box; padding: 24px; background: #0d0f12; border-radius: var(--radius-card); display: flex; flex-direction: column; gap: 20px; }
+.result-cards-top { display: flex; gap: 32px; }
+.result-cards .card-pane { width: 480px; }
+.live-col { flex: 1; display: flex; align-items: center; }
+.live-line { font-size: 32px; line-height: 44px; font-weight: 700; color: var(--card); margin: 0; }
+.live-line.done { color: var(--lamp-on); }
+.result-waiting { display: flex; align-items: center; gap: 24px; font-size: 40px; line-height: 52px; font-weight: 700; color: var(--card); }
+.result-waiting .spinner { width: 56px; height: 56px; border-width: 6px; flex: none; }
+.result-waiting.hidden, .result-answer.hidden { display: none; }

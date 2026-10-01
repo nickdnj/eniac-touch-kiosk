@@ -6,7 +6,7 @@
 // buttons 120x120, independent of the drawn size.
 
 import type { MissionStep, SwitchStep } from "../protocol.ts";
-import { dial, jack, panelFace, jackBlock, ACC_RP, DIGITS, text, C } from "../panels/art.ts";
+import { dial, jack, panelFace, jackBlock, ACC_RP, DIGITS, PR_FIELD, text, C } from "../panels/art.ts";
 import { setDial } from "../panels/load.ts";
 import { h, s, svgFromString, wait } from "../ui/dom.ts";
 import { play } from "../ui/anim.ts";
@@ -126,7 +126,7 @@ export class StepWindows {
     dials.forEach((d, k) => {
       const x = box.w / 2 + (k - (dials.length - 1) / 2) * pitch;
       const y = 350;
-      const positions = cl?.family === "repeat" ? ACC_RP : DIGITS;
+      const positions = cl?.family === "repeat" ? ACC_RP : cl?.family === "printer" ? PR_FIELD : DIGITS;
       const v = values[d.id] ?? (cl?.family === "repeat" ? "1" : "0");
       body += text(x, 200, d.label, { size: 24, fill: "#C9C2A8", weight: 700 });
       body += dial(d.id, x, y, DIAL_R, positions, v, true);
@@ -279,7 +279,7 @@ export class StepWindows {
     if (this.picker || this.step.kind !== "switch") return;
     const st = this.step;
     const fam = dialClusterFor(this.ids[0])?.family;
-    const sheet = h("div", { class: "picker" }, h("div", { class: "picker-title" }, fam === "repeat" ? COPY.rail.pickRepeat : COPY.rail.pickNumber));
+    const sheet = h("div", { class: "picker" }, h("div", { class: "picker-title" }, fam === "repeat" ? COPY.rail.pickRepeat : fam === "printer" ? COPY.rail.pickPrinter : COPY.rail.pickNumber));
     sheet.style.left = `${PICKER.x}px`;
     sheet.style.top = `${PICKER.y}px`;
     sheet.style.width = `${PICKER.w}px`;

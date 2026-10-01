@@ -116,3 +116,38 @@ export async function toRun(page: Page, how: "touch" | "skip" = "skip"): Promise
   await tapSlow(page, mainBtn(page));
   await expect(view(page)).toHaveAttribute("data-view", "run");
 }
+
+/** The five Primes steps as element ids (UX 8.2.2). */
+export const PRIMES_STEPS = [
+  { id: "k1-two", kind: "switch", ids: ["sw:c.k1"], value: "2", line: "s c.k1 2" },
+  { id: "a1-fits", kind: "plug", ids: ["jack:a1.12o", "trunk:1-7"], line: "p a1.12o 1-7" },
+  { id: "trunk17-to-mp", kind: "plug", ids: ["trunk:1-7", "jack:p.Adi"], line: "p 1-7 p.Adi" },
+  { id: "trunk19-to-punch", kind: "plug", ids: ["trunk:1-9", "jack:i.pi"], line: "p 1-9 i.pi" },
+  { id: "punch-done-to-14", kind: "plug", ids: ["jack:i.po", "trunk:1-4"], line: "p i.po 1-4" },
+];
+
+/** The first odd primes, for checking real cards (3, 5, 7, ... in order). */
+export function oddPrimes(n: number): number[] {
+  const out: number[] = [];
+  for (let x = 3; out.length < n; x += 2) {
+    let p = true;
+    for (let d = 3; d * d <= x; d += 2) if (x % d === 0) p = false;
+    if (p) out.push(x);
+  }
+  return out;
+}
+
+/** From the dev shortcut (?mission=ID) to that mission's briefing (mock). */
+export async function devMissionId(page: Page, id: string, briefing: string): Promise<void> {
+  await mock(page, "reset");
+  await page.goto(`/?mission=${id}`);
+  await expect(page.locator(".step-card h2")).toHaveText(briefing);
+}
+
+/** Card values the UI holds for this session, oldest first (from window.__eniac). */
+export async function cardValues(page: Page, fields: number[]): Promise<number[]> {
+  return page.evaluate((fields) => {
+    const app = (window as any).__eniac;
+    return app.cards.cards.map((c: any) => Number(fields.map((i: number) => c.fields[i]).join("").trim()));
+  }, fields);
+}

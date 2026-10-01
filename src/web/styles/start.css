@@ -26,40 +26,68 @@
 }
 @keyframes pill-pulse { 50% { box-shadow: 0 0 0 18px rgba(244, 239, 227, 0.08); transform: scale(1.02); } }
 
-/* S2: mission cards (UX 7.2). */
+/* S2: mission cards (UX 8.4). Cards x80-624, x688-1232, x1296-1840, y184-824. */
 .mission-picker .header { padding-left: 136px; }
-.mission-cards { position: absolute; left: 0; right: 0; top: 184px; display: flex; justify-content: center; gap: 64px; }
+.mission-cards { position: absolute; left: 80px; top: 184px; display: flex; align-items: flex-start; }
 .mission-card {
   width: 544px;
   height: 640px;
+  box-sizing: border-box;
   background: var(--card);
   color: var(--ink);
   border-radius: var(--radius-card);
   padding: 32px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 6px;
   position: relative;
 }
 .mission-card.pressed { transform: scale(0.99); }
-.mc-top { display: flex; align-items: center; justify-content: space-between; }
+.mission-card .mc-art { display: block; width: 480px; height: 200px; margin-bottom: 10px; }
 .mc-badge {
+  position: absolute;
+  left: 16px;
+  top: 16px;
   width: 96px;
   height: 96px;
   border-radius: 50%;
   background: var(--ink);
-  color: var(--card);
+  color: #fff;
+  border: 4px solid var(--card);
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 56px;
   font-weight: 700;
 }
-.mc-here { font-size: 28px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; border: 3px solid var(--ink); border-radius: 8px; padding: 4px 16px; }
-.mc-title { font-size: 48px; line-height: 56px; font-weight: 700; margin-top: 16px; }
-.mc-meta { font-size: 24px; color: #4a4e57; min-height: 30px; }
-.mc-teaser { font-size: 28px; line-height: 40px; flex: 1; }
+/* START HERE / UP NEXT: the yellow "touch here" chip (UX 8.4), 40 px high. */
+.mc-here, .mc-done {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  height: 40px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.mc-here { background: var(--guide); color: var(--ink); border: 2px solid var(--ink); }
+.mc-done { background: var(--card); color: var(--ink); border: 3px solid var(--ok); }
+.mc-done .mc-check { color: var(--ok); font-size: 28px; }
+.mc-title { font-size: 48px; line-height: 56px; font-weight: 700; }
+.mc-meta { font-size: 24px; line-height: 30px; color: #4a4e57; min-height: 30px; }
+.mc-teaser { font-size: 28px; line-height: 40px; flex: 1; margin-top: 6px; }
 .mc-start { width: 480px; align-self: center; }
+.mc-then { width: 64px; height: 640px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9AA0A8; font-size: 24px; }
+.mc-then .chev { font-size: 64px; line-height: 64px; color: var(--card); }
+.mc-order { position: absolute; right: 80px; top: 856px; text-align: right; font-size: 24px; line-height: 32px; color: #9AA0A8; display: flex; flex-direction: column; }
 
 .waking .waiting, .boot .waiting { height: 1032px; }
 

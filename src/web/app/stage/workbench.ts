@@ -1,15 +1,21 @@
-// L1 Workbench (UX 4.2): Init, Constant, Acc 1, Acc 2 lined up, data trunk
-// rail on top, program trunk rail below, live lamp bands, and the cables
-// that are really in the machine. Context only: it never takes taps.
+// L1 Workbench (UX 4.2): the mission's units lined up (Squares: Init,
+// Constant, Acc 1, Acc 2; Primes: Init, Constant, Acc 1, Master Programmer;
+// Trajectory: Init, Printer, Acc 19, Master Programmer), data trunk rail on
+// top, program trunk rail below, live lamp bands, and the cables that are
+// really in the machine. Context only: it never takes taps.
 
-import type { ConfigItem } from "../protocol.ts";
+import type { CompiledMission, ConfigItem } from "../protocol.ts";
 import {
   accumulatorPanel,
   constantPanel,
   dataTrunkRail,
   initiatingPanel,
+  masterProgrammerPanel,
+  printerPanel,
   programTrunkRail,
   CARD_W,
+  DATA_TRUNKS,
+  PROGRAM_TRUNKS,
   type Panel,
 } from "../panels/art.ts";
 import { setDial } from "../panels/load.ts";
@@ -33,26 +39,89 @@ export interface CableOpts {
   pending?: boolean;
 }
 
+/** What a mission's Workbench shows: four unit cards and the trunks. */
+export interface WorkbenchPlan {
+  units: string[];
+  data: string[];
+  program: string[];
+}
+
+const UNIT_RANK = (u: string): number => (u === "i" ? 0 : u === "c" ? 1 : u === "pr" ? 2 : /^a\d+$/.test(u) ? 3 + Number(u.slice(1)) / 100 : u === "p" ? 4 : 5);
+const isTrunk = (t: string) => /^\d+(-\d+)?$/.test(t);
+const unitOfTerm = (t: string) => t.slice(0, t.indexOf("."));
+const trunkSort = (a: string, b: string) => {
+  const [x1, y1] = a.split("-").map(Number), [x2, y2] = b.split("-").map(Number);
+  return x1 - x2 || (y1 ?? 0) - (y2 ?? 0);
+};
+
+/**
+ * Pure: the Workbench for a mission. Units are those the visitor steps
+ * touch (UX 4.2: four 300 px cards), in machine order (Init, Constant,
+ * Printer, accumulators, Master Programmer); trunks are the step trunks plus
+ * the trunks of preset cables that land on those units, as many as the
+ * rails hold (data 4, program 7), step trunks first.
+ */
+export function workbenchPlan(mission: Pick<CompiledMission, "steps" | "config">): WorkbenchPlan {
+  const units = new Set<string>();
+  const stepData = new Set<string>(), stepProg = new Set<string>();
+  for (const st of mission.steps) {
+    const ends = st.kind === "plug" ? [st.from, st.to] : [st.switch];
+    for (const t of ends) {
+      if (isTrunk(t)) (t.includes("-") ? stepProg : stepData).add(t);
+      else units.add(unitOfTerm(t));
+    }
+  }
+  const list = [...units].sort((a, b) => UNIT_RANK(a) - UNIT_RANK(b)).slice(0, 4);
+  const data = new Set(stepData), program = new Set(stepProg);
+  const more = { data: new Set<string>(), program: new Set<string>() };
+  for (const c of mission.config) {
+    if (c.kind !== "plug") continue;
+    const [t, j] = isTrunk(c.from) ? [c.from, c.to] : [c.to, c.from];
+    if (!isTrunk(t) || isTrunk(j) || !list.includes(unitOfTerm(j))) continue;
+    (t.includes("-") ? more.program : more.data).add(t);
+  }
+  for (const t of [...more.data].sort(trunkSort)) if (data.size < 4) data.add(t);
+  for (const t of [...more.program].sort(trunkSort)) if (program.size < 7) program.add(t);
+  // Keep the Squares rails exactly as approved (1-3 and 1-1..1-5).
+  const fill = (set: Set<string>, base: string[], max: number) => {
+    for (const t of base) if (set.size < max && !set.has(t) && set.size < base.length) set.add(t);
+  };
+  fill(data, DATA_TRUNKS, 4);
+  fill(program, PROGRAM_TRUNKS, 7);
+  return { units: list, data: [...data].sort(trunkSort), program: [...program].sort(trunkSort) };
+}
+
+function unitPanel(u: string): Panel | null {
+  if (u === "i") return initiatingPanel();
+  if (u === "c") return constantPanel();
+  if (u === "p") return masterProgrammerPanel();
+  if (u === "pr") return printerPanel();
+  if (/^a\d+$/.test(u)) return accumulatorPanel(Number(u.slice(1)));
+  return null;
+}
+
 export class Workbench {
   readonly el: HTMLElement;
+  readonly plan: WorkbenchPlan;
   private cableLayer: SVGSVGElement;
   private placed = new Map<string, Placed>();
   private cables = new Map<string, SVGGElement>();
   private laneUse = new Map<number, number>();
   private tagBoxes: { x: number; y: number; w: number; h: number }[] = [];
+  private cardX: Record<string, number> = {};
 
-  constructor() {
+  constructor(plan: WorkbenchPlan = { units: ["i", "c", "a1", "a2"], data: DATA_TRUNKS, program: PROGRAM_TRUNKS }) {
+    this.plan = plan;
     this.el = h("div", { class: "workbench" });
-    const dr = dataTrunkRail();
-    const pr = programTrunkRail();
+    const dr = dataTrunkRail(false, plan.data);
+    const pr = programTrunkRail(false, plan.program);
     this.add("trunks-data", dr, WB.dataRail.x, WB.dataRail.y, "rail");
-    const units: [string, Panel][] = [
-      ["i", initiatingPanel()],
-      ["c", constantPanel()],
-      ["a1", accumulatorPanel(1)],
-      ["a2", accumulatorPanel(2)],
-    ];
-    for (const [u, p] of units) this.add(u, p, WB.cardX[u], WB.cardsY, "card");
+    plan.units.forEach((u, i) => {
+      const p = unitPanel(u);
+      if (!p) return;
+      this.cardX[u] = WB.cardXs[i];
+      this.add(u, p, WB.cardXs[i], WB.cardsY, "card");
+    });
     this.add("trunks-program", pr, WB.programRail.x, WB.programRail.y, "rail");
     this.el.append(h("div", { class: "wb-caption" }, COPY.rail.workbench));
     this.cableLayer = svgFromString(
@@ -100,7 +169,7 @@ export class Workbench {
 
   /** Card gutter to route a cable up/down beside a card, with lanes. */
   private gutter(jackX: number): number {
-    const cards = Object.values(WB.cardX);
+    const cards = Object.values(this.cardX);
     let best = 0;
     let bestD = Infinity;
     for (const cx of cards) {
@@ -234,7 +303,7 @@ export class Workbench {
   /** Brief framing zoom toward a unit (UX 4.3 step 1, 400 ms). */
   frame(unit: string | null, reduceMotion: boolean): void {
     if (reduceMotion || !unit) return;
-    const x = WB.cardX[unit] ?? STAGE.w / 2 - CARD_W / 2;
+    const x = this.cardX[unit] ?? STAGE.w / 2 - CARD_W / 2;
     const ox = x + CARD_W / 2;
     void play(this.el, [{ transform: "scale(1)", transformOrigin: `${ox}px 420px` }, { transform: "scale(1.06)", transformOrigin: `${ox}px 420px`, offset: 0.5 }, { transform: "scale(1)", transformOrigin: `${ox}px 420px` }], {
       duration: 800,

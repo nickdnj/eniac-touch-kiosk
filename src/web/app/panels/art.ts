@@ -179,6 +179,9 @@ export function switchDefault(swId: string): string {
   if (/\.rp\d+$/.test(swId)) return "1";
   if (/\.op\d+$/.test(swId)) return "0";
   if (/c\.s\d+$/.test(swId)) return "0";
+  if (/p\.c[A-K]$/.test(swId)) return "6";
+  const a = /p\.(a\d+)$/.exec(swId);
+  if (a && MP_ASSOC[a[1]]) return MP_ASSOC[a[1]][0];
   return "0";
 }
 
@@ -437,32 +440,45 @@ function rail(name: string, w: number, h: number, title: string, trunks: string[
   const g = emptyGeom(w, h);
   let b = `<rect x="0" y="0" width="${w}" height="${h}" rx="6" fill="#0d0e10" stroke="#2c2f35"/>`;
   b += text(12, 13, title, { size: 10, anchor: "start", ls: 1.5 });
+  // Taller lists get a tighter pitch and thinner bars, same outer size.
+  const thin = pitch < 15;
+  const ch = thin ? 10 : 13, bh = thin ? 8 : 10, sr = thin ? 3.6 : 4.6;
   trunks.forEach((t, i) => {
     const y = y0 + i * pitch;
     const id = `trunk:${t}`;
     // A recessed channel, a heavy metal bus bar, and a row of cream-collared
     // sockets along it (where cables can land), like the real trunk trays.
     b += `<g id="${esc(id)}" class="trunk">`;
-    b += `<rect x="62" y="${y - 6.5}" width="${w - 72}" height="13" rx="6.5" fill="#050506" stroke="#26292e" stroke-width="1"/>`;
-    b += `<rect x="64" y="${y - 5}" width="${w - 76}" height="10" rx="5" fill="url(#g-rail)" stroke="#1a1c20" stroke-width="1"/>`;
-    b += `<path d="M66 ${y - 3}H${w - 14}" stroke="#C8CDD4" stroke-width="1" opacity=".55"/>`;
+    b += `<rect x="62" y="${n1(y - ch / 2)}" width="${w - 72}" height="${ch}" rx="${ch / 2}" fill="#050506" stroke="#26292e" stroke-width="1"/>`;
+    b += `<rect x="64" y="${n1(y - bh / 2)}" width="${w - 76}" height="${bh}" rx="${bh / 2}" fill="url(#g-rail)" stroke="#1a1c20" stroke-width="1"/>`;
+    b += `<path d="M66 ${n1(y - bh / 2 + 2)}H${w - 14}" stroke="#C8CDD4" stroke-width="1" opacity=".55"/>`;
     for (let x = 84; x < w - 14; x += 34) {
-      b += `<circle cx="${x}" cy="${y}" r="4.6" fill="${C.jackBlock}" stroke="#6d6450" stroke-width="1"/><circle cx="${x}" cy="${y}" r="2.4" fill="#0b0b0c"/>`;
+      b += `<circle cx="${x}" cy="${n1(y)}" r="${sr}" fill="${C.jackBlock}" stroke="#6d6450" stroke-width="1"/><circle cx="${x}" cy="${n1(y)}" r="${n1(sr * 0.52)}" fill="#0b0b0c"/>`;
     }
-    b += `<rect x="12" y="${y - 6.5}" width="44" height="13" rx="3" fill="${C.jackBlock}" stroke="#8f8566"/>`;
-    b += text(34, y + 4, t, { size: 11, fill: C.ink, mono: true });
+    b += `<rect x="12" y="${n1(y - ch / 2)}" width="44" height="${ch}" rx="3" fill="${C.jackBlock}" stroke="#8f8566"/>`;
+    b += text(34, y + (thin ? 3.5 : 4), t, { size: thin ? 9 : 11, fill: C.ink, mono: true });
     b += `</g>`;
     g.trunks[id] = { y, x0: 64, x1: w - 12 };
   });
   return { name, markup: wrapSvg(w, h, b, standalone, `trunkrail ${name}`), geom: g };
 }
 
-export const STAGE_W = 1360;
-export function dataTrunkRail(standalone = false): Panel {
-  return rail("trunks-data", STAGE_W, 70, "DATA TRUNKS", DATA_TRUNKS, 26, 16, standalone);
+/** y0 and pitch so `n` trunks fit between `top` and `h - 6` (defaults kept). */
+function railFit(n: number, h: number, y0: number, pitch: number): [number, number] {
+  const top = 24, bottom = h - 6;
+  if (y0 + (n - 1) * pitch <= bottom) return [y0, pitch];
+  const p = n > 1 ? (bottom - top) / (n - 1) : pitch;
+  return [top, Math.floor(p * 10) / 10];
 }
-export function programTrunkRail(standalone = false): Panel {
-  return rail("trunks-program", STAGE_W, 104, "PROGRAM TRUNKS", PROGRAM_TRUNKS, 27, 17, standalone);
+
+export const STAGE_W = 1360;
+export function dataTrunkRail(standalone = false, trunks: string[] = DATA_TRUNKS): Panel {
+  const [y0, p] = railFit(trunks.length, 70, 26, 16);
+  return rail("trunks-data", STAGE_W, 70, "DATA TRUNKS", trunks, y0, p, standalone);
+}
+export function programTrunkRail(standalone = false, trunks: string[] = PROGRAM_TRUNKS): Panel {
+  const [y0, p] = railFit(trunks.length, 104, 27, 17);
+  return rail("trunks-program", STAGE_W, 104, "PROGRAM TRUNKS", trunks, y0, p, standalone);
 }
 
 // ---------------------------------------------------------------- run-view lamp grid (UX 6.2: 26 px lamps, 52x38 pitch)
@@ -509,6 +525,281 @@ export function accumulatorRunGrid(n: number, standalone = false): Panel {
   return { name: `accumulator-run-${n}`, markup: wrapSvg(W, H, b, standalone, `rungrid unit-a${n}`), geom: g };
 }
 
+// ---------------------------------------------------------------- master programmer (workbench card)
+
+/** Stepper letters in status order (index S = 0..9; there is no I). */
+export const MP_STEPPERS = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K"];
+/** Associator switches and their two positions (mpctl). */
+export const MP_ASSOC: Record<string, string[]> = {
+  a20: ["A", "B"], a18: ["B", "C"], a14: ["C", "D"], a12: ["D", "E"],
+  a10: ["F", "G"], a8: ["G", "H"], a4: ["H", "J"], a2: ["J", "K"],
+};
+const MP_STAGES = ["1", "2", "3", "4", "5", "6"];
+/** Jack suffixes per stepper, left to right in the jack block. */
+export const MP_JACKS = ["i", "di", "cdi", "1o", "2o", "3o", "4o", "5o", "6o"];
+
+export function masterProgrammerPanel(standalone = false): Panel {
+  const W = CARD_W, H = CARD_H;
+  const g = emptyGeom(W, H);
+  let b = panelFace(W, H);
+  b += plate(14, 14, W - 28, 52, ["MASTER", "PROGRAMMER"], 19);
+
+  // Stepper lamps: one row per stepper, input lamp then stages 0..5.
+  b += recess(12, 76, W - 24, 196);
+  b += text(24, 92, "STEPPERS", { size: 10, anchor: "start", ls: 1 });
+  b += text(66, 106, "IN", { size: 8, weight: 400 });
+  for (let k = 0; k <= 5; k++) b += text(98 + k * 26, 106, String(k), { size: 8, weight: 400 });
+  MP_STEPPERS.forEach((L, S) => {
+    const y = 120 + S * 15.2;
+    b += text(36, y + 3.5, L, { size: 10, weight: 700 });
+    const inId = `lamp:mp.s.${S}.in`;
+    b += lamp(inId, 66, y, 5);
+    g.lamps.push(inId);
+    for (let k = 0; k <= 5; k++) {
+      const id = `lamp:mp.s.${S}.${k}`;
+      b += lamp(id, 98 + k * 26, y, 6);
+      g.lamps.push(id);
+    }
+  });
+  // Decade counters D = 0..19, digits 0..9 (compact block on the right).
+  b += recess(12, 278, W - 24, 112);
+  b += text(24, 292, "DECADE COUNTERS", { size: 10, anchor: "start", ls: 1 });
+  for (let D = 0; D < 20; D++) {
+    for (let V = 0; V <= 9; V++) {
+      const id = `lamp:mp.dec.${D}.${V}`;
+      b += lamp(id, 30 + D * 12.8, 302 + V * 9.4, 4);
+      g.lamps.push(id);
+    }
+  }
+
+  // Dials: stage-count (cA..cK) and associators.
+  b += text(24, 406, "STAGES", { size: 10, anchor: "start", ls: 1 });
+  MP_STEPPERS.forEach((L, i) => {
+    const x = 30 + i * 26.5, y = 424;
+    const id = `sw:p.c${L}`;
+    b += dial(id, x, y, 9, MP_STAGES, switchDefault(id), false);
+    g.switches[id] = { x, y, r: 9, positions: MP_STAGES, value: switchDefault(id) };
+    b += text(x, y + 20, L, { size: 8, weight: 400 });
+  });
+  b += text(24, 462, "ASSOCIATORS", { size: 10, anchor: "start", ls: 1 });
+  Object.keys(MP_ASSOC).forEach((k, i) => {
+    const x = 36 + i * 33, y = 478;
+    const id = `sw:p.${k}`;
+    b += dial(id, x, y, 9, MP_ASSOC[k], switchDefault(id), false);
+    g.switches[id] = { x, y, r: 9, positions: MP_ASSOC[k], value: switchDefault(id) };
+    b += text(x, y + 20, k.toUpperCase(), { size: 7, weight: 400 });
+  });
+
+  // Jack block: 10 steppers x (i, di, cdi, 1o..6o).
+  b += jackBlock(12, 504, W - 24, 164);
+  const colX = (c: number) => 52 + c * 25.5;
+  ["i", "di", "cdi", "1", "2", "3", "4", "5", "6"].forEach((l, c) => (b += text(colX(c), 518, l, { size: 7, fill: C.ink })));
+  MP_STEPPERS.forEach((L, S) => {
+    const y = 528 + S * 14.6;
+    b += text(26, y + 3.5, L, { size: 9, fill: C.ink });
+    MP_JACKS.forEach((j, c) => {
+      const id = `jack:p.${L}${j}`;
+      const x = colX(c);
+      b += jack(id, x, y, 4.6);
+      g.jacks[id] = { x, y, r: 4.6 };
+    });
+  });
+  return { name: "master-programmer", markup: wrapSvg(W, H, b, standalone, "unit-p"), geom: g };
+}
+
+// ---------------------------------------------------------------- printer and card punch (workbench card)
+
+export const PR_FIELD = ["0", "P"];
+export const PR_COUPLE = ["0", "C"];
+
+/** A blank cream punch card (cut top-left corner), for the reader/punch art. */
+function blankCard(x: number, y: number, w: number, h: number): string {
+  const c = Math.min(10, h * 0.25);
+  let out = `<path d="M${x + c} ${y}H${x + w}V${y + h}H${x}V${y + c}Z" fill="#EFE6CC" stroke="#8f8566" stroke-width="1"/>`;
+  for (let i = 1; i <= 3; i++) out += `<path d="M${x + 8} ${n1(y + (i * h) / 4)}H${x + w - 6}" stroke="#d9cda8" stroke-width=".8"/>`;
+  return out;
+}
+
+export function printerPanel(standalone = false): Panel {
+  const W = CARD_W, H = CARD_H;
+  const g = emptyGeom(W, H);
+  let b = panelFace(W, H);
+  b += plate(14, 14, W - 28, 52, ["PRINTER AND", "CARD PUNCH"], 19);
+
+  // Status lamps from the initiating unit (reader and punch flip-flops).
+  b += recess(12, 76, W - 24, 46);
+  b += lamp("lamp:init.rdff", 46, 99, 7);
+  b += text(62, 103, "READER", { size: 10, anchor: "start", weight: 400 });
+  b += lamp("lamp:init.prff", 170, 99, 7);
+  b += text(186, 103, "PUNCH", { size: 10, anchor: "start", weight: 400 });
+  g.lamps.push("lamp:init.rdff", "lamp:init.prff");
+
+  // Field switches 1..16 (P = punch this 5-column field), two rows of 8.
+  b += text(24, 144, "FIELDS (P = PUNCH)", { size: 10, anchor: "start", ls: 1 });
+  for (let f = 1; f <= 16; f++) {
+    const r = Math.floor((f - 1) / 8), c = (f - 1) % 8;
+    const x = 40 + c * 31, y = 168 + r * 50;
+    const id = `sw:pr.${f}`;
+    b += dial(id, x, y, 11, PR_FIELD, "0", true);
+    g.switches[id] = { x, y, r: 11, positions: PR_FIELD, value: "0" };
+    b += text(x, y + 26, String(f), { size: 8, weight: 400 });
+  }
+  // Coupling switches (pairs of fields).
+  b += text(24, 284, "COUPLING", { size: 10, anchor: "start", ls: 1 });
+  for (let k = 0; k < 8; k++) {
+    const x = 40 + k * 31, y = 304;
+    const id = `sw:pr.${2 * k + 1}-${2 * k + 2}`;
+    b += dial(id, x, y, 9, PR_COUPLE, "0", true);
+    g.switches[id] = { x, y, r: 9, positions: PR_COUPLE, value: "0" };
+    b += text(x, y + 22, `${2 * k + 1}-${2 * k + 2}`, { size: 7, weight: 400 });
+  }
+
+  // Card reader and punch art (static decoration, no machine state).
+  b += recess(12, 344, W - 24, 324);
+  // Reader: hopper with a stack of blank cards.
+  b += text(80, 366, "CARD READER", { size: 10, ls: 1 });
+  b += `<path d="M28 380H132L124 452H36Z" fill="#2a2d33" stroke="#4a4e57" stroke-width="1.5"/>`;
+  for (let i = 0; i < 4; i++) b += blankCard(40, 392 + i * 8, 84, 40);
+  b += `<rect x="28" y="452" width="104" height="16" rx="3" fill="#15171a" stroke="#4a4e57"/>`;
+  // Feed path from the reader to the punch.
+  b += `<path d="M132 460C170 460 160 520 196 520" fill="none" stroke="#8A8E96" stroke-width="2" stroke-dasharray="6 5"/>`;
+  b += `<path d="M190 513L200 520L190 527" fill="none" stroke="#8A8E96" stroke-width="2"/>`;
+  // Punch: die, then the stacker of punched cards.
+  b += text(220, 366, "CARD PUNCH", { size: 10, ls: 1 });
+  b += `<rect x="170" y="380" width="104" height="60" rx="5" fill="#2a2d33" stroke="#4a4e57" stroke-width="1.5"/>`;
+  for (let i = 0; i < 6; i++) b += `<rect x="${182 + i * 14}" y="398" width="8" height="24" rx="2" fill="#0B0C0E" stroke="#4a4e57"/>`;
+  b += text(222, 476, "STACKER", { size: 9, weight: 400 });
+  b += `<path d="M168 492H276V600H168Z" fill="#1d1f24" stroke="#4a4e57" stroke-width="1.5"/>`;
+  for (let i = 0; i < 5; i++) b += blankCard(178, 560 - i * 8, 88, 36);
+  b += `<rect x="28" y="520" width="104" height="128" rx="6" fill="#1d1f24" stroke="#4a4e57" stroke-width="1.5"/>`;
+  b += blankCard(40, 560, 80, 40);
+  b += text(80, 624, "NEXT CARD", { size: 9, weight: 400 });
+  return { name: "printer", markup: wrapSvg(W, H, b, standalone, "unit-pr"), geom: g };
+}
+
+// ---------------------------------------------------------------- run-view compact units
+
+/** A mini accumulator (run view): 10x10 digit grid, sign, program lamps. */
+export function accumulatorCompact(n: number, standalone = false, pitch = 9): Panel {
+  const r = Math.max(2, pitch * 0.36);
+  const gx = 22, gy = 16;
+  const W = Math.round(gx + 10 * pitch + 6), H = Math.round(gy + 10 * pitch + pitch + 10);
+  const g = emptyGeom(W, H);
+  let b = `<rect x="0" y="0" width="${W}" height="${H}" rx="4" fill="${C.cabinet}" stroke="#34383f"/>`;
+  b += `<rect x="2" y="12" width="${W - 4}" height="${H - 14}" rx="3" fill="${C.recess}"/>`;
+  b += text(4, 9, `A${n}`, { size: 8, anchor: "start", weight: 700 });
+  const col = (d: number) => gx + (d - 1) * pitch + pitch / 2;
+  const row = (v: number) => gy + v * pitch + pitch / 2;
+  for (const [s, v] of [["P", 0], ["M", 1]] as const) {
+    const id = `lamp:acc.${n}.sign.${s}`;
+    b += lamp(id, 10, row(v), r);
+    g.lamps.push(id);
+  }
+  for (let d = 1; d <= 10; d++) {
+    for (let v = 0; v <= 9; v++) {
+      const id = `lamp:acc.${n}.d.${d}.${v}`;
+      b += lamp(id, col(d), row(v), r);
+      g.lamps.push(id);
+    }
+  }
+  const py = gy + 10 * pitch + pitch / 2 + 2;
+  const pp = (W - 8) / 12;
+  for (let p = 1; p <= 12; p++) {
+    const id = `lamp:acc.${n}.prog.${p}`;
+    b += lamp(id, 4 + pp * (p - 0.5), py, Math.min(r, pp * 0.38));
+    g.lamps.push(id);
+  }
+  return { name: `accumulator-compact-${n}`, markup: wrapSvg(W, H, b, standalone, `compact unit-a${n}`), geom: g };
+}
+
+function stripFace(w: number, h: number, title: string): string {
+  return panelFace(w, h) + recess(10, 10, w - 20, h - 20) + text(22, 30, title, { size: 11, anchor: "start", ls: 1.2 });
+}
+
+/** Function table ring (K = ring + 3, stages -3..9), flags and argument. */
+export function ftRingStrip(u: number, standalone = false): Panel {
+  const W = 420, H = 96;
+  const g = emptyGeom(W, H);
+  let b = stripFace(W, H, `FUNCTION TABLE ${u}`);
+  b += text(22, 52, "RING", { size: 9, anchor: "start", weight: 400 });
+  for (let k = 0; k <= 12; k++) {
+    const id = `lamp:ft.${u}.ring.${k}`;
+    const x = 72 + k * 22;
+    b += lamp(id, x, 50, 6.5);
+    b += text(x, 70, String(k - 3), { size: 8, weight: 400 });
+    g.lamps.push(id);
+  }
+  ([["add", "ADD"], ["sub", "SUB"], ["argset", "ARG"]] as const).forEach(([k, l], i) => {
+    const id = `lamp:ft.${u}.${k}`;
+    const x = 380, y = 26 + i * 22;
+    b += lamp(id, x, y, 6.5);
+    b += text(x - 12, y + 3, l, { size: 8, anchor: "end", weight: 400 });
+    g.lamps.push(id);
+  });
+  b += text(22, 84, "ARG", { size: 8, anchor: "start", weight: 400 });
+  for (const [k, x0] of [["arg10", 60], ["arg1", 200]] as const) {
+    for (let v = 0; v <= 9; v++) {
+      const id = `lamp:ft.${u}.${k}.${v}`;
+      b += lamp(id, x0 + v * 13, 84, 4.5);
+      g.lamps.push(id);
+    }
+  }
+  return { name: `ft-ring-${u}`, markup: wrapSvg(W, H, b, standalone, `ftstrip unit-f${u}`), geom: g };
+}
+
+/** Multiplier: stage 0..13, program flip-flops 1..24, reset FFs. */
+export function multiplierStrip(standalone = false): Panel {
+  const W = 640, H = 96;
+  const g = emptyGeom(W, H);
+  let b = stripFace(W, H, "MULTIPLIER");
+  b += text(22, 54, "STAGE", { size: 9, anchor: "start", weight: 400 });
+  for (let k = 0; k <= 13; k++) {
+    const id = `lamp:mult.stage.${k}`;
+    const x = 130 + k * 23;
+    b += lamp(id, x, 50, 6.5);
+    b += text(x, 32, String(k), { size: 8, weight: 400 });
+    g.lamps.push(id);
+  }
+  b += text(22, 82, "PROG", { size: 9, anchor: "start", weight: 400 });
+  for (let p = 1; p <= 24; p++) {
+    const id = `lamp:mult.prog.${p}`;
+    b += lamp(id, 80 + (p - 1) * 21, 78, 6);
+    g.lamps.push(id);
+  }
+  ([["r1", "R1"], ["r3", "R3"]] as const).forEach(([k, l], i) => {
+    const id = `lamp:mult.${k}`;
+    const x = 480 + i * 60;
+    b += lamp(id, x, 50, 6.5);
+    b += text(x + 12, 54, l, { size: 9, anchor: "start", weight: 400 });
+    g.lamps.push(id);
+  });
+  return { name: "multiplier-strip", markup: wrapSvg(W, H, b, standalone, "multstrip unit-m"), geom: g };
+}
+
+/** Master programmer steppers (run view): input lamp and stages 0..5. */
+export function mpStrip(steppers: number[] = [7], standalone = false): Panel {
+  const rowH = 30;
+  const W = 300, H = Math.max(96, 44 + steppers.length * rowH);
+  const g = emptyGeom(W, H);
+  let b = stripFace(W, H, "MASTER PROGRAMMER");
+  for (let k = 0; k <= 5; k++) b += text(110 + k * 30, 44, String(k), { size: 8, weight: 400 });
+  steppers.forEach((S, i) => {
+    const y = 60 + i * rowH;
+    b += text(28, y + 4, `${MP_STEPPERS[S] ?? "?"}`, { size: 12, weight: 700 });
+    const inId = `lamp:mp.s.${S}.in`;
+    b += lamp(inId, 64, y, 6.5);
+    b += text(64, y + 18, "IN", { size: 7, weight: 400 });
+    g.lamps.push(inId);
+    for (let k = 0; k <= 5; k++) {
+      const id = `lamp:mp.s.${S}.${k}`;
+      b += lamp(id, 110 + k * 30, y, 7);
+      g.lamps.push(id);
+    }
+  });
+  const name = steppers.length === 1 && steppers[0] === 7 ? "mp-strip" : `mp-strip-${steppers.join("-")}`;
+  return { name, markup: wrapSvg(W, H, b, standalone, "mpstrip unit-p"), geom: g };
+}
+
 /** Every panel in the kit, for the generator and the coverage test. */
 export function allPanels(standalone = false): Panel[] {
   return [
@@ -521,5 +812,15 @@ export function allPanels(standalone = false): Panel[] {
     accumulatorRunGrid(2, standalone),
     dataTrunkRail(standalone),
     programTrunkRail(standalone),
+    { ...programTrunkRail(standalone, ["1-2", "1-4", "1-7", "1-9", "2-5"]), name: "trunks-program-m2" },
+    masterProgrammerPanel(standalone),
+    printerPanel(standalone),
+    accumulatorCompact(1, standalone),
+    ftRingStrip(1, standalone),
+    ftRingStrip(2, standalone),
+    ftRingStrip(3, standalone),
+    multiplierStrip(standalone),
+    mpStrip([7], standalone),
+    mpStrip([0], standalone),
   ];
 }

@@ -22,6 +22,10 @@ test.beforeEach(async ({ page }) => {
   await recordSent(page);
 });
 
+// Squares Slow is cy.rate 13 since spike S4: one INIT takes about 13 s with
+// every addition visible, so the slow tests get more time.
+test.setTimeout(240_000);
+
 test("happy path by touch: 7 exact .e lines, S5 8/10, then 1/1 2/4 3/9 on real lamps (M1-02, M1-06)", async ({ page }) => {
   await startSquares(page);
   const mark = logMark();
@@ -116,6 +120,8 @@ test("Keep pressing for me stops at 12 x 12 = 144 after exactly 12 INITs (M1-09)
   await tapSlow(page, mainBtn(page));
   const mark = logMark();
   for (let i = 0; i < 3; i++) await pressInitAndSettle(page);
+  // Keep pressing at Full (at Slow it is about one square per 13 s).
+  await tapSlow(page, page.locator('.speed-btn[data-speed="full"]'));
   await tap(page, page.locator(".keep-btn"));
   await expect(page.locator(".tape-row")).toHaveCount(12, { timeout: 90_000 });
   await expect(page.locator(".keep-btn")).toHaveText("Keep pressing for me", { timeout: 10_000 });

@@ -69,14 +69,19 @@ export async function coreUp(): Promise<void> {
 
 /** S1 -> S2 -> Start -> briefing, the way a visitor gets there. */
 export async function startSquares(page: Page): Promise<void> {
+  await startMission(page, "squares", "What is a square?");
+}
+
+/** S1 -> S2 -> the mission's card -> its briefing, the way a visitor gets there. */
+export async function startMission(page: Page, id: string, briefing: string): Promise<void> {
   await coreUp();
   await page.goto("/");
   await expect(view(page)).toHaveAttribute("data-view", "start");
   await tap(page, page.locator(".screen.start"));
-  await expect(page.locator(".mission-card")).toHaveCount(1);
+  await expect(page.locator(`.mission-card[data-mission="${id}"]`)).toHaveCount(1);
   await page.waitForTimeout(650);
-  await tapSlow(page, page.locator(".mc-start"));
-  await expect(page.locator(".step-card h2")).toHaveText("What is a square?");
+  await tapSlow(page, page.locator(`.mission-card[data-mission="${id}"] .mc-start`));
+  await expect(page.locator(".step-card h2")).toHaveText(briefing);
 }
 
 /** Decodes an accumulator from the lit DOM lamps in the run view. */
@@ -95,6 +100,6 @@ export async function lampValue(page: Page, n: number): Promise<number> {
 export async function pressInitAndSettle(page: Page): Promise<void> {
   await tap(page, page.locator(".init-btn"));
   await expect(page.locator(".init-btn")).toHaveClass(/busy/);
-  await expect(page.locator(".init-btn")).not.toHaveClass(/busy/, { timeout: 30_000 });
+  await expect(page.locator(".init-btn")).not.toHaveClass(/busy/, { timeout: 45_000 });
   await page.waitForTimeout(450);
 }

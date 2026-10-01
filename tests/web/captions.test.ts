@@ -20,7 +20,7 @@ const P6 = "000001000000";
 const P5 = "000010000000";
 
 test("fill and settledVars: {a1} x {a1} = {a2}", () => {
-  assert.equal(fill(run.tape, settledVars({ 1: 3, 2: 9 })), "3 x 3 = 9");
+  assert.equal(fill(run.tape ?? "", settledVars({ 1: 3, 2: 9 })), "3 x 3 = 9");
   assert.equal(fill("{a1} {zz}", { a1: 1 }), "1 {zz}");
 });
 
