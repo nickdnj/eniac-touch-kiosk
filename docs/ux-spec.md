@@ -22,7 +22,9 @@
 | F5 | **PRD inconsistency:** FR-52 says "hold the top-left corner"; FR-70 and UX-03 say 5 taps and no long-press. This spec uses the 5-tap gesture everywhere. | PRD owner |
 | F6 | **Footer type size.** NFR-06 sets body text at 24 px or more. The footer credit is set at 24 px to comply. | None |
 | F7 | All history claims are tagged **[FC]** in the copy. They need the vcf-museum Fact-Checker and Doug Crawford before the floor (FR-22, R6). | Content |
-| F8 | The exact sieve and trajdemo switch choices in section 8 are **candidates** read from the `.e` headers. They must be confirmed line by line when the mission definition files are written in M2. | M2 |
+| F8 | The exact sieve and trajdemo switch choices in section 8 were **candidates** read from the `.e` headers. In v0.2 they are confirmed line by line (8.2.2, 8.3.2): each is unique in the file and passes validation rule 4, checked by script on 2026-10-01. **Open: S2 may still change the Trajectory run (F9).** | Resolved for M2 steps |
+| F9 | **At the pinned commit `trajdemo.e` does not run its 6 demo parts one per INIT.** INIT starts the artillery trajectory at once, and every later INIT restarts it (8.3.1, verified by running the core). FR-19 as written cannot be met with the unmodified file (PRD R4). Mission 3 is therefore READ, INIT, then one flight drawn as dots from the real punched cards. The six-part run is kept as Plan B (8.3.8). Attract mode (7.1) is affected (8.5.1, item 6). | PRD owner, S2 spike, Nick |
+| F10 | **The sieve is punch-bound.** The simulator waits 600 ms per punched card, so all 407 primes take about 4:10 at Full on any machine, and "Skip to the answer" cannot shorten it. The design gives the result at card 100 (about 1 minute) and lets the live count carry on (8.2.1, 8.2.5). | Nick |
 
 ---
 
@@ -348,6 +350,8 @@ Goal: make people curious, and be honest that it is live.
 
 ### 7.2 S2 Mission picker
 
+*Superseded by 8.4 for the final copy, counts and the "Start here" rules; this wireframe is kept for the layout.*
+
 ```
 +------------------------------------------------------------------------------------+
 | [wordmark 0-120]   Pick a mission                                          (64 px)  |
@@ -360,7 +364,7 @@ Goal: make people curious, and be honest that it is live.
 |  |  Squares   |      |  Primes    |        |  The 1946  |   title 48 px            |
 |  |            |      |            |        |  Trajectory|                           |
 |  | About 3 min|      | About 4 min|        | About 5 min|   24 px                  |
-|  | You wire 7 |      | You wire 4 |        | You wire 4 |                           |
+|  | You wire 7 |      | You wire 5 |        | You wire 5 |                           |
 |  | steps      |      | steps      |        | steps + READ|                          |
 |  | "Make ENIAC|      | "Hunt for  |        | "Fire the  |   28 px, 1 line teaser    |
 |  |  count in  |      |  prime     |        |  first     |                           |
@@ -640,7 +644,7 @@ Copy rules: at most 40 words per card body, about a grade 4 to 5 reading level, 
 
 - Stage: a simple two-box animation: "Acc 1 = the number", "Acc 2 = its square", with the trick written out as big math: `9 + 3 + 3 + 1 = 16`.
 - Headline: **Here is the trick**
-- Body: "To get the next square, add the number two times, then add 1. Start with 3 x 3 = 9. Add 3, add 3, add 1. You get 16, which is 4 x 4. ENIAC is great at adding!" (38 words)
+- Body: "To get the next square, add the number two times, then add 1. Start with 3 x 3 = 9. Add 3, add 3, add 1. You get 16, which is 4 x 4. ENIAC is great at adding!" (39 words)
 - Buttons: **Next step** (there is nothing to tap on the machine), **Skip setup**.
 - Tell me more: "This is Brian Stuart's example. Stuart's notes say this is faster than multiplying, because each new square needs only additions. The multiplier is a whole other unit of ENIAC, and this trick does not need it." [FC]
 
@@ -650,7 +654,7 @@ Copy rules: at most 40 words per card body, about a grade 4 to 5 reading level, 
 
 - Stage: L2 window of the Constant Transmitter's J dials. The units digit (digit 1) of the J constant glows.
 - Headline: **Dial in the number 1**
-- Body: "This is the Constant Transmitter. It holds a number that you set with dials. Tap the glowing dial and choose 1." (22 words)
+- Body: "This is the Constant Transmitter. It holds a number that you set with dials. Tap the glowing dial and choose 1." (21 words)
 - Action: tap the dial, picker 0 to 9, tap **1**.
 - On correct: "Now it holds the number 1, ready to send."
 - Wrong-tap hints: picker digit not 1: "Not that number. We need a 1." Wrong dial: "That is a different digit of the number. Try the glowing one."
@@ -663,7 +667,7 @@ Copy rules: at most 40 words per card body, about a grade 4 to 5 reading level, 
 - Window 1 (left): Constant Transmitter jacks. Ring on **OUT**.
 - Window 2 (right): Data trunk sockets at this unit. Ring on **Trunk 1**.
 - Headline: **Put the 1 on the number highway**
-- Body: "Numbers travel through cables on a data trunk, like cars on a highway. Tap the OUT jack. Then tap Trunk 1. Now the 1 can travel." (27 words)
+- Body: "Numbers travel through cables on a data trunk, like cars on a highway. Tap the OUT jack. Then tap Trunk 1. Now the 1 can travel." (26 words)
 - On correct: "The cable is in. The 1 is on Trunk 1."
 - Hints: other jack in window 1: "That is a jack for signals. We want OUT, the number exit." Other trunk: "That is a different trunk. Choose Trunk 1."
 - Lamps: the trunk rail gets a soft blue "live" tint (shape: a pulse dot travels along it once).
@@ -685,7 +689,7 @@ Copy rules: at most 40 words per card body, about a grade 4 to 5 reading level, 
 
 - Window 1: Acc 1 jacks, ring on **A** (output). Window 2: Acc 2 inputs, ring on **beta**.
 - Headline: **Connect Accumulator 1 to Accumulator 2**
-- Body: "Accumulator 1 will hold the number. Accumulator 2 will hold its square. Plug the A output of Accumulator 1 into the β input (say beta) of Accumulator 2." (29 words)
+- Body: "Accumulator 1 will hold the number. Accumulator 2 will hold its square. Plug the A output of Accumulator 1 into the β input (say beta) of Accumulator 2." (28 words)
 - On correct: "Now Accumulator 1 can pass its number to Accumulator 2."
 - Hints: S jack: "S is for subtracting. We want A." Alpha on Acc 2: "That input is for a different job. Try β, beta."
 - Lamps: still 0.
@@ -707,7 +711,7 @@ Copy rules: at most 40 words per card body, about a grade 4 to 5 reading level, 
 
 - Window 1: Initiating Unit jacks, ring on **initiating pulse OUT**. Window 2: Program trunk sockets, ring on **1-1**.
 - Headline: **Wire up the START button**
-- Body: "When does it begin? The Initiating Unit has the GO button. Its signal travels on a program trunk, a highway for signals. Tap the GO output. Then tap program trunk 1-1." (30 words)
+- Body: "When does it begin? The Initiating Unit has the GO button. Its signal travels on a program trunk, a highway for signals. Tap the GO output. Then tap program trunk 1-1." (31 words)
 - On correct: "Now the GO button is wired in."
 - Hints: other jacks: "That one belongs to another job. We want the initiating pulse output." Wrong trunk: "Try program trunk 1-1."
 - Lamps: still 0. The program trunk rail gets a purple pulse dot once.
@@ -718,7 +722,7 @@ Copy rules: at most 40 words per card body, about a grade 4 to 5 reading level, 
 
 - Window 1: Acc 2 program jacks, ring on **6 OUT**. Window 2: Program trunk sockets, ring on **1-3**.
 - Headline: **Say what happens next**
-- Body: "When Accumulator 2 finishes adding twice, it sends a signal. That signal tells everyone to add 1. Tap the 6-out jack on Accumulator 2. Then tap program trunk 1-3." (30 words)
+- Body: "When Accumulator 2 finishes adding twice, it sends a signal. That signal tells everyone to add 1. Tap the 6-out jack on Accumulator 2. Then tap program trunk 1-3." (29 words)
 - On correct: "One job finishing now starts the next job. That is how ENIAC ran a whole program!"
 - Hints: 5-out: "That jack is for the later step. We want 6, out." Program trunk 1-2: "Try program trunk 1-3."
 - Lamps: still 0.
@@ -729,7 +733,7 @@ Copy rules: at most 40 words per card body, about a grade 4 to 5 reading level, 
 **S5. The rest is done for you**
 
 - Headline: **The rest is done for you**
-- Body: "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. [FC] We will place the last ones now: 8 cables and 10 switches." (28 words)
+- Body: "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. [FC] We will place the last ones now: 8 cables and 10 switches." (27 words)
 - Animation: the 8 cables draw in (fast, 250 ms each) and the 10 dials click; counters count up to "8 cables, 10 switches".
 - Button: **Continue** (96 h).
 - Lamps: still 0.
@@ -760,51 +764,799 @@ After press 3 the rail adds:
 **Result (S7) copy**
 
 - Headline: **You made a table of squares!**
-- Body: "Each new square is the old square, plus the number twice, plus 1. Like 9 + 3 + 3 + 1 = 16. ENIAC did it by adding, and you wired it." (31 words)
+- Body: "Each new square is the old square, plus the number twice, plus 1. Like 9 + 3 + 3 + 1 = 16. ENIAC did it by adding, and you wired it." (32 words)
 - Takeaway strip: **The cables were the program.** Sub-line: "To make ENIAC do something new, people plugged in different cables."
 - Left: the notebook tape from the real lamps (for example `1 x 1 = 1` up to `12 x 12 = 144`).
 - Tell me more: "One addition took ENIAC 1/5,000 of a second. [FC] We slowed things down so you could see the steps. Brian Stuart's simulator follows the real machine pulse by pulse." 
 - Buttons: **Next: Primes**, Try again, Menu.
 
-### 8.2 Primes (Mission 2): outline
+### 8.2 Primes (Mission 2): the complete script
 
-**Source:** `programs/sieve.e`: Lehmer's July 1946 runs, reconstructed by De Mol and Bullynck [FC]. 268 cables and 286 switches. Start with INIT. It punches a card for each prime from 3 to 2801, which I computed as **407 primes** (to be confirmed on a real run in M2). Length: about 3 to 4 minutes (FR-10).
+Copy rules as in 8.1.4: at most 40 words per card body, grade 4 to 5, [FC] = Fact-Checker. Tags used below for non-copy statements: **[V]** = verified by the UX agent on 2026-10-01 by running the pinned core (c4b94f2 plus `patches/0001` and `0002`, macOS arm64, Go 1.25.5, stub display); **[I]** = my reading of the program, to be confirmed (Stuart, De Mol and Bullynck, or the S1/S2 spikes); **[A]** = timing assumption, replace when the spike lands. The Pi 5 has not been measured.
 
-**Narrative beats**
+#### 8.2.1 What sieve.e does
 
-1. **Hook:** "A prime has no divisors but 1 and itself: 7 is prime, 9 is not. ENIAC hunted for primes in 1946. [FC] You will set it searching."
-2. **The idea (Step 0, animation):** "ENIAC tests each odd number. Fourteen accumulators each watch one small prime. If any of them says 'I divide it evenly', the number is out." This is a trial-division sieve; the wording is to be aligned with De Mol and Bullynck via the Fact-Checker.
-3. **Hands-on (4 steps).** Candidates from `sieve.e`, to be confirmed (F8):
-   1. **Dial K constant to 2** (`s c.k1 2`): "Move up by 2 each time, so we only test odd numbers."
-   2. **Cable `1-9` to the initiating unit's punch input** (`p 1-9 i.pi`): "If a number is prime, punch a card." This is the program trunk carrying the master programmer's "it's prime" result.
-   3. **Punch switch to P** (`s pr.13 P`; `pr.14` is preset): "Choose what goes on the card: the prime."
-   4. **Cable initiating unit's punch-done output to trunk 1-4** (`p i.po 1-4`): "When the card is punched, try the next number." This is the loop.
-4. **Rest is done for you:** 266 more cables and 284 more switches, a fast animation with running counters.
-5. **Run:** **INIT** only (no READ). The card pane fills with punched cards as primes are found: running count ("Cards: 37"), latest prime big ("Latest: 163"), and a progress bar toward 2801. Speed: Slow / Full / Skip to the answer (FR-18).
-6. **Result:** "ENIAC found all 407 primes from 3 to 2801." The last 20 cards are shown. Takeaway: "The same machine, different cables, a totally different job." Next: The 1946 Trajectory.
+`programs/sieve.e` (606 lines, 268 cables, 286 switches, no `b`, `f` or `l` lines) is "a prime sieve based on Lehmer's July 1946 runs and De Mol and Bullynck's reconstruction thereof" (the file's own header) [FC]. One INIT starts the whole search. It punches one card for every odd prime from 3 to 2801 and then stops. [V] 407 cards, first card `...0000000003`, last `...0000002801` (the count matches my own count of primes up to 2801, excluding 2).
 
-### 8.3 Trajectory (Mission 3): outline
+*Engineering prose: "watcher" below is a technical nickname for each of Accumulators 1 to 14 (one per group size). It is not visitor copy. Visitors hear "group checker" and "fits!".*
 
-**Source:** `programs/trajdemo.e`, "an attempt to recreate the demo at the unveiling of the ENIAC on Feb 15, 1946", using Heun's method on an artillery trajectory. 297 cables, 443 switches. The constants come from `demo.card` (`0000097367000001397500000981750010000000-00000321700143200000005932000`), loaded by READ. Each part starts with an INIT. Length: 4 to 6 minutes (FR-10, FR-19).
+How it works [I, with the watcher-to-prime mapping and the shout timing confirmed in a slow run, [V]]:
 
-**Narrative beats**
+```
+Acc 19 .......... the number being tested: starts at 1 (J constant), adds 2 (K constant) each time:  3, 5, 7, 9, 11 ...
+Acc 1 to 14 ..... fourteen "watchers", one per small prime: 3 5 7 11 13 17 19 23 29 31 37 41 43 47
+                  (the function-table dials hold 2p and p-1 for each prime: I decoded them, for example 06 and 02 for 3)
+Each odd number .. every watcher counts one step. A watcher whose count lands on the number fires its
+                  program 12 (lamp "prog 12" on that accumulator) and sends a pulse on trunk 1-7.
+Master Programmer . stepper A hears trunk 1-7 (jack A-DI). Any shout means "not prime": no card, next number.
+                  No shout means prime: A sends a pulse on trunk 1-9 to the Initiating Unit's punch input.
+Card punch ....... punches Acc 19 into card columns 61 to 70 (printer switches 13 and 14), then sends
+                  "punch done" (i.po) on trunk 1-4, which starts the next number.
+```
 
-1. **Hook:** "ENIAC was built to work out firing tables for Army guns. On February 15, 1946, it was shown to the public. [FC] You will rerun the demo."
-2. **Hands-on (3 steps + READ).** Candidates, to be confirmed (F8):
-   1. **READ:** press READ (96 h). The constants card slides into the reader, its digits visible on the card, and the first constant lights Acc 1 (97367). Caption: "The card holds the numbers for the demo."
-   2. **Cable initiating unit to program trunk 1-1** (`p i.io 1-1`; then `1-1 p.Ai` is preset): "Now the GO button is wired to the Master Programmer, ENIAC's conductor."
-   3. **Master Programmer stepper dial** (the "count of 1000 x 5 adds = 5,000"; `p.cC`, `p.d*` dials): "Dial in how many times to repeat. 1000 counts, 5 adds each, is 5,000 additions."
-   4. **Printer/punch switch to P** (`s pr.N P`): "Choose what gets punched for the table part."
-3. **Rest is done for you:** roughly 295 cables and 440 switches.
-4. **Run, part by part (FR-19).** Each part is its own INIT with a one-line live caption (from the `.e` comments):
-   1. "Adding 97,367 to itself 5,000 times." (The result, 486,835,000 [FC], shows on the lamps.) Fast-forward allowed.
-   2. "The same again, with a 100 Hz clock."
-   3. "Multiplying 13,975 by itself, 500 times." (multiplier demo)
-   4. "A table of squares and cubes, printed on cards."
-   5. "Sine and cosine of 100 angles."
-   6. "The artillery trajectory."
-   A **Skip to the trajectory** button jumps past parts 1 to 5 (R4 fallback: unthrottled plus a condensed caption).
-5. **Result:** the trajectory's card output. "This took ENIAC about 30 seconds. By hand, it took a person days." [FC, carefully, to be checked with the Fact-Checker; the statement is commonly made about the trajectory demo.] Takeaway: "Then, in 1946, this was amazing. Now, your phone does it in a blink." Final button: **Finish**.
+[V] In a slow run the first shouts were: 9 (watcher 3), 15 (watchers 3 and 5), 21 (3 and 7), 25 (5), 27 (3). A watcher never shouts at its own prime, so 3, 5 and 7 each got a card. Fourteen watchers cover every odd number below 53 x 53 = 2,809, which is why the search stops at 2801 [I].
+
+**Measured timings** [V, on the Mac; the Pi 5 is still to be measured in S1/R3]:
+
+| What | Full (rate 0) | Slow (`s cy.rate 100`) |
+|---|---|---|
+| INIT to first card | about 0.15 s | about 4.6 s (loading the watchers first) |
+| Pace | one card per about 0.6 s (the punch simulation waits 150 ms + 450 ms per card, `initiate.go`; CPU speed does not change it); odd numbers that are not prime take only about 0.1 to 0.2 s | one odd number tested per about 1.85 s, so cards at 3, 5, 7 come 1.9 s apart and 11 comes 3.5 s after 7 (the 9 in between) |
+| 50 cards (prime 233) | 30 s | not measured |
+| 100 cards (prime 547) | 60 s | not measured |
+| 200 cards (prime 1229) | 120 s | not measured |
+| All 407 (prime 2801) | **about 250 s** | far too long |
+
+Two consequences. (1) **The sieve is punch-bound, so "Skip to the answer" cannot make the run shorter than about 4 minutes at Full.** The design below picks a checkpoint at card 100 (about 1 minute) as "the answer" and lets the live count keep ticking on the result screen. (2) Without `patches/0002-ft-repeat-default.patch` this mission punches nothing (spike S3). The mission must fail validation if the patch is missing, using the `sieve-canary` from test plan 3.2.
+
+#### 8.2.2 Every cable and switch, and who does it
+
+There are **268 cables and 286 switches**. The visitor does **5 steps: 4 cables and 1 dial**. The other 264 cables and 285 switches are preset.
+
+| # | Step (exact line in sieve.e) | Kind | Who | Why |
+|---|---|---|---|---|
+| 1 | `s c.k1 2` | switch, constant digit (0 to 9) | **Visitor, step 1** | "Step up by 2": only odd numbers get tested. Easy first touch. |
+| 2 | `p a1.12o 1-7` | cable, program | **Visitor, step 2** | "The groups-of-3 checker calls out 'fits!'." The idea of a test result as a signal. |
+| 3 | `p 1-7 p.Adi` | cable, program | **Visitor, step 3** | "The conductor listens." Master Programmer stepper A. |
+| 4 | `p 1-9 i.pi` | cable, program | **Visitor, step 4** | "No group fits: punch a card." The payoff cable. |
+| 5 | `p i.po 1-4` | cable, program | **Visitor, step 5** | "Punch done: next number." The loop. |
+
+Each of the five lines appears exactly once in `sieve.e`. Rule 4 (per terminal, ignoring trunk ends) holds for each: I checked that no other line plugs `a1.12o`, `p.Adi`, `i.pi` or `i.po`, or sets `c.k1`. (The 13 other watchers' `aN.12o 1-7` lines use different jacks, and trunk 1-7 is exempt.) `s pr.13 P` and `s pr.14 P` also pass rule 4 but are left preset: the printer switch teaches nothing the cards will not teach better. Not used as steps: `p i.io 1-1` (it would pass here, but INIT wiring was taught in Squares).
+
+Preset, in groups (counts are exact):
+
+| Group | Cables | Switches |
+|---|---|---|
+| Number highway (`p c.o 1` and trunk 1 to the beta jack of Acc 1 to 14 and 19, table outputs to trunks 2 to 7) | 17 | |
+| Table to watcher, through 56 shift-delete adapters | 56 | |
+| Watcher self-test, through 28 digit-pulse adapters | 28 | |
+| Program wiring (start-up load, loop, shouts from the other 13 watchers, punch) | 163 | |
+| Accumulators 1 to 14 and 19 (operation, correction and repeat switches) | | 188 |
+| Function tables 1 to 3 (the 2p and p-1 tables, 78 switches) | | 78 |
+| Master Programmer (steppers A, B, C and their decade dials) | | 14 |
+| Constant Transmitter (`c.s25`, `c.s26`, `c.j1`) and printer (`pr.13`, `pr.14`) | | 5 |
+| **Total** | **264** | **285** |
+
+S5 reads "264 more cables, 285 more switches" (and, in the body, "13 more group checkers").
+
+**Units and panels the kit must draw** (IDs per architecture 6.1):
+
+| Unit | Why | Elements |
+|---|---|---|
+| Initiating Unit (`i`) | Steps 4 and 5, INIT, lamps | jacks `i.pi`, `i.po`, `i.io` (preset); `lamp:init.*` |
+| Constant Transmitter (`c`) | Step 1, preset | dial `c.k1` (the K dial, digit 1) in the Workbench; `c.j1`, `c.s25`, `c.s26`; jacks `c.o`, `c.25i`, `c.26i`, `c.25o`, `c.26o` |
+| Accumulator 1 | Step 2, and the "3-watcher" in the run | full panel: lamp grid, jacks alpha, beta, gamma, A, S, program jacks 1i 2i 5i 6i 10i 11i 12i and 6o 10o 11o 12o, switches `op/cc/rp` for programs 1, 2, 5, 6, 10, 11, 12; lamp `lamp:acc.1.prog.12` |
+| Accumulators 2 to 14 | Preset, run lamps | the same panel as Acc 1; drawn on the run view only, in compact form |
+| Accumulator 19 | Preset; **the number being tested, shown live** | lamp grid and helper readout; jacks beta, 1i, 5i, 10i, 12i, 10o, 12o |
+| Master Programmer (`p`) | Step 3, preset | jack `p.Adi` in the Workbench; steppers A, B, C: `p.Ai`, `p.Acdi`, `p.A1o`, `p.A2o`, `p.Bi`, `p.B1o`, `p.B2o`, `p.Ci`, `p.C1o`; dials `p.cA`, `p.cB`, `p.cC`, `p.a14`, `p.a18`, `p.d14` to `p.d20`; lamps `lamp:mp.*` |
+| Function Tables 1 to 3 (`f1`, `f2`, `f3`) | Preset; lamps on the run view | jacks A, B, 1i, 2i, 3i, 1o, 3o; the `A1C..A4C`, `RA0L1..6`, `B1C..B4C`, `RB0L1..6` dial banks; `op1..3`, `cl1..3`; ring lamps `lamp:ft.U.ring.K` |
+| Printer and punch (`pr`) | Preset `pr.13`, `pr.14`; the card pane | two field switches; the **card output pane is a UI element**, not an SVG panel |
+| Adapters (`ad`) | S5 only | 84 small boxes (56 shift-delete, 28 digit-pulse) drawn on the trunk rails as black boxes. Not tappable. |
+| Trunks | Steps | data trunks 1 to 7; program trunks 1-1 to 1-11, 2-2, 2-3, 3-1 to 3-10, 4-1 to 4-10, 5-1 to 5-8 |
+
+Not needed: card reader, multiplier, divider. No `f r` line, so there is no READ.
+
+The Workbench for the steps shows four panels: Constant Transmitter, Accumulator 1, Master Programmer and Initiating Unit (4 x 300 px, as in 4.2).
+
+#### 8.2.3 The visual metaphor: sharing evenly into equal groups
+
+*Direction from Nick (2026-10-01): a visitor must understand what a prime IS, explained as for a 5th grader.* Squares used tiles on a floor (handoff-squares-tiles.md). Primes uses the **same floor**, and the idea of **sharing evenly**. 12 cookies share evenly: 2 groups of 6, 3 of 4, 4 of 3. With 7, there is always one left over, however you try. A number that **won't split into equal groups** is prime. On the floor, an equal group is a row of tiles, and the leftover is the tile hanging over. Visitors who did Squares already believe in tiles. The main cards never say "divisible", "factor" or "only divisible by 1 and itself"; the textbook definition lives in Tell me more, for parents.
+
+For the plan, the machine's method is a second picture: **counting wheels, one group size each**. A number's tiles try groups of 3, 5, 7 and more, all at once. Each group size that fits evenly calls out "fits!". A number nobody calls out for is prime, and gets a card. In visitor copy these are "group checkers" (never "watchers", which is only an engineering nickname in 8.2.1 and 8.2.2).
+
+**Briefing canvas (S3), tile animation.** Loops after about 11 s. Reduced motion: both examples shown side by side, finished.
+
+| Beat | Tiles | Colour and second cue | Caption |
+|---|---|---|---|
+| 0.3 s | 12 tiles in one row | `--lamp-on` amber | "12 cookies" |
+| 1.5 s | They snap into 3 equal rows of 4 | amber, rows outlined, a check badge labelled "fits" | "3 equal groups of 4. It shares evenly!" |
+| 4.0 s | 7 tiles in one row | amber | "Now 7" |
+| 5.2 s | They try 2 rows: 3 and 3, one tile hanging over | the leftover tile in `--wrong` vermillion, highlighted, with an X badge | "2 groups: 1 left over" |
+| 6.6 s | They try 3 rows: 2, 2, 2 and one tile over | same | "3 groups: 1 left over" |
+| 8.2 s | Back to one row, with a "P" star badge | `--ok` green, plus the word | "7 won't split evenly. Prime!" |
+
+An **Again** button (64 px minimum) replays. The order, the X badge and the highlighted leftover carry the meaning as well as the colour.
+
+**Plan canvas (step 0b), group sizes side by side.** Loops after about 13 s. The candidate number is shown as a row of tiles. Below it, three counting wheels labelled "groups of 3", "groups of 5", "groups of 7" and a note "+ 11 more group sizes" (14 on the real machine: 3 up to 47). Each wheel shows the tiles arranged into that group size and ends on a check badge (fits evenly) or an X badge with a highlighted leftover. The punch is at the right.
+
+| Beat | What happens | Cue |
+|---|---|---|
+| 0.3 s | Candidate **9** (nine tiles) slides in. All three wheels try at once. | wheels in `--lamp-on` |
+| 1.5 s | Groups of 3: 3 equal groups, a check and a chip "fits!". Groups of 5 and 7: one group and leftovers, X. | `--cable-prog` pink chip with a bell glyph and the words; X badges with highlighted leftovers |
+| 2.6 s | The 9 drops into the bin and greys out | label "out: no card" |
+| 4.2 s | Candidate **11** slides in. Every wheel shows an X. | three X badges |
+| 5.6 s | The 11 stays amber and slides to the punch. A card is punched. | `--ok` check badge, label "prime: punch a card" |
+| 7.8 s | Candidate **15**: groups of 3 and groups of 5 both fit (checks), groups of 7 show an X. It drops. | two chips |
+| 10.0 s | The math line is written: `9 = 3 groups of 3 -> out   11: no equal groups -> prime` | |
+
+Both canvases use only the numbers the real program also uses. The wheels are explanatory art, labelled "how it works, slowed down". The run view below shows the real lamps.
+
+#### 8.2.4 Time budget (normal pace)
+
+| Part | Time |
+|---|---|
+| Pick mission, read briefing (with tile animation) | 0:25 |
+| Step 0 "The plan" | 0:25 |
+| Steps 1 to 5 (about 12 s each) | 1:00 |
+| "Rest done for you" | 0:08 |
+| Run: INIT, Slow for the first 5 cards (about 12 s), then Full to card 100 (about 60 s) | 1:15 [A: Mac numbers] |
+| Result | 0:20 |
+| **Total** | **about 3:45**; with "Do it for me" on 2 steps about 3:20 |
+
+If the Pi 5 punches slower, or testing shows more than 4:00, change the answer checkpoint to card 50 (about 30 s at Full). Trim steps by presetting step 1 (`s c.k1 2`) as a last resort.
+
+#### 8.2.5 Step-by-step script and copy
+
+**0a. Briefing (S3)**
+
+- Stage: L0 room plan with five markers: Initiating Unit, Constant Transmitter, Accumulators 1 to 14 (one grouped marker), Master Programmer, Function Tables. The canvas is the cookies-and-tiles animation in 8.2.3.
+- Headline: **What is a prime?**
+- Body: "Can you share 12 cookies evenly? Yes: 3 groups of 4. Now try 7. There is always one left over. Numbers that won't split into equal groups are prime: 2, 3, 5, 7, 11…" (34 words)
+- Button: **Let's go**. Tell me more: "For parents: a prime is a number above 1 that divides evenly only by 1 and itself. In 1946 ENIAC hunted for primes. ENIAC was shown to the public on February 15, 1946, and in July 1946 D. H. Lehmer ran prime searches on it. Brian Stuart's program is based on those runs and on a reconstruction by Liesbeth De Mol and Maarten Bullynck." (64 words) [FC: 1946, Lehmer, the reconstruction]
+- Lamps: dark lamp grids on the L0 plan.
+
+**0b. The plan (Step 0)**
+
+- Stage: the group-size animation in 8.2.3.
+- Headline: **Here is the trick**
+- Body: "ENIAC tests one number at a time. It tries to split it into groups of 3, 5, 7, and more, all at once. If any group size works, it's out. If none work, it's prime!" (35 words)
+- Math line under the animation: `9 = 3 groups of 3 -> out   11: no equal groups -> prime`
+- Buttons: **Next step**, **Skip setup**.
+- Tell me more: "ENIAC skips even numbers, which always split into 2 equal groups. It needs only 14 group sizes, 3 up to 47. A number below 2,809 (53 x 53) that is not prime always splits into equal groups of 47 or fewer. That is why this search stops at 2,801. Crossing out multiples is an old idea called a sieve." (59 words) [FC]
+
+---
+
+**Step 1 of 5 (switch): Count up by 2**
+
+- Stage: L2 window of the Constant Transmitter's K dials. The units digit (digit 1) of the K constant glows. (The J dials sit beside it, J digit 1 already shows 1: "start at 1".)
+- Headline: **Count up by 2**
+- Body: "Any even number splits into 2 equal groups, so ENIAC tests only odd numbers: 3, 5, 7... It must step up by 2 each time. Tap the glowing dial on the Constant Transmitter and choose 2." (36 words)
+- Action: tap the dial, picker 0 to 9, tap **2**.
+- On correct: "Now ENIAC will step up by 2 each time."
+- Wrong-tap hints: picker digit not 2: "We want to step by 2. Pick 2." Wrong dial: "That is a different dial. Try the glowing one."
+- Lamps: nothing changes yet. The dial shows 2.
+- Tell me more: "The Constant Transmitter has two sets of dials. J holds the number to start from, here 1. K holds the step, here 2. ENIAC adds the step to its test number again and again." (34 words)
+- Sim item: `s c.k1 2`.
+
+**Step 2 of 5 (cable): The checker calls out 'fits!'**
+
+- Window 1 (left): Accumulator 1 program jacks. Ring on **12 OUT**. Window 2 (right): program trunk sockets. Ring on **1-7**.
+- Headline: **Let the checker call out**
+- Body: "Accumulator 1 is the groups-of-3 checker. When a number splits into equal groups of 3, it sends a signal: 'fits!' Tap the 12-out jack on Accumulator 1. Then tap program trunk 1-7." (32 words)
+- On correct: "Now Accumulator 1 can call out 'fits!'"
+- Hints: other program jack: "That jack is for a different signal. Look for 12, out." Wrong trunk: "Try program trunk 1-7."
+- Lamps: Acc 1 lamp band at 0.
+- Tell me more: "Each checker tries one group size. The groups-of-3 checker calls out for 9, 15, 21, and so on. We have wired 13 more checkers just like this one, for groups of 5, 7, 11, and on up to 47." (39 words)
+- Sim item: `p a1.12o 1-7`.
+
+**Step 3 of 5 (cable): The conductor listens**
+
+- Window 1: program trunk sockets, ring on **1-7**. Window 2: Master Programmer jacks, ring on **A DI** (the direct input of stepper A).
+- Headline: **Let the conductor listen**
+- Body: "The Master Programmer is ENIAC's conductor. It decides what happens next. Tap program trunk 1-7. Then tap the A-DI jack on the Master Programmer, so it can hear every 'fits!'." (30 words)
+- On correct: "The conductor can now hear the checkers."
+- Hints: other MP jack: "That jack is for a different job. Look for A, DI." Wrong trunk: "Try program trunk 1-7."
+- Lamps: still 0. The MP stepper A lamps are visible in the window background, at stage 1.
+- Tell me more: "If any checker calls out 'fits!', the conductor skips the card. If none do, the number will not split into equal groups at all. The real Master Programmer had ten steppers, a bit like a music box with pins." (39 words) [FC]
+- Sim item: `p 1-7 p.Adi`.
+
+**Step 4 of 5 (cable): No group fits, punch a card**
+
+- Window 1: program trunk sockets, ring on **1-9**. Window 2: Initiating Unit jacks, ring on **PI** (the punch start input).
+- Headline: **Punch a card for every prime**
+- Body: "If no group size fits, the number is prime. The conductor then sends a signal on program trunk 1-9. Tap trunk 1-9. Then tap the PI jack on the Initiating Unit. That starts the card punch." (36 words)
+- On correct: "Now every prime will get a punched card."
+- Hints: other IU jack: "That jack starts something else. We want the card punch." Wrong trunk: "Try program trunk 1-9."
+- Lamps: still 0.
+- Tell me more: "A card punch makes holes in a card, one number per card. It could punch about 100 cards a minute. Our simulator copies that pace, so it cannot hurry any faster." (31 words) [FC]
+- Sim item: `p 1-9 i.pi`.
+
+**Step 5 of 5 (cable): Then try the next number**
+
+- Window 1: Initiating Unit jacks, ring on **PO** (punch done, OUT). Window 2: program trunk sockets, ring on **1-4**.
+- Headline: **Go on to the next number**
+- Body: "When a card is punched, ENIAC moves on. The punch sends a done signal. Tap the PO jack on the Initiating Unit. Then tap program trunk 1-4, which starts the next number." (32 words)
+- On correct: "Punch, then next number. That loop is the whole program!"
+- Hints: PI jack: "That is the punch start. We want the one that says done: PO." Wrong trunk: "Try program trunk 1-4."
+- Lamps: still 0.
+- Tell me more: "A loop is when the end of a job starts the job again. ENIAC runs this one about 1,400 times, from 3 up to 2,801, and then stops." (28 words)
+- Sim item: `p i.po 1-4`.
+- Button at the bottom: **Finish wiring**.
+
+**S5. The rest is done for you**
+
+- Headline: **The rest is done for you**
+- Body: "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. We will place the last ones now: 264 cables and 285 switches, including 13 more group checkers." (31 words) [FC]
+- Animation: too many items for 250 ms each (that would take over a minute). Cables draw in about 8 waves of about 33 cables (600 ms per wave), and the dials click in groups; the counters count up and ease to "264 cables, 285 switches". The whole screen takes at most 8 s.
+- Button: **Continue** (96 h). Lamps: still 0.
+
+---
+
+**S6 Run: what the visitor does and sees**
+
+There is no READ and no CLEAR. The only run button is **INIT**. Layout (stage 1360 x 904, rail as in 7.5):
+
+```
+LEFT x24-880                                          RIGHT x904-1384 : PUNCHED CARDS
++----------------------------------------------+      +-------------------------------+
+| TESTING   [ 0000000163 ]  helper readout     |      | newest card, large 480 x 150  |
+|  (Acc 19 lamps, live)                        |      |  printed digits over holes    |
++----------------------------------------------+      |  "Prime number 37: 163"       |
+| GROUP CHECKERS                               |      +-------------------------------+
+|  [3][5][7][11][13][17][19]                   |      | 19 older cards, 480 x 34 each |
+|  [23][29][31][37][41][43][47]  chip lights   |      |  newest on top, last 20 kept  |
+|  when that accumulator's prog-12 lamp is on  |      |  "...0000000157"              |
++----------------------------------------------+      |  "...0000000151"              |
+| PRIMES PER HUNDRED  (28 bars, grow live)     |      |   ...                         |
+|  |||||||| ||||||  |||||   ||||  |||  ||        |      +-------------------------------+
+|  3          1000          2000        2801   |      |  Cards: 37   Latest: 163      |
++----------------------------------------------+      +-------------------------------+
+| ACC 19 lamp grid (26 px lamps)  | ACC 1 grid  |
++----------------------------------------------+
+```
+
+| Press | Rail prompt (40 px) | Caption sequence (28 px, one at a time, each fires once) | What the lamps and cards show |
+|---|---|---|---|
+| Before | **Press INIT** ("INIT is the Initiating Pulse, ENIAC's GO button.") | none | All lamps 0. The card pane says "No cards yet." |
+| 1, first 5 s (Slow) | **Watch the checkers** | 1. "ENIAC gives each checker its group size." (on run busy) | Function table ring lamps and accumulator lamps move. Acc 19 gets its 1 and then 3. |
+| first card | | 2. "3 won't split into equal groups. Nothing fits, so ENIAC punched a card." (on the first card) | Card `3` slides out, printed 3 and holes in the 3 row. Chips quiet. Count 1. |
+| first fit | | 3. "9 splits into 3 groups of 3, so no card." (when `lamp:acc.1.prog.12` first lights) | Acc 19 reads 9 on the readout. Chip 3 ("groups of 3") flashes pink, with a bell glyph and "fits!". No card. |
+| 5th card | **Primes pile up** | 4. "Only primes get a card. Watch them pile up." | Hint chip: "Want it faster? Try Full." |
+| later | rail buttons below | Captions off by default (toggle "Show captions") | In Slow about 1 test per 1.85 s; in Full about 1.7 cards per second at the start |
+
+The punched-card display (FR-21):
+
+- **Card graphic.** A cream card with the top-left corner cut. 80 columns exist, but this program punches only columns 61 to 70 (printer switches 13 and 14), so the large card shows **columns 51 to 80** on a torn edge. Digits are printed along the top margin above each punched column; below them 12 rows (12, 11, 0 to 9) with a dark hole for each digit. The cards are never fake: digits and holes come from the real `punch` line (field index 12 and 13, cols 61 to 70).
+- **Motion.** The new card slides down out of a punch slot at the top of the pane in 300 ms, and the older cards shift down one row. At Full there are about 1.7 cards per second, so shifts are 150 ms and no card is skipped. The pane stops animating under "Reduce motion".
+- **Counters.** "Cards: 37" and "Latest: 163" at 40 px. These are the same real data.
+- **Prime bars.** 28 bars, one for each hundred numbers (3 to 100, 101 to 200, ..., 2701 to 2801). Each card adds 1 to its bar. They show that primes get rarer.
+- No card is ever shown before it is punched. If the core stalls, the pane freezes and S10 follows (no demo fallback).
+
+After the 5th card the rail adds:
+
+- **Speed:** Slow | Full. Full is `rate 0`. (Slow is `rate 100`, untuned until spike #33.) The hint chip "Want it faster? Try Full." appears with the 5th card. There is no auto-switch.
+- **Show me what happened** (primary, 96 h): goes to S7 now. The result screen is live (below).
+- **Skip to the answer:** sets Full and goes to S7 immediately. **It cannot make the machine faster than about 0.6 s per card**, so S7 first shows a waiting state ("ENIAC is counting primes: 37 of the first 100") until card 100 (the `hundred` checkpoint), and then the result headline appears. At Full from the start this takes about 1:00 on the Mac. If ENIAC has already punched more than 100 cards, S7 is instant.
+
+If the visitor leaves the run view idle, the standard 3 minute run timeout (S9) applies. The run is never "idle" in the machine sense until card 407, so INIT stays greyed. The mission needs no CLEAR.
+
+**Result (S7) copy**
+
+- Headline: **ENIAC found the primes!**
+- Body: "Every card is a prime: a number that won't split into equal groups. ENIAC tried groups of 3, 5, 7 and more on each odd number. Same machine as Squares, with different cables." (33 words)
+- Takeaway strip: **Same machine. Different cables. A different job.** Sub-line: "Changing the cables changed what ENIAC did."
+- Left: the punched cards pane (last 20), plus the prime bars. A **live line** below them ticks while the run goes on: "ENIAC is still working: 143 primes so far." At the last card (`...0000002801`) it reads: "ENIAC has found them all: 407 primes, from 3 to 2,801." This is real core data. S7's 90 s timer still applies.
+- Tell me more: "The old idea of crossing out multiples is called the sieve of Eratosthenes, after a Greek scholar. ENIAC did it with 14 counters instead of a pencil. Today, big primes help keep online messages secret." (35 words) [FC]
+- Buttons: **Next: Trajectory**, Try again, Menu.
+
+#### 8.2.6 Mission file mapping (`missions/primes.yaml`)
+
+`programSha256` for `sieve.e` at c4b94f2: `23f19a553e9601f56c213a53899495f4e4fd251d4bbaa1f12bcf0363d70d5c70` (computed by the UX agent from the local clone). Steps are in presentation order. All lines are `p` or `s` lines (rule 2), unique (rule 1), and rule 4 holds (checked by script on 2026-10-01).
+
+```yaml
+schema: 1
+id: primes
+title: "Primes"
+order: 2
+summary: "Set ENIAC hunting for prime numbers."
+program: sieve.e
+programSha256: "23f19a553e9601f56c213a53899495f4e4fd251d4bbaa1f12bcf0363d70d5c70"
+includes: {}
+ordered: true
+
+steps:
+  - id: k1-two
+    line: "s c.k1 2"
+    expect: { switch: c.k1, value: "2" }
+    choices: ["0","1","2","3","4","5","6","7","8","9"]
+  - id: a1-fits
+    line: "p a1.12o 1-7"
+    expect: { from: a1.12o, to: 1-7 }
+  - id: trunk17-to-mp
+    line: "p 1-7 p.Adi"
+    expect: { from: 1-7, to: p.Adi }
+  - id: trunk19-to-punch
+    line: "p 1-9 i.pi"
+    expect: { from: 1-9, to: i.pi }
+  - id: punch-done-to-14
+    line: "p i.po 1-4"
+    expect: { from: i.po, to: 1-4 }
+    button: "Finish wiring"
+withheld: []
+
+run:
+  buttons: [init]
+  watch: ["19"]
+  idle: { quietMs: auto }            # the sieve is busy until 2801; the UI never waits for idle
+  speeds:
+    slow: { rate: 100 }              # about 1.85 s per odd number [V on the Mac], untuned until spike #33
+    full: { rate: 0 }
+  defaultSpeed: slow
+
+checkpoints:
+  - { id: first-card, when: { punchCount: { gte: 1 } } }
+  - { id: hundred,    when: { punchCount: { gte: 100 } } }                          # the answer (about 1 min at Full)
+  - { id: last,       when: { punchField: { index: 13, eq: "02801" } } }            # card 407
+result: hundred
+
+selftest:                            # rule 8; needs a new "until" and per-card expect (see 8.5)
+  inits: 1
+  until: { punchCount: { gte: 5 } }
+  expect: { punchField: { index: 13, values: ["00003","00005","00007","00011","00013"] } }
+```
+
+`content:` block keys, with the copy above: `briefing` (headline, body, more, buttons), `plan` (headline, body, **math**, more, buttons), `rest` (headline, body, buttons), `run` (`before`; `presses` with one entry and the four captions, triggers `{run: busy}`, `{punchCount: {gte: 1}}`, `{accProg: {acc: "1", program: 12}}`, `{punchCount: {gte: 5}}`; `extras` with `afterPress`, no `keepPressing`, `showResult`, `skipToAnswer`, `hint`, `stopAt: hundred`), `result` (as for Squares, plus the live-line text in `liveLine: {pending: "ENIAC is still working: {n} primes so far.", done: "ENIAC has found them all: {n} primes, from 3 to 2,801."}`). New keys the loader must accept are listed in 8.5.
+
+`summary` (picker): "Set ENIAC hunting for prime numbers." `credits`: "Brian L. Stuart, programs/sieve.e. After D. H. Lehmer's July 1946 runs, as reconstructed by L. De Mol and M. Bullynck." [FC]
+
+### 8.3 Trajectory (Mission 3): the complete script
+
+Tags as in 8.2: **[V]** verified by the UX agent by running the pinned core on 2026-10-01 (c4b94f2 plus patches 0001 and 0002, macOS arm64); **[I]** my reading, to be confirmed; **[A]** timing assumption. `docs/spikes/S2-trajdemo.md` did not exist when I finished this section, so every number here is mine and must be replaced by the S2 numbers when they land (see 8.3.7). The Pi 5 has not been measured.
+
+#### 8.3.1 What trajdemo.e really does (read this first)
+
+`programs/trajdemo.e` has a 6-part story in its header: "an attempt to recreate the demo at the unveiling of the ENIAC on Feb 15, 1946", with the Master Programmer's A stepper advanced by INIT, one part per press (adding 97,367 to itself 5,000 times, again with a 100 Hz clock, the multiplier, a table of squares and cubes, sines and cosines, and the artillery trajectory). It is 297 cables and 443 switches, plus `drag.e` (705 switches, the drag table in Function Table 2), so **297 cables and 1,148 switches** in all. The tail of the file runs `b c`, `b r`, `b i` itself (clear, read, INIT).
+
+**[V] At the pinned commit the parts do not come one per INIT.** I ran the file with the three `b` lines removed and drove it by hand (build: pin plus patches 0001 and 0002 only; `0003` was not yet in my tree):
+
+1. `b r` (READ) loads the card, which takes about 0.4 s. Accumulator 1 then shows `0000097367` (the first number on the card) and nothing else starts.
+2. **The first `b i` (INIT) starts the artillery trajectory immediately.** The file wires `p p.A1o 1-4` (A stage 1 to the H stepper, the trajectory loop), where the file has `#p p.A1o 1-6` (which would start the 5,000-additions part) commented out. `p i.Io 3-10` near the end of the file also plugs the INIT button straight into the trajectory's start trunk.
+3. **Every further INIT restarts the trajectory** (a new "00001" card appears each press), from whatever state the machine is in, so the second and later flights start with different numbers than a clean first flight. In 90 s with 6 INITs spaced 12 s apart I saw activity only in the trajectory's accumulators (4 to 15, 18 and 20). Acc 2, 16, 17 and the A and B stepper stages never changed. So **parts 1 to 5 were not reached by INIT**.
+4. After the shell lands, the program starts another flight by itself, and goes on until the core is stopped. `b c` (CLEAR) mid-flight did not stop it either: one garbage card, then the flight restarted from clean state.
+
+This is the R4 risk in the PRD, and it has happened: **FR-19 as written (INIT per demo part, fast-forward, skip to the trajectory) cannot be met with the unmodified `.e` at this pin.** The honest mission is therefore **READ, then INIT, then watch one flight, hop by hop, as cards are punched**. The six-part script from the earlier outline is kept in 8.3.8 for the day S2 finds a route to the other parts. The mission below does not depend on it.
+
+What one flight looks like [V], from a clean core:
+
+- **Cards.** After INIT the punch makes one card per hop. Each card has the hop number (card columns 26 to 30), the shell's "along" number (columns 51 to 60, Acc 18) and "up" number (columns 71 to 80, Acc 20). First card `...00001...0014128681...0005693229`; the 35th card has a negative "up" (`-002951425`): the shell has landed. In the three clean first flights I ran, the first cards were identical (so a golden for the first 3 cards is safe, as S3 also found for 7). The first card is sometimes an all-zero card ("shell at the gun") and sometimes the first hop, depending on the READ to INIT gap (2 s: hop; 3 s: zero card), so the UI must not assume which.
+- **Live lamps.** Acc 15 counts hops, Acc 18 holds "along", Acc 20 holds "up", Acc 6 and Acc 4 hold the two speeds [I] (they fall slowly with the air drag and with gravity: Acc 4 went 5.47, 5.04, 4.64, 4.24 over the first four cards). The Multiplier and Function Table 2 (the drag lookup) are busy between cards. The Master Programmer's H stepper goes 1, 2, 0 once per hop, in a burst of about 0.2 s at the end of each hop.
+- **Scale** [I]. From the numbers (a 35-card flight, a top at card 17, speeds near 1,430 and 590 per card) each card is about one second of flight and the numbers are in units of about 100 feet, which would make this a shell with a range of about 39,000 ft (7 miles) and a top of about 4,500 ft. That fits an artillery shell, but nothing in the file states the units. The file's own comment says "simple rectangular integration with a delta-t of 0.01s" and the header also says "Heun's method". I do not use any unit or method name on screen until Stuart or the Fact-Checker confirms it [FC]. The arc is labelled "Along" and "Up", and the plan copy says only "hop".
+
+**Measured timings** [V, Mac, one INIT from a clean core, no other load]:
+
+| What | Value |
+|---|---|
+| READ | about 0.4 s (reader sync is 375 ms) |
+| INIT to first card | 0.15 s to 3.5 s (see the zero-card note) |
+| One card (hop) | **2.0 to 3.4 s**: 2.0 s in the quietest run, up to 4 s with other work on the machine. It is CPU-bound (the Multiplier simulation), not paced, so the Pi 5 could be slower. [A] |
+| One flight | 35 cards, about **70 to 120 s** [A] |
+| Speed control | `cy.rate` cannot speed it up (Full is already unthrottled), and no useful Slow exists (not measured: at `rate 100` the sieve ran several times slower, so a hop would probably take a minute or more) |
+
+#### 8.3.2 Every cable and switch, and who does it
+
+There are 297 cables and 1,148 switches (443 in `trajdemo.e`, 705 in `drag.e`). The visitor does **5 steps: 4 cables and 1 switch**, plus READ and INIT as buttons. The other 293 cables and 1,147 switches are preset.
+
+| # | Step (exact line in trajdemo.e) | Kind | Who | Why |
+|---|---|---|---|---|
+| 1 | `p i.Ro 1-2` | cable, program | **Visitor, step 1** | "Tell ENIAC the card was read." After READ, the card's first number lands in Acc 1 and the visitor sees lamps move. |
+| 2 | `s pr.6 P` | switch, printer field (P or 0) | **Visitor, step 2** | "Punch the hop number." Field 6 is columns 26 to 30. The one switch that visibly changes the cards. |
+| 3 | `p 2-5 i.Pi` | cable, program | **Visitor, step 3** | "Wire the card punch." The cable that makes cards appear. |
+| 4 | `p a19.5o 1-4` | cable, program | **Visitor, step 4** | "Check: still flying?" The shell-in-the-air test as a signal. |
+| 5 | `p 1-4 p.Hi` | cable, program | **Visitor, step 5** | "Start the next hop." The loop closes. |
+
+Each line appears exactly once across `trajdemo.e` and `drag.e`, and rule 4 (per terminal, ignoring trunk ends) holds: no other line plugs `i.Ro`, `i.Pi`, `a19.5o` or `p.Hi`, or sets `pr.6`. `s pr.15-16 C` and `s pr.11-12 C` are different switches and do not clash.
+
+**Not usable as a step: `p i.Io 1-1`.** The file also plugs `p i.Io 3-10`, the same jack (`i.Io`), so rule 4 would reject it. For the same reason INIT's wiring cannot be a Trajectory step.
+
+**Withheld** (architecture 5.9.2): `b r` becomes the READ button, `b i` becomes the INIT button, and `b c` is dropped. `f r demo.card` stays preset (the card is in the hopper from the start; READ reads it). `l drag.e` is an include, with its sha256, and its 705 lines are preset.
+
+Preset totals: **293 cables and 1,147 switches.** (297 − 4 cables = 293, and 1,148 − 1 switch = 1,147.) By group:
+
+| Group | Cables | Switches |
+|---|---|---|
+| All cables except steps 1, 3, 4, 5 (the loop's data and program wiring, multiplier and adapters) | 293 | |
+| Function Table 2, the drag table (`s f2...`, 705 in `drag.e` + 6 in `trajdemo.e`) | | 711 |
+| Accumulators (275) | | 275 |
+| Multiplier (84) | | 84 |
+| Master Programmer | | 63 |
+| Constant Transmitter | | 7 |
+| Printer (`pr.8`, `pr.11`, `pr.12`, `pr.15`, `pr.16`, `pr.11-12`, `pr.15-16`) | | 7 |
+| **Total** | **293** | **1,147** |
+
+S5 reads "293 more cables, 1,147 more switches". The animation must be a batch (see S5 below). Of those, 711 switches are the drag table.
+
+**Units and panels the kit must draw:**
+
+| Unit | Why | Elements |
+|---|---|---|
+| Initiating Unit (`i`) | Steps 1 and 3, READ, INIT | jacks `i.Ro`, `i.Pi` in the Workbench; `i.Io`, `i.Po` (preset); `lamp:init.*` including `rdff`, `prff` |
+| Card reader | READ | a hopper and a card path graphic; the card's 70 digits are read from the mission's `demo.card` (the real input file, pinned by sha256) |
+| Printer and punch (`pr`) | Step 2, the card pane | switches `pr.6` in the Workbench; `pr.8`, `pr.11`, `pr.12`, `pr.15`, `pr.16`, `pr.11-12`, `pr.15-16` (preset). The punched-card pane is a UI element. |
+| Accumulator 19 | Step 4 | jack `a19.5o` in the Workbench; panel with lamps; also programs 5 and 6 |
+| Master Programmer (`p`) | Step 5; preset | jack `p.Hi` in the Workbench; steppers A, B, C and H (`p.Ai`, `p.Adi`, `p.A1o`, `p.A2o`, `p.Bi`, `p.B1o`..`B6o`, `p.Ci`, `p.C1o`, `p.C3o`..`C6o`, `p.Hi`, `p.H1o`..`H3o`), their decade dials and counters; `lamp:mp.s.7.K` (the H stepper) |
+| Constant Transmitter (`c`) | Preset; the card's numbers | programs 1, 2, 7, 13, 14, 15, 19 (`c.s1`, `c.s2`, `c.s7`, `c.s13`, `c.s14`, `c.s15`, `c.s19`), jacks `c.o`, `c.19o`, `c.14o`; its constants come from the card, not dials. The status stream does not carry their values (only program lamps, `lamp:ct.P`), so the panel shows **no digits**; the card graphic shows the card's numbers. |
+| Accumulators 1, 2, 4 to 20 | Preset; run lamps | Acc 1 (READ), 4 and 6 (speeds), 15 (hop count), 18 (along), 20 (up); the rest drawn compactly on the run view |
+| Multiplier (`m`) | Preset; run lamps | the multiplier panel with `lamp:mult.stage.K` and `lamp:mult.prog.P`; its 84 switches; the partial-product jacks to Acc 11 to 14 |
+| Function Table 2 (`f2`) | Preset; run lamps | the drag table: jacks A, C, arg, 1i; ring lamps `lamp:ft.2.ring.K`, `arg1`, `arg10`; its 711 switches drawn as a dense block |
+| Adapters (`ad`) | S5 only | 16 adapters on trunk rails, not tappable |
+| Trunks | Steps | data trunks 1, 2, 3, 6, 7, 8, 9; program trunks 1-1 to 1-11, 2-1 to 2-11, 3-1 to 3-11, 4-1 to 4-11, 5-1 to 5-11, 6-1 to 6-11, 9-1 to 9-10, 10-1 to 10-9 (only the ones in the file) |
+
+Not needed: divider. The Workbench for the steps shows four panels: Initiating Unit (Ro, Pi), Printer (switch 6), Accumulator 19 (5o) and Master Programmer (Hi).
+
+#### 8.3.3 The visual metaphor: connect the dots on a tile floor
+
+The same tile floor as Squares and Primes, as **graph paper**. A cannon shell's path is an arc, but ENIAC does not know the arc. It knows only how to take **one small hop**: it looks at where the shell is and how fast it is moving, works out the next spot, and punches a card with that spot. **Each card is one dot on the floor.** Joined together, the dots are the arc. Visitors who can connect dots can follow how ENIAC finds a path.
+
+**Briefing canvas (S3), the dots appear.** A cannon at the lower left on a tile floor (equal squares both ways). Eight dots light one at a time about 350 ms apart along a rising arc, in `--lamp-on`, each dot labelled by a small card icon. After the 8th dot, the arc is traced as a dashed line through them. The caption counts "1 dot" to "8 dots", then "Each dot is a card. Join the dots: that is the path." Loops after about 9 s. Reduced motion: the finished picture.
+
+**Plan canvas (step 0b), one hop in four beats.** A close-up of one hop, three hops long, looping after about 12 s:
+
+| Beat | Picture | Cue |
+|---|---|---|
+| 0.3 s | The shell dot at spot A, with an arrow showing its speed | `--lamp-on` dot and arrow |
+| 1.8 s | A wind symbol: the arrow gets shorter. Label "air slows it" | `--cable-data` blue, wind glyph |
+| 3.4 s | A pull-down symbol: the arrow bends down. Label "gravity pulls" | `--cable-prog` pink, down-arrow glyph |
+| 5.0 s | The dot hops to spot B. A card is punched and slides out with "along" and "up" numbers | `--ok` check badge, card glyph |
+| 6.5 s | A "still flying?" question with a check mark. The next hop starts from B | the same four beats repeat, twice quicker |
+
+The arrows, glyphs and numbers in this canvas are explanatory art, labelled "how it works, slowed down". The real numbers come in the run view.
+
+**Run view, the arc drawn from the real cards.** See 8.3.5. Equal-square graph paper is a problem: the real flight (35 cards, along about 390, up about 45 in the card's numbers) is about 8.7 times wider than tall, so at equal scale the arc is a flat smear. **The canvas stretches the height by a factor chosen to fit (about 2 to 3) and says so in a chip: "Height stretched so you can see it."** Honest scaling beats a fake arc.
+
+#### 8.3.4 Time budget (normal pace)
+
+| Part | Time |
+|---|---|
+| Pick mission, read briefing (with the dots animation) | 0:25 |
+| Step 0 "The plan" | 0:25 |
+| Steps 1 to 5 (about 12 s each) | 1:00 |
+| "Rest done for you" | 0:08 |
+| READ (button, card slides, lamps) | 0:20 |
+| INIT and one flight, 35 hops at 2.0 to 3.4 s | 1:10 to 2:00 [A] |
+| Result | 0:25 |
+| **Total** | **about 3:50 to 4:40**; Pi 5 slower hop times push toward 5 to 6 min. |
+
+FR-10 asks 4 to 6 min. If the Pi hop time is above about 5 s, the flight alone is 3 min: trim by presetting step 2 (`s pr.6 P`), not by cutting the flight.
+
+#### 8.3.5 Step-by-step script and copy
+
+**0a. Briefing (S3)**
+
+- Stage: L0 room plan with markers: Initiating Unit, Card Reader and Punch, Constant Transmitter, Master Programmer, Multiplier, Function Table 2, Accumulators. The canvas is the dots animation in 8.3.3.
+- Headline: **The path of a shell**
+- Body: "A shell flies in an arc. ENIAC finds the arc one small hop at a time, and punches a card after each hop. Each card is one dot. You will connect the dots." (33 words)
+- Button: **Let's go**. Tell me more: "ENIAC was built to work out firing tables for Army guns. It was shown to the public on February 15, 1946. Brian Stuart's program tries to recreate the demo from that day. Six women programmers set up ENIAC for it." (40 words) [FC: all four sentences; Doug to approve any names]
+- Lamps: dark lamp grids on the L0 plan.
+
+**0b. The plan (Step 0)**
+
+- Stage: the hop animation in 8.3.3.
+- Headline: **Hop by hop**
+- Body: "ENIAC finds a shell's path one hop at a time. Each hop: the air slows the shell, the shell moves, ENIAC punches a card, and checks the shell is still flying. Then it hops again." (35 words)
+- Math line under the animation: `card 1, card 2, card 3 ... one dot each`
+- Buttons: **Next step**, **Skip setup**.
+- Tell me more: "The air slows a fast shell a lot. ENIAC looks up how much in a table of numbers. Brian Stuart's note in the program says he tried to work that table out himself, so the table is his best attempt." (40 words) [FC]
+
+---
+
+**Step 1 of 5 (cable): Tell ENIAC the card was read**
+
+- Window 1 (left): Initiating Unit jacks. Ring on **Ro** (card reader, OUT). Window 2 (right): program trunk sockets. Ring on **1-2**.
+- Headline: **Tell ENIAC the card was read**
+- Body: "ENIAC takes in numbers from punched cards. When the reader finishes, it sends a signal. Tap the reader OUT jack on the Initiating Unit. Then tap program trunk 1-2." (29 words)
+- On correct: "Now the reader can tell the machine it is done."
+- Hints: other IU jack: "That jack belongs to another job. We want the reader, OUT." Wrong trunk: "Try program trunk 1-2."
+- Lamps: Acc 1 lamp band visible, all 0.
+- Tell me more: "Cards were how numbers got into ENIAC. A card had 80 columns. The card in this mission holds seven numbers of up to 10 digits." (25 words) [FC] [I: 7 numbers, to be confirmed against `proccard`]
+- Sim item: `p i.Ro 1-2`.
+
+**Step 2 of 5 (switch): Punch the hop number**
+
+- Window: the Printer and Punch's field switches; the glowing switch is labelled "Field 6". Picker with two choices: **P** "Punch" and **0** "Leave blank".
+- Headline: **Punch the hop number**
+- Body: "Each card will say which hop it is: 1, 2, 3 and so on. The printer has a switch for each part of the card. Tap the glowing switch 6 and choose P, for punch." (35 words)
+- On correct: "Now each card will carry its hop number."
+- Hints: wrong value: "Blank leaves the number off. Choose P." Wrong switch: "That switch is for another part of the card. Try the glowing one."
+- Lamps: nothing changes yet.
+- Tell me more: "The punch worked in 16 groups of 5 columns. A switch for each group chose what got punched. On our card, you will see the hop number, how far along the shell is, and how high." (36 words) [FC]
+- Sim item: `s pr.6 P`. (The picker catalog for `pr.N` is `P` and `0`; `0` stands for anything that is not P, see `prctl`. To be added to the switch catalog.)
+
+**Step 3 of 5 (cable): Wire up the card punch**
+
+- Window 1: program trunk sockets, ring on **2-5**. Window 2: Initiating Unit jacks, ring on **Pi** (punch, IN).
+- Headline: **Wire up the card punch**
+- Body: "On each hop, ENIAC punches a card. The signal to punch rides on program trunk 2-5. Tap trunk 2-5. Then tap the Pi jack on the Initiating Unit, the punch input." (31 words)
+- On correct: "Now each hop will punch a card."
+- Hints: other IU jack: "That jack starts something else. We want the punch, IN: Pi." Wrong trunk: "Try program trunk 2-5."
+- Lamps: still 0.
+- Tell me more: "When a card is punched, the Initiating Unit sends a done signal, and ENIAC carries on. The punch took a little over half a second per card." (27 words) [FC]
+- Sim item: `p 2-5 i.Pi`.
+
+**Step 4 of 5 (cable): Still flying?**
+
+- Window 1: Accumulator 19 program jacks, ring on **5 OUT**. Window 2: program trunk sockets, ring on **1-4**.
+- Headline: **Is the shell still flying?**
+- Body: "After each hop, ENIAC checks the shell's height. If the shell is still in the air, Accumulator 19 sends a signal. Tap its 5-out jack. Then tap program trunk 1-4." (30 words)
+- On correct: "Accumulator 19 will say: keep going."
+- Hints: 6-out: "That jack is for the other answer, landing. We want 5, out." Wrong trunk: "Try program trunk 1-4."
+- Lamps: Acc 19 band at 0.
+- Tell me more: "Accumulator 20 holds the shell's height. The program checks its sign. While the height is above zero, the signal says keep going. When it drops below zero, the shell has landed." (31 words) [I: the file's own comment says 'continue if non-negative']
+- Sim item: `p a19.5o 1-4`.
+
+**Step 5 of 5 (cable): Start the next hop**
+
+- Window 1: program trunk sockets, ring on **1-4**. Window 2: Master Programmer jacks, ring on **H** (the H input, `Hi`).
+- Headline: **Start the next hop**
+- Body: "The 'keep going' signal must start another hop. The Master Programmer, ENIAC's conductor, runs the hops. Tap program trunk 1-4. Then tap the H jack on the Master Programmer." (29 words)
+- On correct: "Hop after hop, ENIAC will fly the shell. Your cables made the loop!"
+- Hints: other MP jack: "That jack is for a different stepper. Look for H." Wrong trunk: "Try program trunk 1-4."
+- Lamps: still 0. The Master Programmer's H stepper lamps are visible in the window, at stage 0.
+- Tell me more: "The Master Programmer had ten steppers, each counting stages and handing off to the next, a bit like a music box with pins. This one is the stepper for the hop loop." (32 words) [FC]
+- Sim item: `p 1-4 p.Hi`.
+- Button at the bottom: **Finish wiring**.
+
+**S5. The rest is done for you**
+
+- Headline: **The rest is done for you**
+- Body: "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. We will place the last ones now: 293 cables and 1,147 switches. Most of the switches make up the drag table." (35 words) [FC]
+- Animation: 293 cables draw in 8 waves (600 ms each), and the switch dials click in blocks of about 140, with the 711 drag-table dials as one large block that "clicks" all at once. Counters ease up to "293 cables, 1,147 switches". At most 8 s. A longer wait is not needed: visitors cannot take in more.
+- Button: **Continue** (96 h). Lamps: still 0.
+
+---
+
+**S6 Run: what the visitor does and sees**
+
+The run view layout (stage 1360 x 904; the rail at the right is as in 7.5):
+
+```
++----------------------------------------------------------------------------------+
+| THE ARC  (graph paper, y124-520, 1360 x 396)                          [stretched]|
+|  cannon                                               . .                         |
+|   [/]  .  .  .                                 .   .          .  .               |
+|  ---.-----------------------------------------------------------.-----------     |
+|       Along ->                      dot = one card         tag: "Highest point"   |
++----------------------------------------------------------------------------------+
+| HELPER READOUTS (y536-700, five, 260 wide)       | BIG CARD (y536-700, 584 wide)  |
+|  Hop 12   Along 143250717  Up 40896638           |  newest card with holes        |
+|  Along speed (Acc 6)  Up speed (Acc 4)           |  "Hop 12"                      |
++--------------------------------------------------+--------------------------------+
+| UNITS AT WORK (y716-916): Multiplier stages, Function Table 2 ring, H stepper      |
+|  (real lamps, compact: 14 px)                                                       |
++----------------------------------------------------------------------------------+
+| FILM STRIP  y928-1010: the last 20 cards, 64 x 70 each, hop number + holes         |
++----------------------------------------------------------------------------------+
+```
+
+- **Arc.** Each real `punch` line adds one dot (hop number, "along" from fields 10 and 11, "up" from fields 14 and 15), joined to the last. Axes labelled "Along" and "Up", no units. A cannon icon at 0. A dashed "ground" line at 0. The dot of the newest card is bigger and ringed. A stretch chip reads "Height stretched so you can see it."
+- **Highest point.** When a new "up" is lower than the last, a tag "Highest point" appears on the previous dot (derived from real cards).
+- **Landing.** The first card with a negative "up" gets a "Landed" tag, drawn at the line where the path would cross zero (a straight line between the last two dots, labelled as such).
+- **Cards (FR-21).** The big card shows the newest card: cream with a cut corner, columns 21 to 80 on a torn left edge (the program punches the hop number at columns 26 to 30, "along" at 51 to 60 and "up" at 71 to 80), digits printed over their holes. The film strip holds the last 20 cards as small cards with the hop number and a hole pattern; **tap a small card to show it large**; the newest returns after 10 s. Dots on the arc can be tapped too (same effect).
+- **Units at work.** Real lamps: `lamp:mult.stage.*`, `lamp:ft.2.ring.*`, `lamp:mp.s.7.*`. These change in bursts between cards. They are the "ENIAC is thinking" part.
+- **Helper readouts.** Acc 15 (hop), Acc 18 (along), Acc 20 (up), Acc 6 (along speed), Acc 4 (up speed). Labelled with the accumulator number so Walt can find them. Computed from the lamps, never separate data.
+
+| Moment | Rail prompt (40 px) | Caption sequence (28 px, one at a time, each fires once) | What the lamps and cards show |
+|---|---|---|---|
+| Before | **Press READ** ("READ pulls the card of numbers into ENIAC.") | none | A card (the real `demo.card` text, 7 numbers, shown in the hopper) waits. READ is a 96 px button, pulsing. INIT is greyed with the label "Read the card first". |
+| READ pressed | **Reading the card** | 1. "The card goes through the reader." (on `lamp:init.rdff`) 2. "The first number, 97,367, lands in Accumulator 1." (on `{acc: "1", eq: 97367}`) 3. "The other numbers wait inside ENIAC. Now press INIT." (on run idle) | The card slides into the reader and out. Real lamps: the reader FF and Acc 1's lamps reading 97,367. The card graphic highlights the first number. INIT arms and pulses. |
+| INIT pressed | **Watch the dots** | 1. "ENIAC starts the first hop." (on run busy) 2. "Card 1 is out. Its big numbers say how far along and how high up the shell is." (on the first card) 3. "Each hop, the air slows the shell, and gravity pulls it down." (on the third card) 4. "Highest point! From here the shell comes down." (on the first fall) 5. "Landed! The height dropped below zero." (on the first negative "up") | Dots build the arc. The Multiplier and the drag table flicker between cards. Hop counter goes 1, 2, 3... |
+| After landing | **You did it!** and a **Show me what happened** button | none | The result screen follows after 3 s, or on tap. |
+
+The big wait is the hop time, 2.0 to 3.4 s [A]. The captions are timed to the events, not to the clock, so a slow Pi only stretches them. After hop 5 the rail adds:
+
+- **Show me what happened** (primary): goes to S7 now.
+- **Skip to the answer**: goes to S7 at once. **There is no way to make the machine faster than Full**, so S7 starts with the live arc and a chip "The shell is still flying: hop 14". The headline appears at landing. Nothing is made up: if the visitor skips at hop 14, the arc is cut there, and keeps growing as hops arrive.
+- No speed control is shown. A one-line explanation lives under the hop counter: "ENIAC does a lot of arithmetic for every hop."
+
+**Fast-forward and skip, for this mission.** The PRD's idea (FR-19) of fast-forwarding inside a part and skipping to the trajectory does not apply: Full is already unthrottled and the trajectory is the only part that runs. The honest equivalents are "Skip to the answer" (above) and the live arc on the result screen. After landing the core keeps going and starts another flight. The bridge should stop the machine at the `landed` checkpoint, for example by switching the cycling unit to single pulse (`s cy.op 1p`), which freezes the machine without clearing it. **Not tested.** If it does not hold, the UI ignores cards after landing (the arc and the film strip freeze at the landing).
+
+**Result (S7) copy**
+
+- Headline: **ENIAC flew the shell!**
+- Body: "Each card was one hop. Joined up, the dots show the whole flight: up, over the top, and down. ENIAC worked it out from a card of numbers and the cables you placed." (33 words)
+- Takeaway strip: **Numbers and cables made a flight path.** Sub-line: "That is what programming ENIAC meant."
+- Left: the full arc from the real cards (landing tagged), the film strip of the last 20 cards, and a line "35 hops, 35 cards" (the real count). The chart is labelled "Height stretched so you can see it."
+- Tell me more: "The real ENIAC could work out a trajectory like this much faster than a shell takes to fly. By hand, the same work took days. Our simulator is slower, so you can watch every hop." (35 words) [FC: both comparisons; the old outline said 30 seconds and days: to be checked with Doug]
+- Buttons: **Finish**, Try again, Menu. **Finish** goes to S8.
+
+#### 8.3.6 Mission file mapping (`missions/trajectory.yaml`)
+
+Shas at c4b94f2 (computed by the UX agent): `trajdemo.e` `b21c3635b1febd4b35169d1f5647b89e94d9b7b2dee2ffcbf9b5e2b3f17c6857`, `drag.e` `66d42fed31297875080da7cf30780fff03d70d43c09aaa4e957adaa02abf194e`, `demo.card` `86ae09c103ba0af54b982cb5be78fb7707014397067801da3c9c68036bc1b4d8` (the file holds the same card twice; the first line is read).
+
+```yaml
+schema: 1
+id: trajectory
+title: "Trajectory"
+order: 3
+summary: "Fire a cannon shell, one dot at a time."
+program: trajdemo.e
+programSha256: "b21c3635b1febd4b35169d1f5647b89e94d9b7b2dee2ffcbf9b5e2b3f17c6857"
+includes: { drag.e: "66d42fed31297875080da7cf30780fff03d70d43c09aaa4e957adaa02abf194e" }
+assets: { demo.card: "86ae09c103ba0af54b982cb5be78fb7707014397067801da3c9c68036bc1b4d8" }   # new, see 8.5
+ordered: true
+
+steps:
+  - id: reader-done-to-1-2
+    line: "p i.Ro 1-2"
+    expect: { from: i.Ro, to: 1-2 }
+  - id: punch-hop-number
+    line: "s pr.6 P"
+    expect: { switch: pr.6, value: "P" }
+    choices: ["P", "0"]
+  - id: trunk25-to-punch
+    line: "p 2-5 i.Pi"
+    expect: { from: 2-5, to: i.Pi }
+  - id: a19-keep-going
+    line: "p a19.5o 1-4"
+    expect: { from: a19.5o, to: 1-4 }
+  - id: trunk14-to-h
+    line: "p 1-4 p.Hi"
+    expect: { from: 1-4, to: p.Hi }
+    button: "Finish wiring"
+
+withheld:
+  - { line: "b r", button: read }
+  - { line: "b i", button: init }
+  # "b c" is dropped (bound to nothing); the file's last three lines are b c, b r, b i
+
+run:
+  buttons: [read, init]
+  watch: ["1", "4", "6", "15", "18", "20"]
+  idle: { quietMs: auto }
+  speeds:
+    full: { rate: 0 }                # no slow speed; see 8.3.5
+  defaultSpeed: full
+
+checkpoints:
+  - { id: card-read, when: { acc: "1", eq: 97367 } }
+  - { id: first-hop, when: { punchCount: { gte: 1 } } }
+  - { id: landed,    when: { punchField: { index: 14, startsWith: "-" } } }   # "up" field turns negative
+result: landed
+
+selftest:                            # rule 8
+  read: true
+  inits: 1
+  until: { punchCount: { gte: 3 } }
+  expect: { anyCard: { fields: { 10: "00141", 11: "28681", 14: "00056", 15: "93229" } } }   # first hop on a clean core [V x3]
+```
+
+The first hop's numbers `0014128681` (along) and `0005693229` (up) were identical on every clean first flight I ran, so the selftest matches any of the first three cards (the zero-card quirk). Compare a second flight only with its own file. S3 saw low-digit differences from card 8 in some runs. A parallel patch, `patches/0003-acc-1pp-race.patch` (spike #31, in `patches/series` but not in my test build), says it fixes a lost-increment race that makes trajdemo cards differ by a few units from card 2 to 18 in about 1 run in 3. My three clean first flights happened to match, so the numbers above may be luck without 0003. **Re-run the selftest values on a build with 0003 before pinning them.**
+
+`content:` keys: `briefing`, `plan` (with `math`), `rest`, `read` (new: `before`, `captions` for the READ beat), `run` (`before`, `presses` with one entry and five captions with triggers `{run: busy}`, `{punchCount: {gte: 1}}`, `{punchCount: {gte: 3}}`, `{derived: apex}`, `{derived: landed}`; `extras` with `afterPress` (hop 5), `showResult`, `skipToAnswer`, no speed control, `stopAt: landed`), `result`. `credits`: "Brian L. Stuart, programs/trajdemo.e and programs/drag.e".
+
+#### 8.3.7 Timings the S2 spike should replace
+
+| Assumption in this section | Where |
+|---|---|
+| READ takes 0.4 s | 8.3.1, run beats |
+| One hop takes 2.0 to 3.4 s on the Mac; the Pi 5 value is unknown | 8.3.1, time budget, "after hop 5" |
+| One flight is 35 cards | 8.3.1, the S7 line "35 hops" is read live, not assumed |
+| The first card may be all zeros | 8.3.1, selftest |
+| INIT after landing cannot be used to fire again from the same core | 8.3.5 (Try again = new core) |
+| The bridge can freeze the machine at landing (`s cy.op 1p`) | 8.3.5 |
+
+If `docs/spikes/S2-trajdemo.md` shows a way to run the six parts (for example, a different INIT order, or a gap of a given length between presses), change the run section to 8.3.8.
+
+#### 8.3.8 Plan B: the six-part run (not reachable at the pin; kept for S2)
+
+This is the earlier outline, expanded to the same level, for the case that S2 finds a route to the other parts or that Stuart updates `trajdemo.e` so that each INIT starts the next part (as its header says). Each part is its own INIT with a one-line live caption from the file's comments. **UNVERIFIED: none of this ran in my tests.**
+
+| INIT | Rail prompt | Caption (28 px) | What the lamps show |
+|---|---|---|---|
+| 1 | **Press INIT** | "Adding 97,367 to itself 5,000 times." | Acc 2 climbs to 486,835,000 (97,367 x 5,000) [FC] |
+| 2 | **Again, with a clock** | "The same again, with a 100 Hz clock." | Same result, slower (a clock of 100 pulses a second) |
+| 3 | **Multiplier** | "Multiplying 13,975 by itself, 500 times." | Multiplier stage lamps; Acc 9 and 10 |
+| 4 | **Tables** | "A table of squares and cubes, printed on cards." | Cards: the squares and cubes |
+| 5 | **Sine and cosine** | "Sine and cosine of 100 angles." | Cards or lamps from Acc 16 to 20 |
+| 6 | **The shell** | "The artillery trajectory." | The same run as 8.3.5 |
+
+A **Skip to the trajectory** button would press INIT 1 to 5 automatically and wait for idle after each (R4 fallback: unthrottled plus one condensed caption: "ENIAC is doing the earlier parts of the 1946 demo."). The picker step count would go up by one (a dial for the 5,000-count, `s p.d17s1 1`, and `s a1.rp5 5`, which in this plan are on the live path). **Do not build this unless S2 confirms it works on the unmodified file.**
+
+### 8.4 The mission picker (S2) with three missions
+
+Final copy and counts for the three cards (the wireframe in 7.2 is superseded by this one). All three cards are unlocked (FR-23). The suggested order is carried by numerals, a "START HERE" chip and arrows, never by locking or colour alone.
+
+```
++------------------------------------------------------------------------------------+
+| [wordmark]   Pick a mission                                                 (64 px) |
++------------------------------------------------------------------------------------+
+|   x80-624              x688-1232             x1296-1840       cards y184-824 (640 h) |
+|  +--------------+     +--------------+      +--------------+                         |
+|  | (1)          |     | (2)          |      | (3)          |   numeral badge 96 px   |
+|  | >START HERE< |     |              |      |              |   chip: 40 h, yellow    |
+|  |  [3x3 tiles] | --> | [12 tiles as | -->  | [cannon and  |   art 544 x 220         |
+|  |              |     |  a 3x4 block |      |  8 dots in   |                         |
+|  |              |     |  and 7 in a  |      |  an arc]     |                         |
+|  |              |     |  row, star]  |      |              |                         |
+|  |  Squares     |     |  Primes      |      |  Trajectory  |   title 48 px           |
+|  |  About 3 min |     |  About 4 min |      |  About 5 min |   24 px                 |
+|  |  You wire 7  |     |  You wire 5  |      |  You wire 5  |   24 px                 |
+|  |  steps       |     |  steps       |      |  steps and   |                         |
+|  |              |     |              |      |  read a card |                         |
+|  | "Make ENIAC  |     | "Set ENIAC   |      | "Fire a      |   28 px, from the       |
+|  |  count in    |     |  hunting for |      |  cannon shell|   mission `summary`     |
+|  |  squares."   |     |  prime       |      |  one dot at  |                         |
+|  |              |     |  numbers."   |      |  a time."    |                         |
+|  | [   Start   ]|     | [   Start   ]|      | [   Start   ]|   96 h x 480 w          |
+|  +--------------+     +--------------+      +--------------+                         |
+|                                                                                     |
+|  [ About ENIAC and this exhibit ]  (64 h, x80-560, y856-920)      Suggested order  |
+|                                                                   1, then 2, then 3 |
++------------------------------------------------------------------------------------+
+```
+
+| Element | Rule |
+|---|---|
+| Numeral badge | A white numeral in a black circle, top-left of each card, 96 px (shape and numeral, not colour). |
+| Card art | The tile floor from the missions: Squares is a 3 x 3 block of 9 amber tiles. Primes is a 3 x 4 block of 12 tiles beside a row of 7 tiles with a small star badge (prime) . Trajectory is a cannon and 8 dots on an arc. Art is drawn with `--lamp-on` on `--panel`, 2 px outline in `--card`, and is not animated (the picker is quiet). |
+| Title and meta | Title from `title`. Duration from a new `minutes` field in the mission file (3, 4, 5; FR-10, all three together are 12 min of mission time). "You wire N steps" from `counts` (visitor cables plus switches). "and read a card" is added when `run.buttons` contains `read`. |
+| Teaser | The mission `summary` string, up to 2 lines at 28 px. |
+| **START HERE** | A yellow `--guide` chip with dark text and a pointing-finger glyph, 40 px high, on card 1 when no mission has been finished in this visit. Yellow is the "touch here" colour everywhere in the kiosk, so it fits. |
+| Arrows | Chevrons between cards labelled "then" (24 px). They show the order, and do not lock anything. |
+| **Done and UP NEXT** | State is in memory only and is cleared by the idle reset (no PII, no storage). When a visitor returns to the picker after reaching the result screen (S7) of a mission, that card gets a check badge and the word "Done". The "START HERE" chip moves, with the words "UP NEXT", to the lowest-numbered card that is not done. If all three are done there is no chip. |
+| Whole card tappable | The card and its Start button both start the mission. Hit area at least 96 px. Focus order 1, 2, 3. |
+| S7 primary button | Names the next mission in the suggested order: "Next: Primes" after Squares, "Next: Trajectory" after Primes, **Finish** after Trajectory. (If a visitor skipped around, the order stays 1, 2, 3.) |
+| Metrics | `mission_picked{m, order_position}` and `picker_next_used` (to see if visitors follow the order). |
+
+### 8.5 What these scripts need from the mission loader and the bridge
+
+The M1 schema and `squares.yaml` cover steps, withheld, run, checkpoints and the `content:` block. These M2 items are **not yet in the schema** and are proposed by this spec. Each is small.
+
+| # | Needs | For |
+|---|---|---|
+| 1 | `includes: {drag.e: sha}` with `l drag.e` expanded for rules 3 and 4 (already in the 5.9.2 schema) | Trajectory |
+| 2 | `assets: {demo.card: sha}`; the bridge serves the card text to the UI for the READ graphic (it is the real input file, not demo data) | Trajectory |
+| 3 | Predicates: `punchField` gains `startsWith` (for the "up" field turning negative: first character `-`) and `values` (selftest). `punchCount` is already planned. | Both |
+| 4 | Caption triggers `{derived: apex}` and `{derived: landed}`, computed by the UI from successive cards (highest point and landing). The bridge only validates their shape. | Trajectory |
+| 5 | `selftest` shapes `{read, inits, until, expect}` where `until` is a predicate and `expect` is a card-field match | Both |
+| 6 | Switch catalog: printer field switches `pr.N` take `P` or `0`; (`prctl` treats anything but P as off). `c.k1` 0 to 9 is already planned. | Trajectory, Primes |
+| 7 | `run.buttons: [read, init]`, with INIT gated on READ having completed (the reader FF finished and `acc 1 = 97367`) | Trajectory |
+| 8 | `run.speeds` with one speed (Full only): the UI hides the speed control. | Trajectory |
+| 9 | `run.cardPane: {fields: [...], window: "cols 51-80"}` and `run.plot: {x: [10,11], y: [14,15], count: [5], stretch: auto}` so the UI draws cards and the arc from fields, not from code | Both |
+| 10 | `content.read`, `content.result.liveLine`, and a `minutes` field for the picker | Both |
+| 11 | `s cy.op 1p` added to the core command whitelist (5.2), to freeze the machine at the landing checkpoint | Trajectory (untested) |
+| 12 | Mission `requires: [0002-ft-repeat-default]`. A missing patch makes Primes unavailable (sieve canary, test plan 3.2). | Primes |
+| 13 | S5 batch animation for large preset sets (hundreds of cables, over a thousand switches) | Both |
+
+#### History claims for the Fact-Checker and Doug Crawford (every [FC] in 8.2 and 8.3)
+
+| Where | Claim | Evidence I have |
+|---|---|---|
+| Primes 0a body and more | In 1946 ENIAC hunted for primes. D. H. Lehmer ran prime searches on ENIAC in July 1946. ENIAC was shown to the public on February 15, 1946. | The header of `sieve.e` ("Lehmer's July 1946 runs") and the header of `trajdemo.e` ("Feb 15, 1946"). Not checked against a source. |
+| Primes 0a more | The program follows a reconstruction by Liesbeth De Mol and Maarten Bullynck. | `sieve.e` header only. |
+| Primes 0b more | The search stops at 2,801 because 14 group sizes only cover numbers below 2,809. | The mathematical statement is exact. "That is why" is my reading of the design [I]. |
+| Primes step 3 more | The real Master Programmer had ten steppers. | The simulator has ten (A to K, no I), `mp.go`. |
+| Primes step 4 more | The card punch made about 100 cards a minute. | The simulator waits 600 ms per card (`initiate.go`), which is 100 a minute. Whether that is the real machine's rate needs a source. |
+| Primes S5 and Trajectory S5 | Real programmers placed hundreds of cables by hand, and setting up took days. | Already in the Squares copy. |
+| Primes result more | The sieve of Eratosthenes is named after a Greek scholar, and crosses out multiples. | General knowledge. |
+| Trajectory 0a more | ENIAC was built to work out firing tables for Army guns. Shown to the public February 15, 1946. Stuart's program tries to recreate the demo. **Six women programmers set up ENIAC for the demo.** | Header of `trajdemo.e`; the rest is common knowledge. **Names are not used in the copy; if Doug approves names, add them to this line.** (UX Q10) |
+| Trajectory step 1 more | Cards were how numbers got into ENIAC; a card has 80 columns; this card holds seven numbers. | `proccard` in `constant.go`; the seven-number split is mine [I]. |
+| Trajectory step 2 more | The punch worked in 16 groups of 5 columns. | `doprint()` in `printer.go`. |
+| Trajectory step 3 more | About half a second per card. | The simulator's timers. |
+| Trajectory 0b more | Stuart's drag table is his own best attempt. | The file's comment: "a drag table I tried to figure out". |
+| Trajectory result more | **Faster than a shell takes to fly; by hand it took days.** | The old outline's claim, "commonly stated for the trajectory demo". **Not verified. If it cannot be confirmed, delete the sentence; the mission works without it.** |
+| Trajectory (not on screen) | The file header says "Heun's method"; the code comment says "simple rectangular integration". | I do not use either name. |
+
+#### 8.5.1 Open questions raised by the M2 scripts
+
+1. **Does `trajdemo.e` ever reach its other parts?** This is spike S2. At the pin, I found that INIT starts the trajectory, and every INIT restarts it (8.3.1). If Stuart's repository has a newer `trajdemo.e` that fixes the routing, the pin bump could restore the six-part mission (Plan B, 8.3.8).
+2. **Units of the trajectory.** My reading is one card per second, units of about 100 feet, flight about 35 s and 39,000 ft [I]. Needs Stuart or the Fact-Checker before any unit appears on screen.
+3. **Primes: answer at 100 cards or all 407?** The punch pace makes all 407 cost about 4:10 at Full. The design gives the result at 100 cards (about 1 minute) and lets the live count carry on. Nick may prefer the full run, or a result at 50 cards.
+4. **Stopping at landing.** Is `s cy.op 1p` enough to freeze the machine? If not, the UI hides later cards.
+5. **Pi 5 timings** for both missions (hop time, punch pace, load). Mine are from a Mac.
+6. **The attract mode (7.1)** assumed "trajdemo parts" with a live caption. The only live thing it can honestly show is the trajectory loop, which restarts itself forever, so attract can be READ, INIT and let it fly again and again. Needs a decision and a re-check of the caption copy.
+7. **Printer switch catalog** for `pr.N` (P or 0) is from `prctl`; confirm there is no "C" meaning for plain `pr.N`.
+8. **Zero first card.** Depending on the READ to INIT gap, the trajectory sometimes starts with an all-zero card (shell at the gun). Is that wanted, or should the UI skip it?
+9. **Who approves the "six women programmers" sentence and any names** (UX Q10).
 
 ---
 
@@ -895,10 +1647,11 @@ Lamp states are smoothed (80 ms decay) so no element flashes more than 3 times p
 
 - [ ] **F1:** does `sq.e` really stop after one square per INIT? (M1 spike.)
 - [ ] Does the architecture let the front end tell "INIT finished" and read Acc 1 and Acc 2 live (F2)?
-- [ ] Which `sieve.e` and `trajdemo.e` items are the hands-on steps (F8), and what exactly do `pr.13` and the master-programmer dials control?
+- [x] Which `sieve.e` and `trajdemo.e` items are the hands-on steps (F8)? Answered in 8.2.2 and 8.3.2. `pr.13` and `pr.14` punch the two halves of Acc 19 into card columns 61 to 70; `pr.6` punches the hop count in columns 26 to 30.
+- [ ] The M2 open questions in 8.5.1 (S2 and the trajdemo routing, units, the Primes answer checkpoint, stopping at landing, Pi 5 timings).
 - [ ] Fact-Checker review of every [FC] line; Doug's approval of the About wording (Q10 on crediting the ENIAC programmers).
 - [ ] Mounting height and whether the production screen matches 1920x1080 (Q2).
-- [ ] Should the attract view show trajdemo (the current exhibit) or rotate missions? This spec assumes trajdemo parts, with a true live caption.
+- [ ] Should the attract view show trajdemo (the current exhibit) or rotate missions? This spec assumed trajdemo parts with a true live caption. At the pin only the trajectory loop is reachable (F9), so attract can only show that loop, with its caption.
 - [ ] Usability test plan (NFR-09): include one gloved tester and one child aged 8 to 12 on the Squares flow; watch where they pause at the jack windows.
 
 ## 14. Revision history
@@ -906,3 +1659,5 @@ Lamp states are smoothed (80 ms decay) so no element flashes more than 3 times p
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | 0.1 | 2026-09-30 | ux-design agent | Initial draft: screens, zoom model, guided help, visual language, Squares script, Primes and Trajectory outlines |
+| 0.2 | 2026-10-01 | ux-design agent | Primes (8.2) and Trajectory (8.3) outlines replaced by complete scripts, mapped to `missions/*.yaml`; picker for three missions (8.4); loader and bridge needs, Fact-Checker list and open questions (8.5); flags F8 (resolved), F9, F10; the picker counts in 7.2 |
+| 0.3 | 2026-10-01 | ux-design agent | Primes reframed around sharing evenly / equal groups (Nick, 2026-10-01): briefing, plan, steps 1 to 4, S5, run captions, result and both canvases; "watcher" kept only as an engineering nickname in 8.2.1 and 8.2.2 |
