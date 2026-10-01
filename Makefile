@@ -15,7 +15,7 @@ LDFLAGS := -X eniac-kiosk/bridge/internal/buildinfo.Version=$(VERSION) \
            -X eniac-kiosk/bridge/internal/buildinfo.Patches=$(PATCH_NAMES)
 WEB_TESTS = $(shell find tests/web -name '*.test.ts' 2>/dev/null)
 
-.PHONY: help upstream upstream-unpatched bridge bridge-dev web dev test test-go vet tsc test-web \
+.PHONY: help upstream upstream-unpatched bridge bridge-dev web dev e2e e2e-mock test test-go vet tsc test-web \
         test-upstream test-realcore fuzz protogen missions-check selftest goldens
 
 help:
@@ -41,10 +41,21 @@ bridge-dev:
 	cd $(BRIDGE) && go build -tags devserver -ldflags "$(LDFLAGS)" -o ../../build/dev/eniac-bridge ./cmd/eniac-bridge
 
 ## web                 bundle src/web into build/web with esbuild (a Go tool)
+# (production: __DEV__=false compiles out the ?mission= dev shortcut; panels are inside app.js)
 web:
-	mkdir -p build/web
-	cd $(BRIDGE) && go tool esbuild ../web/app/main.ts --bundle --format=esm --target=es2022 --outfile=../../build/web/app.js --log-level=warning
+	rm -rf build/web && mkdir -p build/web
+	cd $(BRIDGE) && go tool esbuild ../web/app/main.ts --bundle --format=esm --target=es2022 --minify --legal-comments=none \
+	  --define:__DEV__=false --outfile=../../build/web/app.js --log-level=warning
 	cp src/web/index.html build/web/index.html
+	cp -R src/web/styles src/web/fonts build/web/
+
+## e2e                 Playwright against the REAL bridge + core (1920x1080, touch, incl. kill -9 -> S10)
+e2e: $(HOSTCORE) src/web/node_modules
+	cd src/web && npx playwright install chromium && npm run e2e:real
+
+## e2e-mock            Playwright against the dev-only mock bridge (fast, every screen and fault)
+e2e-mock: src/web/node_modules
+	cd src/web && npx playwright install chromium && npm run e2e
 
 ## dev                 run the bridge in --dev against the real darwin core (http://localhost:8740)
 dev: $(HOSTCORE) bridge-dev
@@ -85,7 +96,7 @@ FUZZTIME ?= 60s
 fuzz:
 	cd $(BRIDGE) && go test ./internal/status -run '^$$' -fuzz FuzzParse -fuzztime $(FUZZTIME)
 
-## protogen            regenerate src/web/app/protocol.gen.ts from the Go protocol types
+## protogen            regenerate src/bridge/internal/{protocol,mission}/*.gen.ts (imported by src/web/app/protocol.ts)
 protogen:
 	cd $(BRIDGE) && go tool tygo generate
 

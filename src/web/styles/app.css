@@ -1,0 +1,156 @@
+/* ENIAC Touch Kiosk: app styles. Authored for 1920x1080; #app is scaled
+   and letterboxed as one unit (UX 9.4). */
+
+/* ---------------------------------------------------------------- guards (UX-05, UX-06) */
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: default;
+}
+* { box-sizing: border-box; -webkit-user-drag: none; }
+img, svg { -webkit-user-drag: none; user-select: none; }
+
+#viewport { position: fixed; inset: 0; overflow: hidden; background: #000; }
+#app {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+  overflow: hidden;
+  background: var(--bg-stage);
+  color: var(--card);
+  font-family: var(--font-ui);
+  font-size: 28px;
+  line-height: 40px;
+  touch-action: none;
+}
+
+/* ---------------------------------------------------------------- persistent chrome */
+#screen { position: absolute; inset: 0; }
+#screen > .screen { position: absolute; inset: 0; animation: fade-in 250ms ease-out; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Credit footer (FR-40): on every screen, 24 px. */
+#footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 1032px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #C9C2A8;
+  background: #0A0B0D;
+  border-top: 1px solid #25282d;
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* Hidden admin zone (UX 7): inert wordmark, 120x96, no handler in M1. */
+#admin-zone {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 120px;
+  height: 96px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: 3px;
+  color: var(--jack-block);
+}
+#admin-zone.hide-mark { color: transparent; }
+
+#overlay { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
+#overlay > * { pointer-events: auto; }
+
+/* ---------------------------------------------------------------- buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: 0 32px;
+  border-radius: var(--radius-btn);
+  border: 3px solid var(--ink);
+  background: var(--ink);
+  color: var(--card);
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.1;
+  text-align: center;
+  transition: transform 150ms ease-out, background 150ms ease-out, opacity 150ms;
+}
+.btn.primary { min-height: var(--target-primary); font-size: 32px; }
+.btn.outline { background: transparent; color: var(--ink); }
+.btn.light { background: var(--card); color: var(--ink); border-color: var(--card); }
+.btn.light.outline { background: transparent; color: var(--card); border-color: var(--card); }
+.btn.link { background: transparent; border-color: transparent; color: var(--ink); text-decoration: underline; text-underline-offset: 6px; padding: 0 8px; }
+.btn.pressed { transform: scale(0.97); filter: brightness(0.8); }
+.btn.disabled { opacity: 0.45; }
+.btn .sub { display: block; font-size: 24px; font-weight: 400; }
+.btn .icon { font-size: 36px; line-height: 1; }
+.btn.pulse { animation: btn-pulse 1s ease-in-out infinite; }
+@keyframes btn-pulse { 50% { transform: scale(1.03); box-shadow: 0 0 0 8px rgba(240, 228, 66, 0.25); } }
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 4px solid currentColor;
+  border-right-color: transparent;
+  animation: spin 900ms linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------------------------------------------------------------- common frame (S2-S7) */
+.header {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px 0 136px;
+  gap: 24px;
+  background: #0D0E10;
+  border-bottom: 1px solid #25282d;
+}
+.header .title { font-size: 36px; font-weight: 700; color: var(--card); white-space: nowrap; }
+.header .spacer { flex: 1; }
+.header .btn { min-height: 64px; font-size: 26px; }
+.screen-title { font-size: 64px; line-height: 72px; font-weight: 700; }
+
+/* ---------------------------------------------------------------- boot / waiting */
+.waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  height: 1032px;
+  font-size: 40px;
+  color: #C9C2A8;
+}
+.waiting .spinner { width: 64px; height: 64px; border-width: 6px; }

@@ -1,0 +1,65 @@
+/* Design tokens (UX section 12). Fonts are bundled locally (NFR-01), OFL. */
+
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  src: url("../fonts/atkinson-hyperlegible-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  src: url("../fonts/atkinson-hyperlegible-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("../fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: block;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("../fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
+  font-weight: 500;
+  font-display: block;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("../fonts/ibm-plex-mono-latin-700-normal.woff2") format("woff2");
+  font-weight: 700;
+  font-display: block;
+}
+
+:root {
+  --bg-stage: #101215;
+  --panel: #1B1D21;
+  --jack-block: #D8CFAE;
+  --card: #F4EFE3;
+  --ink: #1B1D21;
+  --guide: #F0E442;
+  --ok: #009E73;
+  --wrong: #D55E00;
+  --wrong-banner: #A33F00;
+  --lamp-on: #FFB000;
+  --lamp-off: #3A2E1E;
+  --cable-data: #56B4E9;
+  --cable-prog: #CC79A7;
+  --font-ui: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+  --target-min: 64px;
+  --target-primary: 96px;
+  --jack-hit: 88px;
+  --dial-hit: 120px;
+  --radius-card: 16px;
+  --radius-btn: 12px;
+  --muted: #9AA0A8;
+}

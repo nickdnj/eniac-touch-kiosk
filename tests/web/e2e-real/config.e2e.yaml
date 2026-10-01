@@ -1,0 +1,22 @@
+# Real-bridge e2e profile (tests/web/playwright.real.config.ts).
+# Same as deploy/config/config.dev.yaml, on its own ports and run/state dirs so
+# it never collides with `make dev`, and with a shorter setup idle so the
+# "Still there?" test runs in reasonable time. Paths are relative to this file.
+profile: dev
+listen: 127.0.0.1:8752
+health: { listen: "127.0.0.1:8753" }
+core: { gomaxprocs: 2, nice: 5, readyTimeout: 5s, ackTimeout: 1.5s, silenceTimeout: 2s, probeEvery: 5s }
+recovery: { budget: 3, window: 5m, backoff: [2s, 5s, 10s], slowRetry: 10m }
+idle: { setupS: 20, runS: 90, countdownS: 5 }
+admin: { sessionTimeoutS: 120, allowPowerActions: false, allowUpdates: false }
+metrics: { retentionDays: 400 }
+assets: { upstreamPhotos: false }
+paths:
+  release: ../../..
+  core: ../../../build/darwin-arm64/eniac-core
+  upstream: ../../../build/upstream
+  missions: ../../../missions
+  web: ../../../build/web
+  webSrc: ../../../src/web
+  run: /tmp/eniac-kiosk-e2e/run   # short: Unix socket paths are limited to ~104 bytes
+  state: ../../../build/e2e/state

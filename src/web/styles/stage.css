@@ -1,0 +1,199 @@
+/* Guided step stage (#17): Workbench (L1), close-up windows (L2), guide
+   choreography (UX 4.3), feedback (UX 5.2), cables (UX 6.3). Yellow is used
+   only for "touch this"; every cue also has a shape. */
+
+.stage { position: absolute; width: 1360px; height: 904px; overflow: visible; }
+.wb-wrap { position: absolute; inset: 0; overflow: hidden; border-radius: 8px; }
+.workbench { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.workbench > [data-unit] { position: absolute; transition: filter 300ms; }
+.workbench.dimmed > [data-unit]:not(.lit) { filter: brightness(0.55); }
+.wb-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 876px;
+  height: 28px;
+  text-align: center;
+  font-size: 24px;
+  line-height: 28px;
+  color: #A7ACB4;
+}
+.cable-layer { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+
+/* Cables: data = sky blue 8 px solid; program = reddish purple 5 px dash-dot;
+   both with a light outline and end tags. */
+.cable path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.cable .cable-outline { stroke: #F4EFE3; }
+.cable.data .cable-outline { stroke-width: 12; }
+.cable.data .cable-core { stroke: var(--cable-data); stroke-width: 8; }
+.cable.program .cable-outline { stroke-width: 9; }
+.cable.program .cable-core { stroke: var(--cable-prog); stroke-width: 5; stroke-dasharray: 16 6 3 6; }
+.cable .cable-plug { fill: #1B1D21; stroke: #F4EFE3; stroke-width: 3; }
+/* Where a cable lands on a trunk: a cream collar and a coloured ring. */
+.cable .cable-hub { fill: var(--jack-block); stroke: #1B1D21; stroke-width: 2; }
+.cable .cable-hub-ring { fill: none; stroke-width: 3; }
+.cable.data .cable-hub-ring { stroke: var(--cable-data); }
+.cable.program .cable-hub-ring { stroke: var(--cable-prog); }
+.cable.data .cable-plug { stroke: var(--cable-data); }
+.cable.program .cable-plug { stroke: var(--cable-prog); }
+.cable.pending { opacity: 0.6; }
+.cable-tag rect { fill: #F4EFE3; stroke: #1B1D21; stroke-width: 2; }
+.cable-tag text { font-family: var(--font-mono); font-weight: 700; font-size: 24px; fill: #1B1D21; }
+
+/* Scrim (65 %) behind the windows. */
+.stage-scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.65); opacity: 0; pointer-events: none; transition: opacity 400ms ease-in-out; border-radius: 8px; }
+.stage-scrim.on { opacity: 1; }
+
+/* Alternate stage views: room plan (L0), plan diagram. */
+.alt-view { position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity 400ms; background: #0d0f12; border-radius: 8px; }
+.alt-view.on { opacity: 1; }
+.alt-caption { position: absolute; left: 0; right: 0; bottom: 24px; text-align: center; font-size: 24px; color: #A7ACB4; }
+.plan { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 72px; }
+.plan-boxes { display: flex; gap: 80px; }
+.plan-box {
+  width: 440px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 40px;
+  line-height: 48px;
+  font-weight: 700;
+  border: 4px solid var(--jack-block);
+  border-radius: 16px;
+  color: var(--card);
+  background: #1B1D21;
+  padding: 24px;
+}
+.plan-math { font-family: var(--font-mono); font-size: 96px; line-height: 1; font-weight: 700; color: var(--lamp-on); }
+
+/* Windows live in app coordinates inside the stage. */
+.win-host { position: absolute; left: -24px; top: -112px; width: 1920px; height: 1080px; pointer-events: none; }
+.windows { position: absolute; inset: 0; }
+.win { position: absolute; pointer-events: auto; border-radius: 12px; box-shadow: 0 0 0 3px #F4EFE3, 0 24px 60px rgba(0, 0, 0, 0.7); overflow: hidden; }
+.win-art { position: absolute; left: 0; top: 0; }
+.win-head {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  top: 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 12px;
+  border-radius: 6px;
+  background: #0E0F11;
+  border: 1px solid #4a4e57;
+}
+.win-title { font-size: 24px; font-weight: 700; letter-spacing: 1.5px; color: #D9D0B0; }
+.badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  border: 2px solid #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+}
+/* Label chip: plain-language name of the target (24 px). */
+.chip {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 84px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  border-radius: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #6b6f78;
+  border: 2px dashed #4a4e57;
+  background: rgba(0, 0, 0, 0.4);
+}
+.chip .chip-arrow { font-size: 24px; }
+.chip.active { color: #1B1D21; background: var(--guide); border: 2px solid #000; }
+
+.win-overlay { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; }
+
+/* Guide ring: yellow 6 px ring + black 2 px inner line, pulsing at 1 Hz.
+   Wrong #2+: thicker (10 px) and faster (1.5 Hz). */
+.guide-ring .ring-outer { fill: none; stroke: var(--guide); stroke-width: 6; }
+.guide-ring .ring-inner { fill: none; stroke: #000; stroke-width: 2; }
+.guide-ring .pulse { animation: ring-pulse 1s ease-in-out infinite; transform-box: view-box; }
+.guide-ring.lvl2 .ring-outer, .guide-ring.lvl3 .ring-outer { stroke-width: 10; }
+.guide-ring.lvl2 .ring-inner, .guide-ring.lvl3 .ring-inner { stroke-width: 3; }
+.guide-ring.lvl2 .pulse, .guide-ring.lvl3 .pulse { animation-duration: 0.667s; }
+@keyframes ring-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+.guide-ring .chev { fill: var(--guide); stroke: #000; stroke-width: 2; }
+.guide-ring .chevron { animation: bob 1s ease-in-out infinite; }
+.guide-ring.lvl2 .chevron, .guide-ring.lvl3 .chevron { animation-duration: 0.5s; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+.numbadge circle { fill: #000; stroke: #fff; stroke-width: 2; }
+.numbadge text { fill: #fff; font-family: var(--font-ui); font-weight: 700; font-size: 26px; }
+
+/* Feedback. */
+.xbadge circle { fill: var(--wrong); stroke: #fff; stroke-width: 3; }
+.xbadge path { stroke: #fff; stroke-width: 5; stroke-linecap: round; fill: none; }
+.okmark .ok-ring { fill: none; stroke: var(--ok); stroke-width: 6; }
+.okmark .ok-dot { fill: var(--ok); stroke: #fff; stroke-width: 2; }
+.okmark .ok-check { fill: none; stroke: #fff; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.preview .preview-line { fill: none; stroke: #fff; stroke-width: 3; stroke-dasharray: 10 8; }
+.preview .preview-end { fill: #fff; stroke: #1B1D21; stroke-width: 3; }
+.ripples { position: absolute; inset: 0; pointer-events: none; }
+.ripple {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border-radius: 50%;
+  border: 2px solid rgba(244, 239, 227, 0.8);
+  animation: ripple 450ms ease-out forwards;
+}
+@keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+/* Switch picker: bottom sheet, only valid positions, 120x120 buttons. */
+.picker {
+  position: absolute;
+  height: 326px;
+  pointer-events: auto;
+  background: #F4EFE3;
+  color: var(--ink);
+  border-radius: 16px 16px 8px 8px;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.6);
+  padding: 24px 8px;
+}
+.picker-title { font-size: 32px; font-weight: 700; padding: 0 16px 24px; }
+.picker-row { display: flex; justify-content: center; gap: 16px; }
+.pick {
+  width: 120px;
+  height: 120px;
+  border-radius: 12px;
+  border: 3px solid var(--ink);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: transform 150ms ease-out;
+}
+.pick-v { font-family: var(--font-mono); font-size: 56px; font-weight: 700; line-height: 1; }
+.pick-l { font-size: 20px; font-weight: 700; margin-top: 6px; }
+.pick.pressed { transform: scale(0.97); background: #e5dfcf; }
+.pick.wrong { background: var(--wrong-banner); color: #fff; border-color: var(--wrong-banner); }
+
+/* Hit-area markers: invisible and inert (hit testing is geometric). */
+.hit { position: absolute; pointer-events: none; }
+
+/* Leader line from the step card to the target's chip. */
+.leader { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 5; }
+.leader-line { fill: none; stroke: var(--guide); stroke-width: 3; stroke-dasharray: 2 8; stroke-linecap: round; }
+.leader-dot { fill: var(--guide); stroke: #000; stroke-width: 2; }
