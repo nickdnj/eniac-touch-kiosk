@@ -4,6 +4,24 @@ Vanilla TypeScript + SVG + CSS, no framework (architecture 9). The bundle is
 `app/main.ts` → `app.js`, plus `index.html`, `styles/` and `fonts/`. Node is
 dev tooling only: it is never on the Pi and never in a release.
 
+## Run the whole thing against the real bridge and core
+
+From the repo root (first run needs network for the upstream mirror and the
+Go 1.26 toolchain):
+
+```sh
+make upstream        # fetch, verify, patch and build the pinned simulator core
+make dev             # bridge --dev on http://localhost:8740 (real core, this UI)
+make test            # go test + vet + tsc + node --test + mission check
+make e2e             # Playwright against the real bridge + core, incl. kill -9 -> S10
+```
+
+`make e2e` starts its own bridge on 127.0.0.1:8752 (profile
+`tests/web/e2e-real/config.e2e.yaml`, runtime dir under /tmp because Unix
+socket paths are limited to ~104 bytes) and reads the bridge's debug log to
+check exactly which `.e` lines reached the core. `make e2e-mock` runs the
+broader mock suite below.
+
 ## Run it locally against the dev mock
 
 ```sh
@@ -28,7 +46,7 @@ screen (no demo fallback).
 Dev shortcut: `/?mission=squares` starts a session straight away (dev builds
 only; compiled out of `npm run build`).
 
-Against the real bridge (after `m1-bridge` is merged): `make dev` from the
+Against the real bridge: `make dev` from the
 repo root serves this folder the same way at http://localhost:8740/.
 
 ## Build
