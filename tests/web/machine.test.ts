@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { otherUnits } from "./fakes.ts";
 import { applyMergePatch, Mirror, touchedUnits } from "../../src/web/app/state/machine.ts";
 import type { MachineState, SessionInfo } from "../../src/web/app/protocol.ts";
 
@@ -39,6 +40,7 @@ test("touchedUnits maps patch keys to lamp units", () => {
 });
 
 const machine = (): MachineState => ({
+  ...otherUnits(),
   cycle: { pos: 0, mode: "C" },
   init: "000000000000000",
   acc: { "1": { sign: "P", digits: "0000000003", value: 3, carry: "0000000000", rep: 0, prog: "000000000000" } },

@@ -29,7 +29,9 @@ test("production bundle is fixture-free and built only from src/web/app", async 
   const js = await readFile(join(dir, "app.js"), "utf8");
   for (const m of FORBIDDEN) assert.ok(!js.toLowerCase().includes(m.toLowerCase()), `bundle contains "${m}"`);
   const inputs: string[] = JSON.parse(await readFile(join(dir, "inputs.json"), "utf8"));
-  for (const i of inputs) assert.match(i, /^(.*\/)?(src\/web\/)?app\/[^.][^/]*(\/[^/]+)*\.ts$/, `unexpected bundle input ${i}`);
+  // Only the app itself, plus the bridge's generated protocol types (#8).
+  for (const i of inputs)
+    assert.match(i, /^((.*\/)?(src\/web\/)?app\/[^.][^/]*(\/[^/]+)*\.ts|(.*\/)?bridge\/internal\/(protocol|mission)\/[a-z]+\.gen\.ts)$/, `unexpected bundle input ${i}`);
   for (const i of inputs) assert.ok(!i.includes("tests/") && !i.includes("node_modules"), `unexpected bundle input ${i}`);
   const html = await readFile(join(dir, "index.html"), "utf8");
   assert.match(html, /Content-Security-Policy/);

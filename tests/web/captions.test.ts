@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { otherUnits } from "./fakes.ts";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { CaptionTracker, fill, settledVars } from "../../src/web/app/run/captions.ts";
@@ -9,6 +10,7 @@ const mission: MissionCompiled = JSON.parse(readFileSync(join(import.meta.dirnam
 const run = mission.content.run;
 
 const m = (a1prog = "000000000000"): MachineState => ({
+  ...otherUnits(),
   cycle: { pos: 0, mode: "C" },
   init: "000000000000000",
   acc: { "1": { sign: "P", digits: "0000000000", value: 0, carry: "0000000000", rep: 0, prog: a1prog } },

@@ -52,7 +52,7 @@ export class App {
   readonly mirror = new Mirror();
   readonly link: Link;
   readonly idle: IdleTimer;
-  config: HelloConfig = { idle: { setupS: 90, runS: 180, countdownS: 15 } };
+  config: HelloConfig = { idle: { setupS: 90, runS: 180, countdownS: 15 }, admin: { tapZone: { corner: "top-left", widthPx: 120, heightPx: 96, taps: 5 } } };
   missions: MissionSummary[] | null = null;
   mission: CompiledMission | null = null;
   view: View = { name: "boot" };
@@ -74,6 +74,8 @@ export class App {
   private linkDown = false;
   private pendingMetrics: ClientMsg[] = [];
   private expectingSession = false;
+  /** The session that existed when Start was tapped; S0 waits for a different one. */
+  private priorSessionId: string | null = null;
   private screens: Record<string, ScreenFactory>;
   private overlayHooks: { onIdleWarn?: (s: number) => void; onIdleTick?: (s: number) => void; onIdleDismiss?: () => void } = {};
 
@@ -274,7 +276,9 @@ export class App {
 
   private afterSession(): void {
     const s = this.mirror.session;
-    if (this.view.name === "waking" && s && s.state !== "starting") {
+    // The bridge may still report the previous visitor's session (running,
+    // then ending) after start_mission: only a NEW session id counts.
+    if (this.view.name === "waking" && s && s.state !== "starting" && s.id !== this.priorSessionId) {
       this.expectingSession = false;
       this.show({ name: "mission", entry: this.view.entry ?? "briefing" });
       return;
@@ -290,6 +294,7 @@ export class App {
   async startMission(id: string, entry: "briefing" | "step1"): Promise<void> {
     this.resetVisitor();
     this.expectingSession = true;
+    this.priorSessionId = this.mirror.session?.id ?? null;
     this.show({ name: "waking", entry });
     this.send({ t: "start_mission", mission: id, mode: "visitor" });
     try {

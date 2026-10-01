@@ -1,11 +1,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { otherUnits } from "./fakes.ts";
 import { accLamps, cycLamps, ctLamps, initLamps, lampUnit, unitLamps } from "../../src/web/app/lamps/derive.ts";
 import { LampRenderer } from "../../src/web/app/lamps/render.ts";
 import type { AccState, MachineState } from "../../src/web/app/protocol.ts";
 
 const acc = (o: Partial<AccState> = {}): AccState => ({ sign: "P", digits: "0000000000", value: 0, carry: "0000000000", rep: 0, prog: "000000000000", ...o });
 const m = (o: Partial<MachineState> = {}): MachineState => ({
+  ...otherUnits(),
   cycle: { pos: 0, mode: "C" },
   init: "000000000000000",
   acc: { "1": acc(), "2": acc() },

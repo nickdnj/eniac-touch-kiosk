@@ -1,5 +1,18 @@
 // Test doubles shared by the node --test suites (not shipped).
 
+import type { MachineState } from "../../src/web/app/protocol.ts";
+
+/** The units a Squares test doesn't care about, at their engine.go defaults. */
+export function otherUnits(): Pick<MachineState, "mp" | "ft" | "mult" | "div"> {
+  const ft = { arg: "0", ring: -3, add: 0, sub: 0, argff: 0 };
+  return {
+    mp: { stage: "0000000000", dec: "00000000000000000000", inff: "0000000000" },
+    ft: { "1": { ...ft }, "2": { ...ft }, "3": { ...ft } },
+    mult: { stage: 0, ff: "0".repeat(24), r1: 0, r3: 0 },
+    div: { place: 0, prog: 0, progff: "00000000", flags: "000000001000000000000000000000" },
+  };
+}
+
 export class FakeClock {
   t = 0;
   private seq = 0;
