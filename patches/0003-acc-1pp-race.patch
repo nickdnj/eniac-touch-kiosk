@@ -1,0 +1,60 @@
+From: ENIAC Touch Kiosk <kiosk@localhost>
+Subject: [PATCH] accumulator: serialize the 1PP correction with receives
+
+The cycling unit's pulses are fanned out to every unit concurrently
+(fanout() in eniac.go). At 1PP time an accumulator whose receive program
+has the correct switch set (cc C) increments its own units digit in
+doonepp() (accunit goroutine), while a subtracting transmitter's 1' pulse
+for the same accumulator arrives through accunit2() -> accrecv(), which
+increments the same digit in another goroutine. Both are unsynchronized
+read-modify-writes of u.val[0], so now and then one increment is lost.
+trajdemo.e then punches cards whose last field is a few units off from
+some card on (anywhere from card 2 to card 18 in our runs, about 1 run in
+3 on a Mac); the race detector reports accrecv vs doonepp. A per-unit
+mutex around both updates makes the output identical run to run (12 of
+12 runs, including 8 at once). Spike #31; reported upstream (see #34).
+Drop this patch once upstream fixes it.
+
+---
+diff --git a/src/accumulator.go b/src/accumulator.go
+--- a/src/accumulator.go
++++ b/src/accumulator.go
+@@ -3,6 +3,7 @@ package main
+ import (
+ 	"fmt"
+ 	"strconv"
++	"sync"
+ )
+ 
+ /*
+@@ -69,6 +70,7 @@ type accumulator struct {
+ 	whichrp             bool
+ 	change              chan int
+ 	lbuddy, rbuddy      int
++	mu                  sync.Mutex // val, decff, sign: accrecv vs the 1PP correction
+ }
+ 
+ var units [20]accumulator
+@@ -383,6 +385,8 @@ func st2(unit int) int {
+ 
+ func accrecv(unit, dat int) {
+ 	u := &units[unit]
++	u.mu.Lock()
++	defer u.mu.Unlock()
+ 	for i := 0; i < 10; i++ {
+ 		if dat&1 == 1 {
+ 			u.val[i]++
+@@ -558,11 +562,13 @@ func doonepp(u *accumulator, unit int, resp chan int) {
+ 		 * Connection of PX-5-109 pins 14, 15
+ 		 */
+ 		if u.rbuddy == unit {
++			u.mu.Lock()
+ 			u.val[0]++
+ 			if u.val[0] > 9 {
+ 				u.val[0] = 0
+ 				u.decff[0] = true
+ 			}
++			u.mu.Unlock()
+ 		}
+ 	}
+ 	if curprog&(stAS|stS) != 0 && u.S != nil {

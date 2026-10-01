@@ -19,7 +19,7 @@ Recorded from the **real core** at the pinned upstream commit (plus `patches/`),
 | `traj-patched` | `trajdemo.e` (runs itself on load), 10 s unthrottled, frozen before the dump | mp, ft (signed ring from -3), mult in the patched `%d` format, 7 punched cards |
 | `traj-unpatched-m` | Same, with the **unpatched** core | `m` lines with the upstream `%2d` double space; must give the same mult state |
 
-`sieve-canary` (test plan 3.2) is not recorded: `sieve.e` does not run at the pin (U1, spike #32).
+`sieve-canary` (test plan 3.2) is not a recorded golden: it is a live real-core test (`src/bridge/internal/core/sieve_canary_test.go`), because `sieve.e` runs for about 4 minutes. It needs `patches/0002-ft-repeat-default.patch` (U1, spike #32, decision #36).
 
 ## Re-recording (on every upstream bump)
 

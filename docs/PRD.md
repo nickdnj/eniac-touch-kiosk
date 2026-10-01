@@ -1,7 +1,7 @@
 # Product Requirements Document: ENIAC Touch Kiosk
 
-**Version:** 0.1
-**Last Updated:** 2026-09-30
+**Version:** 0.2
+**Last Updated:** 2026-10-01
 **Author:** Nick DeMarco with AI assistance (product-requirements agent)
 **Status:** Draft
 
@@ -237,7 +237,7 @@ Priorities: **P0** = MVP, **P1** = before the floor, **P2** = nice to have.
 | NFR-09 | Usability testing | Before the floor: ≥ 5 walk-up testers including ≥ 1 child aged 8–12, ≥ 1 adult over 65, and ≥ 1 gloved session. At least 4 of 5 must complete Squares without help. |
 | NFR-10 | Security | No inbound services beyond the health endpoint (read-only) and the local websocket (bound to localhost). The admin PIN is not in the repo. There are no default credentials, and museum-held credentials are documented in the runbook's secure section, not in the wiki. |
 | NFR-11 | Privacy | No cameras, no microphones, no personal data, no network telemetry. |
-| NFR-12 | Upstream fidelity | Stuart's core is used unmodified apart from the `mult.go` fix, pinned to a recorded upstream commit. Upstream updates are adopted deliberately, never automatically. |
+| NFR-12 | Upstream fidelity | Stuart's core is pinned to a recorded upstream commit and used unmodified apart from a **documented, minimal set of local patches** (`patches/`, listed in architecture 4.4). Each patch fixes a demonstrated bug in the core, is as small as the fix allows, and applies with no fuzz. Each has a bug report to upstream pending or sent, and is **dropped as soon as the pinned commit contains an upstream fix**. Patches never change a program's `.e` file and never add features. Upstream updates are adopted deliberately (README, "Taking upstream updates"), never automatically. |
 
 ---
 
@@ -275,7 +275,7 @@ Nick must not stay in the loop. The kiosk doesn't ship to the floor until all of
 | ID | Item | Impact | Mitigation |
 |---|---|---|---|
 | R1 | **Licensing / permission from Brian L. Stuart.** The upstream repo has no license. Running it at the museum is fine. Publishing a fork, baking it into a redistributable image, or reusing `images/` photographs needs his permission. | It could block a public repo, image distribution, and the use of upstream panel photos. | Ask Stuart early, bundled with the bug report (R2). Keep the kiosk repo private and fetch upstream at build time until he answers. Plan original panel artwork as a fallback (FR-42). |
-| R2 | **Report the `mult.go` bug upstream.** `src/mult.go:66` uses `"%2d "`, which crashes `eniactk` at `eniactk.go:785` the first time the multiplier runs. The fix is `Sprintf("%d ", stage)`. It's confirmed on the trial box. Nothing has been sent yet. | Other users of eniactk are affected. Our fork carries a patch indefinitely. | Send an issue or email with the diff and repro (owner: Nick, before MVP sign-off). The bridge tolerates both formats (FR-04). |
+| R2 | **Report the `mult.go` bug upstream.** `src/mult.go:66` uses `"%2d "`, which crashes `eniactk` at `eniactk.go:785` the first time the multiplier runs. The fix is `Sprintf("%d ", stage)`. It's confirmed on the trial box. Nothing has been sent yet. Since decision #36 the same report also covers the function-table and accumulator fixes (patches 0002 and 0003; draft in `docs/spikes/S3-sieve-regression.md`). | Other users of eniactk are affected. Our fork carries a patch indefinitely. | Send an issue or email with the diff and repro (owner: Nick, before MVP sign-off). The bridge tolerates both formats (FR-04). |
 | R3 | Pi 5 performance for the sieve and trajdemo at full speed while rendering. | Mission length and fps targets may be missed. | Measure in Milestone 1. Use speed control (FR-16) and update coalescing. |
 | R4 | Fast-forward and skipping trajdemo parts may be limited by the program's master-programmer sequencing. | FR-19 may need a different approach. | Architecture spike in Milestone 1. The fallback is unthrottled rate plus a condensed caption. |
 | R5 | Dev on shared hardware (the Model 4 kiosk). | Could disrupt a live exhibit. | FR-80–83, and test only when the Model 4 kiosk isn't needed on the floor. |
@@ -343,3 +343,4 @@ Nick must not stay in the loop. The kiosk doesn't ship to the floor until all of
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | 0.1 | 2026-09-30 | Nick DeMarco with AI assistance | Initial draft from the VCF handoff, first-session decisions, the dev-on-Model-4 hardware update, and an upstream code review |
+| 0.2 | 2026-10-01 | software-developer agent, recording Nick's decision #36 | NFR-12: from "only the `mult.go` fix" to a documented, minimal set of local upstream patches, each with an upstream bug report pending and dropped once upstream fixes it. We patch upstream bugs ourselves now and take Stuart's official fixes later. Patches carried: 0001 `mult.go` stage format, 0002 `ft.go` repeat-switch default (unblocks Primes, U1), 0003 `accumulator.go` 1PP race (trajdemo cards, spike #31). R2 widened. Verified: `sieve.e` punches the 407 primes from 3 to 2801. |

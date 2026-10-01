@@ -94,7 +94,7 @@ To check that lamps match the core without trusting the bridge or UI, the e2e ha
 | `traj-patched-m` | trajdemo first 30 s, patched core | `m` lines with the `%d` format, plus `mpi`, `ftr`, punch |
 | `traj-punch` | trajdemo through the squares-and-cubes table | Punch payloads with spaces, in order, vs the punch file |
 | `idle-attract` | Core loaded, no INIT, 30 s | `cy` noise only; coalescer must not flood |
-| `sieve-canary` | `sieve.e` at the pinned commit, 40 s | **Expected to fail today (U1):** no cards punched and `ftr` runaway. Marked `xfail` with the U1 reference. When upstream is fixed or patched, the test flips to a required pass and is the M2 Primes entry gate. |
+| `sieve-canary` | `sieve.e` at the pinned commit plus `patches/` | **Required pass** since `patches/0002-ft-repeat-default.patch` (decision #36; it was `xfail` for U1). Quick variant in `make test` (`TestRealCoreSieveCanary`: the first 25 primes, about 15 s); full run in `make test-realcore` (`TestRealCoreSieveCanaryFull`: exactly 407 cards, 3 to 2801, in order, then nothing more). Both fail fast if an FT ring runs away (`ftr` > 12). This is the M2 Primes entry gate and a bump-time canary. |
 
 **Quirk assertions (each is a named table test plus at least one golden line):**
 
@@ -382,7 +382,7 @@ Two kinds of claims need two kinds of checks.
 **Machine-verifiable claims (automated).** Anything the core can prove, such as numbers displayed on lamps:
 - Squares: table goes 1 x 1 = 1 up to 12 x 12 = 144 (tested in M1-09).
 - Trajectory part 1: 97,367 added to itself 5,000 times gives 486,835,000 (checked in arithmetic, and on the lamps in M2).
-- Primes: the count of primes from 3 to 2801 is **407**. I checked this independently: there are 407 primes from 3 through 2801, and 2801 itself is prime. The mission copy ("all 407 primes") must still be confirmed against an actual run's punch file once U1 is cleared (M2 gate), because the copy makes a claim about what the simulated machine does.
+- Primes: the count of primes from 3 to 2801 is **407**. I checked this independently: there are 407 primes from 3 through 2801, and 2801 itself is prime. Confirmed on a real run on 2026-10-01 (patched core, `TestRealCoreSieveCanaryFull`): the punch file has exactly 407 cards, 3 first and 2801 last, equal to the computed list.
 - The card pane count and the "latest prime" readout equal the punch file.
 
 **Human-verifiable claims (history).** Every string tagged `[FC]` in the UX spec, every mission YAML, the About screen and the "Tell me more" text.

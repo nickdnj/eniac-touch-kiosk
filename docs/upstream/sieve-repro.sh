@@ -4,7 +4,7 @@
 #   docs/upstream/sieve-repro.sh [SECONDS] [REV...]
 #
 # For each upstream revision (default: c4b94f2 f611c7f f611c7f~1, plus
-# c4b94f2 with docs/upstream/proposed-0002-ft-repeat-default.patch) this
+# c4b94f2 with patches/0002-ft-repeat-default.patch) this
 # exports the tree from the bare mirror cache, builds the core, runs
 # programs/sieve.e with a stub display child for SECONDS (default 40) after
 # one INIT, and reports the cards punched and the largest function-table
@@ -32,7 +32,7 @@ for rev in "${REVS[@]}"; do
   src="$WORK/$tag"; mkdir -p "$src"
   git --git-dir="$CACHE" archive "$base" | tar -x -C "$src"
   if [ "$rev" != "$base" ]; then
-    (cd "$src" && GIT_CEILING_DIRECTORIES="$WORK" git apply "$HERE/proposed-0002-ft-repeat-default.patch")
+    (cd "$src" && GIT_CEILING_DIRECTORIES="$WORK" git apply "$ROOT/patches/0002-ft-repeat-default.patch")
   fi
   (cd "$src" && CGO_ENABLED=0 GOTOOLCHAIN="$TOOLCHAIN" GOFLAGS=-mod=mod go build -o "$src/eniac-core" ./src) >/dev/null 2>&1 \
     || (cd "$src/src" && CGO_ENABLED=0 GOTOOLCHAIN="$TOOLCHAIN" go build -o "$src/eniac-core" .)

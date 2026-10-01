@@ -17,7 +17,7 @@ Read these first. Several of them change what the PRD assumed.
 
 | # | Finding | Evidence | Consequence |
 |---|---|---|---|
-| U1 | **`sieve.e` does not run at the pinned commit.** After INIT the function-table ring counter runs away (`ftr` keeps increasing, e.g. `02 66014`) and no cards are punched in 40 s. At `f611c7f~1` (just before the 2025-07-08 "Rework function table code…" commit) the same run punches 35 cards in 20 s. At `f611c7f` itself it punches 0. | [verified] on macOS, with and without `-v`. | **The Primes mission (M2) is blocked** until upstream fixes it or the PRD allows a second local patch (NFR-12 currently allows only `mult.go`). Report it to Stuart together with the `mult.go` bug (R2). Squares (M1) is unaffected. Trajdemo does punch cards at `c4b94f2`, but has not been run end to end. |
+| U1 | **`sieve.e` does not run at the pinned commit.** After INIT the function-table ring counter runs away (`ftr` keeps increasing, e.g. `02 66014`) and no cards are punched in 40 s. At `f611c7f~1` (just before the 2025-07-08 "Rework function table code…" commit) the same run punches 35 cards in 20 s. At `f611c7f` itself it punches 0. | [verified] on macOS, with and without `-v`. | **The Primes mission (M2) is blocked** until upstream fixes it or the PRD allows a second local patch (NFR-12 currently allows only `mult.go`). Report it to Stuart together with the `mult.go` bug (R2). Squares (M1) is unaffected. Trajdemo does punch cards at `c4b94f2`, but has not been run end to end. **Resolved 2026-10-01 (decision #36):** `patches/0002-ft-repeat-default.patch` (spike S3); `sieve.e` punches the 407 primes from 3 to 2801 and `sieve-canary` passes. |
 | U2 | **Loading a `.e` over stdin straight after start-up can deadlock the core.** `initupdate` and `intbch` are created inside goroutines, and `main` only covers this with a 1 s sleep before an argv load. Sending `l sq.e` on stdin at once hung 4 of 30 runs. Passing the file as argv hung 0 of 20. | [verified] | The bridge **always passes the preset config as the argv file** and treats the first `> ` prompt as "loaded". A fresh core is ready in about **1.0 s**, set by the upstream sleep. [verified] |
 | U3 | **sq.e computes one square per INIT** (x → x+1, x² → (x+1)²). It does not loop. | [verified] 1/1, 2/4, 3/9 | "Keep pressing for me" is a UI-side repeat of the whitelisted INIT action. It needs a reliable **INIT-finished (idle)** signal from the bridge (section 5.6). |
 | U4 | **Handshake mode (`update`) busy-spins a CPU core** whenever nothing has changed. The status loop has no sleep on the no-change path. `eniactk` uses handshake mode. | `engine.go` status goroutine | The bridge uses **timed mode (`ready`)**, which samples every 30 ms. There is no `up` frame marker in timed mode, so the bridge frames the data itself. |
@@ -52,7 +52,7 @@ Upstream is never vendored. The repo holds a pinned commit, a tree hash and a `p
 | Visitor-plug validation | In the browser. Only `stepId`s reach the bridge, which maps them to `.e` lines. | Wrong taps never touch the core (FR-14). The browser can't inject commands (FR-02). |
 | INIT-finished signal | Bridge-computed `run` events (`busy` / `idle` with settled accumulator values) | Needed for re-arming INIT and the notebook tape (U3, UX F2) |
 | Web stack | Vanilla TypeScript + SVG + CSS, bundled with esbuild (run as a Go tool). No framework, no runtime Node. | Section 9.1 |
-| Upstream handling | `upstream.lock` (commit + tree hash) + `patches/*.patch`, fetched into `build/`, cross-compiled | R1 (no license), NFR-12, U8 |
+| Upstream handling | `upstream.lock` (commit + tree hash) + a minimal set of local `patches/*.patch` (policy in 4.4), fetched into `build/`, cross-compiled | R1 (no license), NFR-12, U8 |
 | Metrics | Append-only JSONL, monthly files, on-box | Simple, robust to power cuts, trivial CSV export |
 | Releases | `/opt/eniac-kiosk/releases/<ver>` + atomic `current` / `previous` symlinks. Ed25519-signed tarballs. | One-tap rollback. Updates from USB without SSH. |
 | Dev/test on the Model 4 box | A `test` install profile: nothing enabled at boot, own user, own Chromium profile on tmpfs, no global Chromium or apt changes, manifest-driven removal | FR-80–83 |
@@ -233,7 +233,9 @@ upstream.lock
     RUNTIME_FILES=auto                      # derived from missions (4.3)
 patches/
     0001-mult-stage-format.patch            # src/mult.go:66  "%2d " -> "%d "
-    series                                  # apply order
+    0002-ft-repeat-default.patch            # src/ft.go ftunit(): rptsw defaults to 1 (U1)
+    0003-acc-1pp-race.patch                 # src/accumulator.go: mutex for the 1PP correction vs accrecv
+    series                                  # apply order (all three, in number order)
 ```
 
 Nothing from upstream is committed. `build/` is gitignored.
@@ -247,16 +249,40 @@ Nothing from upstream is committed. `build/` is gitignored.
 5. Write `build/upstream/.provenance.json` (`commit`, `tree`, `patches` with sha256, `builtAt`). It is shipped in the release and shown on the admin screen.
 6. Build the core: `cd build/upstream/src && CGO_ENABLED=0 GOTOOLCHAIN=$GOTOOLCHAIN GOOS=… GOARCH=… go build -trimpath -o …/eniac-core .` for `linux/arm64` (release) and the host (dev).
 
-**Bumping the pin** (`scripts/bump-upstream.sh <sha>`) is a deliberate PR (NFR-12). It shows `git log` and the diff of `src/`, re-runs patch application, then runs the whole test suite: golden status streams, mission validation against the new `.e` files (sha256 drift check), headless selftests, and the `sieve` canary. A mission whose `.e` changed fails validation until it is reviewed.
+**Bumping the pin** is a deliberate PR (NFR-12), following the step-by-step procedure in `README.md`, "Taking upstream updates". Review `git log` and the diff of `src/` and `programs/`, edit `upstream.lock`, drop every patch upstream has fixed (4.4), re-apply the rest (no fuzz), re-record the goldens, then run the whole test suite: golden status streams, mission validation against the new `.e` files (sha256 drift check), headless selftests, and the canaries (`sieve-canary`, `trajdemo-canary`). A mission whose `.e` changed fails validation until it is reviewed. (A `scripts/bump-upstream.sh` wrapper was planned but not written; the README procedure is the source of truth.)
 
 ### 4.3 What ships from upstream
 
 Only the **compiled core** plus the runtime files that missions actually use. These are computed from the mission dependency closure: each mission's `.e`, anything it pulls in with `l`, and anything it reads with `f r` (for example `programs/sq.e`, `programs/sieve.e`, `programs/trajdemo.e`, `programs/drag.e`, `demo.card`). They are laid out as `upstream/programs/…` and `upstream/demo.card` in the release, which becomes the core's cwd. `images/` and `obj/` are **not shipped** unless `assets.upstream_photos: true` is set after R1 is resolved (FR-42). Releases stay private (R1).
 
-### 4.4 Candidate future patches (not approved)
+### 4.4 Patch policy and the patches we carry
 
-| Patch | Why | Status |
-|---|---|---|
+**Policy (PRD NFR-12, decision #36, 2026-10-01).** We patch upstream bugs ourselves now and take Stuart's official fixes later. A local patch is allowed only if:
+
+1. it fixes a **demonstrated bug** in the core (a reproduction is written down), not a feature or a style preference;
+2. it is **as small as the fix allows** and touches only `src/`, never a program's `.e` file;
+3. it applies with `git apply --check` to the pinned commit after the patches before it in `series`, with **no fuzz**;
+4. it has an **upstream bug report** pending or sent (#34; the draft is in `docs/spikes/S3-sieve-regression.md`) and a regression test or canary;
+5. it is **dropped** in the first bump whose pinned commit contains an upstream fix (procedure in `README.md`, "Taking upstream updates").
+
+Each patch file starts with a mail-style header saying what it fixes and why. The patch names go into `eniac-bridge version` and `/healthz` (from `series`, via the Makefile), and the names with their sha256 into `.provenance.json`.
+
+| Patch | File | Bug | Found / decided | Test that shows it | Upstream status |
+|---|---|---|---|---|---|
+| `0001-mult-stage-format` | `src/mult.go:66` | `multstat()` pads the stage with `%2d`, which crashes `eniactk` at `eniactk.go:785` | PRD R2, before M1 | golden `traj-unpatched-m` vs `traj-patched`; `test-fetch.sh` | Not yet reported (#34) |
+| `0002-ft-repeat-default` | `src/ft.go` `ftunit()` | Since `f611c7f` an unset FT repeat switch is 0, which no stage matches; `sieve.e` and `lehmer.e` run away (U1) | Spike S3 (#32), decision #36 | `sieve-canary` (`TestRealCoreSieveCanary`, `…Full`); fails in about 1.5 s without it | Not yet reported (#34) |
+| `0003-acc-1pp-race` | `src/accumulator.go` | `doonepp()` correction and `accrecv()` both increment `val[0]` from different goroutines; a lost increment makes trajdemo's cards differ run to run | Spike S2 (#31), under this policy | Race detector (`go build -race`, trajdemo); `TestRealCoreTrajdemoDeterministic` (weak: the race is environment dependent) | Not yet reported (#34) |
+
+**Considered and not patched:**
+
+| Issue | Why not |
+|---|---|
+| Remove the 1 s argv sleep | Not a bug. 1.0 s meets NFR-03. |
+| MP steppers B, C and H sometimes advance one stage while a `.e` loads (spike S2, section 4) | `trajdemo.e`'s own `b c` clears it; the mission sends `b c` before READ. Reported as a note. |
+| Other race-detector reports: status-goroutine reads (A7), load-time plugging, multiplier flags read by `st1()`, MP goroutines | None was shown to change any output. |
+| `trajdemo.e` wires INIT only to the trajectory; `lehmer.e` line `s a18 rp5 2` is malformed | Program files, not core bugs. Patches never touch `.e` files. Asked as questions in the report. |
+
+---|---|---|
 | FT ring regression (U1) | Primes mission blocked | Needs an upstream fix or a PRD change to NFR-12. Investigate in M1 spike S3. |
 | Remove the 1 s argv sleep | Faster ready | **Not needed.** 1.0 s meets NFR-03. Don't patch. |
 
@@ -979,7 +1005,7 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 
 | # | Item | Impact | Proposed handling |
 |---|---|---|---|
-| A1 | **Sieve broken at the pinned commit (U1)** | Primes mission blocked | Spike S3; report to Stuart with a repro alongside R2; PRD owner to decide whether NFR-12 may allow a second patch or an alternative pin. **Owner: Nick.** |
+| A1 | **Sieve broken at the pinned commit (U1)** | Primes mission blocked | **Resolved:** decision #36 allows local patches under the 4.4 policy; `patches/0002` fixes it and `sieve-canary` passes. Report to Stuart pending (#34). |
 | A2 | Pi 5 CPU at full speed (U10, R3) | Frame rate and mission length | `GOMAXPROCS=2`, `Nice=5`; spike S1; missions can cap `full` at a finite rate |
 | A3 | `time.Sleep` granularity makes high `cy.rate` values slower than nominal | "Full" speed isn't 1946 real time | Treat speeds as tuned presets, not physical claims. Any "5,000 additions per second" copy is about the real machine, not our playback. |
 | A4 | Idle detection is heuristic | "Keep pressing" could misfire at some speeds | Bridge-side `BUSY` guard; known-answer soak (S4); per-mission `quietMs` override |
@@ -996,3 +1022,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 |---|---|---|---|
 | 0.1 | 2026-09-30 | Nick DeMarco with AI assistance | Initial architecture from the PRD v0.1, the UX spec v0.1 (F2 needs folded in), and a code read plus local runs of upstream `c4b94f2` |
 | 0.2 | 2026-09-30 | software-developer agent (M1 bridge) | 5.9.2: `content:`, `selftest:` and `summary` added to the mission schema; `[FC]` review metadata. 5.9.5 rule 4 defined per terminal, ignoring trunk ends. Greek/ASCII canonicalization note. | 5.3-5.6 (#8): generated TS types live next to the Go types; `hello.config.admin.tapZone` shape; `frame.seq` monotonic across sessions; `health.detail`; `pong`; `metric` gains optional `speed` and `screen` (the 8.3 events `speed{m,speed}` and `idle_reset{screen}` need them). | 5.4/5.6 (#11): `state.session` and `state.machine` are `null` without a session; CLEAR also starts `busy`. | 5.6 (#12): `metric.assisted` (for `step_done{m,step,assisted}`). |
+| 0.3 | 2026-10-01 | software-developer agent (M2 upstream fixes) | Decision #36: 4.4 is now the patch policy plus the list of patches we carry (0001 `mult.go`, 0002 `ft.go`, 0003 `accumulator.go`) and what we chose not to patch. 4.1 lists the patches. 4.2 points the bump to the README procedure. U1 and A1 resolved. Trajdemo findings in `docs/spikes/S2-trajdemo.md`. |
