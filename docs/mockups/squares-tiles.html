@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Squares Mockup</title>
+<style>
+@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; src: url("../../src/web/fonts/atkinson-hyperlegible-latin-400-normal.woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 700; src: url("../../src/web/fonts/atkinson-hyperlegible-latin-700-normal.woff2"); }
+:root {
+  --bg-stage: #101215; --card: #F4EFE3; --ink: #1B1D21; --muted: #9AA0A8;
+  --lamp-on: #FFB000; --lamp-off: #3A2E1E; --row: #56B4E9; --col: #CC79A7; --corner: #009E73;
+  --font-ui: "Atkinson Hyperlegible", system-ui, sans-serif;
+}
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+#stage { width: 1920px; height: 1080px; position: absolute; left: 0; top: 0; transform-origin: 0 0;
+  background: #000; color: var(--card); font-family: var(--font-ui); }
+header { height: 96px; display: flex; align-items: center; gap: 32px; padding: 0 24px 0 10px; border-bottom: 1px solid #222; }
+.logo { font-weight: 700; font-size: 28px; letter-spacing: 3px; color: #D8CFAE; }
+.btn-o { border: 3px solid var(--card); border-radius: 12px; height: 58px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 26px; }
+h1 { font-size: 38px; margin: 0; flex: 1; }
+.dots { display: flex; gap: 12px; } .dots i { width: 16px; height: 16px; border: 2px solid var(--muted); border-radius: 50%; }
+main { display: flex; gap: 24px; padding: 16px 24px; height: 920px; box-sizing: border-box; }
+.canvas { flex: 1; background: var(--bg-stage); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px; }
+.side { width: 488px; display: flex; flex-direction: column; gap: 16px; }
+.card { background: var(--card); color: var(--ink); border-radius: 16px; padding: 28px; height: 588px; box-sizing: border-box; }
+.card small { font-weight: 700; color: #555; font-size: 22px; letter-spacing: 1px; }
+.card h2 { font-size: 38px; margin: 16px 0; }
+.card p { font-size: 26px; line-height: 1.55; margin: 0; }
+.next { background: var(--card); color: var(--ink); border-radius: 12px; height: 96px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 32px; margin-top: 36px; cursor: pointer; }
+.skip { text-align: center; font-size: 28px; font-weight: 700; color: #D8CFAE; text-decoration: underline; margin-top: 24px; }
+footer { padding: 8px 32px; font-weight: 700; color: #D8CFAE; font-size: 22px; }
+.grid { position: relative; }
+.tile { position: absolute; width: 100px; height: 100px; border-radius: 10px; box-sizing: border-box;
+  background: var(--lamp-off); transform: scale(.2); opacity: 0; transition: transform .35s ease-out, opacity .35s, background .35s; }
+.tile.on { transform: scale(1); opacity: 1; }
+.tile.base.on { background: var(--lamp-on); box-shadow: 0 0 18px #ffb00066; }
+.tile.row.on { background: var(--row); box-shadow: 0 0 18px #56b4e988; }
+.tile.col.on { background: var(--col); box-shadow: 0 0 18px #cc79a788; }
+.tile.corner.on { background: var(--corner); box-shadow: 0 0 18px #009e7388; }
+.tile.dim { filter: brightness(.55); }
+.caption { font-size: 54px; font-weight: 700; min-height: 70px; color: var(--card); }
+.eq { font-size: 96px; font-weight: 700; display: flex; gap: 34px; color: #3a3a3a; }
+.eq span { transition: color .3s; }
+.eq .b.lit { color: var(--lamp-on); } .eq .r.lit { color: var(--row); } .eq .c.lit { color: var(--col); }
+.eq .k.lit { color: var(--corner); } .eq .t.lit { color: var(--card); }
+.replay { position: absolute; right: 24px; bottom: 16px; }
+.screen { display: none; } .screen.show { display: block; }
+.note { position: fixed; right: 12px; bottom: 12px; background: #F0E442; color: #000; font: 700 14px system-ui; padding: 6px 10px; border-radius: 6px; z-index: 9; }
+</style>
+</head>
+<body>
+<div class="note">MOCKUP · proposed copy · tap Next / Back</div>
+<div id="stage">
+  <header>
+    <div class="logo">ENIAC</div>
+    <div class="btn-o" style="width:274px">‹ Missions</div>
+    <h1>Mission 1: Squares</h1>
+    <div class="dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="btn-o" style="width:290px">Start over</div>
+  </header>
+
+  <!-- Briefing -->
+  <div class="screen show" id="s-brief">
+  <main>
+    <div class="canvas">
+      <div class="grid" id="g1"></div>
+      <div class="caption" id="cap1"></div>
+    </div>
+    <div class="side">
+      <div class="card">
+        <small>MISSION 1</small>
+        <h2>What is a square?</h2>
+        <p>Picture tiles on a floor. Lay them out 3 rows of 3, and you have a square made of 9 tiles. That is why 9 is called the “square” of 3.</p>
+        <p style="margin-top:20px">ENIAC can make a whole list of squares, and you will wire it up. No typing. In 1946, programming meant plugging in cables!</p>
+      </div>
+      <div class="next" onclick="go('s-plan')">Let’s go</div>
+    </div>
+  </main>
+  </div>
+
+  <!-- Plan -->
+  <div class="screen" id="s-plan">
+  <main>
+    <div class="canvas" style="position:relative">
+      <div class="grid" id="g2"></div>
+      <div class="eq" id="eq">
+        <span class="b">9</span><span>+</span><span class="r">3</span><span>+</span><span class="c">3</span><span>+</span><span class="k">1</span><span>=</span><span class="t">16</span>
+      </div>
+      <div class="btn-o replay" style="width:200px" onclick="playPlan()">↻ Again</div>
+    </div>
+    <div class="side">
+      <div class="card">
+        <small>STEP 0</small>
+        <h2>Here is the trick</h2>
+        <p>To make the square one size bigger, add a row, add a column, and add 1 tile in the corner.</p>
+        <p style="margin-top:20px">ENIAC never multiplies here. It just adds, and adding is what it did best.</p>
+      </div>
+      <div class="next" onclick="go('s-brief')">‹ Back</div>
+      <div class="skip">Skip setup, just run it</div>
+    </div>
+  </main>
+  </div>
+
+  <footer>ENIAC simulator by Brian L. Stuart, Drexel University</footer>
+</div>
+
+<script>
+const S = 112; // tile pitch
+function fit() {
+  const k = Math.min(innerWidth / 1920, innerHeight / 1080);
+  document.getElementById('stage').style.transform = `scale(${k})`;
+}
+addEventListener('resize', fit); fit();
+
+function makeGrid(el, n) {
+  el.innerHTML = ''; el.style.width = el.style.height = (n * S - 12) + 'px';
+  const tiles = {};
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+    const t = document.createElement('div');
+    t.className = 'tile'; t.style.left = c * S + 'px'; t.style.top = r * S + 'px';
+    el.appendChild(t); tiles[r + ',' + c] = t;
+  }
+  return tiles;
+}
+let timers = [];
+const at = (ms, f) => timers.push(setTimeout(f, ms));
+const clear = () => { timers.forEach(clearTimeout); timers = []; };
+
+function playBrief() {
+  clear();
+  const g = makeGrid(document.getElementById('g1'), 3), cap = document.getElementById('cap1');
+  cap.textContent = '';
+  let i = 0;
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) {
+    const t = g[r + ',' + c]; i++;
+    const n = i;
+    at(400 + i * 350, () => { t.classList.add('on', 'base'); cap.textContent = n + (n === 1 ? ' tile' : ' tiles'); });
+  }
+  at(400 + 10 * 350, () => cap.textContent = '3 rows of 3 = 9 tiles');
+  at(400 + 10 * 350 + 1600, () => cap.textContent = 'The square of 3 is 9');
+  at(400 + 10 * 350 + 5000, playBrief);
+}
+
+function playPlan() {
+  clear();
+  const g = makeGrid(document.getElementById('g2'), 4);
+  const eq = [...document.querySelectorAll('#eq span')];
+  eq.forEach(s => s.classList.remove('lit'));
+  const lit = cls => document.querySelectorAll('#eq .' + cls).forEach(s => s.classList.add('lit'));
+  // 3x3 base
+  for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) at(300, () => g[r + ',' + c].classList.add('on', 'base'));
+  at(500, () => lit('b'));
+  // a row of 3 along the bottom
+  for (let c = 0; c < 3; c++) at(1800 + c * 250, () => g['3,' + c].classList.add('on', 'row'));
+  at(1800, () => lit('r'));
+  // a column of 3 down the side
+  for (let r = 0; r < 3; r++) at(3600 + r * 250, () => g[r + ',3'].classList.add('on', 'col'));
+  at(3600, () => lit('c'));
+  // the corner
+  at(5400, () => { g['3,3'].classList.add('on', 'corner'); lit('k'); });
+  at(6600, () => lit('t'));
+  at(11000, playPlan);
+}
+
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('show', s.id === id));
+  id === 's-brief' ? playBrief() : playPlan();
+}
+playBrief();
+</script>
+</body>
+</html>
