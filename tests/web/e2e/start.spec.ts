@@ -59,6 +59,24 @@ test("S2 shows available missions only, with Start here and a 96 px Start; S0 wh
   expect((await sent(page)).filter((m) => m.t === "start_mission")).toHaveLength(1);
 });
 
+test("starting while the previous visitor's session is still alive waits for the NEW session", async ({ page }) => {
+  // Found against the real bridge: the old session is reported, then ended,
+  // after start_mission. S0 must not take it for the new one.
+  await fresh(page);
+  await tap(page, page.locator(".screen.start"));
+  await page.waitForTimeout(650);
+  await tapSlow(page, page.locator(".mc-start"));
+  await expect(page.locator(".step-card h2")).toHaveText("Mission 1: Squares");
+  await page.goto("/"); // a reload leaves the session alive on the bridge
+  await expect(view(page)).toHaveAttribute("data-view", "start");
+  await tap(page, page.locator(".screen.start"));
+  await page.waitForTimeout(650);
+  await tapSlow(page, page.locator(".mc-start"));
+  await expect(page.locator(".step-card h2")).toHaveText("Mission 1: Squares");
+  await page.waitForTimeout(1000);
+  await expect(view(page)).toHaveAttribute("data-view", "mission");
+});
+
 test("the whole mission card is a target too", async ({ page }) => {
   await fresh(page);
   await tap(page, page.locator(".screen.start"));

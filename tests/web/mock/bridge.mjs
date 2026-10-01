@@ -202,7 +202,13 @@ export class MockBridge {
 
   // ------------------------------------------------------------- sessions
   startSession(mode) {
-    this.endSession(true);
+    // Like the real bridge: the previous session is still reported (it was
+    // current when start_mission arrived), then visibly ended, before the
+    // new one starts.
+    if (this.session) {
+      this.sendSession();
+      this.endSession(false);
+    }
     const s = {
       id: randomBytes(4).toString("hex"),
       mission: SQUARES,
