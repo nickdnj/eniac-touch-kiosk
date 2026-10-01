@@ -31,6 +31,41 @@ type Options struct {
 type Result struct {
 	ReadyIn time.Duration
 	Settled map[string]int64
+	Cards   []machine.Punch // with selftest.until: the cards punched by then
+}
+
+// UntilTimeout bounds a selftest.until wait.
+var UntilTimeout = 60 * time.Second
+
+// waitCheckpoint waits up to 10 s for a named checkpoint's predicate.
+func waitCheckpoint(c *core.Core, mir *machine.Mirror, m *mission.Mission, id string) error {
+	for _, cp := range m.Checkpoints() {
+		if cp.ID != id {
+			continue
+		}
+		deadline := time.Now().Add(10 * time.Second)
+		for {
+			st := mir.State()
+			if cp.When.Eval(&st) {
+				return nil
+			}
+			if f, bad := c.Faulted(); bad {
+				return f
+			}
+			if time.Now().After(deadline) {
+				return fmt.Errorf("checkpoint %s not reached after READ", id)
+			}
+			time.Sleep(33 * time.Millisecond)
+		}
+	}
+	return fmt.Errorf("no checkpoint %s", id)
+}
+
+func fieldAt(f []string, i int) string {
+	if i < len(f) {
+		return f[i]
+	}
+	return ""
 }
 
 // Run executes the mission's selftest block.
@@ -79,24 +114,81 @@ func Run(ctx context.Context, o Options) (Result, error) {
 	}
 	q, _ := m.QuietOverrideMs()
 	tr := machine.NewRunTracker(mir, m.Watch(), speed.Rate, q)
+	waitIdle := func(what string) error {
+		deadline := time.Now().Add(30 * time.Second)
+		for {
+			if ev, ok := tr.Tick(); ok {
+				res.Settled = ev.Settled
+				return nil
+			}
+			if f, bad := c.Faulted(); bad {
+				return f
+			}
+			if time.Now().After(deadline) {
+				return fmt.Errorf("%s: machine never went idle", what)
+			}
+			time.Sleep(33 * time.Millisecond)
+		}
+	}
+	if st.Read {
+		for _, text := range m.WithheldFor("read") {
+			cmd, err := core.WithheldLine(text)
+			if err != nil {
+				return res, err
+			}
+			if _, err := c.Do(cmd); err != nil {
+				return res, fmt.Errorf("READ (%s): %w", text, err)
+			}
+		}
+		tr.Pressed(false)
+		if err := waitIdle("READ"); err != nil {
+			return res, err
+		}
+		if id := m.File.Run.InitAfter; id != "" {
+			if err := waitCheckpoint(c, mir, m, id); err != nil {
+				return res, err
+			}
+		}
+	}
 	for i := 1; i <= st.Inits; i++ {
 		if _, err := c.Do(core.ButtonInit()); err != nil {
 			return res, fmt.Errorf("INIT %d: %w", i, err)
 		}
 		tr.Pressed(true)
-		deadline := time.Now().Add(30 * time.Second)
+		if st.Until != nil {
+			continue // runs that never go idle: wait for the predicate below
+		}
+		if err := waitIdle(fmt.Sprintf("INIT %d", i)); err != nil {
+			return res, err
+		}
+	}
+	if st.Until != nil {
+		deadline := time.Now().Add(UntilTimeout)
 		for {
-			if ev, ok := tr.Tick(); ok {
-				res.Settled = ev.Settled
+			state := mir.State()
+			if st.Until.Eval(&state) {
 				break
 			}
 			if f, bad := c.Faulted(); bad {
 				return res, f
 			}
 			if time.Now().After(deadline) {
-				return res, fmt.Errorf("INIT %d: machine never went idle", i)
+				return res, fmt.Errorf("selftest.until not reached in %s (%d cards)", UntilTimeout, state.Punched)
 			}
 			time.Sleep(33 * time.Millisecond)
+		}
+		state := mir.State()
+		res.Cards = state.Cards
+		for _, ce := range st.Cards {
+			for i, want := range ce.Values {
+				if i >= len(state.Cards) {
+					return res, fmt.Errorf("card %d was not punched", i+1)
+				}
+				f := state.Cards[i].Fields
+				if ce.Index >= len(f) || f[ce.Index] != want {
+					return res, fmt.Errorf("card %d field %d = %q, want %q (card %q)", i+1, ce.Index, fieldAt(f, ce.Index), want, state.Cards[i].Text)
+				}
+			}
 		}
 	}
 	// Check against the core's own dump, not only the mirror.

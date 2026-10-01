@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -15,6 +16,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"eniac-kiosk/bridge/internal/buildinfo"
 	"eniac-kiosk/bridge/internal/econfig"
 	"eniac-kiosk/bridge/internal/machine"
 )
@@ -35,6 +37,8 @@ type Mission struct {
 	stepOrder   []string // step ids in presentation order
 	fileOrder   []string // step ids in .e file order (skip_setup)
 	withheld    []econfig.Line
+	incLines    []econfig.Line // command lines of included files (l drag.e), preset
+	readCard    *ReadCard
 	compiled    *Compiled
 }
 
@@ -140,8 +144,24 @@ func Load(path, upstream string) *Mission {
 			m.fail("include %s: %v", inc, err)
 		} else if sha(ib) != want {
 			m.fail("include %s sha256 mismatch", inc)
+		} else {
+			// Rules 3 and 4 see the included lines as preset (UX 8.5 item 1).
+			il, _ := econfig.Parse(bytes.NewReader(ib))
+			for _, l := range il {
+				if l.Cmd == "l" || l.Cmd == "b" || l.Cmd == "f" {
+					m.fail("include %s: nested %q lines are not supported", inc, l.Cmd)
+				}
+			}
+			m.incLines = append(m.incLines, il...)
 		}
 	}
+	for inc := range f.Includes {
+		if !contains(econfig.Includes(m.lines), inc) {
+			m.fail("includes pins %s, which the program does not load", inc)
+		}
+	}
+	m.checkAssets(upstream)
+	m.checkRequires(upstream)
 
 	m.validateGrammar()
 	m.resolveSteps()
@@ -166,6 +186,108 @@ func sha(b []byte) string {
 func (m *Mission) validateGrammar() {
 	for _, e := range econfig.Validate(m.lines) {
 		m.fail("%s: %v", m.File.Program, e)
+	}
+	for _, e := range econfig.Validate(m.incLines) {
+		m.fail("include: %v", e)
+	}
+}
+
+func contains(list []string, v string) bool {
+	for _, x := range list {
+		if x == v {
+			return true
+		}
+	}
+	return false
+}
+
+// checkAssets: rule 1 for input files the program reads (`f r demo.card`).
+// They live in the upstream runtime dir (the core's cwd), are pinned by
+// sha256, and the first card is served to the UI for the READ graphic: the
+// real input, not demo data (UX 8.5 item 2).
+func (m *Mission) checkAssets(upstream string) {
+	reads := map[string]bool{}
+	for _, l := range m.lines {
+		if l.Cmd == "f" && len(l.Args) == 2 && l.Args[0] == "r" {
+			reads[l.Args[1]] = true
+		}
+	}
+	for r := range reads {
+		if _, ok := m.File.Assets[r]; !ok {
+			m.fail("program reads %s, which is not pinned in assets", r)
+		}
+	}
+	for name, want := range m.File.Assets {
+		if !reads[name] {
+			m.fail("assets pins %s, which the program does not read (f r)", name)
+			continue
+		}
+		if strings.ContainsAny(name, "/\\ ") {
+			m.fail("asset %q must be a plain file name", name)
+			continue
+		}
+		b, err := os.ReadFile(filepath.Join(upstream, name))
+		if err != nil {
+			m.fail("asset %s: %v", name, err)
+			continue
+		}
+		if sha(b) != want {
+			m.fail("asset %s sha256 mismatch", name)
+			continue
+		}
+		first, _, _ := strings.Cut(string(b), "\n")
+		first = strings.TrimRight(first, "\r")
+		if len(first) > 80 {
+			first = first[:80]
+		}
+		if m.readCard == nil {
+			m.readCard = &ReadCard{File: name, Text: first}
+		}
+	}
+}
+
+// Patches is how the loader learns which local upstream patches the core was
+// built with: the fetch script's .provenance.json in the runtime dir, else
+// the bridge's build info. Tests may replace it.
+var Patches = func(upstream string) ([]string, error) {
+	b, err := os.ReadFile(filepath.Join(upstream, ".provenance.json"))
+	if err == nil {
+		var p struct {
+			Patches []struct {
+				Name string `json:"name"`
+			} `json:"patches"`
+		}
+		if err := json.Unmarshal(b, &p); err != nil {
+			return nil, fmt.Errorf(".provenance.json: %v", err)
+		}
+		out := []string{}
+		for _, x := range p.Patches {
+			out = append(out, x.Name)
+		}
+		return out, nil
+	}
+	if bp := buildinfo.Patches; bp != "" {
+		return strings.Split(bp, ","), nil
+	}
+	return nil, errors.New("neither .provenance.json nor build info lists the upstream patches")
+}
+
+// checkRequires: a mission that needs a local patch (Primes needs
+// 0002-ft-repeat-default, or sieve.e punches nothing: spike S3) is
+// unavailable without it.
+func (m *Mission) checkRequires(upstream string) {
+	if len(m.File.Requires) == 0 {
+		return
+	}
+	have, err := Patches(upstream)
+	if err != nil {
+		m.fail("requires %v: %v", m.File.Requires, err)
+		return
+	}
+	for _, r := range m.File.Requires {
+		if !contains(have, r) {
+			m.fail("requires upstream patch %s, which this core was not built with (have %v)", r, have)
+		}
 	}
 }
 
@@ -230,8 +352,15 @@ func (m *Mission) resolveSteps() {
 		} else if len(s.Choices) > 0 {
 			m.fail("step %s: choices only apply to switch steps", s.ID)
 		}
-		if l.Plug != nil && (!l.Plug.From.M1 || !l.Plug.To.M1) {
-			m.fail("step %s: %q is outside the M1 jack grammar", s.ID, l.Text)
+		if l.Plug != nil {
+			for _, t := range []econfig.Terminal{l.Plug.From, l.Plug.To} {
+				if !t.Known() || t.Class == econfig.ClassOther {
+					m.fail("step %s: %s in %q cannot be a visitor target", s.ID, t.Raw, l.Text)
+				}
+			}
+		}
+		if l.Sw != nil && l.Sw.Family != "" && econfig.Catalog(*l.Sw) == nil {
+			m.fail("step %s: switch %s has no closed catalog, so it cannot be a visitor step", s.ID, l.Sw.Name)
 		}
 		m.stepLine[s.ID] = l
 		m.stepOrder = append(m.stepOrder, s.ID)
@@ -347,7 +476,7 @@ func (m *Mission) checkOverlap() {
 			stepSw[l.Sw.Name] = id
 		}
 	}
-	for _, l := range m.PresetLines() {
+	for _, l := range append(m.PresetLines(), m.incLines...) {
 		if l.Plug != nil {
 			for _, t := range []econfig.Terminal{l.Plug.From, l.Plug.To} {
 				if id, ok := stepTerm[t.Canon]; ok && !t.IsTrunk() {
@@ -416,32 +545,148 @@ func (m *Mission) validateRun() {
 	if st := m.File.Content.Run.Extras.StopAt; st != "" && !ids[st] {
 		m.fail("content.run.extras.stopAt %q is not a checkpoint", st)
 	}
+	for name, id := range map[string]string{"run.initAfter": r.InitAfter, "run.freezeAt": r.FreezeAt, "content.result.live.doneAt": m.liveDoneAt()} {
+		if id != "" && !ids[id] {
+			m.fail("%s %q is not a checkpoint", name, id)
+		}
+	}
+	if m.HasButton("read") != (len(m.WithheldFor("read")) > 0) {
+		m.fail("run.buttons has read exactly when a withheld line is bound to read")
+	}
+	if m.HasButton("read") && m.File.Content.Read == nil {
+		m.fail("content.read is required with a read button")
+	}
+	if r.InitOnce && m.HasButton("clear") {
+		m.fail("run.initOnce missions cannot offer clear (CLEAR mid-run corrupts the run)")
+	}
+	m.validateCardPane()
 	if s := m.File.Selftest; s != nil {
 		for k := range s.Expect {
 			if n, err := strconv.Atoi(k); err != nil || n < 1 || n > 20 {
 				m.fail("selftest.expect: %q is not an accumulator", k)
 			}
 		}
+		if s.Until != nil {
+			if err := s.Until.Validate(); err != nil {
+				m.fail("selftest.until: %v", err)
+			}
+		}
+		for _, c := range s.Cards {
+			if c.Index < 0 || c.Index > 15 || len(c.Values) == 0 {
+				m.fail("selftest.cards: index must be 0..15 with at least one value")
+			}
+		}
+		if s.Read && !m.HasButton("read") {
+			m.fail("selftest.read needs a read button")
+		}
+	}
+	check := func(where string, caps []Caption) {
+		for _, c := range caps {
+			if err := c.Trigger.validate(); err != nil {
+				m.fail("%s caption %q: %v", where, c.Text, err)
+			}
+		}
 	}
 	for _, p := range m.File.Content.Run.Presses {
-		for _, c := range p.Captions {
-			if err := c.Trigger.validate(); err != nil {
-				m.fail("content.run press %d caption %q: %v", p.Press, c.Text, err)
+		check(fmt.Sprintf("content.run press %d", p.Press), p.Captions)
+	}
+	if rd := m.File.Content.Read; rd != nil {
+		check("content.read", rd.Captions)
+	}
+}
+
+func (m *Mission) liveDoneAt() string {
+	if l := m.File.Content.Result.Live; l != nil {
+		return l.DoneAt
+	}
+	return ""
+}
+
+func (m *Mission) validateCardPane() {
+	r := m.File.Run
+	field := func(where string, idx []int) {
+		for _, i := range idx {
+			if i < 0 || i > 15 {
+				m.fail("%s: field index %d must be 0..15", where, i)
 			}
+		}
+	}
+	if c := r.Cards; c != nil {
+		if c.Window[0] < 1 || c.Window[1] > 80 || c.Window[0] > c.Window[1] {
+			m.fail("run.cards.window %v must be columns 1..80, first <= last", c.Window)
+		}
+		if len(c.Value) == 0 {
+			m.fail("run.cards.value needs at least one field")
+		}
+		field("run.cards.value", c.Value)
+		field("run.cards.hop", c.Hop)
+		if c.Style != "stack" && c.Style != "film" {
+			m.fail("run.cards.style must be stack or film")
+		}
+		if c.Keep < 1 || c.Keep > 20 {
+			m.fail("run.cards.keep must be 1..20 (the bridge keeps the last 20 for a resync)")
+		}
+		if b := c.Bars; b != nil && (b.Per < 1 || b.UpTo < b.Per || b.UpTo/b.Per > 60) {
+			m.fail("run.cards.bars: per >= 1, upTo >= per, at most 60 bars")
+		}
+		if m.File.Content.Run.Cards == nil {
+			m.fail("content.run.cards is required with run.cards")
+		}
+	}
+	if p := r.Plot; p != nil {
+		if len(p.X) == 0 || len(p.Y) == 0 {
+			m.fail("run.plot needs x and y fields")
+		}
+		field("run.plot.x", p.X)
+		field("run.plot.y", p.Y)
+		if r.Cards == nil {
+			m.fail("run.plot needs run.cards")
+		}
+		if m.File.Content.Run.Plot == nil {
+			m.fail("content.run.plot is required with run.plot")
 		}
 	}
 }
 
+// initLampNames are the initiating unit's lamps (architecture 6.1).
+var initLampNames = []string{"clear.1", "clear.2", "clear.3", "clear.4", "clear.5", "clear.6", "rdff", "prff", "rdfinish", "rdilock", "rdsync", "g66", "g69"}
+
 func (t Trigger) validate() error {
+	n := 0
+	for _, set := range []bool{t.AccProg != nil, t.Run != "", t.Acc != nil, t.PunchCount != nil, t.Init != "", t.Derived != ""} {
+		if set {
+			n++
+		}
+	}
+	if n != 1 {
+		return errors.New("trigger must be exactly one of accProg, run, acc, punchCount, init, derived")
+	}
 	switch {
-	case t.AccProg != nil && t.Run == "":
+	case t.AccProg != nil:
 		a, err := strconv.Atoi(t.AccProg.Acc)
 		if err != nil || a < 1 || a > 20 || t.AccProg.Program < 1 || t.AccProg.Program > 12 {
 			return errors.New("accProg needs acc 1..20 and program 1..12")
 		}
-	case t.AccProg == nil && (t.Run == "idle" || t.Run == "busy"):
-	default:
-		return errors.New("trigger must be exactly one of accProg or run: idle|busy")
+	case t.Run != "":
+		if t.Run != "idle" && t.Run != "busy" {
+			return errors.New("trigger must be run: idle|busy")
+		}
+	case t.Acc != nil:
+		if a, err := strconv.Atoi(t.Acc.Acc); err != nil || a < 1 || a > 20 {
+			return errors.New("acc needs acc 1..20")
+		}
+	case t.PunchCount != nil:
+		if t.PunchCount.Gte < 1 {
+			return errors.New("punchCount.gte must be >= 1")
+		}
+	case t.Init != "":
+		if !contains(initLampNames, t.Init) {
+			return fmt.Errorf("init lamp %q is not one of %v", t.Init, initLampNames)
+		}
+	case t.Derived != "":
+		if t.Derived != "apex" && t.Derived != "landed" {
+			return errors.New("derived must be apex or landed")
+		}
 	}
 	return nil
 }
@@ -493,7 +738,43 @@ func (m *Mission) validateCopy() {
 	check("content.plan", c.Plan.Headline, c.Plan.Body, c.Plan.More, true)
 	check("content.rest", c.Rest.Headline, c.Rest.Body, c.Rest.More, true)
 	check("content.result", c.Result.Headline, c.Result.Body, c.Result.More, true)
+	if c.Read != nil {
+		check("content.read", c.Read.Before.Headline, c.Read.Before.Sub, "", false)
+		if c.Read.InitLocked == "" || c.Read.Headline == "" {
+			m.fail("content.read: headline and initLocked are required")
+		}
+	}
+	for _, x := range []string{c.Run.Note, c.Run.Before.Sub} {
+		if words(x) > MaxBodyWords || strings.Contains(x, "[FC") {
+			m.fail("content.run: %q is too long or carries an [FC] marker", x)
+		}
+	}
 }
+
+// WithheldFor returns the texts of the withheld lines bound to a button,
+// in file order (Trajectory's READ sends `b c` then `b r`: spike S2).
+func (m *Mission) WithheldFor(button string) []string {
+	var out []string
+	for i, w := range m.File.Withheld {
+		if w.Button == button && i < len(m.withheld) {
+			out = append(out, m.withheld[i].Text)
+		}
+	}
+	sort.SliceStable(out, func(i, j int) bool { return m.lineNum(out[i]) < m.lineNum(out[j]) })
+	return out
+}
+
+func (m *Mission) lineNum(text string) int {
+	for _, l := range m.withheld {
+		if l.Text == text {
+			return l.Num
+		}
+	}
+	return 0
+}
+
+// IncludeLines are the command lines of included files (always preset).
+func (m *Mission) IncludeLines() []econfig.Line { return append([]econfig.Line(nil), m.incLines...) }
 
 // PresetLines are the program's command lines minus steps and withheld lines.
 func (m *Mission) PresetLines() []econfig.Line {

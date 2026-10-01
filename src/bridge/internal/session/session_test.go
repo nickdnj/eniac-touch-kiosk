@@ -308,7 +308,7 @@ func TestSquaresEndToEnd(t *testing.T) {
 	if strings.Join(steps, "|") != strings.Join(want, "|") {
 		t.Fatalf("step writes %q", steps)
 	}
-	if !strings.HasPrefix(w[0], "f p ") || w[1] != "s cy.rate 100" {
+	if !strings.HasPrefix(w[0], "f p ") || w[1] != "s cy.rate 13" {
 		t.Fatalf("session setup writes %q", w[:2])
 	}
 	// A fresh client gets the same state.
@@ -342,7 +342,7 @@ func TestRejects(t *testing.T) {
 	}
 	expect(cl.send(`{"t":"apply_step","step":"j1-one"}`), "BAD_STATE") // no session
 	expect(cl.send(`{"t":"button","b":"init"}`), "BAD_STATE")
-	expect(cl.send(`{"t":"start_mission","mission":"primes"}`), "NOT_ALLOWED")
+	expect(cl.send(`{"t":"start_mission","mission":"cubes"}`), "NOT_ALLOWED")
 	cl.startSquares()
 	expect(cl.send(`{"t":"button","b":"init"}`), "BAD_STATE")               // still in setup
 	expect(cl.send(`{"t":"apply_step","step":"a1-to-a2"}`), "NOT_ALLOWED")  // out of order
@@ -357,12 +357,14 @@ func TestRejects(t *testing.T) {
 	cl.wait(10*time.Second, "setup_complete", is("setup_complete", "skipped", "6"))
 	expect(cl.send(`{"t":"button","b":"read"}`), "NOT_ALLOWED")
 	expect(cl.send(`{"t":"set_speed","speed":"warp"}`), "NOT_ALLOWED")
-	// INIT while busy: at slow speed the run takes ~1.8 s.
+	// INIT while busy: at slow speed (cy.rate 13) the run takes about 13 s;
+	// then Full finishes it (changing speed mid-run is safe, spike S2/S4).
 	cl.send(`{"t":"button","b":"init"}`)
 	cl.wait(3*time.Second, "busy", is("run", "state", "busy"))
 	expect(cl.send(`{"t":"button","b":"init"}`), "BUSY")
 	expect(cl.send(`{"t":"button","b":"clear"}`), "BUSY")
-	cl.wait(10*time.Second, "idle", is("run", "state", "idle"))
+	cl.send(`{"t":"set_speed","speed":"full"}`)
+	cl.wait(20*time.Second, "idle", is("run", "state", "idle"))
 	// CLEAR resets both accumulators (dev plan 7 item 5, checked on the Mac).
 	cl.send(`{"t":"button","b":"clear"}`)
 	idle := cl.wait(5*time.Second, "idle after clear", is("run", "state", "idle"))
@@ -392,6 +394,7 @@ func TestSkipSetupAfterThree(t *testing.T) {
 	if len(sess["applied"].([]any)) != 7 || sess["remaining"] != 0.0 {
 		t.Fatalf("%v", sess)
 	}
+	cl.send(`{"t":"set_speed","speed":"full"}`)
 	idle := cl.initAndWait()
 	if s := idle["settled"].(map[string]any); s["1"] != 1.0 || s["2"] != 1.0 {
 		t.Fatalf("%v", s)
@@ -469,4 +472,49 @@ func TestOrphanReaped(t *testing.T) {
 		time.Sleep(100 * time.Millisecond)
 	}
 	t.Fatal("session not reaped")
+}
+
+// Primes (M2): one INIT at Full punches the primes 3, 5, 7 ... as `punch`
+// messages, in order; first-card fires; a second INIT is refused (run.initOnce)
+// and so are CLEAR and READ (not in run.buttons). With ENIAC_WRITE_FIXTURES=1
+// the first punch message is written to tests/fixtures/protocol/punch.json.
+func TestPrimesSessionPunches(t *testing.T) {
+	r := newRig(t, nil)
+	cl := r.connect()
+	cl.wait(3*time.Second, "state", is("state"))
+	cl.send(`{"t":"start_mission","mission":"primes","mode":"visitor"}`)
+	cl.wait(10*time.Second, "session setup", is("session", "state", "setup"))
+	cl.send(`{"t":"skip_setup"}`)
+	cl.wait(10*time.Second, "setup_complete", is("setup_complete", "skipped", "5"))
+	cl.send(`{"t":"set_speed","speed":"full"}`)
+	cl.send(`{"t":"button","b":"init"}`)
+	cl.wait(3*time.Second, "run busy", is("run", "state", "busy"))
+	want := []string{"00003", "00005", "00007", "00011"}
+	for i, w := range want {
+		p := cl.wait(10*time.Second, "punch "+w, func(m map[string]any) bool { return m["t"] == "punch" && m["n"] == float64(i+1) })
+		f := p["fields"].([]any)
+		if len(f) != 16 || f[13] != w || f[12] != "00000" || len(p["text"].(string)) != 80 {
+			t.Fatalf("card %d: %v", i+1, p)
+		}
+		if i == 0 && os.Getenv("ENIAC_WRITE_FIXTURES") == "1" {
+			root, _ := testenv.RepoRoot()
+			b, _ := json.MarshalIndent(p, "", "  ")
+			os.WriteFile(filepath.Join(root, "tests", "fixtures", "protocol", "punch.json"), append(b, '\n'), 0o644)
+		}
+	}
+	cl.seen(2*time.Second, "first-card", is("checkpoint", "id", "first-card"))
+	cl.send(`{"t":"button","b":"init","id":7}`)
+	cl.wait(3*time.Second, "second INIT refused", func(m map[string]any) bool { return m["t"] == "error" && m["re"] == 7.0 && (m["code"] == "BUSY" || m["code"] == "NOT_ALLOWED") })
+	cl.send(`{"t":"button","b":"clear","id":8}`)
+	cl.wait(3*time.Second, "CLEAR refused", func(m map[string]any) bool { return m["t"] == "error" && m["re"] == 8.0 })
+	cl.send(`{"t":"button","b":"read","id":9}`)
+	cl.wait(3*time.Second, "READ refused", func(m map[string]any) bool { return m["t"] == "error" && m["re"] == 9.0 && m["code"] == "NOT_ALLOWED" })
+	// A fresh client's state carries the cards so far (the last 20).
+	cl2 := r.connect()
+	cl2.wait(3*time.Second, "hello", is("hello"))
+	st := cl2.wait(3*time.Second, "state", is("state"))
+	cards := st["cards"].([]any)
+	if len(cards) < 4 || cards[0].(map[string]any)["fields"].([]any)[13] != "00003" {
+		t.Fatalf("state cards %v", cards)
+	}
 }

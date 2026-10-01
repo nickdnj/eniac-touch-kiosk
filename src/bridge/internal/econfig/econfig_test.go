@@ -134,6 +134,33 @@ func TestTerminals(t *testing.T) {
 			t.Errorf("%q accepted: %+v", bad, tm)
 		}
 	}
+	m2cases := []struct{ in, canon, class string }{
+		{"i.Pi", "i.pi", ClassProgIn},
+		{"i.Ro", "i.ro", ClassProgOut},
+		{"i.Io", "i.io", ClassProgOut},
+		{"i.po", "i.po", ClassProgOut},
+		{"p.Adi", "p.Adi", ClassProgIn},
+		{"p.Hi", "p.Hi", ClassProgIn},
+		{"p.Acdi", "p.Acdi", ClassProgIn},
+		{"p.B6o", "p.B6o", ClassProgOut},
+		{"p.17di", "p.17di", ClassProgIn},
+		{"f2.arg", "f2.arg", ClassDataIn},
+		{"f2.NC", "f2.NC", ClassProgOut},
+		{"f1.11o", "f1.11o", ClassProgOut},
+		{"m.Rβ", "m.Rβ", ClassDataIn},
+		{"m.24i", "m.24i", ClassProgIn},
+	}
+	for _, c := range m2cases {
+		tm := ParseTerminal(c.in)
+		if !tm.Known() || tm.Canon != c.canon || tm.Class != c.class {
+			t.Errorf("%s: %+v", c.in, tm)
+		}
+	}
+	for _, bad := range []string{"p.Ii", "p.A7o", "p.Ax", "p.21di", "f4.1i", "f1.12i", "f1.zz", "m.25i", "ad.s", "ad.s.x.1", "d.1i", "pr.1"} {
+		if tm := ParseTerminal(bad); tm.Known() {
+			t.Errorf("%q accepted: %+v", bad, tm)
+		}
+	}
 	for _, m2 := range []string{"f1.arg", "m.A", "p.Ai", "ad.s.1.1", "a1.st"} {
 		if tm := ParseTerminal(m2); tm.M1 || tm.Err != "" {
 			t.Errorf("%q should be a valid non-M1 terminal: %+v", m2, tm)
@@ -163,6 +190,19 @@ func TestCatalogFamilies(t *testing.T) {
 		"c.s13":   {"Elr", "Fl"},
 		"cy.op":   {"1p", "1a", "co", "cy", "CO"},
 		"cy.rate": {"0", "100", "5000"},
+		// M2 (sieve.e, trajdemo.e, drag.e)
+		"pr.6":      {"P", "p", "0"},
+		"pr.15-16":  {"C", "0"},
+		"p.cA":      {"2", "6"},
+		"p.a20":     {"B"},
+		"p.d17s1":   {"1"},
+		"m.ieracc3": {"β", "a"},
+		"m.place5":  {"10"},
+		"f2.RA0L6":  {"0"},
+		"f2.RA103S": {"P"},
+		"f1.A2C":    {"6"},
+		"f2.op1":    {"A0", "S0"},
+		"f2.rp1":    {"1"},
 	}
 	for name, vals := range valid {
 		for _, v := range vals {
@@ -186,7 +226,15 @@ func TestCatalogFamilies(t *testing.T) {
 		"cy.op":   {"fast"},
 		"cy.rate": {"-1", "x"},
 		"cy.zz":   {"1"},
-		"m.ieracc1": {"a"},
+		"m.zz1":     {"1"},
+		"pr.17":     {"P"},
+		"pr.6":      {"C", "X"},
+		"pr.2-3":    {"C"},
+		"pr.1-2":    {"P"},
+		"p.cI":      {"2"},
+		"p.a3":      {"B"},
+		"f2.op12":   {"A0"},
+		"f1.rp1":    {"1 2"},
 	}
 	for name, vals := range invalid {
 		for _, v := range vals {

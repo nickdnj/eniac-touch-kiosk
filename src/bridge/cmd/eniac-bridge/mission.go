@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -13,15 +14,16 @@ import (
 )
 
 func init() {
-	register("mission", "mission check FILE...: validate missions against the pinned programs", runMission)
+	register("mission", "mission check|compile FILE...: validate missions against the pinned programs (compile prints the API JSON)", runMission)
 	register("selftest", "boot a mission headless, apply every step, check the known answer", runSelftest)
 }
 
 func runMission(args []string) int {
-	if len(args) == 0 || args[0] != "check" {
-		fmt.Fprintln(os.Stderr, "usage: eniac-bridge mission check [--config F] [--upstream DIR] missions/*.yaml")
+	if len(args) == 0 || (args[0] != "check" && args[0] != "compile") {
+		fmt.Fprintln(os.Stderr, "usage: eniac-bridge mission check|compile [--config F] [--upstream DIR] missions/*.yaml")
 		return 2
 	}
+	compileOnly := args[0] == "compile"
 	fs := flag.NewFlagSet("mission check", flag.ContinueOnError)
 	cfgPath := fs.String("config", "/etc/eniac-kiosk/config.yaml", "config file (for paths.upstream)")
 	upstream := fs.String("upstream", "", "upstream runtime dir holding programs/ (overrides the config)")
@@ -44,6 +46,19 @@ func runMission(args []string) int {
 	bad := 0
 	for _, f := range files {
 		m := mission.Load(f, *upstream)
+		if compileOnly {
+			// The compiled mission exactly as GET /api/missions/{id} serves it
+			// (used to refresh the UI's test fixtures).
+			if !m.Available {
+				fmt.Fprintf(os.Stderr, "%s: unavailable: %s\n", f, m.Reason)
+				return 1
+			}
+			enc := json.NewEncoder(os.Stdout)
+			enc.SetEscapeHTML(false)
+			enc.SetIndent("", "  ")
+			enc.Encode(m.Compiled())
+			continue
+		}
 		if m.Available {
 			c := m.Compiled()
 			fmt.Printf("ok   %s (%s): %d steps; preset %d cables, %d switches\n", m.File.ID, filepath.Base(f),

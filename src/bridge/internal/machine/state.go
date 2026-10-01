@@ -19,7 +19,16 @@ type State struct {
 	CT        [30]byte
 	Mult      Mult
 	Div       Div
+
+	// Cards punched in this session, in order (at most MaxCards; the
+	// oldest are dropped), and the total count. Not part of the JSON
+	// snapshot: the UI gets cards as punch messages. Read-only once copied.
+	Cards   []Punch
+	Punched int
 }
+
+// MaxCards bounds State.Cards (a session that runs away is ended long before).
+const MaxCards = 5000
 
 type Acc struct {
 	Sign   byte     // 'P' or 'M'
@@ -195,9 +204,12 @@ func (s *State) ProgIdle() bool {
 	return true
 }
 
-// GatesIdle reports whether init gate66 and gate69 are both 0.
+// GatesIdle reports whether init gate66 and gate69 are both 0 and the card
+// reader and printer flip-flops (init bits 6 and 7) are clear: a READ or a
+// punch in progress is not idle (M2: the reader and punch are paced in
+// wall-clock time and can be quiet for longer than the quiet period).
 func (s *State) GatesIdle() bool {
-	return len(s.Init) == 15 && s.Init[13] == '0' && s.Init[14] == '0'
+	return len(s.Init) == 15 && s.Init[13] == '0' && s.Init[14] == '0' && s.Init[6] == '0' && s.Init[7] == '0'
 }
 
 // Snapshot returns the JSON form (architecture 5.4) as nested maps.

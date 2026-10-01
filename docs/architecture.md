@@ -1,7 +1,7 @@
 # Software Architecture: ENIAC Touch Kiosk
 
-**Version:** 0.1
-**Last Updated:** 2026-09-30
+**Version:** 0.4
+**Last Updated:** 2026-10-01
 **Author:** Nick DeMarco with AI assistance (software-architecture agent)
 **Status:** Draft for review
 **PRD Reference:** `docs/PRD.md` v0.1 (as corrected in `fe4c96d`)
@@ -434,7 +434,7 @@ stateDiagram-v2
 - `idle` is declared when **all** of these hold:
   1. no MachineState change other than `cycle` for `quiet` ms, where `quiet = max(120, 3 × additionTime)` and `additionTime = 20000 / rate` ms (the core sleeps `500000/rate` µs in each of the 40 pulse slots of an addition cycle; at rate 0 → 120 ms);
   2. every `acc[*].prog` is all zeros;
-  3. `init` gate66 and gate69 are both 0.
+  3. `init` gate66 and gate69 are both 0, and (M2) the reader and printer flip-flops (bits 6 and 7) are clear.
 - On `idle` the bridge snapshots `settled` values for the mission's `run.watch` accumulators.
 - A mission can override `quiet` (`run.idle.quietMs`). Missions whose runs never go idle (Primes, Trajectory) use checkpoints instead.
 
@@ -618,6 +618,47 @@ The preset is the other 18 lines. `withheld: []`, because `sq.e` has no `b` line
 6. Every step target has a matching element ID in the SVG panel kit (`jack:c.o`, `sw:c.j1`, …; section 6).
 7. Copy lint: headline and body length, and word counts (FR-22).
 8. **Headless run** (CI and `selftest`): boot the preset, apply all steps, check that the core printed no errors, then run the mission's `selftest` script (Squares: INIT ×3 with idle waits → `acc1=3, acc2=9`).
+
+*M2 additions to the rules:* rule 1 also covers `assets` (input files such as `demo.card`, in the runtime dir) and `requires` (local upstream patches the core must have been built with, read from the runtime dir's `.provenance.json`, else the build info; Primes requires `0002-ft-repeat-default`). Rule 2: a step's terminals must be known jacks with a class (no adapters), and a switch step needs a closed catalog. Rules 3 and 4 see the lines of included files (`l drag.e`) as preset. Rule 5's catalog gains the printer (`pr.N`: `P`/`0`, `pr.N-M`: `C`/`0`); the other M2 switches (master programmer, function tables, multiplier) are checked for name shape and a plain value token, and the core checks the rest at load. Rule 8 for Primes: one INIT at Full until 5 cards, which must be 3, 5, 7, 11, 13.
+
+#### 5.9.6 M2 additions (Primes; Trajectory)
+
+The mission format grew for the M2 missions (UX 8.5). All of it is data: a new mission needs no code.
+
+```yaml
+minutes: 4                       # picker "About 4 min"
+requires: [0002-ft-repeat-default]
+includes: { drag.e: "<sha256>" } # l lines: pinned, preset, counted in S5
+assets: { demo.card: "<sha256>" } # f r lines: pinned; the first card is served as readCard
+withheld:                         # several lines may be bound to one button, sent in file order
+  - { line: "b c", button: read } # Trajectory: READ sends b c then b r (spike S2)
+  - { line: "b r", button: read }
+  - { line: "b i", button: init }
+run:
+  initOnce: true                  # INIT once per session; the bridge refuses a second one
+  initAfter: card-read            # INIT refused until this checkpoint fired
+  freezeAt: landed                # on this checkpoint the bridge sends s cy.op 1a (already whitelisted)
+  cards: { window: [51, 80], value: [12, 13], hop: [5], style: stack|film, keep: 20, bars: { per: 100, upTo: 2801 } }
+  plot: { x: [10, 11], y: [14, 15] }
+checkpoints:
+  - { id: hundred, when: { punchCount: { gte: 100 } } }
+  - { id: last,    when: { punchField: { index: 13, eq: "02801" } } }
+  - { id: landed,  when: { punchField: { index: 14, startsWith: "-" } } }
+selftest: { read: true, inits: 1, until: { punchCount: { gte: 5 } }, cards: [{ index: 13, values: ["00003", "00005"] }] }
+content:
+  read: { before: {headline, sub}, headline, captions, initLocked }   # the READ beat
+  run: { done: {headline}, cards: {title, label, count, latest, empty, bars}, plot: {...}, note, extras: { afterCards, autoResultMs, headline } }
+  result: { live: { waiting, pending, done, doneAt } }               # S7 keeps counting
+```
+
+- **Predicates** (5.9.2 grammar, now implemented): `punchCount: {gte|eq}` and `punchField: {index 0..15, eq|startsWith}`; a `punchField` predicate is true once **any** card of the session matches. The mirror keeps the session's cards (at most 5000) for this; `state.cards` still carries only the last 20.
+- **Caption triggers** (UI-side): `{punchCount: {gte}}`, `{acc: {acc, eq}}`, `{init: rdff}` (an initiating-unit lamp) and `{derived: apex|landed}` (computed by the UI from successive cards), besides `accProg` and `run`.
+- **Buttons:** a button with withheld lines bound to it sends those lines (through `WithheldLine`, in file order); otherwise INIT is `b i` and CLEAR is `b c`. READ needs bound lines and is refused after INIT. `initOnce` missions cannot offer CLEAR.
+- **Idle** (5.6): the reader and printer flip-flops (init bits 6 and 7) must also be clear. A READ or a punch is paced in wall-clock time and can be quiet for longer than the quiet period; without this a Primes run could look idle while a card is being punched.
+- **Freeze:** `freezeAt` sends `s cy.op 1a` from the tick loop under the operation lock; afterwards `set_speed` is refused (a speed change could restart the clock).
+- **Metrics:** two UI events for the picker (UX 8.4): `mission_picked {m, n}` (n is the card's position) and `picker_next_used {m}`.
+- **Tooling:** `eniac-bridge mission compile FILE` prints the compiled mission exactly as `GET /api/missions/{id}` serves it; the UI's mock fixtures (`tests/web/mock/missions/*.json`) are generated with it.
+- **Jack grammar:** the initiating unit's jacks are case-insensitive in the first letter, like `initplug` (`i.Pi` = `i.pi`, canonical lower case); master programmer jacks are `p.<X>i|di|cdi|<1-6>o` with X in A..K without I, and `p.<1-20>di`; function tables `f<U>.<1-11>i|o, arg, A, B, C, NC`; multiplier `m.<1-24>i|o` and its data terminals; adapters `ad.<kind>.<n>.<param>`.
 
 ---
 
@@ -1023,3 +1064,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 | 0.1 | 2026-09-30 | Nick DeMarco with AI assistance | Initial architecture from the PRD v0.1, the UX spec v0.1 (F2 needs folded in), and a code read plus local runs of upstream `c4b94f2` |
 | 0.2 | 2026-09-30 | software-developer agent (M1 bridge) | 5.9.2: `content:`, `selftest:` and `summary` added to the mission schema; `[FC]` review metadata. 5.9.5 rule 4 defined per terminal, ignoring trunk ends. Greek/ASCII canonicalization note. | 5.3-5.6 (#8): generated TS types live next to the Go types; `hello.config.admin.tapZone` shape; `frame.seq` monotonic across sessions; `health.detail`; `pong`; `metric` gains optional `speed` and `screen` (the 8.3 events `speed{m,speed}` and `idle_reset{screen}` need them). | 5.4/5.6 (#11): `state.session` and `state.machine` are `null` without a session; CLEAR also starts `busy`. | 5.6 (#12): `metric.assisted` (for `step_done{m,step,assisted}`). |
 | 0.3 | 2026-10-01 | software-developer agent (M2 upstream fixes) | Decision #36: 4.4 is now the patch policy plus the list of patches we carry (0001 `mult.go`, 0002 `ft.go`, 0003 `accumulator.go`) and what we chose not to patch. 4.1 lists the patches. 4.2 points the bump to the README procedure. U1 and A1 resolved. Trajdemo findings in `docs/spikes/S2-trajdemo.md`. |
+| 0.4 | 2026-10-01 | software-developer agent (M2 build) | 5.9.6: the M2 mission format (minutes, requires, includes as preset, assets and readCard, withheld lines per button, initOnce, initAfter, freezeAt, run.cards, run.plot, content.read, result.live); punchCount and punchField predicates implemented; M2 caption triggers; idle also needs the reader and printer flip-flops clear; M2 jack grammar and switch families; picker metrics; `mission compile`. 5.9.5 rules extended for M2. |

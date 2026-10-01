@@ -10,6 +10,7 @@ id: squares
 title: "Squares"
 order: 1
 summary: "Make ENIAC count in squares."
+minutes: 3                       # picker "About 3 min" (UX 8.4, FR-10)
 program: sq.e
 programSha256: "462e103f309fc74acf3b2bc1ca6084aff26b4183a8ec63768808cdecc83fe6f0"
 includes: {}
@@ -118,7 +119,7 @@ run:
   watch: ["1", "2"]
   idle: { quietMs: auto }        # max(120 ms, 3 x addition time)
   speeds:
-    slow: { rate: 100 }          # 200 ms per addition; untuned until spike #33
+    slow: { rate: 13 }           # spike S4: 1.5 s per addition, each step about 1 s apart; one press about 13 s
     full: { rate: 0 }            # unthrottled
   defaultSpeed: slow
 

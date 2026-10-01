@@ -1,6 +1,7 @@
 package econfig
 
 import (
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -16,6 +17,15 @@ const (
 	FamConstSel   = "const.sel"   // c.s<P>, P 1..30
 	FamCycleOp    = "cy.op"
 	FamCycleRate  = "cy.rate"
+
+	// M2 families (sieve.e, trajdemo.e, drag.e). Printer field switches
+	// have a closed catalog (they can be visitor steps); the others are
+	// preset-only and are checked for shape and a plain value token.
+	FamPrField  = "pr.field"  // pr.<N>, N 1..16: P punches the field, anything else leaves it blank (prctl)
+	FamPrCouple = "pr.couple" // pr.<N>-<N+1>: C couples the two fields, anything else does not
+	FamMP       = "mp"        // p.a<N> associators, p.c<X> stage counts, p.d<D>s<S> decade limits
+	FamFT       = "ft"        // f<U>.op/cl/rp/mpm<N>, f<U>.<A|B><N><C|S>, f<U>.R<A|B><row><L<N>|S>
+	FamMult     = "mult"      // m.icandacc/icandcl/ieracc/iercl/place/prod/sf<N>
 )
 
 // Switch is an `s name value` line.
@@ -54,7 +64,15 @@ func ParseSwitch(name, value string) Switch {
 		return cycleSwitch(s, sw)
 	case unit == "c":
 		return constSwitch(s, sw)
-	case len(unit) >= 2 && unit[0] == 'a' && unit != "ad":
+	case unit == "pr":
+		return printerSwitch(s, sw)
+	case unit == "p":
+		return m2Switch(s, FamMP, mpSwitchRe, sw)
+	case unit == "m":
+		return m2Switch(s, FamMult, multSwitchRe, sw)
+	case unit == "f1" || unit == "f2" || unit == "f3":
+		return m2Switch(s, FamFT, ftSwitchRe, sw)
+	case len(unit) >= 2 && unit[0] == 'a':
 		n, err := strconv.Atoi(unit[1:])
 		if err != nil || n < 1 || n > 20 {
 			s.Err = "accumulator must be a1..a20: " + name
@@ -187,6 +205,64 @@ func ConstSelValues(prog int) []string {
 	return out
 }
 
+func printerSwitch(s Switch, sw string) Switch {
+	if a, b, ok := strings.Cut(sw, "-"); ok {
+		x, e1 := strconv.Atoi(a)
+		y, e2 := strconv.Atoi(b)
+		if e1 != nil || e2 != nil || x < 1 || x > 15 || x%2 != 1 || y != x+1 {
+			s.Err = "printer coupling switches are pr.1-2, pr.3-4, ... pr.15-16: " + s.Name
+			return s
+		}
+		s.Family = FamPrCouple
+		switch s.Value {
+		case "C", "c":
+			s.Canon = "C"
+		case "0":
+		default:
+			s.Err = "printer coupling value " + s.Value + " not C or 0"
+		}
+		return s
+	}
+	if _, ok := progNum(sw, "", 1, 16); !ok {
+		s.Err = "printer field switches are pr.1..pr.16: " + s.Name
+		return s
+	}
+	s.Family = FamPrField
+	switch s.Value {
+	case "P", "p":
+		s.Canon = "P"
+	case "0":
+	default:
+		s.Err = "printer field value " + s.Value + " not P or 0"
+	}
+	return s
+}
+
+var (
+	mpSwitchRe   = regexp.MustCompile(`^(a(20|18|14|12|10|8|4|2)|c[A-HJK]|d([1-9]|1[0-9]|20)s[1-6])$`)
+	multSwitchRe = regexp.MustCompile(`^(icandacc|icandcl|ieracc|iercl|place|prod|sf)([1-9]|1[0-9]|2[0-4])$`)
+	ftSwitchRe   = regexp.MustCompile(`^((op|cl|rp|mpm)([1-9]|1[01])|[AB][1-4][CS]|R[AB]-?\d{1,3}(L[1-6]|S))$`)
+	m2ValueRe    = regexp.MustCompile(`^[A-Za-z0-9+-]{1,4}$`)
+)
+
+// m2Switch: preset-only M2 switches. The name must have a known shape and
+// the value must be a short plain token; the core checks the rest at load
+// (a load error faults the session, E-CORE-CMD).
+func m2Switch(s Switch, fam string, re *regexp.Regexp, sw string) Switch {
+	if !re.MatchString(sw) {
+		s.Err = "switch " + s.Name + " is not a known " + fam + " switch"
+		return s
+	}
+	if g, ok := greek[s.Value]; ok {
+		s.Canon = g // the multiplier's ier/icand accumulator inputs
+	} else if !m2ValueRe.MatchString(s.Value) {
+		s.Err = "switch " + s.Name + " value " + s.Value + " is not a plain value"
+		return s
+	}
+	s.Family = fam
+	return s
+}
+
 func cycleSwitch(s Switch, sw string) Switch {
 	switch sw {
 	case "op":
@@ -228,6 +304,10 @@ func Catalog(sw Switch) []string {
 		return ConstSelValues(p)
 	case FamCycleOp:
 		return []string{"1p", "1a", "co", "cy"}
+	case FamPrField:
+		return []string{"0", "P"}
+	case FamPrCouple:
+		return []string{"0", "C"}
 	}
 	return nil
 }

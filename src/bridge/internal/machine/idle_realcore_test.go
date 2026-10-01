@@ -12,9 +12,9 @@ import (
 	"eniac-kiosk/bridge/internal/testenv"
 )
 
-// Hand-written stand-in for the Squares mission's run table until #10:
-// speeds slow (rate 100) and full (rate 0), watch accumulators 1 and 2.
-var squaresSpeeds = map[string]int{"slow": 100, "full": 0}
+// Hand-written copy of the Squares mission's run table: speeds slow
+// (rate 13 since spike S4) and full (rate 0), watch accumulators 1 and 2.
+var squaresSpeeds = map[string]int{"slow": 13, "full": 0}
 
 // idleKnownAnswer boots the full sq.e on the real core and presses INIT n
 // times at the given rate, waiting for the tracker's idle each time. Every
@@ -54,7 +54,7 @@ func idleKnownAnswer(t *testing.T, speed string, n int) {
 				e = ev
 				break
 			}
-			if time.Since(t0) > 20*time.Second {
+			if time.Since(t0) > 40*time.Second {
 				t.Fatalf("press %d: never idle", x)
 			}
 		}
