@@ -49,6 +49,15 @@ export const COPY = {
     pickRepeat: "How many times?",
     roomPlan: "The ENIAC room, seen from above. Not to scale.",
   },
+  // Squares tile figures (docs/handoff-squares-tiles.md): briefing captions,
+  // the plan's "+3"/"+1" labels and the replay button.
+  tiles: {
+    count: (n: number) => (n === 1 ? "1 tile" : `${n} tiles`),
+    rows: (n: number) => `${n} rows of ${n} = ${n * n} tiles`,
+    square: (n: number) => `The square of ${n} is ${n * n}`,
+    plus: (n: number) => `+${n}`,
+    again: "↻ Again",
+  },
   run: {
     init: "INIT",
     initSub: "Initiating Pulse: the GO button",

@@ -10,6 +10,7 @@ import { unitOf, termId } from "../mission/ids.ts";
 import { Workbench } from "../stage/workbench.ts";
 import { StepWindows } from "../stage/windows.ts";
 import { roomPlanSvg, unitsForPlan } from "../stage/roomplan.ts";
+import { TileFigure } from "../stage/tiles.ts";
 import { PICKER, RAIL, STAGE } from "../stage/layout.ts";
 import { LampRenderer } from "../lamps/render.ts";
 import { h, s, svgFromString, wait } from "../ui/dom.ts";
@@ -23,6 +24,11 @@ type Phase = "briefing" | "plan" | "step" | "rest";
 
 const REDUCE_MOTION = false; // UX 9.5: staff setting; wired to config in M3
 
+/** The staff setting, or the browser's prefers-reduced-motion. */
+function reduceMotion(): boolean {
+  return REDUCE_MOTION || (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches);
+}
+
 export function missionScreen(app: App, view: View): Screen {
   const mission = app.mission!;
   const content = mission.content;
@@ -30,6 +36,7 @@ export function missionScreen(app: App, view: View): Screen {
   const runner = new Runner(mission, () => app.now(), app.mirror.session?.applied ?? []);
   let phase: Phase = view.entry === "step1" ? "step" : "briefing";
   let windows: StepWindows | null = null;
+  let figure: TileFigure | null = null; // Squares tiles on the briefing / plan stage
   let animGen = 0; // bumps to cancel a running success choreography
   let acked = false;
   let assistedNow = false;
@@ -176,6 +183,7 @@ export function missionScreen(app: App, view: View): Screen {
     renderDots();
     setIdle();
     leader.replaceChildren();
+    stopFigure();
     skipBtn.classList.toggle("hidden", phase === "briefing" || phase === "rest");
     if (phase === "briefing") return renderBriefing();
     if (phase === "plan") return renderPlan();
@@ -187,7 +195,11 @@ export function missionScreen(app: App, view: View): Screen {
     closeWindows();
     workbench.spotlight(null);
     scrim.classList.remove("on");
-    altView.replaceChildren(svgFromString(roomPlanSvg(planUnits)), h("div", { class: "alt-caption" }, COPY.rail.roomPlan));
+    if (mission.id === "squares") {
+      startFigure(TileFigure.briefing());
+    } else {
+      altView.replaceChildren(svgFromString(roomPlanSvg(planUnits)), h("div", { class: "alt-caption" }, COPY.rail.roomPlan));
+    }
     altView.classList.add("on");
     setCard("none", content.briefing.headline, content.briefing.body);
     showMore(!!content.briefing.more);
@@ -197,17 +209,29 @@ export function missionScreen(app: App, view: View): Screen {
   function renderPlan(): void {
     closeWindows();
     const p = content.plan;
-    altView.replaceChildren(
-      h(
-        "div",
-        { class: "plan" },
-        h("div", { class: "plan-math" }, p.math ?? ""),
-      ),
-    );
+    const fig = mission.id === "squares" ? TileFigure.plan(p.math ?? "", reduceMotion()) : null;
+    if (fig) startFigure(fig);
+    else altView.replaceChildren(h("div", { class: "plan" }, h("div", { class: "plan-math" }, p.math ?? "")));
     altView.classList.add("on");
     setCard("none", p.headline, p.body);
     showMore(!!p.more);
     setMain(p.buttons?.[0] ?? COPY.rail.next, "filled");
+  }
+
+  /** Shows a tile figure: looping, or finished at once with reduced motion. */
+  function startFigure(fig: TileFigure): void {
+    figure = fig;
+    altView.replaceChildren(fig.el);
+    if (reduceMotion()) fig.showFinal();
+    else fig.play();
+  }
+
+  /** Stops the figure's timers and takes it (and its Again button) off the stage. */
+  function stopFigure(): void {
+    if (!figure) return;
+    figure.stop();
+    figure.el.remove();
+    figure = null;
   }
 
   function renderStep(): void {
@@ -538,6 +562,7 @@ export function missionScreen(app: App, view: View): Screen {
     },
     unmount: () => {
       renderer.dispose();
+      stopFigure();
       for (const t of restTimers) clearTimeout(t);
       animGen++;
       closeWindows();

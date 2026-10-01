@@ -64,7 +64,7 @@ test("next visitor after a reset starts clean: new session, step 1, no tape", as
   await tap(page, page.locator(".screen.start"));
   await page.waitForTimeout(650);
   await tap(page, page.locator(".mc-start"));
-  await expect(page.locator(".step-card h2")).toHaveText("Mission 1: Squares");
+  await expect(page.locator(".step-card h2")).toHaveText("What is a square?");
   const { session, machine } = await mockGet(page, "session");
   expect(session.applied).toEqual([]);
   expect(machine.acc["1"].value).toBe(0);

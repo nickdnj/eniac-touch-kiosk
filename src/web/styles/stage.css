@@ -68,6 +68,45 @@
 }
 .plan-math { font-family: var(--font-mono); font-size: 96px; line-height: 1; font-weight: 700; color: var(--lamp-on); }
 
+/* Squares tile figures (app/stage/tiles.ts). State is the .on / .lit class,
+   set on timers; the transitions below are decoration only. */
+.tiles { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 56px; }
+.tiles-grid { position: relative; }
+.tile {
+  position: absolute; width: 100px; height: 100px; border-radius: 10px;
+  background: var(--tile-off); opacity: 0; transform: scale(0.2);
+  transition: transform 350ms ease-out, opacity 350ms, background 350ms;
+}
+.tile.on { opacity: 1; transform: none; }
+.tile.base.on { background: var(--tile-base); box-shadow: 0 0 18px rgba(255, 176, 0, 0.4); }
+.tile.row.on { background: var(--tile-row); box-shadow: 0 0 18px rgba(86, 180, 233, 0.5); }
+.tile.col.on { background: var(--tile-col); box-shadow: 0 0 18px rgba(204, 121, 167, 0.5); }
+.tile.corner.on { background: var(--tile-corner); box-shadow: 0 0 18px rgba(0, 158, 115, 0.5); }
+.tile-label {
+  position: absolute; width: 84px; height: 100px; display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 48px; font-weight: 700; opacity: 0; transition: opacity 300ms;
+}
+.tile-label.col { width: 100px; height: 68px; }
+.tile-label.corner { padding-left: 12px; }
+.tile-label.on { opacity: 1; }
+.tile-label.row { color: var(--tile-row); }
+.tile-label.col { color: var(--tile-col); }
+.tile-label.corner { color: var(--tile-corner); }
+.tiles-caption { min-height: 70px; font-size: 54px; font-weight: 700; color: var(--card); }
+.tiles-eq { display: flex; gap: 34px; font-family: var(--font-mono); font-size: 96px; line-height: 1; font-weight: 700; color: var(--tile-off); }
+.tiles-eq .term { transition: color 300ms; }
+.tiles-eq .term.base.lit { color: var(--tile-base); }
+.tiles-eq .term.row.lit { color: var(--tile-row); }
+.tiles-eq .term.col.lit { color: var(--tile-col); }
+.tiles-eq .term.corner.lit { color: var(--tile-corner); }
+.tiles-eq .term.total.lit { color: var(--tile-total); }
+.tiles-again { position: absolute; right: 24px; bottom: 16px; width: 200px; }
+.alt-view.on .tiles-again { pointer-events: auto; }
+.tiles.still .tile, .tiles.still .tile-label, .tiles.still .term { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .tile, .tile-label, .tiles-eq .term { transition: none; }
+}
+
 /* Windows live in app coordinates inside the stage. */
 .win-host { position: absolute; left: -24px; top: -112px; width: 1920px; height: 1080px; pointer-events: none; }
 .windows { position: absolute; inset: 0; }

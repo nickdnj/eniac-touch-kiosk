@@ -135,18 +135,20 @@ selftest:                        # architecture 5.9.5 rule 8
 
 content:
   briefing:                      # S3, step 0a
-    headline: "Mission 1: Squares"
-    body: "A square is a number times itself. 3 x 3 = 9. ENIAC can make a whole table of squares, and you will wire it up. No typing. In 1946, programming meant plugging in cables!"
+    headline: "What is a square?"   # the header already says "Mission 1: Squares"
+    # Handoff copy trimmed to the 40-word lint (FR-22): "That is why 9 is
+    # called the square of 3" is the stage caption instead; "No typing." cut.
+    body: "Picture tiles on a floor. Lay them out 3 rows of 3, and you have a square of 9 tiles. ENIAC can make a list of squares, and you will wire it up. In 1946, programming meant plugging in cables!"
     more: "ENIAC was finished in 1945 and shown to the public on February 15, 1946. It had about 18,000 vacuum tubes. There was no keyboard for programs. People set cables and switches, a bit like an old telephone switchboard."
     buttons: ["Let's go"]
-    review: { factCheck: [body, more], source: "ux-spec 8.1.4 0a (body: [FC: 1946])" }
+    review: { factCheck: [body, more], source: "docs/handoff-squares-tiles.md, from ux-spec 8.1.4 0a (body: [FC: 1946])" }
   plan:                          # step 0b
     headline: "Here is the trick"
-    body: "To get the next square, add the number two times, then add 1. Start with 3 x 3 = 9. Add 3, add 3, add 1. You get 16, which is 4 x 4. ENIAC is great at adding!"
+    body: "To make the square one size bigger, add a row, add a column, and add 1 tile in the corner. ENIAC never multiplies here. It just adds, and ENIAC was very fast at adding."
     math: "9 + 3 + 3 + 1 = 16"
     more: "This is Brian Stuart's example. Stuart's notes say this is faster than multiplying, because each new square needs only additions. The multiplier is a whole other unit of ENIAC, and this trick does not need it."
     buttons: ["Next step", "Skip setup"]
-    review: { factCheck: [more], source: "ux-spec 8.1.4 0b" }
+    review: { factCheck: [more], source: "docs/handoff-squares-tiles.md, from ux-spec 8.1.4 0b (body softened: no new claim)" }
   rest:                          # S5
     headline: "The rest is done for you"
     body: "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. We will place the last ones now: 8 cables and 10 switches."

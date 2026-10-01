@@ -49,7 +49,7 @@ export async function toBriefing(page: Page): Promise<void> {
   await expect(page.locator("#app")).toHaveAttribute("data-view", "picker");
   await tapSlow(page, page.getByRole("button", { name: "Start", exact: true }).first());
   await expect(page.locator("#app")).toHaveAttribute("data-view", "mission");
-  await expect(page.locator(".step-card h2")).toHaveText("Mission 1: Squares");
+  await expect(page.locator(".step-card h2")).toHaveText("What is a square?");
 }
 
 export const view = (page: Page) => page.locator("#app");
@@ -63,7 +63,7 @@ export const feedback = (page: Page) => page.locator(".step-card .feedback");
 export async function devMission(page: Page): Promise<void> {
   await mock(page, "reset");
   await page.goto("/?mission=squares");
-  await expect(page.locator(".step-card h2")).toHaveText("Mission 1: Squares");
+  await expect(page.locator(".step-card h2")).toHaveText("What is a square?");
 }
 
 /** Briefing -> plan -> step 1. */

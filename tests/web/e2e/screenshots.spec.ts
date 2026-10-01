@@ -25,9 +25,17 @@ test("capture key screens", async ({ page }) => {
   await shot(page, "02-picker");
 
   await devMission(page);
-  await page.waitForTimeout(500);
-  await shot(page, "03-briefing");
+  // Briefing tiles: all 9 lit, "3 rows of 3 = 9 tiles".
+  await expect(page.locator(".tiles-caption")).toHaveText("3 rows of 3 = 9 tiles", { timeout: 12_000 });
+  await page.screenshot({ path: join(dir, "03-briefing.png") });
   await tapSlow(page, mainBtn(page));
+  // Plan mid-animation: the 3x3 base and the new row of 3 (9 + 3 lit).
+  await tap(page, page.locator(".tiles-again"));
+  await expect(page.locator('.tiles-eq .term[data-term="row"]')).toHaveClass(/lit/, { timeout: 4000 });
+  await page.waitForTimeout(700);
+  await page.screenshot({ path: join(dir, "04b-plan-mid-animation.png") });
+  // Plan finished: = 16 lit.
+  await expect(page.locator('.tiles-eq .term[data-term="total"]')).toHaveClass(/lit/, { timeout: 9000 });
   await shot(page, "04-plan");
   await tapSlow(page, mainBtn(page));
   await page.waitForTimeout(600);
