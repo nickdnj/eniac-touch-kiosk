@@ -1,0 +1,19 @@
+{
+  "name": "sq-3inits",
+  "program": "sq.e",
+  "rate": 100,
+  "inits": 3,
+  "patched": true,
+  "upstream": "c4b94f2ca9ea59dd3fdb05ddf5e29a08c7ce569a",
+  "commands": [
+    "f p /Users/nickd/Workspaces/eniac-touch-kiosk/build/run/s/rec60015/punch.txt",
+    "s cy.rate 100",
+    "b i",
+    "b i",
+    "b i",
+    "D",
+    "q"
+  ],
+  "recordedAt": "2026-09-30T20:08:25Z",
+  "settled": true
+}

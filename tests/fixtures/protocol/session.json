@@ -1,0 +1,17 @@
+{
+  "applied": [
+    "j1-one",
+    "const-to-trunk1",
+    "trunk1-to-a1",
+    "a1-to-a2",
+    "init-to-1-1",
+    "a2-6o-to-1-3",
+    "a1-twice"
+  ],
+  "id": "faaacdf9",
+  "mission": "squares",
+  "mode": "visitor",
+  "remaining": 0,
+  "state": "running",
+  "t": "session"
+}

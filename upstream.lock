@@ -1,0 +1,7 @@
+# Pinned upstream simulator (Brian L. Stuart). Nothing from upstream is committed (PRD R1).
+# Read by scripts/fetch-upstream.sh. Bump only with a deliberate PR (NFR-12).
+URL=https://github.com/blstuart/eniac-simulator
+COMMIT=c4b94f2ca9ea59dd3fdb05ddf5e29a08c7ce569a
+TREE=8ddc33467d446226b4a59ec2f8d721864d98d6c6
+GOTOOLCHAIN=go1.26.8
+RUNTIME_FILES=auto

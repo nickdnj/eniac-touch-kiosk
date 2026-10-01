@@ -149,7 +149,7 @@ graph LR
 | `internal/econfig` | `.e` tokenizer (comments, `l` includes, `f` lines); jack grammar; **switch catalog** (valid positions per switch family, taken from upstream `*ctl` functions). | M1 (acc, constant, init, cycling, trunks); M2 (MP, FT, printer, multiplier, divider) |
 | `internal/mission` | Load YAML; validate against the pinned `.e`; generate the preset file; compile the mission JSON served to the UI; evaluate checkpoint predicates. | M1 |
 | `internal/session` | Session state machine (5.5); action whitelist; run control (speed, buttons); orphan-session reaping. | M1 |
-| `internal/protocol` | Go types for every websocket message. **Source of truth.** `tygo` generates `src/web/app/protocol.gen.ts`. | M1 |
+| `internal/protocol` | Go types for every websocket message (and `/healthz`). **Source of truth.** `tygo` generates `src/bridge/internal/protocol/protocol.gen.ts` (and `internal/mission/mission.gen.ts` for the mission API); a Go test fails if they are stale. The web app imports them from there. | M1 |
 | `internal/server` | Static files, `/api/missions`, `/api/missions/{id}`, `/healthz`, `/ws`, Origin checks | M1 (loopback `/healthz`), M3 (LAN health port, admin API) |
 | `internal/metrics` | JSONL writer, retention, rollups, CSV export | M3 (M1 writes the raw JSONL only) |
 | `internal/health` | CPU temperature (`/sys/class/thermal`), `vcgencmd get_throttled`, sd_notify watchdog | M3 |
@@ -320,17 +320,18 @@ This is the complete list. Nothing else is ever written.
 
 | `t` | When | Payload | M |
 |---|---|---|---|
-| `hello` | On connect | `protocol`, `build` (version + upstream commit), `config` (`idle.setupS`, `idle.runS`, `idle.countdownS`, `admin.tapZone`), `health` (as below) | M1 |
-| `state` | After `hello`, on every new session, and on resync | `session` (below), `seq`, `machine` (full MachineState), `cards` (last 20), `run` (below) | M1 |
-| `frame` | ≤ 30 Hz while a session exists and something changed | `seq`, `d`: a **JSON Merge Patch** against MachineState | M1 |
+| `hello` | On connect | `protocol`, `build` (version + upstream commit), `config` (`idle.setupS`, `idle.runS`, `idle.countdownS`, `admin.tapZone` = `{corner: "top-left", widthPx: 120, heightPx: 96, taps: 5}`), `health` (as below) | M1 |
+| `state` | After `hello`, on every new session, and on resync | `session` (below, `null` when there is none), `seq`, `machine` (full MachineState, `null` when there is no session: nothing to render, no demo fallback), `cards` (last 20), `run` (below) | M1 |
+| `frame` | ≤ 30 Hz while a session exists and something changed | `seq`, `d`: a **JSON Merge Patch** against MachineState. `seq` increases monotonically for the life of the bridge (not per session); apply a frame only if its `seq` is greater than the last `state`/`frame` applied | M1 |
 | `session` | Session state change | `id`, `mission`, `mode` (`visitor`/`docent`/`attract`), `state` (5.5), `applied` (step IDs), `remaining` (count) | M1 |
 | `step_applied` | After the core acked a step line | `re`, `step`, `assisted` (bool), `remaining` | M1 |
 | `setup_complete` | All steps applied (normally, or via `skip_setup`) | `skipped` (count of steps the bridge applied) | M1 |
 | `run` | `busy` ↔ `idle` transitions | `state`: `busy`\|`idle`; `inits` (INIT presses this session); `settled` (on idle only: decoded values of the mission's `watch` accumulators, for example `{"1":3,"2":9}`) | M1 |
 | `checkpoint` | A mission predicate became true (edge-triggered, once) | `id` | M1 |
 | `punch` | Each card, in order, never coalesced | `n` (1-based card number), `text` (80 chars), `fields` (16 × 5-char strings) | M2 |
-| `health` | Change, and every 5 s | `core`: `starting`\|`up`\|`down`; `code` (5.8); `attempt`, `of`; `final` (retry budget exhausted); `kioskClient` (bool) | M1 |
+| `health` | Change, and every 5 s | `core`: `starting`\|`up`\|`down`; `code` (5.8); `detail` (for example `hang-cmd`); `attempt`, `of`; `final` (retry budget exhausted); `kioskClient` (bool) | M1 |
 | `error` | A rejected client action | `re`, `code` (`BUSY`, `BAD_STATE`, `UNKNOWN_STEP`, `NOT_ALLOWED`, `BAD_MESSAGE`), `message` | M1 |
+| `pong` | Reply to `ping` | `re` | M1 |
 
 **MachineState (JSON).** Everything is 1-based, and the keys are the `.e` unit numbers. Bit and digit vectors are strings, which keeps merge-patches small and exact. Arrays are never used, because merge-patch replaces arrays wholesale.
 
@@ -396,14 +397,14 @@ stateDiagram-v2
 | `button` | `b`: `init`\|`clear`\|`read` | `armed`, `running`, `result` | Must be listed in the mission's `run.buttons`. **INIT and CLEAR are rejected with `BUSY` unless `run.state` is `idle`** (a server-side guard for UX-07). READ runs the withheld line if the mission binds one. | M1 (init, clear), M2 (read) |
 | `set_speed` | `speed` (a name from the mission's `speeds`) | `armed`+ | Sends `s cy.rate N` / `s cy.op …` | M1 |
 | `end_session` | `reason`: `idle`\|`menu`\|`restart`\|`done` | any | Tears down the core. Records metrics. | M1 |
-| `metric` | `ev` (whitelisted name), `mission`, `step`, `n` | any | Appends to JSONL. Never influences the core. | M1 (write only) |
+| `metric` | `ev` (whitelisted name), `mission`, `step`, `speed`, `screen`, `assisted`, `n` (each optional, whitelisted per event; for `setup_skipped` the `step` is recorded as `atStep`) | any | Appends to JSONL. Never influences the core. Bridge event names (`mission_complete`, `error_*`, `core_restart`, `session_*`) are `NOT_ALLOWED` from the UI. | M1 (write only) |
 | `ping` | none | any | Replies `pong`. Updates `kioskClient` last-seen. | M1 |
 | `admin_*` | Over HTTP, not ws; section 8.4 | | | M3 |
 
 **"Keep pressing for me" and "Skip to the answer"** (UX 8.1.4) are **UI-side loops** over `button {b:"init"}`: wait for `run: idle`, check the `settled` values, press again. "Skip to the answer" first sends `set_speed {speed:"full"}`. The mission's `checkpoints` tell the UI when to stop (Squares: `a1 == 12`). The bridge's `BUSY` guard means a UI bug can't stack INITs.
 
 **Idle detection** (`run.state`). This is UX F2(a):
-- `busy` starts when the bridge sends `b i` or `b r`.
+- `busy` starts when the bridge sends `b i` or `b r`, and also `b c` (M1, #11), so that after CLEAR the UI gets an `idle` event whose `settled` values are the cleared ones (0 / 0 for Squares; verified on the Mac that `b c` clears both accumulators even though `sq.e` sets no `cc` switch).
 - `idle` is declared when **all** of these hold:
   1. no MachineState change other than `cycle` for `quiet` ms, where `quiet = max(120, 3 × additionTime)` and `additionTime = 20000 / rate` ms (the core sleeps `500000/rate` µs in each of the 40 pulse slots of an addition cycle; at rate 0 → 120 ms);
   2. every `acc[*].prog` is all zeros;
@@ -509,7 +510,29 @@ checkpoints:                    # predicates over MachineState, evaluated by the
 result: answer                  # the checkpoint that means "mission complete" (metrics, FR-60)
 
 credits: ["Brian L. Stuart, programs/sq.e and doc/example.tex"]
+
+selftest: { inits: 3, expect: { "1": 3, "2": 9 } }   # rule 8 (M1 addition)
+
+content:                        # M1 addition (#10): the non-step copy
+  briefing: { headline, body, more, buttons }         # S3 / step 0a
+  plan:     { headline, body, math, more, buttons }   # step 0b
+  rest:     { headline, body, buttons }               # S5 "the rest is done for you"
+  run:                                                # S6 rail
+    before:  { headline: "Press INIT", sub: "…" }
+    presses:                                          # per INIT press
+      - press: 1
+        headline: "Watch the lamps"
+        captions:                                     # fire in the UI on real lamp state (UX F2)
+          - { text: "…", trigger: { accProg: { acc: "1", program: 6 } } }   # that program FF lit
+          - { text: "1 x 1 = 1", trigger: { run: idle } }                   # run: idle|busy
+    tape: "{a1} x {a1} = {a2}"                        # notebook tape line; {aN} = settled value
+    extras: { afterPress: 3, keepPressing, showResult, skipToAnswer, hint, stopAt: answer }
+  result:   { headline, body, takeaway, takeawaySub, more, buttons }       # S7
 ```
+
+**Content block (M1 amendment, #10).** The 5.9.2 schema had no home for the briefing, the plan step, the S5 card, the run-rail captions or the result copy. They live in `content:`, are copied verbatim into the compiled mission (5.9.3) and are linted like step copy (rule 7). Caption `trigger`s are evaluated **by the UI** against MachineState and `run` events; the bridge only validates their shape. Every text block (step `text` and each `content` card) may carry `review: {factCheck: [fields], source}`: the UX spec's `[FC]` tags live there, are never sent to the UI, and `[FC]` in shown text fails validation. Step `text.hints` has the keys `wrongFrom`, `wrongTo`, `wrongKind`, `wrongSwitch`, `wrongValue` and `byTarget` (canonical `.e` term → text); the UI picks which one to show. `summary` (one line for the mission picker) is also an M1 addition.
+
+**Greek and ASCII (M1, #9).** At the pinned commit `sq.e` spells the accumulator inputs in Greek (`p 1 a1.α`, `s a1.op5 α`). The core also accepts `a`/`alpha` and so on. The loader matches on a canonical form (Greek) and always sends the file's original text; compiled missions use the Greek form.
 
 **Predicate grammar** (M1: `acc`+`eq|gte`; M2: the rest): `{acc: n, eq|gte|lte: int}`, `{punchCount: {gte: n}}`, `{punchField: {index: i, eq: "02801"}}`, `{init: {bit: n, eq: 0|1}}`, `{mp: {stage: s, eq: k}}`, `{all: [...]}`, `{any: [...]}`.
 
@@ -564,7 +587,7 @@ The preset is the other 18 lines. `withheld: []`, because `sq.e` has no `b` line
 1. The program and include sha256 values match. Every `line` matches exactly one command.
 2. Steps are only `p` or `s` lines. Withheld lines are only `b` or `f` lines.
 3. **Multiset check:** preset ∪ steps ∪ withheld == the original command lines (nothing lost or duplicated).
-4. No preset line touches the same jack or switch as a step. Otherwise the order of application would matter.
+4. **Per terminal, ignoring trunk ends:** no preset line plugs the same unit jack (for example `a1.A`, `c.o`, `i.io`) or sets the same switch as a step. Otherwise the order of application would matter. Trunk ends are exempt because trunks are shared by design: in `sq.e`, trunks `1`, `1-1` and `1-3` carry both step and preset cables. *(Amended in M1, #10; the original wording "no preset line touches the same jack or switch as a step" rejected `sq.e` itself.)*
 5. Switch values are in the **catalog** (from upstream `*ctl` accepted values; for example acc `op`: `α β γ δ ε A S AS 0`; `rp`: `1-9`; `cc`: `0 C`; constant `j`/`k` digits: `0-9`; `sNN`: `[A-K](l|r|lr)`). `choices` ⊆ catalog and contains the value.
 6. Every step target has a matching element ID in the SVG panel kit (`jack:c.o`, `sw:c.j1`, …; section 6).
 7. Copy lint: headline and body length, and word counts (FR-22).
@@ -718,7 +741,7 @@ TypeScript gives the protocol types (`protocol.gen.ts`, generated from the Go st
 ```
 index.html                 single page; CSP: default-src 'self'; connect-src ws://127.0.0.1:8740
 app/main.ts                boot: fetch missions, open ws, router
-app/protocol.gen.ts        generated from src/bridge/internal/protocol (do not edit)
+(protocol types: import src/bridge/internal/protocol/protocol.gen.ts and internal/mission/mission.gen.ts; generated, do not edit)
 app/net/ws.ts              connect, reconnect (backoff 250 ms -> 2 s), ping 5 s, E-LINK after 5 s down
 app/state/machine.ts       merge-patch apply, session tracking (pure)
 app/lamps/derive.ts        state -> lamp IDs per unit (pure)
@@ -972,3 +995,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | 0.1 | 2026-09-30 | Nick DeMarco with AI assistance | Initial architecture from the PRD v0.1, the UX spec v0.1 (F2 needs folded in), and a code read plus local runs of upstream `c4b94f2` |
+| 0.2 | 2026-09-30 | software-developer agent (M1 bridge) | 5.9.2: `content:`, `selftest:` and `summary` added to the mission schema; `[FC]` review metadata. 5.9.5 rule 4 defined per terminal, ignoring trunk ends. Greek/ASCII canonicalization note. | 5.3-5.6 (#8): generated TS types live next to the Go types; `hello.config.admin.tapZone` shape; `frame.seq` monotonic across sessions; `health.detail`; `pong`; `metric` gains optional `speed` and `screen` (the 8.3 events `speed{m,speed}` and `idle_reset{screen}` need them). | 5.4/5.6 (#11): `state.session` and `state.machine` are `null` without a session; CLEAR also starts `busy`. | 5.6 (#12): `metric.assisted` (for `step_done{m,step,assisted}`). |
