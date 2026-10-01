@@ -55,7 +55,7 @@ test("S2 shows available missions only, with Start here and a 96 px Start; S0 wh
   await expect(page.locator(".screen.waking, .screen.mission")).toHaveCount(1);
   if (await page.locator(".screen.waking").count()) await expect(page.locator(".lamp.on")).toHaveCount(0);
   await expect(view(page)).toHaveAttribute("data-view", "mission");
-  await expect(page.locator(".step-card h2")).toHaveText("Mission 1: Squares");
+  await expect(page.locator(".step-card h2")).toHaveText("What is a square?");
   expect((await sent(page)).filter((m) => m.t === "start_mission")).toHaveLength(1);
 });
 
@@ -66,13 +66,13 @@ test("starting while the previous visitor's session is still alive waits for the
   await tap(page, page.locator(".screen.start"));
   await page.waitForTimeout(650);
   await tapSlow(page, page.locator(".mc-start"));
-  await expect(page.locator(".step-card h2")).toHaveText("Mission 1: Squares");
+  await expect(page.locator(".step-card h2")).toHaveText("What is a square?");
   await page.goto("/"); // a reload leaves the session alive on the bridge
   await expect(view(page)).toHaveAttribute("data-view", "start");
   await tap(page, page.locator(".screen.start"));
   await page.waitForTimeout(650);
   await tapSlow(page, page.locator(".mc-start"));
-  await expect(page.locator(".step-card h2")).toHaveText("Mission 1: Squares");
+  await expect(page.locator(".step-card h2")).toHaveText("What is a square?");
   await page.waitForTimeout(1000);
   await expect(view(page)).toHaveAttribute("data-view", "mission");
 });

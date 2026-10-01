@@ -20,7 +20,8 @@ import {
 
 test("happy path: all 7 steps by touch, exact .e lines in order, S5 shows 8 cables and 10 switches (M1-02)", async ({ page }) => {
   await devMission(page);
-  await expect(page.locator(".roomplan")).toBeVisible();
+  await expect(page.locator('.alt-view [data-figure="briefing"]')).toBeVisible();
+  await expect(page.locator(".header .title")).toHaveText("Mission 1: Squares");
   await toStep1(page);
   await expect(page.locator(".hdr-step")).toHaveText("Step 1 of 7");
   await doAllSteps(page);
@@ -140,8 +141,11 @@ test("Missions: no confirm before any step; confirm after one", async ({ page })
 
 test("all copy on the rail comes from the mission JSON", async ({ page }) => {
   await devMission(page);
-  await expect(page.locator(".step-card .card-body")).toContainText("A square is a number times itself.");
-  await toStep1(page);
+  await expect(page.locator(".step-card .card-body")).toContainText("Picture tiles on a floor.");
+  await tapSlow(page, mainBtn(page));
+  await expect(page.locator(".step-card .card-body")).toContainText("ENIAC was very fast at adding.");
+  await tapSlow(page, mainBtn(page));
+  await expect(page.locator(".step-card h2")).toHaveText("Dial in the number 1");
   await expect(page.locator(".step-card .card-body")).toHaveText(
     "This is the Constant Transmitter. It holds a number that you set with dials. Tap the glowing dial and choose 1.",
   );

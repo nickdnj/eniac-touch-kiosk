@@ -138,14 +138,14 @@
   "result": "answer",
   "content": {
     "briefing": {
-      "headline": "Mission 1: Squares",
-      "body": "A square is a number times itself. 3 x 3 = 9. ENIAC can make a whole table of squares, and you will wire it up. No typing. In 1946, programming meant plugging in cables!",
+      "headline": "What is a square?",
+      "body": "Picture tiles on a floor. Lay them out 3 rows of 3, and you have a square of 9 tiles. ENIAC can make a list of squares, and you will wire it up. In 1946, programming meant plugging in cables!",
       "more": "ENIAC was finished in 1945 and shown to the public on February 15, 1946. It had about 18,000 vacuum tubes. There was no keyboard for programs. People set cables and switches, a bit like an old telephone switchboard.",
       "buttons": ["Let's go"]
     },
     "plan": {
       "headline": "Here is the trick",
-      "body": "To get the next square, add the number two times, then add 1. Start with 3 x 3 = 9. Add 3, add 3, add 1. You get 16, which is 4 x 4. ENIAC is great at adding!",
+      "body": "To make the square one size bigger, add a row, add a column, and add 1 tile in the corner. ENIAC never multiplies here. It just adds, and ENIAC was very fast at adding.",
       "math": "9 + 3 + 3 + 1 = 16",
       "more": "This is Brian Stuart's example. Stuart's notes say this is faster than multiplying, because each new square needs only additions. The multiplier is a whole other unit of ENIAC, and this trick does not need it.",
       "buttons": ["Next step", "Skip setup"]

@@ -47,6 +47,14 @@
   --lamp-off: #3A2E1E;
   --cable-data: #56B4E9;
   --cable-prog: #CC79A7;
+  /* Squares tile figures: own names so they never read as cable or
+     correct/wrong meanings; values from the same Okabe-Ito set. */
+  --tile-base: #FFB000;
+  --tile-row: #56B4E9;
+  --tile-col: #CC79A7;
+  --tile-corner: #009E73;
+  --tile-total: #F4EFE3;
+  --tile-off: #3A3D42;
   --font-ui: "Atkinson Hyperlegible", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --space-1: 8px;

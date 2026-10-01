@@ -143,13 +143,17 @@ test("audit: S1, S2, S3, Step 0, D2 Tell me more, D1 confirm", async ({ page }, 
   await audit(page, info, "S2");
   await page.waitForTimeout(650);
   await tapSlow(page, page.locator(".mc-start"));
-  await expect(page.locator(".step-card h2")).toHaveText("Mission 1: Squares");
+  await expect(page.locator(".step-card h2")).toHaveText("What is a square?");
   await audit(page, info, "S3");
   await tapSlow(page, page.locator(".rail .more-btn"));
   await audit(page, info, "D2");
   await tapSlow(page, page.getByText("Close"));
   await page.waitForTimeout(400);
   await tapSlow(page, mainBtn(page));
+  // The plan's tile figure has a "↻ Again" button on the stage: it is audited
+  // like every other target (>= 64 px, not covered, 16 px clear).
+  await expect(page.locator(".tiles-again")).toBeVisible();
+  expect((await collect(page)).filter((r) => r.label === "↻ Again")).toHaveLength(1);
   await audit(page, info, "S4-step0");
   await tapSlow(page, page.locator(".hdr-startover"));
   await audit(page, info, "D1");

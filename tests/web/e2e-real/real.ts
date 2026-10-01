@@ -76,7 +76,7 @@ export async function startSquares(page: Page): Promise<void> {
   await expect(page.locator(".mission-card")).toHaveCount(1);
   await page.waitForTimeout(650);
   await tapSlow(page, page.locator(".mc-start"));
-  await expect(page.locator(".step-card h2")).toHaveText("Mission 1: Squares");
+  await expect(page.locator(".step-card h2")).toHaveText("What is a square?");
 }
 
 /** Decodes an accumulator from the lit DOM lamps in the run view. */
