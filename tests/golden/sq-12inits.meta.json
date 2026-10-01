@@ -1,0 +1,28 @@
+{
+  "name": "sq-12inits",
+  "program": "sq.e",
+  "rate": 0,
+  "inits": 12,
+  "patched": true,
+  "upstream": "c4b94f2ca9ea59dd3fdb05ddf5e29a08c7ce569a",
+  "commands": [
+    "f p /Users/nickd/Workspaces/eniac-touch-kiosk/build/run/s/rec60032/punch.txt",
+    "s cy.rate 0",
+    "b i",
+    "b i",
+    "b i",
+    "b i",
+    "b i",
+    "b i",
+    "b i",
+    "b i",
+    "b i",
+    "b i",
+    "b i",
+    "b i",
+    "D",
+    "q"
+  ],
+  "recordedAt": "2026-09-30T20:08:30Z",
+  "settled": true
+}

@@ -1,0 +1,82 @@
+cm C
+ftar 0 00
+ftar 1 00
+ftar 2 00
+ftr 2 -3
+d 0 0 00000000 000000001000000000000000000000
+cy 10
+ftr 0 -3
+ftr 1 -3
+cy 26
+cy 4
+cy 26
+cy 7
+cy 20
+cy 2
+cy 11
+cy 2
+cy 7
+cy 17
+cy 20
+cy 5
+cy 9
+cy 10
+cy 2
+cy 26
+cy 38
+cy 18
+cy 20
+cy 14
+cy 19
+cy 34
+cy 8
+cy 14
+cy 19
+cy 11
+cy 8
+cy 34
+cy 10
+cy 3
+cy 13
+cy 2
+cy 5
+ad 0 10 5
+ad 1 0 3
+ad 1 1 9
+ad 1 2 9
+ad 1 3 9
+ad 1 4 9
+ad 1 5 9
+ad 1 6 9
+ad 1 7 9
+ad 1 8 9
+ad 1 9 9
+ad 1 10 5
+cy 17
+cy 11
+cy 26
+cy 17
+cy 26
+cy 38
+cy 10
+cy 19
+cy 4
+cy 3
+cy 17
+cy 2
+cy 5
+cy 4
+cy 5
+cy 19
+cy 10
+cy 16
+cy 10
+cy 19
+cy 18
+cy 38
+cy 19
+cy 9
+cy 11
+cy 8
+cy 18
+cy 9

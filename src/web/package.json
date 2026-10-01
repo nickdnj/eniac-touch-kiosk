@@ -1,0 +1,14 @@
+{
+  "name": "eniac-kiosk-web",
+  "private": true,
+  "description": "Dev-only tooling for the kiosk web UI. Node is never on the Pi and never in a release.",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "test": "node --test ../../tests/web/"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  }
+}

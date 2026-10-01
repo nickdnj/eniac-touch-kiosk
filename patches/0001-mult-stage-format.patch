@@ -1,0 +1,21 @@
+From: ENIAC Touch Kiosk <kiosk@localhost>
+Subject: [PATCH] mult: print the multiplier stage without padding
+
+multstat() formats the stage as "%2d ", so a stage below 10 gets a
+leading space ("m  0 ..."). Consumers that split on single spaces
+(vis/eniactk.go) index an empty field and panic the first time the
+multiplier runs. Print "%d " instead. Reported upstream (see #34).
+
+---
+diff --git a/src/mult.go b/src/mult.go
+--- a/src/mult.go
++++ b/src/mult.go
+@@ -63,7 +63,7 @@
+ }
+ 
+ func multstat() string {
+-	s := fmt.Sprintf("%2d ", stage)
++	s := fmt.Sprintf("%d ", stage)
+ 	for i, _ := range multff {
+ 		if multff[i] {
+ 			s += "1"

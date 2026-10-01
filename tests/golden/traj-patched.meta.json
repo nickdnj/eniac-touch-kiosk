@@ -1,0 +1,18 @@
+{
+  "name": "traj-patched",
+  "program": "trajdemo.e",
+  "rate": 0,
+  "inits": 0,
+  "seconds": 10,
+  "patched": true,
+  "upstream": "c4b94f2ca9ea59dd3fdb05ddf5e29a08c7ce569a",
+  "commands": [
+    "f p /Users/nickd/Workspaces/eniac-touch-kiosk/build/run/s/rec60864/punch.txt",
+    "s cy.rate 0",
+    "s cy.op 1p",
+    "D",
+    "q"
+  ],
+  "recordedAt": "2026-09-30T20:11:43Z",
+  "settled": true
+}
