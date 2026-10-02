@@ -150,6 +150,14 @@ export const COPY = {
     punch: "Punch",
     candidate: (n: number) => `Testing ${n}`,
   },
+  // Live attract captions (UX 14.2.1 "Live caption"), used by attract/store.ts.
+  attract: {
+    waking: "Waking ENIAC...",
+    reading: "Live: ENIAC is reading its card of numbers.",
+    flying: (hop: number) => `Live: ENIAC is working out a shell's path. Hop ${hop}`,
+    landed: "The shell has landed. ENIAC worked out the whole path.",
+    between: "Starting another flight.",
+  },
   still: {
     title: "Still there?",
     body: "We will start over in",

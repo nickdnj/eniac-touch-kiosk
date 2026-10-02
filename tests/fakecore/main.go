@@ -17,6 +17,16 @@
 //	                   (a program flip-flop stays set) and nothing more comes
 //	FAKECORE_STDIN_LOG append every stdin line here (allow-list checks)
 //
+//	traj               a short trajdemo flight for the attract loop: "b r"
+//	                   loads Acc 1 = 97367; "b i" punches FAKECORE_N cards
+//	                   (default 6) FAKECORE_AFTER ms apart (default 100),
+//	                   the last with "up" below zero (column 71 '-'), and
+//	                   keeps flying (as trajdemo does) until "s cy.op 1a".
+//	                   FAKECORE_TRAJ_FAIL = exit | stall | read makes the
+//	                   flight exit after card 2, stop punching (busy) after
+//	                   card 2, or never load the card; FAKECORE_ONCE=<path>
+//	                   applies it to one core only (the first to create it).
+//
 // It is never shipped: `make release` fails if it appears in a release.
 package main
 
@@ -164,6 +174,17 @@ func main() {
 	if hangAfter < 0 {
 		hangAfter = 2
 	}
+	trajFail := os.Getenv("FAKECORE_TRAJ_FAIL")
+	if p := os.Getenv("FAKECORE_ONCE"); p != "" && trajFail != "" {
+		f, err := os.OpenFile(p, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o644)
+		if err != nil {
+			trajFail = "" // another core already failed
+		} else {
+			f.Close()
+		}
+	}
+	var frozen sync.Once
+	frozenc := make(chan struct{})
 	sc := bufio.NewScanner(os.Stdin)
 	cmds := 0
 	for sc.Scan() {
@@ -186,6 +207,39 @@ func main() {
 				for i := 1; i <= envInt("FAKECORE_N", 3); i++ {
 					time.Sleep(time.Duration(gap) * time.Millisecond)
 					status("punch " + fmt.Sprintf("%80s", fmt.Sprintf("%010d          ", 2*i+1)))
+				}
+			}()
+		case mode == "traj" && line == "b r" && trajFail != "read":
+			go status("init 000001000000000", "ad 0 6 9", "ad 0 7 7", "ad 0 8 3", "ad 0 9 6", "ad 0 10 7", "init 000000000000000")
+		case mode == "traj" && line == "s cy.op 1a":
+			frozen.Do(func() { close(frozenc) })
+		case mode == "traj" && line == "b i":
+			go func() {
+				status("af 3 0 1") // a program flip-flop stays set: busy while flying
+				gap := envInt("FAKECORE_AFTER", 100)
+				n := envInt("FAKECORE_N", 6)
+				for i := 1; ; i++ {
+					select {
+					case <-frozenc:
+						return
+					case <-time.After(time.Duration(gap) * time.Millisecond):
+					}
+					hop := (i-1)%n + 1
+					if trajFail == "exit" && i == 3 {
+						os.Exit(4)
+					}
+					if trajFail == "stall" && i == 3 {
+						return // busy, never another card
+					}
+					up := fmt.Sprintf("%010d", 1000*hop*(n-hop))
+					if hop == n {
+						up = "-000000029"
+					}
+					fields := []string{"00000", "00000", "00000", "00000", "00000", fmt.Sprintf("%05d", hop),
+						"00000", "00000", "00000", "00000"}
+					along := fmt.Sprintf("%010d", 14128681*hop)
+					fields = append(fields, along[:5], along[5:], "00000", "00000", up[:5], up[5:])
+					status("punch " + strings.Join(fields, ""))
 				}
 			}()
 		case line == "d i":

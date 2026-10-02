@@ -17,6 +17,10 @@ func TestDecodeValid(t *testing.T) {
 		`{"t":"metric","ev":"wrong_tap","mission":"squares","step":"a1-to-a2"}`,
 		`{"t":"metric","ev":"idle_reset","screen":"S4"}`,
 		`{"t":"ping","id":99}`,
+		`{"t":"attract_start","id":3}`,
+		`{"t":"attract_stop","id":4,"reason":"touch"}`,
+		`{"t":"attract_stop","reason":"menu"}`,
+		`{"t":"attract_stop"}`,
 	} {
 		if m, e := Decode([]byte(s)); e != nil || m == nil {
 			t.Errorf("%s: %+v", s, e)
@@ -40,6 +44,7 @@ func TestDecodeRejects(t *testing.T) {
 		`{"t":"set_speed","speed":"s cy.rate 1"}`,
 		`{"t":"start_mission","mission":"../etc"}`, `{"t":"start_mission","mission":"squares","mode":"god"}`,
 		`{"t":"end_session","reason":"because"}`,
+		`{"t":"attract_stop","reason":"sleep"}`, `{"t":"attract_start","mission":"primes"}`,
 		`{"t":"metric","ev":"wrong_tap","ip":"1.2.3.4"}`, `{"t":"metric","ev":"free text here"}`,
 		`{"t":"ping","id":"x"}`, `{"t":"ping","id":1.5}`,
 		`{"t":"ping"} {"t":"ping"}`,

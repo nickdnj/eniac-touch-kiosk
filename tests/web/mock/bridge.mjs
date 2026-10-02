@@ -31,7 +31,7 @@ export const RATES = { squares: { slow: 13, full: 0 }, primes: { slow: 100, full
 /** The 14 group checkers of sieve.e: Acc n watches the nth odd prime. */
 export const CHECKERS = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
 
-const WL = new Set(["start_mission", "apply_step", "skip_setup", "button", "set_speed", "end_session", "metric", "ping"]);
+const WL = new Set(["start_mission", "apply_step", "skip_setup", "button", "set_speed", "end_session", "attract_start", "attract_stop", "metric", "ping"]);
 // UI metric whitelist (architecture 8.3, protocol.gen.ts Metric.ev); bridge-owned names are NOT_ALLOWED.
 const METRICS = new Set(["wrong_tap", "step_done", "speed", "skip_to_answer", "setup_skipped", "idle_reset", "mission_picked", "picker_next_used", "honor_page_view"]);
 
@@ -170,6 +170,12 @@ export class MockBridge {
         return this.startSession(m.mode || "visitor", MISSIONS[m.mission]);
       case "end_session":
         return this.endSession();
+      // Attract (attract.go): the mock has no core, so it acknowledges the
+      // request but never flies (no fake lamps or cards, even in dev).
+      case "attract_start":
+        return this.send(ws, { t: "attract", re: m.id, phase: "starting", mission: "trajectory", flight: 1, landed: 0, total: 0, cards: 0 });
+      case "attract_stop":
+        return this.send(ws, { t: "attract", re: m.id, phase: "off", mission: "trajectory", flight: 0, landed: 0, total: 0, cards: 0 });
       case "apply_step": {
         if (!s || s.state !== "setup") return err("BAD_STATE", "not in setup");
         const idx = s.mission.steps.findIndex((x) => x.id === m.step);

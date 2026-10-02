@@ -36,6 +36,7 @@ type Config struct {
 	Core     Core     `yaml:"core"`
 	Recovery Recovery `yaml:"recovery"`
 	Idle     Idle     `yaml:"idle"`
+	Attract  Attract  `yaml:"attract"`
 	Admin    Admin    `yaml:"admin"`
 	Metrics  Metrics  `yaml:"metrics"`
 	Assets   Assets   `yaml:"assets"`
@@ -66,6 +67,15 @@ type Idle struct {
 	SetupS     int `yaml:"setupS"`
 	RunS       int `yaml:"runS"`
 	CountdownS int `yaml:"countdownS"`
+}
+
+// Attract configures the live attract loop (PRD FR-34, FR-36; UX 14.2).
+type Attract struct {
+	Mission     string   `yaml:"mission"`     // whose preset, steps and run settings fly (trajectory)
+	Hold        Duration `yaml:"hold"`        // the finished plot is held this long (8 s)
+	Stall       Duration `yaml:"stall"`       // no new card for this long while flying is a hang (20 s)
+	ReadTimeout Duration `yaml:"readTimeout"` // READ must load the card (and settle) within this (15 s)
+	FlightMax   Duration `yaml:"flightMax"`   // a flight that has not landed by then is a hang (5 min)
 }
 
 type Admin struct {
@@ -145,8 +155,10 @@ func Default() Config {
 			Backoff:   []Duration{Duration(2 * time.Second), Duration(5 * time.Second), Duration(10 * time.Second)},
 			SlowRetry: Duration(10 * time.Minute),
 		},
-		Idle:    Idle{SetupS: 90, RunS: 180, CountdownS: 15},
-		Admin:   Admin{SessionTimeoutS: 120, AllowPowerActions: true, AllowUpdates: true, TapZone: TapZone{Corner: "top-left", WidthPx: 120, HeightPx: 96, Taps: 5}},
+		Idle: Idle{SetupS: 90, RunS: 180, CountdownS: 15},
+		Attract: Attract{Mission: "trajectory", Hold: Duration(8 * time.Second), Stall: Duration(20 * time.Second),
+			ReadTimeout: Duration(15 * time.Second), FlightMax: Duration(5 * time.Minute)},
+		Admin:  Admin{SessionTimeoutS: 120, AllowPowerActions: true, AllowUpdates: true, TapZone: TapZone{Corner: "top-left", WidthPx: 120, HeightPx: 96, Taps: 5}},
 		Metrics: Metrics{RetentionDays: 400},
 		Paths: Paths{
 			Release: "/opt/eniac-kiosk/current",
@@ -224,6 +236,9 @@ func (c Config) Validate() error {
 	}
 	if c.Core.ReadyTimeout <= 0 || c.Core.AckTimeout <= 0 || c.Core.SilenceTimeout <= 0 || c.Core.ProbeEvery <= 0 {
 		errs = append(errs, "core timeouts must be positive")
+	}
+	if a := c.Attract; a.Mission == "" || a.Hold < 0 || a.Stall <= 0 || a.ReadTimeout <= 0 || a.FlightMax <= 0 {
+		errs = append(errs, "attract.mission must be set; attract.stall, readTimeout and flightMax must be positive; attract.hold >= 0")
 	}
 	if c.Recovery.Budget < 1 || len(c.Recovery.Backoff) == 0 {
 		errs = append(errs, "recovery.budget must be >= 1 and recovery.backoff non-empty")

@@ -577,6 +577,12 @@ func (c *Core) Close() {
 			case <-time.After(2 * time.Second):
 				c.o.Log.Error("core: process did not exit after SIGKILL", "pid", c.cmd.Process.Pid)
 			}
+			// The vlink relay is the core's child in the same process group;
+			// wait (briefly) until the group is gone, so that a closed
+			// session leaves no process behind when the next core starts.
+			for end := time.Now().Add(500 * time.Millisecond); time.Now().Before(end) && groupAlive(c.cmd.Process.Pid); {
+				time.Sleep(5 * time.Millisecond)
+			}
 		}
 		c.stdin.Close()
 		if conn != nil {
@@ -587,6 +593,9 @@ func (c *Core) Close() {
 		}
 	})
 }
+
+// groupAlive reports whether any process of the group (pgid == pid) is left.
+func groupAlive(pid int) bool { return syscall.Kill(-pid, 0) == nil }
 
 func killGroup(pid int) {
 	// Negative pid: the whole process group (Setpgid made pgid == pid).

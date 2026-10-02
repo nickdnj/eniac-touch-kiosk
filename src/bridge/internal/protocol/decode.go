@@ -15,7 +15,7 @@ var (
 
 // Decode strictly parses one client frame into one of the client message
 // types (StartMission, ApplyStep, SkipSetup, Button, SetSpeed, EndSession,
-// Metric, Ping). Unknown types, unknown fields, wrong field types, bad
+// AttractStart, AttractStop, Metric, Ping). Unknown types, unknown fields, wrong field types, bad
 // values and oversize frames return an Error with code BAD_MESSAGE; they
 // never reach the core (FR-02).
 func Decode(b []byte) (any, *Error) {
@@ -113,6 +113,21 @@ func Decode(b []byte) (any, *Error) {
 			}
 			if m.Screen != "" && !screen.MatchString(m.Screen) {
 				return fail(re, "bad metric screen")
+			}
+		}
+		msg = m
+	case "attract_start":
+		var m AttractStart
+		err = strict(&m)
+		msg = m
+	case "attract_stop":
+		var m AttractStop
+		if err = strict(&m); err == nil {
+			if m.Reason == "" {
+				m.Reason = "touch"
+			}
+			if m.Reason != "touch" && m.Reason != "menu" {
+				return fail(re, "reason must be touch or menu")
 			}
 		}
 		msg = m

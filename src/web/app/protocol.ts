@@ -46,6 +46,10 @@ export type ErrorMsg = P.Error;
 export type ErrorCode = P.Error["code"];
 export type Pong = P.Pong;
 export type Punch = P.Punch;
+export type Attract = P.Attract;
+export type AttractInfo = Omit<P.Attract, "t" | "re">;
+export type AttractPhase = P.Attract["phase"];
+export type AttractLanding = P.AttractLanding;
 
 export type ServerMsg =
   | P.Hello
@@ -59,12 +63,23 @@ export type ServerMsg =
   | (P.Health & { t: "health" })
   | P.Error
   | P.Pong
-  | P.Punch;
+  | P.Punch
+  | (P.Attract & { t: "attract" });
 
 export type ButtonName = P.Button["b"];
 export type EndReason = P.EndSession["reason"];
 export type MetricEv = P.Metric["ev"];
-export type ClientMsg = P.StartMission | P.ApplyStep | P.SkipSetup | P.Button | P.SetSpeed | P.EndSession | P.Metric | P.Ping;
+export type ClientMsg =
+  | P.StartMission
+  | P.ApplyStep
+  | P.SkipSetup
+  | P.Button
+  | P.SetSpeed
+  | P.EndSession
+  | P.AttractStart
+  | P.AttractStop
+  | P.Metric
+  | P.Ping;
 
 export type MissionSummary = M.Summary;
 export type Hints = M.Hints;

@@ -75,6 +75,52 @@ export const StateResult = "result";
  */
 export const StateFailed = "failed";
 /**
+ * ModeAttract is the session mode of an attract flight.
+ */
+export const ModeAttract = "attract";
+/**
+ * Attract phases (PRD FR-34 to FR-36, UX 14.2): one flight of trajdemo.e
+ * per fresh core, READ -> INIT -> fly -> freeze on the landing card ->
+ * hold -> recycle.
+ */
+export const AttractOff = "off"; // not running (a visitor has the machine, or nobody asked)
+/**
+ * Attract phases (PRD FR-34 to FR-36, UX 14.2): one flight of trajdemo.e
+ * per fresh core, READ -> INIT -> fly -> freeze on the landing card ->
+ * hold -> recycle.
+ */
+export const AttractStarting = "starting"; // first flight of a run: a fresh core boots (no frame to hold yet)
+/**
+ * Attract phases (PRD FR-34 to FR-36, UX 14.2): one flight of trajdemo.e
+ * per fresh core, READ -> INIT -> fly -> freeze on the landing card ->
+ * hold -> recycle.
+ */
+export const AttractReading = "reading"; // READ sent (b c, b r): the card of numbers goes in
+/**
+ * Attract phases (PRD FR-34 to FR-36, UX 14.2): one flight of trajdemo.e
+ * per fresh core, READ -> INIT -> fly -> freeze on the landing card ->
+ * hold -> recycle.
+ */
+export const AttractFlying = "flying"; // INIT sent: cards are being punched
+/**
+ * Attract phases (PRD FR-34 to FR-36, UX 14.2): one flight of trajdemo.e
+ * per fresh core, READ -> INIT -> fly -> freeze on the landing card ->
+ * hold -> recycle.
+ */
+export const AttractLanded = "landed"; // frozen on the landing card; the plot is held for holdMs
+/**
+ * Attract phases (PRD FR-34 to FR-36, UX 14.2): one flight of trajdemo.e
+ * per fresh core, READ -> INIT -> fly -> freeze on the landing card ->
+ * hold -> recycle.
+ */
+export const AttractRecycling = "recycling"; // the flight's core is being replaced by a fresh one
+/**
+ * Attract phases (PRD FR-34 to FR-36, UX 14.2): one flight of trajdemo.e
+ * per fresh core, READ -> INIT -> fly -> freeze on the landing card ->
+ * hold -> recycle.
+ */
+export const AttractError = "error"; // the core faulted; recovery (5.8) runs and attract resumes on its own
+/**
  * Core health values.
  */
 export const CoreStarting = "starting";
@@ -130,6 +176,10 @@ export interface State {
   machine: MachineState | null; // null when there is no session
   cards: Card[];
   run: RunInfo;
+  /**
+   * Attract is the attract loop's status (phase "off" when not running).
+   */
+  attract?: Attract;
 }
 /**
  * RunInfo is the current run state inside `state`.
@@ -214,6 +264,51 @@ export interface Card {
   fields: string[];
 }
 /**
+ * Attract is the attract loop's status (UX 14.2). It is broadcast on every
+ * phase change (not per card: cards arrive as `punch`) and as the reply
+ * (re) to attract_start and attract_stop; with T empty it is the attract
+ * object inside `state`. The
+ * flight itself is an ordinary session with mode "attract": its `state`,
+ * `frame`, `punch`, `run` and `checkpoint` messages are the live machine.
+ */
+export interface Attract {
+  t?: 'attract';
+  re?: number /* int64 */;
+  phase: 'off' | 'starting' | 'reading' | 'flying' | 'landed' | 'recycling' | 'error';
+  mission: string; // the mission whose program flies (trajectory)
+  session?: string; // id of the session carrying this flight
+  flight: number /* int */; // this flight's number in the current attract run (1-based; 0 when off)
+  landed: number /* int */; // flights landed in the current attract run
+  total: number /* int */; // flights landed since the bridge started
+  cards: number /* int */; // cards punched so far in this flight
+  /**
+   * HoldMs (phase landed): how long the finished plot is held before recycling.
+   */
+  holdMs?: number /* int */;
+  /**
+   * Landing (phases landed and recycling): the landing card's values.
+   */
+  landing?: AttractLanding;
+  /**
+   * Code and Detail (phase error): the fault, as in health.
+   */
+  code?: string;
+  detail?: string;
+}
+/**
+ * AttractLanding is decoded from the landing card (the first card whose
+ * plot "up" value is below zero), with the mission's run.cards.hop and
+ * run.plot fields and the card's 11-row overpunch sign (printer.go).
+ */
+export interface AttractLanding {
+  card: number /* int */; // card number in the flight
+  hop: number /* int64 */; // the hop number punched on it
+  along: number /* int64 */; // plot x
+  up: number /* int64 */; // plot y (negative: below ground)
+  text: string; // the 80-column card
+  flightMs: number /* int64 */; // INIT to the landing card, wall clock
+}
+/**
  * Health reports the core's state (5.8). With T empty it is the health
  * object inside hello.
  */
@@ -273,6 +368,27 @@ export interface EndSession {
   t: 'end_session';
   id?: number /* int64 */;
   reason: 'idle' | 'menu' | 'restart' | 'done';
+}
+/**
+ * AttractStart asks for the attract loop (the kiosk is home, S1). It is
+ * idempotent: a running loop keeps running. It ends any other session
+ * first. The loop survives core faults: after recovery it resumes on its
+ * own (FR-51). The reply is the current `attract` status.
+ */
+export interface AttractStart {
+  t: 'attract_start';
+  id?: number /* int64 */;
+}
+/**
+ * AttractStop is the hand-off (FR-31): the loop stops, the attract core is
+ * killed and its session ends. The reply, attract {phase:"off", re}, comes
+ * once the core process is gone. start_mission and end_session stop the
+ * loop the same way.
+ */
+export interface AttractStop {
+  t: 'attract_stop';
+  id?: number /* int64 */;
+  reason: 'touch' | 'menu';
 }
 /**
  * Metric is an anonymous UI event (architecture 8.3); it never reaches the core.
