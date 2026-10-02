@@ -497,10 +497,10 @@ not-yet-built profile and must not use this dedicated-kiosk installer.
     boot installs the kiosk **offline** from the bundle (selftest ok) →
     reboot → checks over the serial console: bridge active, page 200,
     selftest ok, first-boot unit disabled, `multi-user.target`, xtradeb
-    Chromium .deb, no PPA source added, SSH key-only, X running on tty1.
-    Chromium running as `eniac-kiosk`, and the ENIAC Start screen on the
-    VM's display (`docs/screenshots/one-stick/`). About 32 minutes emulated,
-    from power-on to the exhibit; real hardware should be faster.
+    Chromium .deb, no PPA source added, SSH key-only, X on tty1, Chromium
+    running as `eniac-kiosk`, and the ENIAC Start screen on the VM's display
+    (`docs/screenshots/one-stick/`). 32–47 minutes emulated from power-on
+    to the exhibit; real hardware should be faster.
   - The first run of that test found a real bug: Chromium exited every 3 s
     with "No usable sandbox!" and the screen stayed black. Ubuntu 24.04's
     AppArmor blocks Chromium's namespace sandbox, and `chromium-sandbox`
@@ -508,8 +508,9 @@ not-yet-built profile and must not use this dedicated-kiosk installer.
     both paths and refuses to finish without its setuid helper; the run
     above is after the fix.
   - `confirm-prompt`: with no `autoinstall` on the cmdline (the default
-    stick), the guard runs and the installer stops at `Continue with
-    autoinstall? (yes|no)`; the disk is still empty afterwards.
+    stick), the guard runs, its WILL ERASE banner shows on the monitor
+    (tty1), and the installer stops at `Continue with autoinstall?
+    (yes|no)`. The disk is still empty afterwards.
   - `guard-jersey`: a disk laid out like a default Ubuntu install (ESP,
     /boot, LVM `ubuntu-vg/ubuntu-lv`) carrying the jersey-shore kiosk's
     files, booted **with** `autoinstall` (worst case): the guard refuses,
@@ -518,6 +519,9 @@ not-yet-built profile and must not use this dedicated-kiosk installer.
   - `--write-to` refuses the Mac's internal disk, the APFS container, a
     partition, a missing disk and a non-terminal run. The actual `dd` to a
     stick has **not** been run (no stick was attached, and by design).
+  - Run at most two of these VMs at once on a laptop. With three in
+    parallel, subiquity's own `netplan apply` failed under the load (in
+    both VMs that reached that step). Two at a time, as above, it passes.
 - **Not tested anywhere yet:** the OptiPlex itself (its firmware, F12 boot,
   its SSD, real-speed timings), the touchscreen, Chromium actually painting
   the kiosk page on a real display, BIOS power-on after AC loss, and the
