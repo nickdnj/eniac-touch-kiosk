@@ -214,3 +214,6 @@
 @media (prefers-reduced-motion: reduce) {
   .honor-rotator .rot-slide { transition: none; }
 }
+
+/* Page 4: the font credit sits under the mission sources. */
+.honor-page .type-credit { margin-top: 24px; }
