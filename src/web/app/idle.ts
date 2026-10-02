@@ -3,7 +3,8 @@
 
 import type { HelloConfig } from "./protocol.ts";
 
-export type IdleMode = "none" | "setup" | "run";
+/** setup: 90 s (S2-S5, S11, S15); run: 3 min; explore: 120 s (S14, visitors read cards). */
+export type IdleMode = "none" | "setup" | "run" | "explore";
 
 export interface IdleClock {
   setTimeout(fn: () => void, ms: number): unknown;
@@ -24,7 +25,7 @@ export class IdleTimer {
   mode: IdleMode = "none";
   warning = false;
   paused = false;
-  private cfg: HelloConfig["idle"] = { setupS: 90, runS: 180, countdownS: 15 };
+  private cfg: HelloConfig["idle"] = { setupS: 90, runS: 180, countdownS: 15, exploreS: 120 };
   private t: unknown = null;
   private pauseCap: unknown = null;
   private left = 0;
@@ -93,7 +94,7 @@ export class IdleTimer {
   private restart(): void {
     this.clearT();
     if (this.mode === "none" || this.paused || this.warning) return;
-    const s = this.mode === "run" ? this.cfg.runS : this.cfg.setupS;
+    const s = this.mode === "run" ? this.cfg.runS : this.mode === "explore" ? this.cfg.exploreS || 120 : this.cfg.setupS;
     this.t = this.clock.setTimeout(() => this.warn(), s * 1000);
   }
 

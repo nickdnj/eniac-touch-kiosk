@@ -13,6 +13,7 @@ import { COPY } from "../copy.ts";
 import { button } from "../ui/overlays.ts";
 import { HONOR } from "../content/honor.ts";
 import { openHonor } from "./honor.ts";
+import { EXPLORE } from "../explore/content.ts";
 
 /** Taps landing on S2 this soon after S1 are the same visitor's double tap (FR-31). */
 export const PICKER_ARM_MS = 600;
@@ -55,6 +56,7 @@ export function pickerScreen(app: App): Screen {
     h("div", { class: "header" }, h("span", { class: "screen-title" }, COPY.picker.title)),
     cards,
     list.length > 1 ? h("div", { class: "mc-order" }, h("span", {}, COPY.picker.order), h("span", {}, COPY.picker.orderLine(list.map((m) => m.order)))) : null,
+    exploreButton(app, armed),
     honorButton(app, armed),
   );
   return { el, idle: "setup" };
@@ -65,6 +67,18 @@ function honorButton(app: App, armed: () => boolean): HTMLElement {
   return button(HONOR.pickerButton, "primary light outline picker-honor", () => {
     if (armed()) openHonor(app, 1, { name: "picker" });
   });
+}
+
+/** UX 14.9: "Explore ENIAC", 800 x 96 at x80 y848, under the mission cards (not a fourth mission: no number). */
+function exploreButton(app: App, armed: () => boolean): HTMLElement {
+  const b = h(
+    "div",
+    { class: "btn primary light pk-explore", role: "button" },
+    svgFromString(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 56" width="64" height="56" aria-hidden="true"><path d="M8 50V8H56V50" fill="none" stroke="#1B1D21" stroke-width="8" stroke-linejoin="round"/></svg>`) as unknown as HTMLElement,
+    EXPLORE.pickerButton,
+  );
+  onTap(b, () => armed() && app.show({ name: "explore", explore: { from: "picker", back: { name: "picker" } } }));
+  return b;
 }
 
 /**

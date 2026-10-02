@@ -79,6 +79,8 @@ type IdleConfig struct {
 	SetupS     int `json:"setupS"`
 	RunS       int `json:"runS"`
 	CountdownS int `json:"countdownS"`
+	// ExploreS is the Explore ENIAC timeout (S14, FR-32 v0.4: visitors read cards, so it is longer).
+	ExploreS int `json:"exploreS"`
 }
 
 type AdminConfig struct {
@@ -305,13 +307,15 @@ type AttractStop struct {
 type Metric struct {
 	T       string `json:"t" tstype:"'metric'"`
 	ID      *int64 `json:"id,omitempty"`
-	Ev      string `json:"ev" tstype:"'wrong_tap' | 'step_done' | 'speed' | 'skip_to_answer' | 'setup_skipped' | 'idle_reset' | 'mission_picked' | 'picker_next_used' | 'honor_page_view'"`
+	Ev      string `json:"ev" tstype:"'wrong_tap' | 'step_done' | 'speed' | 'skip_to_answer' | 'setup_skipped' | 'idle_reset' | 'mission_picked' | 'picker_next_used' | 'honor_page_view' | 'explore_open' | 'explore_card' | 'explore_walk_completed' | 'explore_mission_chip' | 'glossary_open'"`
 	Mission string `json:"mission,omitempty"`
 	Step    string `json:"step,omitempty"`
 	Speed   string `json:"speed,omitempty"`
 	Screen   string `json:"screen,omitempty"`
 	Assisted *bool  `json:"assisted,omitempty"`
 	N        *int64 `json:"n,omitempty"`
+	// Unit is the Explore ENIAC card a visitor opened (explore_card, FR-98).
+	Unit string `json:"unit,omitempty"`
 }
 
 type Ping struct {

@@ -1,0 +1,142 @@
+/* S14 Explore ENIAC, S15 Glossary and the shared panorama (UX 14.3, 14.4).
+   Authored at 1920 x 1080 like the rest of the app. */
+
+/* ---------------------------------------------------------------- the panorama (explore/panorama.ts) */
+.pano { position: relative; overflow: hidden; background: #0b0c0f; border-radius: 8px; touch-action: none; }
+.pano-strip { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+.pano.dark .lamp .lamp-lit { opacity: 0 !important; }
+
+.pano-tray { position: absolute; left: 0; width: 7360px; height: 72px; }
+.pano-tray .bar { position: absolute; left: 0; right: 0; top: 22px; height: 28px; border-radius: 6px; background: linear-gradient(#A3A8B0, #6B7078 45%, #3A3D43); box-shadow: 0 2px 6px #000; }
+.pano-tray .wires { position: absolute; left: 0; right: 0; top: 29px; height: 14px; background-image: repeating-linear-gradient(90deg, transparent 0 10px, rgba(0, 0, 0, .25) 10px 12px); }
+.pano-tray.d .wires { background-color: var(--cable-data); }
+.pano-tray.p .wires { background-color: var(--cable-prog); height: 8px; top: 32px; background-image: repeating-linear-gradient(90deg, transparent 0 14px, rgba(0, 0, 0, .35) 14px 20px); }
+.pano-tray .tag { position: absolute; top: 12px; height: 48px; padding: 0 16px; border-radius: 24px; background: #0b0c0f; border: 3px solid var(--card); font-size: 24px; font-weight: 700; line-height: 42px; white-space: nowrap; color: var(--card); }
+.pano-tray.sel .bar { outline: 6px solid var(--card); outline-offset: 4px; }
+.pano-tray.hl .bar { outline: 6px solid var(--guide); outline-offset: 4px; }
+.pano .stub { position: absolute; width: 8px; border-radius: 4px; }
+.pano .stub.d { background: var(--cable-data); top: 46px; height: 28px; }
+.pano .stub.p { background: var(--cable-prog); top: 450px; height: 36px; }
+
+/* A unit's tap area is its whole pitch, so a tap in a gap picks the nearest unit (6.6). */
+.pano-unit { position: absolute; top: 72px; height: 400px; }
+.pano-unit .panels { position: absolute; left: 4px; top: 0; height: 400px; display: flex; gap: 8px; }
+.pano-unit .pw { display: block; width: 176px; height: 400px; flex: none; }
+.pano-unit .pw svg.panel { width: 176px; height: 400px; }
+.pano-unit .ring, .pano-cart .ring { position: absolute; inset: -8px; border-radius: 10px; display: none; pointer-events: none; }
+.pano-unit.sel:not(.hl) > .panels > .ring { display: block; border: 6px solid var(--card); box-shadow: 0 0 0 2px #000, inset 0 0 0 2px #000, 0 0 24px rgba(244, 239, 227, .35); }
+.pano-unit.hl > .panels > .ring { display: block; border: 6px solid var(--guide); box-shadow: 0 0 0 2px #000, inset 0 0 0 2px #000; }
+.pano-unit .badge { display: none; position: absolute; left: -12px; top: -26px; width: 56px; height: 56px; border-radius: 50%; background: #000; border: 3px solid var(--card); color: #fff; font-size: 34px; line-height: 50px; text-align: center; font-weight: 700; pointer-events: none; z-index: 3; }
+.pano-unit.hl .badge:not(:empty) { display: block; }
+.pano-unit.dim > .panels { filter: brightness(.36) saturate(.6); }
+.pano-unit.pressed > .panels { filter: brightness(.85); }
+
+.pano-cart { position: absolute; left: 70px; bottom: -2px; width: 220px; height: 132px; z-index: 2; }
+.pano-cart .cart-art { display: block; }
+.pano-cart.sel .ring { display: block; border: 6px solid var(--card); box-shadow: 0 0 0 2px #000; }
+.pano-cart.hl .ring { display: block; border: 4px solid var(--guide); }
+.pano-cart.dim { filter: none; }
+.pano .aux { position: absolute; bottom: 0; width: 190px; height: 124px; z-index: 2; pointer-events: none; }
+.pano .aux.reader { left: 0; }
+.pano .aux.punch { right: 0; }
+
+.pano-chip { position: absolute; top: 548px; height: 80px; border-radius: 12px; background: var(--card); color: var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 28px; font-size: 24px; font-weight: 700; text-align: center; border: 3px solid transparent; }
+.pano-chip strong { font-size: 30px; line-height: 32px; }
+.pano-chip span + strong { font-size: 30px; }
+.pano-chip.sel { border-color: var(--guide); background: #fff; outline: 4px solid var(--card); outline-offset: 2px; }
+.pano-chip.hl { border-color: var(--guide); }
+.pano-chip.dim { opacity: .4; }
+.pano-chip.pressed { transform: scale(.97); }
+
+/* ---------------------------------------------------------------- S14 layout */
+.explore .header .ex-back { min-width: 280px; }
+.explore .header .ex-gloss-btn { width: 260px; }
+.ex-room { position: absolute; left: 24px; top: 112px; width: 1360px; height: 640px; }
+.ex-arrow { position: absolute; top: 172px; width: 96px; height: 200px; border-radius: 16px; background: rgba(10, 11, 13, .88); border: 3px solid var(--card); display: flex; align-items: center; justify-content: center; z-index: 20; }
+.ex-arrow.l { left: 12px; }
+.ex-arrow.r { right: 12px; }
+.ex-arrow.disabled { opacity: .25; }
+.ex-arrow.pressed { transform: scale(.96); }
+
+.ex-pill { position: absolute; left: 50%; top: 84px; transform: translateX(-50%); z-index: 25; display: flex; align-items: center; gap: 14px; height: 64px; padding: 0 28px; border-radius: 32px; background: #000; border: 3px solid var(--card); font-size: 26px; font-weight: 700; white-space: nowrap; color: var(--card); }
+.ex-pill-icon { font-size: 30px; }
+.ex-pill.hidden, .ex-live.hidden { display: none; }
+.ex-live { position: absolute; right: 536px; top: 906px; z-index: 22; display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 20px; border-radius: 24px; background: rgba(0, 0, 0, .82); border: 2px solid #5b606a; font-size: 24px; font-weight: 700; color: #C9C2A8; white-space: nowrap; }
+.ex-live .ex-dot { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #9AA0A8; }
+.ex-live.on { color: var(--card); border-color: var(--card); }
+.ex-live.on .ex-dot { background: var(--lamp-on); border-color: var(--lamp-on); }
+
+.ex-minimap { position: absolute; left: 24px; top: 768px; width: 1360px; height: 96px; border-radius: 8px; background: #0b0c0f; border: 2px solid #2a2e35; box-sizing: border-box; }
+.ex-cells { position: absolute; left: 18px; top: 18px; width: 1320px; height: 56px; display: flex; pointer-events: none; }
+.ex-cells .mc { flex: 0 0 33px; height: 56px; font-style: normal; font-size: 20px; font-weight: 700; color: #101215; display: flex; align-items: center; justify-content: center; border-right: 1px solid #0b0c0f; box-sizing: border-box; overflow: hidden; white-space: nowrap; }
+.ex-cells .mc.k-ct, .ex-cells .mc.k-pr { color: #fff; }
+.ex-cells .mc.hl { outline: 4px solid var(--guide); outline-offset: -4px; position: relative; z-index: 2; }
+.ex-cells .mc.dim { opacity: .3; }
+.ex-bracket { position: absolute; top: 10px; height: 72px; border: 5px solid var(--card); border-radius: 6px; box-shadow: 0 0 0 2px #000, inset 0 0 0 2px #000; pointer-events: none; transition: left 450ms ease-in-out; box-sizing: border-box; }
+.ex-walls { position: absolute; left: 24px; top: 868px; width: 1360px; height: 36px; }
+.ex-walls .wall { position: absolute; top: 0; height: 36px; border: 4px solid #5b606a; border-bottom: 0; box-sizing: border-box; text-align: center; font-size: 24px; line-height: 36px; color: #C9C2A8; }
+.ex-readout { position: absolute; left: 24px; top: 906px; width: 1360px; height: 40px; font-size: 24px; line-height: 40px; color: #C9C2A8; }
+.ex-readout b { color: var(--card); }
+.ex-mchips { position: absolute; left: 24px; top: 952px; width: 1360px; height: 64px; display: flex; align-items: center; gap: 16px; font-size: 24px; font-weight: 700; color: #C9C2A8; }
+
+.mchip { height: 64px; box-sizing: border-box; border: 3px solid var(--card); border-radius: 12px; display: inline-flex; align-items: center; gap: 12px; padding: 0 20px 0 10px; font-size: 26px; font-weight: 700; color: var(--card); white-space: nowrap; }
+.mchip i { font-style: normal; width: 40px; height: 40px; box-sizing: border-box; border-radius: 50%; background: #000; border: 3px solid var(--card); color: #fff; text-align: center; line-height: 34px; font-size: 24px; }
+.mchip.on { background: var(--guide); color: #000; border-color: #000; }
+.mchip.on i { border-color: #000; }
+.mchip.clear { padding: 0 20px; }
+.mchip.pressed { transform: scale(.97); }
+
+/* ---------------------------------------------------------------- the rail (UX 14.3.4) */
+.ex-rail { position: absolute; left: 1408px; top: 112px; width: 488px; height: 904px; box-sizing: border-box; background: var(--card); color: var(--ink); border-radius: 16px; padding: 20px 24px 24px; display: flex; flex-direction: column; overflow: hidden; }
+.ex-rail .eyebrow { font-size: 24px; line-height: 30px; font-weight: 700; color: #4a4d52; letter-spacing: .5px; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; }
+.ex-rail h2 { font-size: 40px; line-height: 46px; margin: 2px 0 10px; }
+.ex-rail .body { font-size: 28px; line-height: 38px; margin: 0; }
+.ex-rail .close { flex: none; width: 64px; height: 64px; box-sizing: border-box; border: 3px solid var(--ink); border-radius: 12px; font-size: 32px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.ex-rail .close.pressed { transform: scale(.95); }
+.ex-rail .banner { height: 96px; border-radius: 10px; overflow: hidden; background: #101215; margin: 6px 0 10px; position: relative; flex: none; }
+.ex-rail .banner svg { display: block; width: 440px; height: 96px; }
+.ex-rail .banner.tray { height: 64px; background: #0b0c0f; }
+.ex-rail .banner.tray .bar { position: absolute; left: 0; right: 0; top: 16px; height: 32px; border-radius: 6px; background: linear-gradient(#A3A8B0, #6B7078 45%, #3A3D43); }
+.ex-rail .banner.tray .wires { position: absolute; left: 0; right: 0; top: 24px; height: 16px; background-image: repeating-linear-gradient(90deg, transparent 0 10px, rgba(0, 0, 0, .3) 10px 13px); }
+.ex-rail .banner.tray.dt .wires { background-color: var(--cable-data); }
+.ex-rail .banner.tray.pt .wires { background-color: var(--cable-prog); height: 10px; top: 27px; }
+.ex-rail .live-line { margin: 8px 0 0; font-family: var(--font-mono); font-size: 22px; line-height: 30px; font-weight: 500; color: #5a3d00; }
+.ex-rail .live-line:empty { display: none; }
+.ex-rail .ex-link { min-height: 56px; padding: 0; justify-content: flex-start; font-size: 26px; margin-top: 6px; align-self: flex-start; }
+.ex-rail .used { margin-top: auto; display: flex; flex-direction: column; gap: 8px; padding-top: 10px; }
+.ex-rail .used-h { font-size: 24px; font-weight: 700; color: #4a4d52; }
+.ex-rail .used-none { font-size: 24px; line-height: 32px; color: #4a4d52; }
+.ex-rail .used .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.ex-rail .mchip { color: var(--ink); border-color: var(--ink); padding: 0 12px 0 6px; font-size: 24px; gap: 8px; }
+.ex-rail .mchip i { width: 38px; height: 38px; line-height: 32px; }
+.ex-rail .mchip.on { background: var(--guide); }
+.ex-rail .nav { display: flex; gap: 16px; margin-top: 14px; flex: none; }
+.ex-rail .nav .btn { flex: 1; min-height: 96px; padding: 0 12px; }
+.ex-rail .nav .btn.outline { background: transparent; color: var(--ink); border-color: var(--ink); }
+.ex-rail .rings-note { font-size: 28px; line-height: 38px; font-weight: 700; margin: 14px 0 0; }
+.ex-rail .ex-plan-block { margin: 12px 0 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.ex-rail .ex-plan { display: block; width: 344px; height: 240px; }
+.ex-rail .ex-plan-block.small .ex-plan { width: 260px; height: 182px; }
+.ex-rail .ex-plan-block .caption { font-size: 24px; line-height: 30px; color: #4a4d52; align-self: stretch; }
+.ex-rail .rail-foot { margin-top: auto; }
+.ex-rail .rail-foot .btn { width: 100%; }
+
+/* ---------------------------------------------------------------- entry points (UX 14.9, 14.3.7) */
+.mission-picker .pk-explore { position: absolute; left: 80px; top: 848px; width: 800px; min-height: 96px; height: 96px; justify-content: flex-start; padding: 0 32px; gap: 24px; font-size: 32px; }
+.rail .explore-btn { position: absolute; left: 0; top: 832px; width: 488px; min-height: 64px; color: var(--card); }
+.result-right .explore-btn { min-height: 64px; width: 360px; margin: 16px 0 0 16px; background: transparent; color: var(--card); border-color: var(--card); }
+
+/* ---------------------------------------------------------------- S15 glossary (UX 14.4) */
+.glossary .gl-head { position: absolute; left: 48px; right: 48px; top: 112px; height: 80px; display: flex; align-items: center; gap: 24px; }
+.glossary .gl-head h2 { flex: 1; margin: 0; font-size: 48px; line-height: 56px; }
+.glossary .gl-page { width: 300px; }
+.glossary .gl-close { width: 200px; }
+.gl-tiles { position: absolute; left: 48px; top: 208px; width: 1824px; display: grid; grid-template-columns: 904px 904px; grid-auto-rows: 184px; gap: 16px; }
+.gl-tile { position: relative; box-sizing: border-box; background: var(--card); color: var(--ink); border-radius: 16px; padding: 14px 24px; height: 184px; }
+.gl-tile b { display: block; font-size: 30px; line-height: 36px; }
+.gl-tile span { display: block; font-size: 26px; line-height: 34px; padding-right: 8px; }
+.gl-tile .gl-show { position: absolute; right: 16px; bottom: 0; min-height: 64px; font-size: 24px; padding: 0 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pano-strip, .ex-bracket { transition: none !important; }
+}

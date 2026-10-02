@@ -96,7 +96,7 @@ test("every Primes step target has a close-up cluster that holds it, with real n
 
 test("room plan: Primes groups Accumulators 1 to 14 and the function tables; Squares is unchanged", () => {
   const sq = unitsForPlan(["i", "c", "a1", "a2", "trunks"]);
-  assert.deepEqual(sq.map((u) => [u.id, u.panel]), [["i", 1], ["c", 34], ["a1", 6], ["a2", 7]]);
+  assert.deepEqual(sq.map((u) => [u.id, u.panel]), [["i", 0], ["c", 34], ["a1", 6], ["a2", 7]]);
   const pr = unitsForPlan(toView(primes).units);
   const labels = pr.map((u) => u.label);
   assert.ok(labels.includes("Accumulators 1 to 14"));

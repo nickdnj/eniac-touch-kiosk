@@ -4,34 +4,46 @@
 
 import { text } from "../panels/art.ts";
 import { STAGE } from "./layout.ts";
+import { unitOfE } from "../explore/room.ts";
 
 export interface PlanUnit {
   id: string;
   label: string;
-  panel: number; // 1..40 around the U
+  panel: number; // 0..39 around the U (0-based, explore/room.ts)
+}
+
+/** The middle panel of a unit (0-based), from the one room table (explore/room.ts, F12). */
+function panelOf(e: string): number {
+  const u = unitOfE(e)!;
+  return u.at + Math.floor((u.n - 1) / 2);
 }
 
 /**
- * Where each unit stands in the room (panel 1..40 around the U) and its
- * name. This is machine layout knowledge, not mission copy (UX F4: the
- * constant transmitter is about 30 panels from accumulators 1 and 2).
+ * Where each unit stands in the room and its name on the plan. Positions
+ * come from explore/room.ts (UX 14.3.1, 0-based like the upstream offsets);
+ * the labels are the plan's own (UX F4: the constant transmitter is about
+ * 30 panels from accumulators 1 and 2).
  */
-export const UNIT_PANELS: Record<string, { label: string; panel: number }> = {
-  i: { label: "Initiating Unit", panel: 1 },
-  p: { label: "Master Programmer", panel: 3 },
-  f1: { label: "Function Table 1", panel: 4 },
-  a1: { label: "Accumulator 1", panel: 6 },
-  a2: { label: "Accumulator 2", panel: 7 },
-  m: { label: "Multiplier", panel: 18 },
-  f2: { label: "Function Table 2", panel: 29 },
-  f3: { label: "Function Table 3", panel: 31 },
-  c: { label: "Constant Transmitter", panel: 34 },
-  pr: { label: "Card Reader and Punch", panel: 38 },
-};
+export const UNIT_PANELS: Record<string, { label: string; panel: number }> = Object.fromEntries(
+  (
+    [
+      ["i", "Initiating Unit"],
+      ["p", "Master Programmer"],
+      ["f1", "Function Table 1"],
+      ["a1", "Accumulator 1"],
+      ["a2", "Accumulator 2"],
+      ["m", "Multiplier"],
+      ["f2", "Function Table 2"],
+      ["f3", "Function Table 3"],
+      ["c", "Constant Transmitter"],
+      ["pr", "Card Reader and Punch"],
+    ] as const
+  ).map(([e, label]) => [e, { label, panel: panelOf(e) }]),
+);
 
-/** Accumulator n's panel (the rest of the U: left wall, back wall, right wall). */
+/** Accumulator n's panel (0-based). */
 function accPanel(n: number): number {
-  return n <= 2 ? 5 + n : n <= 10 ? 6 + n : n <= 15 ? 9 + n : n + 9;
+  return panelOf(`a${n}`);
 }
 
 /**
@@ -80,11 +92,11 @@ function accGroups(accs: number[]): PlanUnit[] {
 const X0 = 300, Y0 = 150, SIDE = 36, BACK = 56, DEPTH = 50;
 const RIGHT_X = X0 + DEPTH + 10 + 8 * BACK + 10;
 
-/** Panel n (1..40): left wall bottom->top (1-16), back wall (17-24), right wall top->bottom (25-40). */
-function panelRect(n: number): { x: number; y: number; w: number; h: number } {
-  if (n <= 16) return { x: X0, y: Y0 + (16 - n) * SIDE + DEPTH, w: DEPTH, h: SIDE - 4 };
-  if (n <= 24) return { x: X0 + DEPTH + 10 + (n - 17) * BACK, y: Y0, w: BACK - 4, h: DEPTH };
-  return { x: RIGHT_X, y: Y0 + (n - 25) * SIDE + DEPTH, w: DEPTH, h: SIDE - 4 };
+/** Panel p (0..39): left wall bottom->top (0-15), back wall (16-23), right wall top->bottom (24-39). */
+function panelRect(p: number): { x: number; y: number; w: number; h: number } {
+  if (p <= 15) return { x: X0, y: Y0 + (15 - p) * SIDE + DEPTH, w: DEPTH, h: SIDE - 4 };
+  if (p <= 23) return { x: X0 + DEPTH + 10 + (p - 16) * BACK, y: Y0, w: BACK - 4, h: DEPTH };
+  return { x: RIGHT_X, y: Y0 + (p - 24) * SIDE + DEPTH, w: DEPTH, h: SIDE - 4 };
 }
 
 /** Does a marker ("a1-14", "ft", "c") stand for unit u ("a7", "f2", "c")? */
@@ -100,7 +112,7 @@ export function roomPlanSvg(units: PlanUnit[], highlight: string[] | null = null
   let b = `<rect x="0" y="0" width="${STAGE.w}" height="${STAGE.h}" fill="#0d0f12"/>`;
   b += `<rect x="${X0 - 50}" y="100" width="${roomW}" height="720" rx="8" fill="#15181c" stroke="#2c3036" stroke-width="2"/>`;
   b += text(X0 - 50 + roomW / 2, 800, "ENTRANCE", { size: 16, ls: 3 });
-  for (let n = 1; n <= 40; n++) {
+  for (let n = 0; n < 40; n++) {
     const r = panelRect(n);
     const flagged = units.some((u) => u.panel === n);
     b += `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="3" fill="${flagged ? "#2a2d33" : "#1f2226"}" stroke="${flagged ? "#F0E442" : "#34383f"}" stroke-width="${flagged ? 3 : 1}"/>`;
@@ -109,7 +121,7 @@ export function roomPlanSvg(units: PlanUnit[], highlight: string[] | null = null
   const marks = units.map((u, i) => {
     const r = panelRect(u.panel);
     const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
-    const side = u.panel <= 16 ? "left" : u.panel >= 25 ? "right" : "back";
+    const side = u.panel <= 15 ? "left" : u.panel >= 24 ? "right" : "back";
     const lx = side === "left" ? cx + 100 : side === "right" ? cx + 110 : cx;
     const ly = side === "back" ? cy - 80 : cy;
     return { u, i, cx, cy, lx, ly, side };

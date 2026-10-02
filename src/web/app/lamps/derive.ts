@@ -1,5 +1,5 @@
 // MachineState -> lit lamp IDs, per unit (architecture 6.1). Pure.
-// Units: "acc.N", "cyc", "init", "ct", "mp", "ft", "mult".
+// Units: "acc.N", "cyc", "init", "ct", "mp", "ft", "mult", "div".
 
 import type { MachineState } from "../protocol.ts";
 import { INIT_LAMPS } from "../panels/art.ts";
@@ -96,6 +96,24 @@ export function multLamps(m: MachineState): Set<string> {
   return out;
 }
 
+/**
+ * Divider and Square-Rooter (Explore panorama): place ring 0..11, program
+ * ring 0..9, program flip-flops 1..8 and the 30 control flip-flops, exactly
+ * as the core's `d` status line reports them (upstream divsrstat).
+ */
+export function divLamps(m: MachineState): Set<string> {
+  const out = new Set<string>();
+  const d = m.div;
+  if (!d) return out;
+  if (Number.isInteger(d.place) && d.place >= 0 && d.place <= 11) out.add(`lamp:div.place.${d.place}`);
+  if (Number.isInteger(d.prog) && d.prog >= 0 && d.prog <= 9) out.add(`lamp:div.prog.${d.prog}`);
+  const ff = d.progff ?? "";
+  if (ff.length === 8) for (let k = 1; k <= 8; k++) if (ff[k - 1] === "1") out.add(`lamp:div.ff.${k}`);
+  const fl = d.flags ?? "";
+  if (fl.length === 30) for (let k = 1; k <= 30; k++) if (fl[k - 1] === "1") out.add(`lamp:div.flag.${k}`);
+  return out;
+}
+
 export function unitLamps(unit: string, m: MachineState): Set<string> {
   if (unit.startsWith("acc.")) return accLamps(unit.slice(4), m);
   if (unit === "cyc") return cycLamps(m);
@@ -104,6 +122,7 @@ export function unitLamps(unit: string, m: MachineState): Set<string> {
   if (unit === "mp") return mpLamps(m);
   if (unit === "ft") return ftLamps(m);
   if (unit === "mult") return multLamps(m);
+  if (unit === "div") return divLamps(m);
   return new Set();
 }
 

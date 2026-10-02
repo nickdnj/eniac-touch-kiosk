@@ -21,6 +21,7 @@ import { onTap, setDisabled, type TapPoint } from "../ui/tap.ts";
 import { button, confirm, tellMore } from "../ui/overlays.ts";
 import { switchDefault } from "../panels/art.ts";
 import { COPY } from "../copy.ts";
+import { EXPLORE } from "../explore/content.ts";
 
 type Phase = "briefing" | "plan" | "step" | "rest";
 
@@ -109,7 +110,11 @@ export function missionScreen(app: App, view: View): Screen {
   const moreBtn = button(COPY.rail.tellMore, "outline more-btn", () => openMore());
   const mainBtn = button("", "primary main-btn", () => mainAction());
   const skipBtn = button(COPY.rail.skip, "link skip-btn", () => skipSetup());
-  const rail = h("div", { class: "rail" }, card, moreBtn, mainBtn, skipBtn);
+  // UX 14.3.7: the briefing links to this mission's units in Explore ENIAC (the session is untouched).
+  const exploreBtn = button(EXPLORE.briefingLink, "link explore-btn", () =>
+    app.show({ name: "explore", explore: { from: "briefing", mission: mission.id, back: { name: "mission", entry: "briefing" } } }),
+  );
+  const rail = h("div", { class: "rail" }, card, moreBtn, mainBtn, skipBtn, exploreBtn);
   rail.style.left = `${RAIL.x}px`;
   rail.style.top = `${RAIL.y}px`;
 
@@ -217,6 +222,7 @@ export function missionScreen(app: App, view: View): Screen {
     leader.replaceChildren();
     stopFigure();
     skipBtn.classList.toggle("hidden", phase === "briefing" || phase === "rest");
+    exploreBtn.classList.toggle("hidden", phase !== "briefing");
     if (phase === "briefing") return renderBriefing();
     if (phase === "plan") return renderPlan();
     if (phase === "step") return renderStep();

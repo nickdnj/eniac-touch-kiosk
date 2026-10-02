@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { otherUnits } from "./fakes.ts";
-import { accLamps, cycLamps, ctLamps, ftLamps, initLamps, lampUnit, mpLamps, multLamps, unitLamps } from "../../src/web/app/lamps/derive.ts";
+import { accLamps, cycLamps, ctLamps, divLamps, ftLamps, initLamps, lampUnit, mpLamps, multLamps, unitLamps } from "../../src/web/app/lamps/derive.ts";
 import { LampRenderer } from "../../src/web/app/lamps/render.ts";
 import type { AccState, MachineState } from "../../src/web/app/protocol.ts";
 
@@ -79,7 +79,16 @@ test("unit routing", () => {
   // All-zero master programmer: every stepper at stage 0, every decade at 0.
   assert.equal(unitLamps("mp", m()).size, 10 + 20);
   assert.ok(unitLamps("mp", m()).has("lamp:mp.s.7.0"));
-  assert.equal(unitLamps("div", m()).size, 0);
+  assert.equal(lampUnit("lamp:div.flag.9"), "div");
+  // The divider at rest: place 0, program 0, the one control flip-flop the core reports set.
+  assert.deepEqual([...unitLamps("div", m())].sort(), ["lamp:div.flag.9", "lamp:div.place.0", "lamp:div.prog.0"]);
+});
+
+test("divider lamps: place and program rings, program and control flip-flops (Explore panorama)", () => {
+  const lit = divLamps(m({ div: { place: 11, prog: 7, progff: "10000001", flags: "1".padEnd(29, "0") + "1" } }));
+  assert.deepEqual([...lit].sort(), ["lamp:div.ff.1", "lamp:div.ff.8", "lamp:div.flag.1", "lamp:div.flag.30", "lamp:div.place.11", "lamp:div.prog.7"]);
+  // Out-of-range or malformed values light nothing (never invent state).
+  assert.equal(divLamps(m({ div: { place: 99, prog: -1, progff: "1", flags: "" } })).size, 0);
 });
 
 test("master programmer: stages 0..5, inputs (digit or *), decades; out of range lights nothing", () => {

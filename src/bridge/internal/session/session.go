@@ -220,7 +220,7 @@ func (m *Manager) Hello() protocol.Hello {
 	tz := cfg.Admin.TapZone
 	return protocol.Hello{T: "hello", Protocol: protocol.Version, Build: buildinfo.Build(),
 		Config: protocol.HelloConfig{
-			Idle:  protocol.IdleConfig{SetupS: cfg.Idle.SetupS, RunS: cfg.Idle.RunS, CountdownS: cfg.Idle.CountdownS},
+			Idle:  protocol.IdleConfig{SetupS: cfg.Idle.SetupS, RunS: cfg.Idle.RunS, CountdownS: cfg.Idle.CountdownS, ExploreS: cfg.Idle.ExploreS},
 			Admin: protocol.AdminConfig{TapZone: protocol.TapZone{Corner: tz.Corner, WidthPx: tz.WidthPx, HeightPx: tz.HeightPx, Taps: tz.Taps}},
 		},
 		Health: m.healthNow()}

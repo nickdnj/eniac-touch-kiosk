@@ -19,6 +19,7 @@ import { fillCard } from "../run/cards.ts";
 import { COPY } from "../copy.ts";
 import { HONOR } from "../content/honor.ts";
 import { openHonor } from "./honor.ts";
+import { EXPLORE } from "../explore/content.ts";
 
 function reduceMotion(): boolean {
   return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -64,6 +65,10 @@ export function resultScreen(app: App): Screen {
     h("p", {}, r.body),
     r.takeaway ? h("div", { class: "takeaway" }, h("strong", {}, r.takeaway), r.takeawaySub ? h("span", {}, r.takeawaySub) : null) : null,
     r.more ? button(COPY.rail.tellMore, "more-btn", () => tellMore(app, r.headline, r.more ?? "")) : null,
+    // UX 14.3.7: where this mission's units stand in the room (the session is untouched).
+    button(EXPLORE.resultLink, "explore-btn", () =>
+      app.show({ name: "explore", explore: { from: "result", mission: mission.id, back: { name: "result" } } }),
+    ),
     // UX 14.6.3: Trajectory links to the women who set up the 1946 shell path (S11 page 2).
     HONOR.resultLink.missions.includes(mission.id)
       ? button(`${HONOR.resultLink.text} ›`, "link honor-link", () => openHonor(app, HONOR.resultLink.page, { name: "result" }))

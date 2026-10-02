@@ -93,6 +93,44 @@ func TestBridgeEvents(t *testing.T) {
 	}
 }
 
+// FR-98: the Explore ENIAC and glossary counters from the UI, with only
+// their own fields (the attract counters are the bridge's, attract.go).
+func TestExploreEvents(t *testing.T) {
+	w, dir := open(t)
+	ok := []protocol.Metric{
+		{Ev: "explore_open", Screen: "picker"},
+		{Ev: "explore_open", Screen: "briefing", Mission: "primes"},
+		{Ev: "explore_card", Unit: "acc"},
+		{Ev: "explore_walk_completed"},
+		{Ev: "explore_mission_chip", Mission: "trajectory"},
+		{Ev: "glossary_open"},
+	}
+	for _, m := range ok {
+		if err := w.UI(m, ""); err != nil {
+			t.Errorf("%+v: %v", m, err)
+		}
+	}
+	bad := []protocol.Metric{
+		{Ev: "explore_card", Mission: "squares"},     // field not allowed
+		{Ev: "wrong_tap", Unit: "acc"},               // unit only on explore_card
+		{Ev: "explore_card", Unit: "acc 7"},          // free text
+		{Ev: "attract_flight_started", Mission: "x"}, // bridge event from the UI
+	}
+	for _, m := range bad {
+		if err := w.UI(m, ""); !errors.Is(err, ErrNotAllowed) {
+			t.Errorf("%+v accepted (%v)", m, err)
+		}
+	}
+	w.SessionEnd()
+	recs, _ := Read(dir)
+	if len(recs) != len(ok) {
+		t.Fatalf("%d records: %v", len(recs), recs)
+	}
+	if recs[2]["unit"] != "acc" || recs[4]["m"] != "trajectory" {
+		t.Fatalf("%v", recs)
+	}
+}
+
 func TestTruncatedLastLineSkipped(t *testing.T) {
 	w, dir := open(t)
 	w.Bridge("session_start", "s1", nil)
