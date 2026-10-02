@@ -14,7 +14,7 @@
 # repo must install everything install.sh installs, against that same status.
 set -euo pipefail
 PKGS_X=(xserver-xorg xinit x11-xserver-utils xinput openbox unclutter)
-PKGS_C=(chromium)
+PKGS_C=(chromium chromium-sandbox)
 W=/work
 OUT=/out/offline
 log() { echo "offline-repo: $*" >&2; }
@@ -61,6 +61,8 @@ DRY=(-o "Dir::State::status=$W/status" -o "Dir::State::Lists=$W/lists" -o "Dir::
      -o "Dir::Etc::SourceList=$W/only-offline.list" -o "Dir::Etc::SourceParts=$W/no-parts")
 apt-get "${DRY[@]}" update -q >/dev/null
 apt-get "${DRY[@]}" install -s -q --no-install-recommends "${PKGS_X[@]}" "${PKGS_C[@]}" > "$W/dry.txt"
-grep -q '^Inst chromium ' "$W/dry.txt" || { log "dry run did not install chromium"; cat "$W/dry.txt" >&2; exit 1; }
+if ! { grep -q '^Inst chromium ' "$W/dry.txt" && grep -q '^Inst chromium-sandbox ' "$W/dry.txt"; }; then
+  log "dry run did not install chromium + chromium-sandbox"; cat "$W/dry.txt" >&2; exit 1
+fi
 log "  dry run OK: $(grep -c '^Inst ' "$W/dry.txt") packages would install offline, chromium included"
 chmod -R a+rX "$OUT"

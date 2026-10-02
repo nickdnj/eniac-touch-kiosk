@@ -217,11 +217,28 @@ Pin-Priority: -1
 EOF
     record file "$APT_PIN"
   fi
-  log "apt: installing Chromium ($CHROMIUM_SOURCE)"
-  "${APT[@]}" install -y -q --no-install-recommends chromium
+  CHROMIUM_PKGS=(chromium)
+  if [ "$CHROMIUM_SOURCE" = ppa ] || [ "$CHROMIUM_SOURCE" = offline ]; then
+    # Ubuntu 23.10+ blocks unprivileged user namespaces (AppArmor), so
+    # Chromium's namespace sandbox can't start: it exits at once with "No
+    # usable sandbox!" and the kiosk stays black. The setuid sandbox helper
+    # (only a Recommends, which --no-install-recommends skips) fixes that.
+    CHROMIUM_PKGS+=(chromium-sandbox)
+  fi
+  log "apt: installing Chromium ($CHROMIUM_SOURCE): ${CHROMIUM_PKGS[*]}"
+  "${APT[@]}" install -y -q --no-install-recommends "${CHROMIUM_PKGS[@]}"
   [ "$CHROMIUM_SOURCE" = offline ] && rm -rf -- "$odir"
   comm -13 <(echo "$before") <(installed_pkgs) > "$PREFIX/.pkgs-new" || true
   while read -r p; do [ -n "$p" ] && record package "$p"; done < "$PREFIX/.pkgs-new"; rm -f "$PREFIX/.pkgs-new"
+fi
+
+# On Ubuntu the setuid sandbox helper must be there, or Chromium won't start.
+if [ "$DO_PACKAGES" = 1 ] && { [ "$CHROMIUM_SOURCE" = ppa ] || [ "$CHROMIUM_SOURCE" = offline ]; }; then
+  sbx="$(dpkg -L chromium-sandbox 2>/dev/null | grep -m1 '/chrome-sandbox$' || true)"
+  if [ -z "$sbx" ] || [ ! -u "$sbx" ]; then
+    die "chromium-sandbox's setuid helper is missing (${sbx:-not installed}); Chromium would exit with 'No usable sandbox!'"
+  fi
+  log "chromium sandbox: $sbx (setuid)"
 fi
 
 # Whatever the source, the browser must be a real .deb, never the snap.

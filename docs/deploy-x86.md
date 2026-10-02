@@ -44,9 +44,190 @@ BIOS "AC Recovery: Power On"
 - The OptiPlex, its power brick, the touchscreen with **both** cables: video
   (the 9020M's outputs are DisplayPort; check the back panel, and use a
   DP→HDMI cable if the panel is HDMI-only) **and the USB touch cable**.
-- USB keyboard (bench only), a ≥ 4 GB USB stick, Ethernet with internet
-  for the install (apt + the Chromium PPA). The kiosk needs no network after.
+- USB keyboard (bench only) and a USB stick: **≥ 8 GB** for the one-stick
+  install (the image is ~4.4 GB), ≥ 4 GB for the manual path.
+- Network: **none needed** with the one-stick install (everything is on the
+  stick). The manual path needs Ethernet with internet (apt + the Chromium
+  PPA). The kiosk needs no network after either.
 - The Mac with this repo, for building the release and SSH.
+
+## Two ways to install
+
+| | One-stick install (recommended) | Manual install (Steps 1–5) |
+|---|---|---|
+| At the box | BIOS once, boot the stick, type `yes`, walk away | Run the Ubuntu installer by hand, SSH in, copy the release, run `install.sh` |
+| Network at the box | none | internet |
+| Hands-on time | ~2 minutes, then ~30 minutes unattended (real hardware: estimate) | ~45 minutes |
+| Disk | **erases the internal disk** | the Ubuntu installer erases it too (you choose) |
+
+Both end in the same place (the table above). After either one, carry on at
+**Step 6**.
+
+## One-stick install
+
+> **⚠ THIS STICK ERASES THE INTERNAL DISK OF THE MACHINE IT BOOTS ON.**
+> Everything on the OptiPlex's SSD is destroyed: partitions, data, any old
+> Ubuntu or Windows. Label the stick "ENIAC KIOSK INSTALLER: ERASES DISK",
+> never leave it plugged into anything, and never boot it on a machine whose
+> disk you want to keep.
+
+One USB stick carries Ubuntu 24.04 Server, an unattended-install config, the
+kiosk release and every apt package the kiosk needs (Chromium .deb included),
+so the box needs no network. The flow:
+
+```
+boot stick -> grub menu (30 s, default = "ENIAC kiosk: ERASE internal disk + install")
+  -> stick guard (read-only): picks the one internal disk, refuses on a kiosk
+  -> "Continue with autoinstall? (yes|no)"  <- you type yes  (no question on an --unattended-wipe stick)
+  -> Ubuntu on the SSD (LVM, whole disk), your admin user + SSH key, openssh
+  -> late-commands: kiosk payload copied to the SSD, first-boot unit armed, UEFI: SSD first
+  -> reboot (from the SSD, even with the stick still in)
+  -> first boot: eniac-kiosk-firstboot runs install.sh --offline-repo=<bundle from the stick>,
+     selftest, then reboots
+  -> the exhibit
+```
+
+### Build the stick (on the Mac)
+
+Needs Docker Desktop running (xorriso and the apt bundle run in Ubuntu
+containers) and internet on the Mac. If `gpg` is installed
+(`brew install gnupg`), it also verifies the signature on Ubuntu's checksum
+list.
+
+1. Admin account settings, once. Put them in `stick.local.env` at the repo
+   root (gitignored; `chmod 600`), or skip this and the script prompts:
+   ```bash
+   ENIAC_ADMIN_USER=nick
+   ENIAC_ADMIN_PASSWORD_HASH='$6$...'          # from: openssl passwd -6   (the hash, never the password)
+   ENIAC_SSH_PUBKEY_FILE=~/.ssh/id_ed25519.pub   # optional; with a key, SSH is key-only
+   ```
+   The password is for the console and `sudo`. The hash and the public key
+   end up on the stick and in the image under `build/stick/` (gitignored).
+   Nothing secret goes into the repo. Keep the stick as safe as you would a
+   note with the hash on it.
+2. Build the image (from a clean, merged `main`):
+   ```bash
+   make install-stick          # = scripts/make-install-stick.sh
+   ```
+   This builds `make release ARCH=amd64`. It downloads the newest Ubuntu
+   24.04.x live-server ISO into `build/stick/cache/` (once, ~4 GB) and checks
+   it against Ubuntu's `SHA256SUMS`. It builds the offline apt bundle and
+   proves it installs against that ISO's package set. Then it writes
+   `build/stick/eniac-kiosk-install-<ver>-confirm.iso` (+ `.sha256`). It
+   **writes to no disk**.
+3. Flash it. Either use balenaEtcher (select the `.iso`, then the stick), or
+   use the script, which accepts only an external/removable disk and makes
+   you type its name:
+   ```bash
+   diskutil list                                    # find the stick, e.g. disk4
+   make install-stick STICK_ARGS="--write-to disk4" # builds, then asks you to type "disk4"
+   ```
+
+Useful options (`scripts/make-install-stick.sh --help`): `--release FILE`
+(use an existing tarball), `--hostname` (default `eniac-kiosk`),
+`--timezone` (default `America/New_York`), `--reuse-offline` (faster
+rebuilds), `--no-offline` (smaller stick, but first boot needs internet),
+`--unattended-wipe` (below).
+
+**Why a remastered ISO.** The script copies the stock ISO with xorriso
+(`-boot_image any replay`), adding `/eniac/` (config, guard, release,
+packages) and one grub menu entry. The result is one file that Etcher or
+`dd` writes as-is, and it boots UEFI and legacy BIOS exactly like the stock
+ISO. The alternatives are worse from a Mac. Adding a CIDATA partition behind
+a `dd`-ed hybrid ISO means editing its partition tables by hand. A second
+"seed" stick is one more thing to lose or mix up.
+
+### Safety: how the stick avoids wiping the wrong machine
+
+1. **It asks first (default).** The grub entry has no `autoinstall` keyword,
+   so Ubuntu's installer stops at `Continue with autoinstall? (yes|no)`
+   before it writes anything. Nothing happens until someone types `yes`.
+   With `--unattended-wipe` there is no question: the stick erases the disk
+   about a minute after power-on with nobody there. The script builds that
+   version only after you type `ERASE-ON-BOOT`, and names the file
+   `...-UNATTENDED-WIPE.iso`. Use it only if you really will walk away before
+   the question would appear.
+2. **The stick guard** runs before the question, read-only:
+   - It picks the target: the one **internal** disk. The stick itself, any USB
+     disk, removable media and disks under 16 GB are never candidates. If
+     there is no candidate, or more than one, it refuses.
+   - It looks inside that disk (activating LVM just to look, mounting
+     read-only) and **refuses if the disk holds a kiosk**. That means the
+     jersey-shore kiosk (`/opt/3280-kiosk`, `os32*.service`), an ENIAC kiosk
+     (`/opt/eniac-touch-kiosk`, or an earlier install from a stick), any tty1
+     autologin drop-in, or a Linux filesystem it can't mount to check.
+     Windows or a plain Ubuntu doesn't stop it (the yes/no question does).
+   - Only then does it write the disk into the install config. Until then
+     the config names no disk, so if the guard is skipped the install fails
+     instead of guessing a disk.
+
+   A refusal prints `REFUSING TO INSTALL. NOTHING HAS BEEN WRITTEN TO ANY
+   DISK.` and the reason. Power off and take the stick out.
+3. **It doesn't loop.** After the install, the SSD's Ubuntu entry goes first
+   in the UEFI boot order, so the reboot comes up from the SSD even with the
+   stick still in. If it ever boots the stick again, the guard sees
+   "installed by THIS stick" and refuses.
+
+**Overrides** (only when you mean it): at the grub menu, highlight the ENIAC
+entry, press `e`, add the flag before the ` ---` on the `linux` line, then
+press `Ctrl+X`:
+
+| Flag | Effect |
+|---|---|
+| `eniac.disk=/dev/sda` | install to this disk (needed if the box has two internal disks) |
+| `eniac.overwrite-kiosk=yes` | erase the disk even though it holds a kiosk (e.g. re-imaging this ENIAC kiosk) |
+
+The second menu entry, **Try or Install Ubuntu Server**, is the stock manual
+installer: nothing automatic, and the kiosk isn't installed.
+
+### Use the stick
+
+1. Set up the BIOS first (Step 2 below): AC Recovery → Power On, keyboard
+   errors off, **UEFI** boot. Leave the SSD first in the boot order.
+2. Plug in the stick (and the touchscreen and keyboard). Power on, press
+   **F12** at the Dell logo, and choose the USB stick under UEFI.
+3. Grub shows its menu. After 30 s (or on Enter) it starts the ENIAC entry.
+   After about a minute the screen shows the guard's lines
+   (`eniac-guard: OK: Ubuntu will be installed on /dev/sda ...`), then
+   `Continue with autoinstall? (yes|no)`. Check the disk it names, type
+   `yes`, and press Enter.
+4. Walk away. It installs Ubuntu, reboots, installs the kiosk (progress on
+   screen), reboots again, and the exhibit appears. Pull the stick out any
+   time after the first reboot.
+5. Continue at **Step 6** (checks), using the admin account you set:
+   `ssh <admin>@<ip>` if the box is on a network, or **Ctrl+Alt+F2** on the
+   console.
+
+If the kiosk step fails, tty1 shows a login prompt instead of the exhibit,
+with the reason printed above it. It retries on every boot until it works,
+or you can retry now with `sudo systemctl start eniac-kiosk-firstboot`. Logs:
+`/var/log/eniac-kiosk-firstboot.log`, `/var/log/eniac-stick-guard.log` (what
+the guard saw), and `journalctl -u eniac-kiosk-firstboot`.
+
+**Network at install time.** None is needed. If the box *is* online, the
+Ubuntu installer also fetches current security updates, and the kiosk step
+still uses the bundle on the stick. If the bundle can't be installed and the
+network is up, it retries online (apt + the xtradeb PPA). A box installed
+offline gets no later Chromium updates unless you re-run `install.sh` online
+(which adds the PPA). For an offline exhibit that's usually what you want.
+
+### Desk test checklist (at home, before the museum)
+
+- [ ] `make test` passes, then `make install-stick` on a clean, merged `main`.
+- [ ] Stick labelled; image name ends in `-confirm.iso` (not `UNATTENDED-WIPE`).
+- [ ] BIOS: AC Recovery → Power On, keyboard errors off, UEFI, SSD first.
+- [ ] F12 → the stick. The guard names the SSD you expect (model and size). Type `yes`.
+- [ ] Leave it. When you come back, the exhibit is on screen: no cursor, no bubbles. Note the total time.
+- [ ] Pull the stick. `ssh <admin>@<ip>` with your key works (password SSH is refused if you gave a key).
+- [ ] `eniac-touch-kiosk status` shows the bridge active and X and Chromium running; `sudo eniac-touch-kiosk selftest` prints `selftest: ok`.
+- [ ] `cat /var/lib/eniac-stick/installed-by` names the stick you built.
+- [ ] Steps 7–10 below: screen, display mode + touch (four corners), power-cut test ×3, failure drills.
+- [ ] Optional: boot the stick again on the installed box. It must refuse (`already installed by THIS stick`). Power off.
+
+## Manual install
+
+The original path, without the one-stick installer. It's still useful when
+the box already runs Ubuntu 24.04, or when you want to watch each step.
 
 ## Step 0: build the release (on the Mac, the day before)
 

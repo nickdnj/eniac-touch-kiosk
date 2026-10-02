@@ -22,6 +22,7 @@
 #   --out FILE          output image path (default build/stick/eniac-kiosk-install-<ver>-<mode>.iso)
 #   --write-to DEV      after building, write the image to DEV (e.g. disk4) -- external,
 #                       removable disks only, with a typed confirmation. Never by default.
+#   --image FILE        with --write-to: don't build, flash this already-built image
 #
 # Admin account (never committed; stick.local.env is .gitignored). Env vars
 # override the --secrets file; anything still missing is prompted for:
@@ -53,7 +54,7 @@ log()  { echo "make-install-stick: $*" >&2; }
 warn() { echo "make-install-stick: WARNING: $*" >&2; }
 
 RELEASE="" SECRETS="" HOSTNAME_="eniac-kiosk" TZ_="America/New_York" ISO_IN="" OFFLINE=1 REUSE_OFFLINE=0
-UNATTENDED=0 SERIAL=0 OUT="" WRITE_TO=""
+UNATTENDED=0 SERIAL=0 OUT="" WRITE_TO="" IMAGE=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --release) RELEASE="$2"; shift ;;
@@ -67,7 +68,8 @@ while [ $# -gt 0 ]; do
     --serial-console) SERIAL=1 ;;
     --out) OUT="$2"; shift ;;
     --write-to) WRITE_TO="$2"; shift ;;
-    -h|--help) sed -n '2,42p' "$0"; exit 0 ;;
+    --image) IMAGE="$2"; shift ;;
+    -h|--help) sed -n '2,43p' "$0"; exit 0 ;;
     *) die "unknown option $1 (try --help)" ;;
   esac
   shift
@@ -75,6 +77,15 @@ done
 
 [[ "$HOSTNAME_" =~ ^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$ ]] || die "bad --hostname '$HOSTNAME_'"
 [[ "$TZ_" =~ ^[A-Za-z0-9_+/-]+$ ]] || die "bad --timezone '$TZ_'"
+if [ -n "$IMAGE" ]; then
+  [ -n "$WRITE_TO" ] || die "--image only makes sense with --write-to"
+  [ -f "$IMAGE" ] || die "no such image: $IMAGE"
+  if [ -f "$IMAGE.sha256" ]; then
+    (cd "$(dirname "$IMAGE")" && shasum -a 256 -c "$(basename "$IMAGE").sha256" >/dev/null) || die "$IMAGE does not match its .sha256"
+  fi
+fi
+
+build_image() {
 for t in curl shasum openssl; do command -v "$t" >/dev/null || die "$t not found"; done
 if command -v xorriso >/dev/null; then XORRISO=native; else XORRISO=docker; fi
 if [ "$XORRISO" = docker ] || [ "$OFFLINE" = 1 ]; then
@@ -100,7 +111,7 @@ fi
 # --- 1. the release -------------------------------------------------------------
 if [ -z "$RELEASE" ]; then
   log "building the release: make release ARCH=amd64"
-  RELEASE="$(cd "$ROOT" && make --no-print-directory release ARCH=amd64 | tail -n 1)"
+  RELEASE="$(cd "$ROOT" && make --no-print-directory release ARCH=amd64 | tee /dev/stderr | tail -n 1)"
 fi
 [ -f "$RELEASE" ] || die "release tarball not found: $RELEASE"
 case "$RELEASE" in *-linux-amd64.tar.gz) ;; *) die "the OptiPlex needs an amd64 release, not $(basename "$RELEASE")" ;; esac
@@ -297,7 +308,7 @@ fi
 [ -s "$OUT" ] || die "xorriso produced nothing"
 (cd "$(dirname "$OUT")" && shasum -a 256 "$(basename "$OUT")" > "$(basename "$OUT").sha256")
 SIZE_MB=$(( $(stat -f %z "$OUT" 2>/dev/null || stat -c %s "$OUT") / 1000000 ))
-log "image: $OUT ($SIZE_MB MB; needs a stick of at least $(( (SIZE_MB / 1000) + 1 )) GB)"
+log "image: $OUT ($SIZE_MB MB; use a stick of at least 8 GB)"
 cat >&2 <<EOF
 
   Mode: $MODE. $( [ "$UNATTENDED" = 1 ] && echo "Boots -> ERASES the internal disk with no question." || echo "Boots -> asks 'Continue with autoinstall? (yes|no)' -> type yes -> ERASES the internal disk." )
@@ -305,6 +316,14 @@ cat >&2 <<EOF
   Then: docs/deploy-x86.md, "One-stick install".
 
 EOF
+}
+
+if [ -n "$IMAGE" ]; then
+  OUT="$IMAGE"
+  case "$IMAGE" in *UNATTENDED-WIPE*) MODE="UNATTENDED-WIPE" ;; *) MODE="confirm" ;; esac
+else
+  build_image
+fi
 
 # --- 8. optional: write to a stick (never without an explicit device + typed confirmation) ---
 [ -n "$WRITE_TO" ] || { echo "$OUT"; exit 0; }
@@ -314,8 +333,9 @@ dev="${WRITE_TO#/dev/}"; dev="${dev#r}"
 [[ "$dev" =~ ^disk[0-9]+$ ]] || die "--write-to wants a whole disk like disk4, not '$WRITE_TO'"
 info="$(diskutil info "$dev" 2>/dev/null)" || die "no such disk: $dev"
 field() { sed -n "s/^ *$1: *//p" <<<"$info" | head -n 1; }
-[ "$(field 'Device Location')" = External ] || [ "$(field 'Removable Media')" = Removable ] || die "$dev is not an external/removable disk; refusing"
-[ "$(field 'Internal')" != Yes ] || die "$dev is internal; refusing"
+loc="$(field 'Device Location')"; proto="$(field 'Protocol')"
+[ "$loc" != Internal ] || die "$dev is an internal disk; refusing"
+[ "$loc" = External ] || [ "$proto" = USB ] || die "$dev is not an external USB disk (location '$loc', protocol '$proto'); refusing"
 [ "$(field 'Virtual')" != Yes ] || die "$dev is a virtual (APFS container) disk; refusing"
 diskutil info / | grep -q "Part of Whole: *$dev\$" && die "$dev holds the running macOS; refusing"
 dbytes="$(sed -n 's/^ *Disk Size: .*(\([0-9]*\) Bytes).*/\1/p' <<<"$info")"

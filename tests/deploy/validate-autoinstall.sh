@@ -18,6 +18,7 @@ fail=0
 [ -f "$SCHEMA" ] || curl -fsSL -o "$SCHEMA" "$SCHEMA_URL"
 
 # Render exactly like make-install-stick.sh (dummy secrets).
+# shellcheck disable=SC2016  # a literal crypt hash
 HASH='$6$testsalt$0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ./0123456789abcdefghijk'
 KEYS='["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDummyDummyDummyDummyDummyDummyDummyDummy test@example"]'
 sed -e "s|@HOSTNAME@|eniac-kiosk|" -e "s|@TIMEZONE@|America/New_York|" -e "s|@ADMIN_USER@|admin|" \
@@ -50,7 +51,11 @@ for f in "$ROOT"/deploy/autoinstall/*.sh "$ROOT"/scripts/make-install-stick.sh "
   bash -n "$f" || { echo "FAIL: bash -n $f"; fail=1; }
 done
 if command -v shellcheck >/dev/null; then
-  shellcheck -x "$ROOT"/deploy/autoinstall/*.sh "$ROOT"/scripts/make-install-stick.sh "$ROOT"/scripts/stick/*.sh "$ROOT"/deploy/kiosk/install.sh \
-    && echo "PASS: shellcheck" || { echo "FAIL: shellcheck"; fail=1; }
+  if shellcheck -x "$ROOT"/deploy/autoinstall/*.sh "$ROOT"/scripts/make-install-stick.sh "$ROOT"/scripts/stick/*.sh "$ROOT"/deploy/kiosk/install.sh \
+       "$ROOT"/tests/deploy/*.sh; then
+    echo "PASS: shellcheck"
+  else
+    echo "FAIL: shellcheck"; fail=1
+  fi
 fi
 exit $fail
