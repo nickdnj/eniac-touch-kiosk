@@ -518,3 +518,48 @@ func TestPrimesSessionPunches(t *testing.T) {
 		t.Fatalf("state cards %v", cards)
 	}
 }
+
+// Trajectory (M2, PRD FR-19 v0.3): INIT is refused until the card is read;
+// one READ tap writes b c then b r (spike S2); then INIT punches hop 1; a
+// second READ or INIT is refused.
+func TestTrajectoryReadThenInit(t *testing.T) {
+	r := newRig(t, nil)
+	cl := r.connect()
+	cl.wait(3*time.Second, "state", is("state"))
+	cl.send(`{"t":"start_mission","mission":"trajectory","mode":"visitor"}`)
+	cl.wait(10*time.Second, "session setup", is("session", "state", "setup"))
+	cl.send(`{"t":"skip_setup"}`)
+	cl.wait(10*time.Second, "setup_complete", is("setup_complete", "skipped", "5"))
+	cl.send(`{"t":"button","b":"init","id":3}`)
+	cl.wait(3*time.Second, "INIT before READ refused", func(m map[string]any) bool { return m["t"] == "error" && m["re"] == 3.0 && m["code"] == "NOT_ALLOWED" })
+	cl.send(`{"t":"set_speed","speed":"slow","id":4}`)
+	cl.wait(3*time.Second, "no slow speed", func(m map[string]any) bool { return m["t"] == "error" && m["re"] == 4.0 })
+	before := len(r.wl.all())
+	cl.send(`{"t":"button","b":"read"}`)
+	cl.wait(3*time.Second, "read busy", is("run", "state", "busy"))
+	cl.seen(10*time.Second, "card-read", is("checkpoint", "id", "card-read"))
+	cl.wait(10*time.Second, "read idle", is("run", "state", "idle"))
+	var runCmds []string
+	for _, w := range r.wl.all()[before:] {
+		if strings.HasPrefix(w, "b ") {
+			runCmds = append(runCmds, w)
+		}
+	}
+	if strings.Join(runCmds, "|") != "b c|b r" {
+		t.Fatalf("READ wrote %q, want b c then b r", runCmds)
+	}
+	if cl.accValue("1") != 97367 {
+		t.Fatalf("acc 1 = %v after READ", cl.accValue("1"))
+	}
+	cl.send(`{"t":"button","b":"init"}`)
+	cl.wait(3*time.Second, "run busy", is("run", "state", "busy"))
+	p := cl.wait(10*time.Second, "hop 1", is("punch"))
+	f := p["fields"].([]any)
+	if f[5] != "00001" || f[10] != "00141" || f[11] != "28681" || f[14] != "00056" || f[15] != "93229" {
+		t.Fatalf("first card %v", p["text"])
+	}
+	cl.send(`{"t":"button","b":"read","id":8}`)
+	cl.wait(3*time.Second, "READ after INIT refused", func(m map[string]any) bool { return m["t"] == "error" && m["re"] == 8.0 })
+	cl.send(`{"t":"button","b":"init","id":9}`)
+	cl.wait(3*time.Second, "second INIT refused", func(m map[string]any) bool { return m["t"] == "error" && m["re"] == 9.0 })
+}

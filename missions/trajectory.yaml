@@ -1,0 +1,208 @@
+# Mission 3: Trajectory. Architecture 5.9 (schema 1, plus the M2 additions
+# of 5.9.6). Copy is from docs/ux-spec.md 8.3.5, with the v0.4 decisions
+# after spike S2 (the box at the top of 8.3, PRD FR-19 v0.3):
+#   - READ, then INIT, then one flight of 34 cards, drawn from the real cards;
+#   - one READ tap sends `b c` then `b r` (prevents the all-zero first card);
+#   - INIT once; the bridge freezes the machine on the landing card with
+#     `s cy.op 1a`; Full speed only;
+#   - no feet or seconds on screen until Stuart or the Fact-Checker confirms.
+# [FC] tags from the UX spec are kept in `review.factCheck` (never shown).
+schema: 1
+id: trajectory
+title: "Trajectory"
+order: 3
+summary: "Fire a cannon shell, one dot at a time."
+minutes: 5
+program: trajdemo.e
+programSha256: "b21c3635b1febd4b35169d1f5647b89e94d9b7b2dee2ffcbf9b5e2b3f17c6857"
+includes: { drag.e: "66d42fed31297875080da7cf30780fff03d70d43c09aaa4e957adaa02abf194e" }
+assets: { demo.card: "86ae09c103ba0af54b982cb5be78fb7707014397067801da3c9c68036bc1b4d8" }   # the file holds the same card twice; the first is read
+requires: [0003-acc-1pp-race]    # without it the "up" numbers can come out a few units low (spike S2)
+ordered: true
+
+steps:
+  - id: reader-done-to-1-2
+    line: "p i.Ro 1-2"
+    expect: { from: i.Ro, to: 1-2 }
+    text:
+      headline: "Tell ENIAC the card was read"
+      body: "ENIAC takes in numbers from punched cards. When the reader finishes, it sends a signal. Tap the reader OUT jack on the Initiating Unit. Then tap program trunk 1-2."
+      more: "Cards were how numbers got into ENIAC. A card had 80 columns. The card in this mission holds seven numbers of up to 10 digits."
+      done: "Now the reader can tell the machine it is done."
+      hints:
+        wrongFrom: "That jack belongs to another job. We want the reader, OUT."
+        wrongTo: "Try program trunk 1-2."
+      review: { factCheck: [more], source: "ux-spec 8.3.5 step 1 ([I: 7 numbers, to be confirmed against proccard])" }
+
+  - id: punch-hop-number
+    line: "s pr.6 P"
+    expect: { switch: pr.6, value: "P" }
+    choices: ["P", "0"]
+    text:
+      headline: "Punch the hop number"
+      body: "Each card will say which hop it is: 1, 2, 3 and so on. The printer has a switch for each part of the card. Tap the glowing switch 6 and choose P, for punch."
+      more: "The punch worked in 16 groups of 5 columns. A switch for each group chose what got punched. On our card, you will see the hop number, how far along the shell is, and how high."
+      done: "Now each card will carry its hop number."
+      hints:
+        wrongValue: "Blank leaves the number off. Choose P."
+        wrongSwitch: "That switch is for another part of the card. Try the glowing one."
+      review: { factCheck: [more], source: "ux-spec 8.3.5 step 2" }
+
+  - id: trunk25-to-punch
+    line: "p 2-5 i.Pi"
+    expect: { from: 2-5, to: i.Pi }
+    text:
+      headline: "Wire up the card punch"
+      body: "On each hop, ENIAC punches a card. The signal to punch rides on program trunk 2-5. Tap trunk 2-5. Then tap the Pi jack on the Initiating Unit, the punch input."
+      more: "When a card is punched, the Initiating Unit sends a done signal, and ENIAC carries on. The punch took a little over half a second per card."
+      done: "Now each hop will punch a card."
+      hints:
+        wrongFrom: "Try program trunk 2-5."
+        wrongTo: "That jack starts something else. We want the punch, IN: Pi."
+      review: { factCheck: [more], source: "ux-spec 8.3.5 step 3" }
+
+  - id: a19-keep-going
+    line: "p a19.5o 1-4"
+    expect: { from: a19.5o, to: 1-4 }
+    text:
+      headline: "Is the shell still flying?"
+      body: "After each hop, ENIAC checks the shell's height. If the shell is still in the air, Accumulator 19 sends a signal. Tap its 5-out jack. Then tap program trunk 1-4."
+      more: "Accumulator 20 holds the shell's height. The program checks its sign. While the height is above zero, the signal says keep going. When it drops below zero, the shell has landed."
+      done: "Accumulator 19 will say: keep going."
+      hints:
+        wrongTo: "Try program trunk 1-4."
+        byTarget:
+          a19.6o: "That jack is for the other answer, landing. We want 5, out."
+      review: { source: "ux-spec 8.3.5 step 4 ([I: the file's own comment says 'continue if non-negative'])" }
+
+  - id: trunk14-to-h
+    line: "p 1-4 p.Hi"
+    expect: { from: 1-4, to: p.Hi }
+    text:
+      headline: "Start the next hop"
+      body: "The 'keep going' signal must start another hop. The Master Programmer, ENIAC's conductor, runs the hops. Tap program trunk 1-4. Then tap the H jack on the Master Programmer."
+      more: "The Master Programmer had ten steppers, each counting stages and handing off to the next, a bit like a music box with pins. This one is the stepper for the hop loop."
+      done: "Hop after hop, ENIAC will fly the shell. Your cables made the loop!"
+      button: "Finish wiring"
+      hints:
+        wrongFrom: "Try program trunk 1-4."
+        wrongTo: "That jack is for a different stepper. Look for H."
+      review: { factCheck: [more], source: "ux-spec 8.3.5 step 5" }
+
+withheld:                        # the file's last three lines are b c, b r, b i
+  - { line: "b c", button: read } # sent first: prevents the all-zero first card (spike S2)
+  - { line: "b r", button: read }
+  - { line: "b i", button: init }
+
+run:
+  buttons: [read, init]
+  watch: ["15", "18", "20", "6", "4", "1"]   # hop, along, up, along speed, up speed; 1 holds the card's first number
+  idle: { quietMs: auto }
+  initOnce: true                 # a second INIT mid-flight corrupts the flight (spike S2)
+  initAfter: card-read           # INIT only once the card is in (Acc 1 = 97367)
+  freezeAt: landed               # s cy.op 1a on the landing card: nothing more is punched
+  speeds:
+    full: { rate: 0 }            # Full only: a card every 1.43 s on the Mac (spike S2); nothing is faster
+  defaultSpeed: full
+  cards:
+    window: [21, 80]             # hop 26-30, along 51-60, up 71-80
+    value: [5]
+    hop: [5]
+    style: film
+    keep: 20
+  plot: { x: [10, 11], y: [14, 15] }
+
+checkpoints:
+  - { id: card-read, when: { acc: "1", eq: 97367 } }
+  - { id: first-hop, when: { punchCount: { gte: 1 } } }
+  - { id: landed,    when: { punchField: { index: 14, startsWith: "-" } } }   # "up" turns negative: card 34
+result: landed
+
+selftest:                        # rule 8: READ (b c, b r), INIT, the first hop on a clean core [V, S2 with 0003]
+  read: true
+  inits: 1
+  until: { punchCount: { gte: 1 } }
+  cards:
+    - { index: 5, values: ["00001"] }
+    - { index: 10, values: ["00141"] }
+    - { index: 11, values: ["28681"] }
+    - { index: 14, values: ["00056"] }
+    - { index: 15, values: ["93229"] }
+
+content:
+  briefing:                      # S3, step 0a
+    headline: "The path of a shell"
+    body: "A shell flies in an arc. ENIAC finds the arc one small hop at a time, and punches a card after each hop. Each card is one dot. You will connect the dots."
+    more: "ENIAC was built to work out firing tables for Army guns. It was shown to the public on February 15, 1946. Brian Stuart's program tries to recreate the demo from that day. Six women programmers set up ENIAC for it."
+    buttons: ["Let's go"]
+    review: { factCheck: [more], source: "ux-spec 8.3.5 0a ([FC: all four sentences; Doug to approve any names])" }
+  plan:                          # step 0b
+    headline: "Hop by hop"
+    body: "ENIAC finds a shell's path one hop at a time. Each hop: the air slows the shell, the shell moves, ENIAC punches a card, and checks the shell is still flying. Then it hops again."
+    math: "card 1, card 2, card 3 ... one dot each"
+    more: "The air slows a fast shell a lot. ENIAC looks up how much in a table of numbers. Brian Stuart's note in the program says he tried to work that table out himself, so the table is his best attempt."
+    buttons: ["Next step", "Skip setup"]
+    review: { factCheck: [more], source: "ux-spec 8.3.5 0b" }
+  rest:                          # S5
+    headline: "The rest is done for you"
+    body: "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. We will place the last ones now: 293 cables and 1,147 switches. Most of the switches make up the drag table."
+    buttons: ["Continue"]
+    review: { factCheck: [body], source: "ux-spec 8.3.5 S5" }
+  read:                          # the READ beat before INIT
+    before: { headline: "Press READ", sub: "READ pulls the card of numbers into ENIAC." }
+    headline: "Reading the card"
+    captions:
+      - { text: "The card goes through the reader.", trigger: { init: rdff } }
+      - { text: "The first number, 97,367, lands in Accumulator 1.", trigger: { acc: { acc: "1", eq: 97367 } } }
+      - { text: "The other numbers wait inside ENIAC. Now press INIT.", trigger: { run: idle } }
+    initLocked: "Read the card first"
+    review: { source: "ux-spec 8.3.5 S6 (READ pressed)" }
+  run:                           # S6
+    before: { headline: "Press INIT", sub: "INIT is the Initiating Pulse, ENIAC's GO button." }
+    presses:
+      - press: 1
+        headline: "Watch the dots"
+        captions:
+          - { text: "ENIAC starts the first hop.", trigger: { run: busy } }
+          - { text: "Card 1 is out. Its big numbers say how far along and how high up the shell is.", trigger: { punchCount: { gte: 1 } } }
+          - { text: "Each hop, the air slows the shell, and gravity pulls it down.", trigger: { punchCount: { gte: 3 } } }
+          - { text: "Highest point! From here the shell comes down.", trigger: { derived: apex } }
+          - { text: "Landed! The height dropped below zero.", trigger: { derived: landed } }
+    extras:
+      afterPress: 1
+      afterCards: 5              # Show me and Skip appear after hop 5
+      autoResultMs: 3000         # the result follows 3 s after the landing, or on tap
+      showResult: "Show me what happened"
+      skipToAnswer: "Skip to the answer"
+      stopAt: landed
+    done: { headline: "You did it!" }
+    note: "ENIAC does a lot of arithmetic for every hop."
+    cards:
+      title: "Punched cards"
+      label: "Hop {v}"
+      count: "Cards: {n}"
+      empty: "The card punch is waiting."
+    plot:
+      x: "Along"
+      y: "Up"
+      dot: "Each dot is one card."
+      stretch: "Height stretched so you can see it."
+      apex: "Highest point"
+      landed: "Landed"
+      cross: "where the line between the last two dots crosses the ground"
+    review: { source: "ux-spec 8.3.5 S6 (v0.4: Full only, no units)" }
+  result:                        # S7
+    headline: "ENIAC flew the shell!"
+    body: "Each card was one hop. Joined up, the dots show the whole flight: up, over the top, and down. ENIAC worked it out from a card of numbers and the cables you placed."
+    takeaway: "Numbers and cables made a flight path."
+    takeawaySub: "That is what programming ENIAC meant."
+    more: "The real ENIAC could work out a trajectory like this much faster than a shell takes to fly. By hand, the same work took days. Our simulator is slower, so you can watch every hop."
+    live:
+      waiting: "The shell is still flying: hop {n}"
+      done: "{n} hops, {n} cards"
+      doneAt: landed
+    buttons: ["Finish", "Try again", "Menu"]
+    review: { factCheck: [more], source: "ux-spec 8.3.5 S7 ([FC: both comparisons; to be checked with Doug])" }
+
+credits:
+  - "Brian L. Stuart, programs/trajdemo.e and programs/drag.e"

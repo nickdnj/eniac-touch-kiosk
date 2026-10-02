@@ -14,6 +14,7 @@ import type { ServerMsg } from "../protocol.ts";
 import { h } from "../ui/dom.ts";
 import { button, tellMore } from "../ui/overlays.ts";
 import { BarsPane, StackPane } from "../run/cardpane.ts";
+import { ArcPlot } from "../run/filmstage.ts";
 import { fillCard } from "../run/cards.ts";
 import { COPY } from "../copy.ts";
 
@@ -30,11 +31,16 @@ export function resultScreen(app: App): Screen {
   const live = r.live;
 
   // ------------------------------------------------------------------ left
-  let left: HTMLElement;
+  let left!: HTMLElement;
   let pane: StackPane | null = null;
   let bars: BarsPane | null = null;
+  let arc: ArcPlot | null = null;
   const liveLine = h("p", { class: "live-line", "aria-live": "polite" });
-  if (cardMission) {
+  if (cardMission && mission.run.plot) {
+    // Trajectory: the full arc from the real cards, landing tagged, and the count.
+    arc = new ArcPlot(app, 848, 600);
+    left = h("div", { class: "result-cards result-arc" }, arc.el, liveLine);
+  } else if (cardMission) {
     pane = new StackPane(app, { rows: 10, bigW: 480, bigH: 150, reduceMotion: reduceMotion() });
     const parts: HTMLElement[] = [h("div", { class: "result-cards-top" }, pane.el, h("div", { class: "live-col" }, liveLine))];
     if (app.cards.spec?.bars) {
@@ -110,6 +116,7 @@ export function resultScreen(app: App): Screen {
     liveLine.classList.toggle("done", done);
     pane?.update();
     bars?.update();
+    arc?.update();
   }
 
   return {
@@ -120,6 +127,7 @@ export function resultScreen(app: App): Screen {
       app.done.add(mission.id);
       pane?.update(true);
       bars?.update();
+      arc?.update(true);
       refresh();
     },
     onMessage: (m: ServerMsg) => {

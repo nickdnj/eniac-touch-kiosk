@@ -17,7 +17,7 @@ import { accLamps } from "../../src/web/app/lamps/derive.ts";
 import { toView } from "../../src/web/app/mission/view.ts";
 import { PROTOCOL_VERSION, type MachineState, type MissionCompiled } from "../../src/web/app/protocol.ts";
 // @ts-expect-error: plain ESM mock without types
-import { MockBridge, SQUARES, PRIMES } from "./mock/bridge.mjs";
+import { MockBridge, SQUARES, PRIMES, TRAJECTORY } from "./mock/bridge.mjs";
 
 const repo = join(import.meta.dirname, "..", "..");
 const FIXTURES = process.env.ENIAC_FIXTURES ?? join(repo, "tests", "fixtures", "protocol");
@@ -186,7 +186,7 @@ const strip = (o: any): any => {
   return o;
 };
 
-for (const [id, mock] of [["squares", SQUARES], ["primes", PRIMES]] as const) {
+for (const [id, mock] of [["squares", SQUARES], ["primes", PRIMES], ["trajectory", TRAJECTORY]] as const) {
   const yamlPath = join(MISSIONS, `${id}.yaml`);
   test(`mock compiled mission agrees with missions/${id}.yaml`, { skip: !existsSync(yamlPath) && `no ${yamlPath}` }, () => {
     const require = createRequire(join(repo, "src", "web", "package.json"));
@@ -207,7 +207,9 @@ for (const [id, mock] of [["squares", SQUARES], ["primes", PRIMES]] as const) {
     for (const [i, ys] of y.steps.entries()) {
       const s = c.steps[i];
       const line = s.kind === "plug" ? `p ${s.from} ${s.to}` : `s ${s.switch} ${s.value}`;
-      assert.equal(line, ys.line, `step ${s.id} line`);
+      // The compiled mission uses canonical terms (initiating-unit jacks in lower case, like initplug).
+      const canon = (l: string) => l.replace(/\bi\.([A-Za-z])/g, (_m, c: string) => `i.${c.toLowerCase()}`);
+      assert.equal(line, canon(ys.line), `step ${s.id} line`);
       assert.deepEqual(strip(s.text), strip(ys.text), `step ${s.id} text`);
       if (ys.choices) assert.deepEqual(s.choices, ys.choices, `step ${s.id} choices`);
     }

@@ -42,8 +42,10 @@ test("S2 shows available missions only, with Start here and a 96 px Start; S0 wh
   await fresh(page);
   await tap(page, page.locator(".screen.start"));
   await expect(view(page)).toHaveAttribute("data-view", "picker");
-  await expect(page.locator(".mission-card")).toHaveCount(2);
-  await expect(page.locator(".mission-card .mc-title")).toHaveText(["Squares", "Primes"]);
+  await expect(page.locator(".mission-card")).toHaveCount(3);
+  await expect(page.locator(".mission-card .mc-title")).toHaveText(["Squares", "Primes", "Trajectory"]);
+  await expect(page.locator('.mission-card[data-mission="trajectory"] .mc-steps')).toHaveText("You wire 5 steps and read a card");
+  await expect(page.locator(".mc-order")).toHaveText(/1, then 2, then 3/);
   await expect(page.locator(".mc-here")).toHaveCount(1);
   await expect(page.locator('.mission-card[data-mission="squares"] .mc-here')).toHaveText(/Start here/i);
   await expect(page.locator('.mission-card[data-mission="squares"] .mc-steps')).toHaveText("You wire 7 steps");

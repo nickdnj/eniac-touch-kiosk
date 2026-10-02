@@ -17,7 +17,7 @@ import { devMission, fresh, hit, mainBtn, mock, tap, tapSlow, toRun, toStep1, vi
 // UX-set 64 px exceptions (UX 5.1, 7.3, 7.5): Tell me more, Show me where,
 // Skip setup in the rail, CLEAR, header Missions / Start over, run extras.
 const ALLOW_64 = [/^Tell me more$/, /^Show me where$/, /^Skip setup, just run it$/, /^CLEAR/, /Missions$/, /^Start over$/, /^Keep pressing for me$/, /^Stop pressing$/, /^Skip to the answer$/];
-const PRIMARY = [/^INIT/, /^Next step$/, /^Finish wiring$/, /^Do it for me$/, /^Continue$/, /^I'm here$/, /^Let's go$/, /^Start$/, /^Try again$/, /^Menu$/, /^Close$/, /^Yes, /, /^Keep going$/, /^Show me what happened$/];
+const PRIMARY = [/^INIT/, /^READ/, /^Next: /, /^Finish$/, /^Next step$/, /^Finish wiring$/, /^Do it for me$/, /^Continue$/, /^I'm here$/, /^Let's go$/, /^Start$/, /^Try again$/, /^Menu$/, /^Close$/, /^Yes, /, /^Keep going$/, /^Show me what happened$/];
 
 interface Row {
   el: string;
@@ -245,4 +245,45 @@ test("audit M2: picker with Done/UP NEXT, Primes briefing, plan (Again), steps, 
   await expect(view(page)).toHaveAttribute("data-view", "picker");
   await expect(page.locator(".mc-done")).toHaveCount(1);
   await audit(page, info, "M2-picker-done");
+});
+
+test("audit M2 Trajectory: briefing, plan, printer switch picker, MP window, S6 before READ, flight with film strip, S7", async ({ page }, info) => {
+  await mock(page, "reset");
+  await page.goto("/?mission=trajectory");
+  await expect(page.locator(".step-card h2")).toHaveText("The path of a shell");
+  await audit(page, info, "M2-traj-S3");
+  await tapSlow(page, mainBtn(page));
+  await expect(page.locator('[data-figure="traj-plan"] .tiles-again')).toBeVisible();
+  await audit(page, info, "M2-traj-step0");
+  await tapSlow(page, mainBtn(page));
+  await page.waitForTimeout(500);
+  await audit(page, info, "M2-traj-ro-window");
+  await tapSlow(page, mainBtn(page)); // Do it for me
+  await tapSlow(page, mainBtn(page));
+  await page.waitForTimeout(500);
+  await tapSlow(page, hit(page, "sw:pr.6"));
+  await audit(page, info, "M2-traj-printer-picker");
+  await tapSlow(page, page.locator('.pick[data-value="P"]'));
+  await tapSlow(page, mainBtn(page));
+  await tapSlow(page, mainBtn(page)); // step 3 Do it for me
+  await tapSlow(page, mainBtn(page));
+  await tapSlow(page, mainBtn(page)); // step 4 Do it for me
+  await tapSlow(page, mainBtn(page));
+  await page.waitForTimeout(500);
+  await audit(page, info, "M2-traj-mp-window");
+  await tapSlow(page, page.locator(".rail .skip-btn"));
+  await expect(mainBtn(page)).toHaveText("Continue", { timeout: 15_000 });
+  await audit(page, info, "M2-traj-S5");
+  await tapSlow(page, mainBtn(page));
+  await expect(view(page)).toHaveAttribute("data-view", "run");
+  await audit(page, info, "M2-traj-S6-before-read");
+  await tapSlow(page, page.locator(".read-btn"));
+  await expect(page.locator(".init-btn")).not.toHaveClass(/disabled/, { timeout: 5000 });
+  await audit(page, info, "M2-traj-S6-read");
+  await mock(page, "hop", { ms: 150 });
+  await tap(page, page.locator(".init-btn"));
+  await expect(page.locator(".skip-answer-btn")).toBeVisible({ timeout: 10_000 });
+  await audit(page, info, "M2-traj-S6-flight");
+  await expect(view(page)).toHaveAttribute("data-view", "result", { timeout: 20_000 });
+  await audit(page, info, "M2-traj-S7");
 });

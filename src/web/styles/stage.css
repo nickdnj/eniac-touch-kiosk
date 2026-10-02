@@ -172,6 +172,46 @@
   .share-tile, .share-plan .cand, .share-math { transition: none; }
 }
 
+/* Trajectory figures (app/stage/trajfig.ts): connect the dots on graph paper. */
+.traj .traj-fig { position: absolute; left: 230px; top: 56px; }
+.gp-line { stroke: var(--traj-grid); stroke-width: 2; }
+.traj-fig .ground, .arc-plot .ground { stroke: #9AA0A8; stroke-width: 3; stroke-dasharray: 10 8; fill: none; }
+.cannon rect, .cannon circle { fill: var(--traj-path); stroke: #101215; stroke-width: 2; }
+.cannon .hub { fill: #101215; }
+.traj-fig .dot { opacity: 0; transform-box: fill-box; transform-origin: center; transition: opacity 250ms, transform 250ms; transform: scale(.3); }
+.traj-fig .dot.on { opacity: 1; transform: none; }
+.traj-fig .dot circle { fill: var(--traj-dot); stroke: var(--traj-path); stroke-width: 3; }
+.card-glyph { fill: var(--traj-path); stroke: #101215; stroke-width: 1.5; }
+.traj-fig .arc-trace { fill: none; stroke: var(--traj-path); stroke-width: 4; stroke-dasharray: 12 10; opacity: 0; transition: opacity 400ms; }
+.traj-fig .arc-trace.on { opacity: .9; }
+.traj .traj-caption { position: absolute; left: 0; right: 0; top: 560px; text-align: center; }
+.traj-fig .shell { opacity: 0; transition: transform 500ms ease-in-out, opacity 200ms; }
+.traj-fig .shell.on { opacity: 1; }
+.traj-fig .shell circle { fill: var(--traj-dot); stroke: var(--traj-path); stroke-width: 3; }
+.traj-fig .trail-dot { fill: var(--traj-dot); opacity: .6; }
+.traj-fig .speed { opacity: 0; transition: transform 400ms ease-in-out, opacity 200ms; }
+.traj-fig .speed.on { opacity: 1; }
+.traj-fig .speed .arrow { stroke: var(--traj-dot); stroke-width: 6; stroke-linecap: round; }
+.traj-fig .speed .arrow-head { fill: var(--traj-dot); }
+.traj-fig .speed[data-stage="air"] .arrow { stroke: var(--traj-air); }
+.traj-fig .speed[data-stage="air"] .arrow-head { fill: var(--traj-air); }
+.traj-fig .speed[data-stage="gravity"] .arrow { stroke: var(--traj-gravity); }
+.traj-fig .speed[data-stage="gravity"] .arrow-head { fill: var(--traj-gravity); }
+.hop-labels { position: absolute; left: 0; right: 0; top: 540px; display: flex; justify-content: center; min-height: 60px; }
+.hop-label { display: inline-flex; align-items: center; gap: 12px; padding: 6px 24px; border-radius: 999px; border: 4px solid; background: #15181c; color: var(--card); font-size: 36px; font-weight: 700; }
+.hop-label .glyph { font-size: 40px; }
+.hop-label.air { border-color: var(--traj-air); }
+.hop-label.gravity { border-color: var(--traj-gravity); }
+.hop-label.hop, .hop-label.check { border-color: var(--traj-card); }
+.hop-label.hop .glyph, .hop-label.check .glyph { color: var(--traj-card); }
+.hop-card { position: absolute; right: 60px; top: 60px; width: 200px; height: 80px; background: var(--card); color: var(--ink); clip-path: polygon(18px 0, 100% 0, 100% 100%, 0 100%, 0 18px); display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 36px; font-weight: 700; opacity: 0; transition: opacity 250ms; }
+.hop-card.on { opacity: 1; }
+.traj-math { top: 630px; }
+.traj.still .dot, .traj.still .arc-trace, .traj.still .shell, .traj.still .speed, .traj.still .hop-card { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .traj-fig .dot, .traj-fig .arc-trace, .traj-fig .shell, .traj-fig .speed, .hop-card { transition: none; }
+}
+
 /* Windows live in app coordinates inside the stage. */
 .win-host { position: absolute; left: -24px; top: -112px; width: 1920px; height: 1080px; pointer-events: none; }
 .windows { position: absolute; inset: 0; }
@@ -278,8 +318,10 @@
 .picker-title { font-size: 32px; font-weight: 700; padding: 0 16px 24px; }
 .picker-row { display: flex; justify-content: center; gap: 16px; }
 .pick {
-  width: 120px;
+  min-width: 120px;
   height: 120px;
+  box-sizing: border-box;
+  padding: 0 16px;
   border-radius: 12px;
   border: 3px solid var(--ink);
   background: #fff;
@@ -290,7 +332,7 @@
   transition: transform 150ms ease-out;
 }
 .pick-v { font-family: var(--font-mono); font-size: 56px; font-weight: 700; line-height: 1; }
-.pick-l { font-size: 20px; font-weight: 700; margin-top: 6px; }
+.pick-l { font-size: 24px; font-weight: 700; margin-top: 6px; white-space: nowrap; }
 .pick.pressed { transform: scale(0.97); background: #e5dfcf; }
 .pick.wrong { background: var(--wrong-banner); color: #fff; border-color: var(--wrong-banner); }
 

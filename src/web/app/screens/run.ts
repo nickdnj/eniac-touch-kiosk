@@ -16,6 +16,7 @@ import { onTap, setDisabled } from "../ui/tap.ts";
 import { button, confirm } from "../ui/overlays.ts";
 import { RAIL, STAGE } from "../stage/layout.ts";
 import { stackStage, type RunStage } from "../run/stackstage.ts";
+import { filmStage } from "../run/filmstage.ts";
 import { COPY } from "../copy.ts";
 
 const REDUCE_MOTION = false; // UX 9.5: staff setting; wired to config in M3
@@ -27,7 +28,7 @@ function reduceMotion(): boolean {
  * Optional stages by card-pane style. Squares (no run.cards) keeps its own
  * stage below; "stack" is Primes. Other styles register here.
  */
-export const RUN_STAGES: Record<string, (app: App, reduceMotion: boolean) => RunStage> = { stack: stackStage };
+export const RUN_STAGES: Record<string, (app: App, reduceMotion: boolean) => RunStage> = { stack: stackStage, film: filmStage };
 
 export const INIT_DEBOUNCE_MS = 400;
 const PENDING_TIMEOUT_MS = 2000;
@@ -133,6 +134,21 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     h("span", { class: "init-label" }, h("span", { class: "big" }, COPY.run.init), h("span", { class: "sub" }, COPY.run.initSub)),
   );
   onTap(initBtn, () => press("init"));
+  const initSub = initBtn.querySelector(".sub") as HTMLElement;
+  // READ (Trajectory, UX 8.3.5): the card goes in first; INIT waits for it.
+  const readCopy = mission.content.read ?? null;
+  const hasRead = mission.run.buttons.includes("read") && !!readCopy;
+  let readPressed = false;
+  const readBtn = h(
+    "div",
+    { class: "btn primary read-btn", role: "button" },
+    h("span", { class: "spinner" }),
+    h("span", { class: "init-label" }, h("span", { class: "big" }, COPY.run2.read), h("span", { class: "sub" }, COPY.run2.readSub)),
+  );
+  onTap(readBtn, () => press("read"));
+  if (!hasRead) readBtn.classList.add("hidden");
+  /** INIT waits for its checkpoint (Trajectory: the card has been read). */
+  const initLocked = () => !!mission.run.initAfter && !app.checkpoints.has(mission.run.initAfter);
   const clearBtn = h("div", { class: "btn clear-btn", role: "button" }, h("span", {}, COPY.run.clear), h("span", { class: "sub" }, COPY.run.clearSub));
   onTap(clearBtn, () => press("clear"));
   if (!mission.run.buttons.includes("clear")) clearBtn.classList.add("hidden");
@@ -149,7 +165,8 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     speedRow.append(b);
   }
   const showMe = button(run.extras.showResult, "primary show-me hidden", () => goResult());
-  const rail = h("div", { class: "rail run-rail" }, card, initBtn, clearBtn, speedLabel, speedRow);
+  const rail = h("div", { class: "rail run-rail" }, card, readBtn, initBtn, clearBtn, speedLabel, speedRow);
+  if (!hasRead) readBtn.remove();
   if (!hasSpeeds) {
     speedLabel.classList.add("hidden");
     speedRow.classList.add("hidden");
@@ -169,9 +186,18 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   function refreshButtons(): void {
     const b = busy();
     const noMachine = app.mirror.machine === null;
-    initBtn.classList.toggle("busy", b);
+    const locked = initLocked();
+    initBtn.classList.toggle("busy", b && (!hasRead || presses > 0));
     initBtn.classList.toggle("used", initUsed());
-    setDisabled(initBtn, b || noMachine || initUsed());
+    initBtn.classList.toggle("pulse", hasRead && !locked && !b && presses === 0);
+    setDisabled(initBtn, b || noMachine || initUsed() || locked);
+    initSub.textContent = locked && readCopy ? readCopy.initLocked : COPY.run.initSub;
+    if (hasRead) {
+      readBtn.classList.toggle("busy", b && readPressed && presses === 0);
+      readBtn.classList.toggle("pulse", !readPressed && !b);
+      readBtn.classList.toggle("hidden", presses > 0 || initUsed());
+      setDisabled(readBtn, b || noMachine || presses > 0);
+    }
     setDisabled(clearBtn, b || noMachine);
     for (const [sp, btn] of Object.entries(speedBtns)) {
       btn.setAttribute("aria-pressed", String(sp === speed));
@@ -179,8 +205,21 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     }
     const extras = extrasOn();
     const done = app.checkpoints.has(mission.result);
-    prompt.textContent = done && run.done ? run.done.headline : extras && run.extras.headline ? run.extras.headline : captions.prompt(b);
-    captionEl.textContent = caption || (presses === 0 && !b ? captions.sub() : "");
+    // Before INIT on a READ mission: "Press READ", then "Reading the card",
+    // then the INIT prompt once the card is in.
+    const readPhase = hasRead && presses === 0 ? (!readPressed ? "before" : initLocked() || b ? "reading" : "armed") : null;
+    prompt.textContent =
+      done && run.done
+        ? run.done.headline
+        : extras && run.extras.headline
+          ? run.extras.headline
+          : readPhase === "before"
+            ? readCopy!.before.headline
+            : readPhase === "reading"
+              ? readCopy!.headline
+              : captions.prompt(b);
+    const sub = readPhase === "before" ? (readCopy!.before.sub ?? "") : readPhase === "reading" ? "" : captions.sub();
+    captionEl.textContent = caption || (presses === 0 && (!b || readPhase === "reading") ? sub : "");
     hint.classList.toggle("hidden", !extras || !hasSpeeds || speed !== mission.run.defaultSpeed);
     showMe.classList.toggle("hidden", !extras && !done);
     skipBtn?.classList.toggle("hidden", !extras || done);
@@ -218,7 +257,8 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   function press(b: ButtonName, auto = false): boolean {
     const t = app.now();
     if (busy() || (!auto && t - lastPress < INIT_DEBOUNCE_MS) || app.mirror.machine === null) return false;
-    if (b === "init" && initUsed()) return false;
+    if (b === "init" && (initUsed() || initLocked())) return false;
+    if (b === "read" && presses > 0) return false;
     if (app.send({ t: "button", b }) === null) return false;
     lastPress = t;
     lastButton = b;
@@ -232,6 +272,11 @@ function runScreen(app: App, hooks: RunHooks): Screen {
       presses++;
       caption = "";
       captions.onPress();
+    }
+    if (b === "read" && readCopy) {
+      readPressed = true;
+      caption = "";
+      captions.begin(readCopy.captions);
     }
     refreshButtons();
     return true;
@@ -281,7 +326,10 @@ function runScreen(app: App, hooks: RunHooks): Screen {
       } else {
         pending = false;
         const settled = m.settled ?? {};
-        if (lastButton === "clear") {
+        if (lastButton === "read") {
+          const c = captions.onRun("idle", app.mirror.machine, settled);
+          if (c) caption = c;
+        } else if (lastButton === "clear") {
           app.tape = [];
           presses = 0;
           caption = "";

@@ -158,3 +158,62 @@
 .result-waiting { display: flex; align-items: center; gap: 24px; font-size: 40px; line-height: 52px; font-weight: 700; color: var(--card); }
 .result-waiting .spinner { width: 56px; height: 56px; border-width: 6px; flex: none; }
 .result-waiting.hidden, .result-answer.hidden { display: none; }
+
+/* S6 film stage (Trajectory, UX 8.3.5; app/run/filmstage.ts). */
+.film-stage { position: absolute; inset: 0; }
+.arc-box { position: absolute; left: 0; top: 0; width: 1360px; height: 400px; }
+.arc-panel { position: absolute; left: 0; top: 0; background: #0d0f12; }
+.arc-panel.hidden, .reader-art.hidden { display: none; }
+.arc-plot .arc-line { fill: none; stroke: var(--traj-path); stroke-width: 3; stroke-dasharray: 10 6; }
+.arc-plot .arc-dot { fill: var(--traj-dot); stroke: var(--traj-path); stroke-width: 2; }
+.arc-plot .arc-dot.newest { stroke-width: 3; }
+.arc-plot .arc-ring { fill: none; stroke: var(--traj-dot); stroke-width: 3; }
+.arc-plot .arc-cross { fill: var(--traj-card); stroke: var(--traj-path); stroke-width: 3; }
+.arc-plot .arc-tag rect { fill: var(--card); }
+.arc-plot .arc-tag text { font-family: var(--font-ui); font-size: 24px; font-weight: 700; fill: var(--ink); }
+.arc-plot .arc-tag path { stroke: var(--card); stroke-width: 3; }
+.arc-plot .arc-tag.landed rect { fill: var(--traj-card); }
+.arc-plot .arc-tag.landed text { fill: #fff; }
+.axis-x { position: absolute; right: 36px; bottom: 6px; font-size: 24px; color: #9AA0A8; }
+.axis-y { position: absolute; left: 8px; top: 4px; font-size: 24px; color: #9AA0A8; }
+.dot-note { position: absolute; left: 80px; bottom: 6px; font-size: 24px; color: #9AA0A8; }
+.stretch-chip { position: absolute; right: 24px; top: 16px; padding: 4px 16px; border-radius: 8px; background: #15181c; border: 2px solid #9AA0A8; color: var(--card); font-size: 24px; }
+.stretch-chip.hidden { display: none; }
+.reader-art { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; background: #0d0f12; }
+.reader-hopper { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; transition: transform 600ms ease-in, opacity 600ms; }
+.reader-art.reading .reader-hopper, .reader-art.read .reader-hopper { transform: translateX(-120px) scale(.92); opacity: .55; }
+.reader-art .input-card { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .6)); }
+.reader-nums { display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: baseline; max-width: 1200px; }
+.reader-num { font-family: var(--font-mono); font-size: 32px; font-weight: 700; color: var(--card); }
+.reader-art.read .reader-num:first-of-type { color: var(--lamp-on); }
+.traj-mid { position: absolute; left: 0; top: 412px; width: 1360px; height: 210px; display: flex; gap: 20px; }
+.traj-readouts { display: grid; grid-template-columns: repeat(3, 250px); gap: 8px; }
+.ro { height: 84px; box-sizing: border-box; padding: 4px 12px; background: #15181c; border: 2px solid #2c2f35; border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; }
+.ro-label { font-size: 24px; color: #9AA0A8; display: flex; justify-content: space-between; }
+.ro-acc { font-family: var(--font-mono); }
+.ro-value { font-family: var(--font-mono); font-size: 30px; line-height: 40px; color: #fff; text-align: right; white-space: nowrap; }
+.traj-note { font-size: 24px; line-height: 30px; color: #9AA0A8; margin-top: 8px; max-width: 760px; }
+.traj-big { width: 560px; }
+.traj-big .card-big { height: 150px; overflow: hidden; }
+.traj-big .card-big.pinned { outline: 4px solid var(--guide); outline-offset: 2px; }
+.units-at-work { position: absolute; left: 0; top: 632px; width: 1360px; }
+.units-row { display: flex; gap: 0; align-items: flex-start; width: 1360px; justify-content: space-between; }
+.film-strip { position: absolute; left: 0; top: 748px; width: 1360px; height: 148px; display: flex; gap: 16px; align-items: flex-end; overflow: hidden; }
+.film-card { width: 64px; height: 100px; box-sizing: border-box; background: var(--card); color: var(--ink); clip-path: polygon(10px 0, 100% 0, 100% 100%, 0 100%, 0 10px); display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 4px 0; }
+.film-card:first-child { height: 120px; box-shadow: 0 0 0 4px var(--traj-dot); }
+.film-hop { font-family: var(--font-mono); font-size: 28px; font-weight: 700; }
+.read-btn { width: 488px; min-height: 96px; background: var(--card); color: var(--ink); border-color: var(--card); gap: 20px; }
+.read-btn .init-label { display: flex; flex-direction: column; align-items: flex-start; }
+.read-btn .big { font-size: 40px; line-height: 44px; letter-spacing: 3px; }
+.read-btn .sub { font-size: 24px; line-height: 28px; font-weight: 400; }
+.read-btn .spinner { display: none; }
+.read-btn.busy .spinner { display: inline-block; }
+.read-btn.hidden { display: none; }
+
+/* S7 for the plot: the arc and the live count. */
+.result-arc { gap: 12px; }
+.result-arc .arc-panel { position: relative; border-radius: 10px; }
+/* READ / INIT on the run rail pulse with a glow only: no scale, so the 16 px
+   gap between the two big buttons never shrinks (touch audit). */
+.run-rail .read-btn.pulse, .run-rail .init-btn.pulse { animation: rail-pulse 1s ease-in-out infinite; }
+@keyframes rail-pulse { 50% { box-shadow: 0 0 0 8px rgba(240, 228, 66, 0.35); } }
