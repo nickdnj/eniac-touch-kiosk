@@ -8,7 +8,14 @@ set -euo pipefail
 T=/target
 P=/cdrom/eniac
 FB=$T/var/lib/eniac-firstboot
-say() { echo "eniac-late: $*" >&2; }   # subiquity shows command output on its consoles
+# Unlike early-commands, subiquity does not show late-commands output on screen
+# (seen in the VM rehearsal), so also write to the console: the screen on the
+# OptiPlex, the serial port in the QEMU test.
+say() {
+  echo "eniac-late: $*" >&2
+  [ -w /dev/console ] && echo "eniac-late: $*" > /dev/console 2>/dev/null
+  return 0
+}
 
 say "staging the kiosk payload from the stick"
 install -d -m 0755 "$FB" "$T/var/lib/eniac-stick"

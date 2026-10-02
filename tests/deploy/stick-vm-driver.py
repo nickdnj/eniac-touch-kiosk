@@ -134,7 +134,7 @@ def full(c, a):
     if i != 0:
         return step(False, "stick guard did not accept the blank disk")
     step(True, f"stick guard picked {m.group(1).decode()} ({el()})")
-    i, _ = c.expect([r"eniac-late: done", r"eniac-late: release checksum FAILED", r"An error occurred|crash report|Traceback"], 180 * 60, "the end of late-commands")
+    i, _ = c.expect([r"eniac-late: done", r"eniac-late: release checksum FAILED", r"An error occurred\. Press enter|Traceback \(most recent"], 180 * 60, "the end of late-commands")
     if i != 0:
         return step(False, "installer failed before late-commands finished")
     step(True, f"Ubuntu installed, late-commands done ({el()})")
