@@ -2224,7 +2224,7 @@ The picker keeps its three cards (8.4). The row under them changes (y 848 to 944
 | Q23 | Finale trigger: all three missions done, or Finish on any mission? | All three done (14.5.1) | Nick |
 | Q24 | When the core is down, should S16 keep working with no pill? | Yes: nothing on it is live and the plate says so (14.11) | Nick |
 | Q25 | A header button on S14, or also a "Where are the tubes?" tag on every panel of the room? | Header button only (14.11) | Nick |
-| Q26 | Ship the optional attract plate "about 18,000 vacuum tubes, about 150 kilowatts, about 30 tons"? | Not built; P2 if there is room in the rotation | Nick |
+| Q26 | Ship the optional attract plate "about 18,000 vacuum tubes, about 150 kilowatts, about 30 tons"? | Built with S1 live attract: the fifth slide of the rotating honor plate, "THE MACHINE: About 18,000 vacuum tubes / About 150 kilowatts / About 30 tons" (`content/honor.ts`, fact-check E1, E6 and the weight row). Drop it by setting `hold: true` | Nick |
 | Q27 | The Haigh and Priestley December 1947 figures on a card once someone has read the book? | Not on a card; docent note only (`docs/tubes.md` 1.3) | Nick |
 
 ### 14.11 S16 Keeping ENIAC alive
