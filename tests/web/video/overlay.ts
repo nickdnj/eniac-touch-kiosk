@@ -2,6 +2,7 @@
 // end cards, a caption over the left stage, and a visible ripple on every
 // touch. Injected with bypassCSP; nothing here is in the kiosk bundle.
 import type { Page } from "@playwright/test";
+import { afterSpeech, lineMs, speak } from "./narrate.ts";
 
 // Overlay helpers: title/end cards, captions, and a visible tap ripple.
 export async function overlays(page: Page) {
@@ -30,7 +31,12 @@ export async function card(page: Page, html: string, ms: number) {
   await page.evaluate((html) => {
     const c = document.createElement("div"); c.id = "vid-card"; c.innerHTML = html; document.body.append(c);
   }, html);
-  await page.waitForTimeout(ms);
+  // Narration: title and end cards stay up at least as long as their line.
+  const key = /<h1>Thank you<\/h1>/.test(html) ? "end card" : "title card";
+  const t = Date.now();
+  await speak(page, key);
+  const left = Math.max(ms, lineMs(key)) - (Date.now() - t);
+  if (left > 0) await page.waitForTimeout(left);
   await page.evaluate(() => { const c = document.getElementById("vid-card"); if (c) { c.style.opacity = "0"; setTimeout(() => c.remove(), 700); } });
   await page.waitForTimeout(700);
 }
@@ -40,6 +46,7 @@ export async function cap(page: Page, text: string | null) {
     if (!c) { c = document.createElement("div"); c.id = "vid-cap"; document.body.append(c); }
     if (text) { c.textContent = text; c.style.opacity = "1"; } else c.style.opacity = "0";
   }, text);
+  await speak(page, text ?? "(caption cleared)");
 }
-export const pause = (page: Page, ms: number) => page.waitForTimeout(ms);
+export const pause = (page: Page, ms: number) => page.waitForTimeout(afterSpeech(ms));
 

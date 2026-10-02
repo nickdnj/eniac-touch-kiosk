@@ -2,9 +2,11 @@
 import { test, expect } from "@playwright/test";
 import { tap, tapSlow, hit, mainBtn, feedback, view } from "../e2e/helpers.ts";
 import { card, cap, overlays, pause } from "./overlay.ts";
+import { finishNarration, narration, speakDuring } from "./narrate.ts";
 
 test("ENIAC touch kiosk walkthrough", async ({ page }) => {
   await overlays(page);
+  await narration(page, "squares");
   await page.goto("/");
   await expect(view(page)).toHaveAttribute("data-view", "start");
   await card(page, "<h1>ENIAC Touch Kiosk</h1><p>A touch-screen prototype for museum visitors, running Brian L. Stuart's pulse-level ENIAC simulator.</p><small>Prototype · Squares mission · recorded live on the real simulator</small>", 6000);
@@ -73,6 +75,7 @@ test("ENIAC touch kiosk walkthrough", async ({ page }) => {
     await tap(page, page.locator(".init-btn"));
     await expect(page.locator(".init-btn")).toHaveClass(/busy/);
     await expect(page.locator(".init-btn")).not.toHaveClass(/busy/, { timeout: 30_000 });
+    await speakDuring(page);
     await pause(page, 3500);
   }
   await cap(page, "1, 4, 9 … each press adds a row, a column and a corner");
@@ -86,4 +89,5 @@ test("ENIAC touch kiosk walkthrough", async ({ page }) => {
   await cap(page, null);
 
   await card(page, "<h1>Thank you</h1><p>Simulator: Brian L. Stuart, Drexel University — github.com/blstuart/eniac-simulator</p><p>Touch front end: prototype for the Vintage Computer Federation museum</p><small>Squares mission · M1 prototype · not for distribution</small>", 7000);
+  await finishNarration(page);
 });

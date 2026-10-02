@@ -6,10 +6,12 @@
 import { test, expect } from "@playwright/test";
 import { tap, tapSlow, hit, mainBtn, feedback, view } from "../e2e/helpers.ts";
 import { card, cap, overlays, pause } from "./overlay.ts";
+import { finishNarration, narration } from "./narrate.ts";
 
 test("ENIAC touch kiosk walkthrough: Trajectory", async ({ page }) => {
   test.setTimeout(600_000);
   await overlays(page);
+  await narration(page, "trajectory");
   await page.goto("/");
   await expect(view(page)).toHaveAttribute("data-view", "start");
   await card(page, "<h1>Mission 3: Trajectory</h1><p>ENIAC works out the path of a cannon shell, one hop at a time, from Brian L. Stuart's recreation of the February 15, 1946 demo.</p><small>Prototype · Trajectory mission · recorded live on the real simulator</small>", 5000);
@@ -75,4 +77,5 @@ test("ENIAC touch kiosk walkthrough: Trajectory", async ({ page }) => {
   await cap(page, null);
 
   await card(page, "<h1>Thank you</h1><p>Simulator: Brian L. Stuart, Drexel University — github.com/blstuart/eniac-simulator</p><p>Programs: trajdemo.e and drag.e</p><small>Trajectory mission · M2 prototype · not for distribution</small>", 6000);
+  await finishNarration(page);
 });
