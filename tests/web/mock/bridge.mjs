@@ -305,12 +305,14 @@ export class MockBridge {
       total: this.attractTotal,
       cards: this.session && this.session.mode === "attract" ? this.session.cards.length : 0,
       ...(a?.phase === "landed" ? { holdMs: this.attractHoldMs } : {}),
+      ...(a?.landing && (a.phase === "landed" || a.phase === "recycling") ? { landing: a.landing } : {}),
       ...extra,
     };
   }
   setAttract(phase) {
     if (!this.attract) return;
     this.attract.phase = phase;
+    if (phase !== "landed" && phase !== "recycling") delete this.attract.landing;
     this.attract.session = this.session && this.session.mode === "attract" ? this.session.id : undefined;
     this.broadcast(this.attractMsg());
   }
@@ -375,6 +377,7 @@ export class MockBridge {
   onTick() {
     const s = this.session;
     if (!s || s.state === "starting" || this.health.core !== "up") return;
+    if (this.framesPaused) return; // test control (/__mock/frames): the status stream stops (FR-36)
     const pos = (s.machine.cycle.pos + 1) % 40;
     this.patch({ cycle: { pos } });
     this.seq++;
@@ -528,6 +531,9 @@ export class MockBridge {
           if (s.mode === "attract" && this.attract) {
             this.attract.landed++;
             this.attractTotal++;
+            // As attract.go landingOf: the landing card's numbers (up carries the 11-row overpunch).
+            const up = fields[14] + fields[15];
+            this.attract.landing = { card: n, hop: Number(fields[5]), along: num(10, 11), up: -Number(up.slice(1)), text: c.text, flightMs: (i + 1) * this.hopMs };
             this.setAttract("landed");
             this.later(() => {
               if (this.session === s && this.attract && this.health.core === "up") this.nextFlight();
@@ -631,6 +637,7 @@ export class MockBridge {
     this.timers.clear();
     this.attract = null;
     this.attractTotal = 0;
+    this.framesPaused = false;
     this.attractHoldMs = 1500;
     this.endSession(true);
     this.log = [];

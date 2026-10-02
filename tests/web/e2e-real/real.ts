@@ -8,7 +8,7 @@ import { join } from "node:path";
 import { tap, tapSlow, view } from "../e2e/helpers.ts";
 
 const LOG = join(__dirname, "..", "..", "..", "build", "e2e", "bridge.log");
-const HEALTH = "http://127.0.0.1:8752/healthz";
+const HEALTH = `http://127.0.0.1:${Number(process.env.E2E_REAL_PORT || 8752)}/healthz`;
 
 /** Byte offset of the bridge log now; pass to stdinSince(). */
 export function logMark(): number {

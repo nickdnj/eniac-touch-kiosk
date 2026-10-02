@@ -176,3 +176,15 @@ test("the recorded attract fixture is consumed", { skip: !existsSync(FIXTURE) &&
   assert.equal(s.phase, fx.phase);
   if (fx.landing) assert.ok(fx.landing.up < 0 && fx.landing.hop > 0);
 });
+
+test("setMission keeps the attract mission's plot labels for S1's shell's path card", () => {
+  const s = new AttractStore();
+  const copy = () => s.plotCopy; // read fresh each time (no narrowing across setMission)
+  assert.equal(copy(), null);
+  s.setMission(traj);
+  assert.equal(copy()?.x, "Along");
+  assert.equal(copy()?.y, "Up");
+  assert.equal(copy()?.landed, "Landed");
+  s.setMission(null);
+  assert.equal(copy(), null);
+});

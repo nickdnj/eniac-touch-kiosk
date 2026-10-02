@@ -22,7 +22,7 @@
 // the current attract session; nothing is kept across a hand-off; between
 // flights the last real flight is kept only to be shown dimmed.
 
-import type { AttractInfo, AttractLanding, AttractPhase, ClientMsg, CompiledMission, PunchCard, ServerMsg } from "../protocol.ts";
+import type { AttractInfo, AttractLanding, AttractPhase, ClientMsg, CompiledMission, PlotCopy, PunchCard, ServerMsg } from "../protocol.ts";
 import { CardLog, cardValue, type CardPaneSpec, type PlotSpec } from "../run/cards.ts";
 import { COPY } from "../copy.ts";
 
@@ -72,9 +72,13 @@ export class AttractStore {
     return this.status.phase === "recycling";
   }
 
+  /** The attract mission's plot labels (content.run.plot: "Along", "Up", "Landed"...), once loaded. */
+  plotCopy: PlotCopy | null = null;
+
   /** The compiled attract mission (run.cards, run.plot): enables plot dots. */
-  setMission(m: Pick<CompiledMission, "run"> | null): void {
+  setMission(m: (Pick<CompiledMission, "run"> & { content?: Partial<Pick<CompiledMission, "content">>["content"] }) | null): void {
     this.spec = m ? { cards: (m.run.cards as CardPaneSpec | undefined) ?? null, plot: (m.run.plot as PlotSpec | undefined) ?? null } : null;
+    this.plotCopy = m?.content?.run?.plot ?? null;
     const kept = this.cards.cards;
     this.cards = this.newLog();
     for (const c of kept) this.cards.add(c);

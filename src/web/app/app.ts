@@ -123,6 +123,8 @@ export class App {
   /** Asks for attract while home (S1) and hands off on the visitor's touch. */
   readonly attractCtl: AttractController;
   errorCode: string | null = null;
+  /** S1 saw no live attract status for 5 s (FR-36): S10 (E-ATTRACT) until a live frame arrives. */
+  private attractDown = false;
   /** A mission the bridge listed failed to load (E-MISSION until the next hello). */
   missionBroken = false;
   scale = 1;
@@ -228,6 +230,7 @@ export class App {
 
   private onServer(m: ServerMsg): void {
     this.attractCtl.onMessage(m, this.now());
+    if (this.attractDown && ["live", "held"].includes(this.attract.liveness(this.now()))) this.attractDown = false; // live again: evaluate() returns to S1
     if (m.t === "attract" || m.t === "state") this.root.dataset.attract = this.attract.phase;
     switch (m.t) {
       case "hello":
@@ -336,6 +339,7 @@ export class App {
     let code: string | null = null;
     if (this.linkDown) code = "E-LINK";
     else if (this.helloSeen && this.mirror.health.core === "down" && !(this.screen?.coreOptional && !this.errorCode)) code = this.mirror.health.code ?? "E-CORE-DOWN";
+    else if (this.attractDown) code = "E-ATTRACT";
     else if (this.missionBroken || (this.missions && !this.missions.some((x) => x.available))) code = "E-MISSION";
 
     if (code && !this.errorCode) {
@@ -422,6 +426,18 @@ export class App {
     this.endSession("idle");
     this.overlayHooks.onIdleDismiss?.();
     this.show({ name: "start" });
+  }
+
+  /**
+   * S1 (screens/attract.ts) saw no live attract status for 5 s (FR-36, UX
+   * 14.2.4): S10 now. Attract stays wanted; the first live frame (or the
+   * bridge's own recovery) clears it and evaluate() returns to S1.
+   */
+  attractLost(): void {
+    if (this.attractDown || this.errorCode || this.view.name !== "start") return;
+    this.attractDown = true;
+    this.evaluate();
+    this.attractCtl.enter(); // idempotent on the bridge: ask again in case it never started
   }
 
   setOverlayHooks(h: App["overlayHooks"]): void {

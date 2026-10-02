@@ -1,11 +1,144 @@
 /* S1 start, S2 picker, S0 waking (#22), S9 still there (#23), S10 error (#24). */
 
-/* S1: dark, honest, no machine drawn (UX 7.1 stand-in). */
+/* S1 Attract, live (UX 14.2.1, screens/attract.ts). 1920 x 1080:
+   title x136 y60, the shell's path card top right, the room y300-744,
+   the caption y756, the Stuart plate, the pill and the honor plate y820-976. */
 .start {
-  background: radial-gradient(ellipse at 50% 40%, #1a1d22 0%, #0b0c0e 70%);
+  background:
+    radial-gradient(ellipse 1400px 520px at 50% 520px, rgba(255, 176, 0, 0.07) 0%, rgba(255, 176, 0, 0) 70%),
+    radial-gradient(ellipse at 50% 40%, #191c21 0%, #0b0c0e 72%);
 }
-.start-title { position: absolute; left: 136px; top: 60px; font-size: 120px; line-height: 140px; font-weight: 700; letter-spacing: 12px; color: var(--jack-block); }
-.start-sub { position: absolute; left: 136px; top: 216px; font-size: 40px; line-height: 52px; color: #C9C2A8; max-width: 1400px; }
+.start-title { position: absolute; left: 136px; top: 60px; font-size: 120px; line-height: 140px; font-weight: 700; letter-spacing: 12px; color: var(--jack-block); text-shadow: 0 0 48px rgba(255, 176, 0, 0.22); }
+.start-sub { position: absolute; left: 136px; top: 216px; font-size: 40px; line-height: 52px; color: #C9C2A8; max-width: 1060px; }
+
+/* The room: the shared panorama at pitch 150, edges fading into the dark. */
+.att-room {
+  position: absolute;
+  left: 48px;
+  top: 300px;
+  width: 1824px;
+  height: 444px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0b0c0f;
+  box-shadow: 0 0 0 2px #22252b, 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+.att-room .pano { position: absolute; left: 0; top: 0; border-radius: 0; transition: filter 600ms ease-in-out; }
+.att-room-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, #0b0c0e 0%, rgba(11, 12, 14, 0) 72px, rgba(11, 12, 14, 0) calc(100% - 72px), #0b0c0e 100%),
+    linear-gradient(180deg, rgba(11, 12, 14, 0.35) 0%, rgba(11, 12, 14, 0) 18%, rgba(11, 12, 14, 0) 82%, rgba(11, 12, 14, 0.45) 100%);
+}
+/* The room's lamps switch without the 80 ms neon fade: at this size it is not
+   visible, and hundreds of running fades cost most of S1's render time
+   (measured: about 2.5x the CPU). S1 runs all day (NFR-04). */
+.att-room .lamp .lamp-lit { transition: none; }
+/* Between flights: the last real frame, dimmed to 50 % (UX 14.2.4). Waking: dark lamps. */
+.attract[data-scene="between"] .att-room .pano { filter: brightness(0.5) saturate(0.7); }
+
+/* LIVE chip (UX 14.2.1): a dot and a word, not colour alone; only while frames arrive. */
+.att-chip {
+  position: absolute;
+  left: 20px;
+  top: 16px;
+  z-index: 3;
+  min-width: 64px;
+  height: 40px;
+  padding: 0 16px 0 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 2px solid var(--card);
+  color: var(--card);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 3px;
+}
+.att-chip.hidden { display: none; }
+.att-chip-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--lamp-on); box-shadow: 0 0 10px var(--lamp-on); animation: att-blink 1.6s ease-in-out infinite; }
+.att-chip.waiting { border-color: #9AA0A8; color: #C9C2A8; }
+.att-chip.waiting .att-chip-dot { background: transparent; border: 3px solid #9AA0A8; box-shadow: none; animation: none; }
+@keyframes att-blink { 50% { opacity: 0.35; } }
+
+/* The live caption (32 px), with a spinner while waking or between flights. */
+.att-caption { position: absolute; left: 48px; top: 756px; width: 1240px; height: 48px; display: flex; align-items: center; gap: 16px; font-size: 32px; line-height: 40px; font-weight: 700; color: var(--card); white-space: nowrap; }
+.att-caption .att-spin { display: none; width: 28px; height: 28px; color: #C9C2A8; flex: none; }
+.attract[data-scene="waking"] .att-spin, .attract[data-scene="between"] .att-spin { display: inline-block; }
+.attract[data-scene="waking"] .att-caption, .attract[data-scene="between"] .att-caption { color: #C9C2A8; }
+
+/* The landing hold: the landing card's own numbers, right of the caption. */
+.att-landing {
+  position: absolute;
+  right: 48px;
+  top: 752px;
+  height: 56px;
+  padding: 0 24px;
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--traj-card);
+  color: #fff;
+  font-size: 30px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+  animation: fade-in 400ms ease-out;
+}
+.att-landing.hidden { display: none; }
+.att-land-cards { font-size: 26px; font-weight: 400; opacity: 0.92; }
+.att-land-cards:empty { display: none; }
+.attract[data-scene="between"] .att-landing { background: #1f5c4a; color: #d9e8e2; }
+
+/* The shell's path card (UX 14.2.1): the Trajectory mission's arc, from the real cards. */
+.att-plot {
+  position: absolute;
+  left: 1232px;
+  top: 24px;
+  width: 640px;
+  height: 264px;
+  border-radius: 12px;
+  background: #0d0f12;
+  border: 2px solid #2a2e35;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.att-plot-head { position: absolute; left: 20px; right: 20px; top: 10px; height: 34px; display: flex; align-items: center; justify-content: space-between; }
+.att-plot-title { font-size: 24px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #C9C2A8; }
+.att-plot-hop { font-family: var(--font-mono); font-size: 30px; font-weight: 700; color: var(--lamp-on); }
+.att-plot-host { position: absolute; left: 14px; top: 46px; width: 608px; height: 208px; }
+.att-plot .arc-panel { background: transparent; }
+.att-plot .dot-note, .att-plot .stretch-chip { display: none; }
+.att-plot .axis-y { left: 30px; top: 0; }
+.att-plot .axis-x { right: 22px; bottom: -4px; }
+.att-plot-empty { position: absolute; left: 14px; top: 46px; width: 608px; height: 172px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #9AA0A8; }
+.att-plot-empty.hidden { display: none; }
+.attract[data-scene="between"] .att-plot-host { opacity: 0.5; transition: opacity 600ms; }
+
+/* Plates: Stuart (never rotates) left, honor rotator right. */
+/* The 24 px caps kicker ("THE SIMULATOR BEHIND THIS SCREEN") needs two lines
+   at 512 px, so on S1 both plates are 192 px tall (y816-1008, above the footer). */
+.att-stuart { position: absolute; left: 48px; top: 816px; }
+.att-honor { position: absolute; left: 1360px; top: 816px; }
+.attract .stuart-plate.size-attract { height: 192px; padding: 20px 40px; justify-content: center; }
+.attract .stuart-plate.size-attract .plate-kicker { margin-bottom: 2px; }
+.attract .honor-rotator { height: 192px; }
+.attract .honor-rotator .rot-slide { inset: 20px 40px; }
+.attract .rot-names { font-size: 26px; line-height: 30px; }
+.attract .rot-names.n3 { flex-direction: column; }
+
+/* Call to action (UX 14.2.1): the pill, 720 x 120 at x600, pulsing at 1 Hz, centred on the plates. */
+.start-pill.att-pill { top: 852px; }
+/* Reduced motion: no pulse, a static double ring. */
+.start-pill.att-pill.still { animation: none; box-shadow: 0 0 0 6px #0b0c0e, 0 0 0 12px var(--card); }
+@media (prefers-reduced-motion: reduce) {
+  .att-chip-dot { animation: none; }
+}
 .start-pill {
   position: absolute;
   left: 600px;

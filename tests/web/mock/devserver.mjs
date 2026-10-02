@@ -111,6 +111,9 @@ export function startDevServer({ port = PORT, host = HOST } = {}) {
           case "/__mock/hop":
             bridge.hopMs = body.ms ?? bridge.hopMs;
             return json(res, 200, { ok: true });
+          case "/__mock/frames":
+            bridge.framesPaused = body.paused === true;
+            return json(res, 200, { ok: true });
           case "/__mock/attract":
             bridge.attractHoldMs = body.holdMs ?? bridge.attractHoldMs;
             return json(res, 200, { ok: true });

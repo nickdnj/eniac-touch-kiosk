@@ -157,6 +157,15 @@ export const COPY = {
     flying: (hop: number) => `Live: ENIAC is working out a shell's path. Hop ${hop}`,
     landed: "The shell has landed. ENIAC worked out the whole path.",
     between: "Starting another flight.",
+    // S1 screen (UX 14.2.1): the LIVE chip (a dot and a word, not colour alone),
+    // the shell's path card, and the landing hold's numbers (from the real card).
+    live: "LIVE",
+    waiting: "WAITING",
+    plotTitle: "The shell's path",
+    plotEmpty: "Waiting for the first card",
+    hop: (n: number) => `Hop ${n}`,
+    landedOn: (hop: number) => `Landed on hop ${hop}`,
+    cardsPunched: (n: number) => (n === 1 ? "1 card punched" : `${n} cards punched`),
   },
   still: {
     title: "Still there?",
