@@ -255,9 +255,13 @@ default boot target, verifies nothing is left, and prints what it removed.
 anything the installer didn't add; it never runs a blanket `autoremove`.
 It works without the manifest too (half-finished install). Reboot afterwards.
 
-Known residue after `--purge-packages`: system users/groups that package
-scripts create (for example `messagebus`, `polkitd`) are not removed by apt
-purge and are not ours to delete; the container test lists them exactly.
+In the container rehearsal (a server-like Ubuntu 24.04 baseline), install →
+re-install → upgrade → `--purge-packages` leaves the package list, users,
+groups and files under `/etc /opt /usr/local /home /var/lib /run` identical
+to before. Caveat: if the installer had to pull in base packages such as
+systemd or dbus (never the case on Ubuntu Server), purging them leaves the
+system users their maintainer scripts created (`messagebus`, `polkitd`);
+apt never removes those.
 
 The last-resort rollback is reinstalling Ubuntu (Steps 1–3).
 
