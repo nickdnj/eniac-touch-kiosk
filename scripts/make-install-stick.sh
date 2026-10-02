@@ -137,8 +137,12 @@ verify_sums_sig() {
   if ! command -v gpg >/dev/null; then warn "gpg not installed: SHA256SUMS checked over HTTPS only (brew install gnupg to verify its signature)"; return 0; fi
   local gh="$CACHE/gnupg"; mkdir -p "$gh"; chmod 700 "$gh"
   if ! GNUPGHOME="$gh" gpg --batch --list-keys "$UBUNTU_CD_KEY" >/dev/null 2>&1; then
-    GNUPGHOME="$gh" gpg --batch --quiet --keyserver hkps://keyserver.ubuntu.com --recv-keys "$UBUNTU_CD_KEY" >/dev/null 2>&1 \
-      || { warn "could not fetch Ubuntu's signing key: SHA256SUMS checked over HTTPS only"; return 0; }
+    # Plain HTTPS fetch + import (gpg's dirmngr is often unusable). Trust comes
+    # from the pinned fingerprint checked in VALIDSIG below, not from the fetch.
+    if ! curl -fsSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x$UBUNTU_CD_KEY" -o "$gh/ubuntu-cd.asc" \
+       || ! GNUPGHOME="$gh" gpg --batch --quiet --import "$gh/ubuntu-cd.asc" >/dev/null 2>&1; then
+      warn "could not fetch Ubuntu's signing key: SHA256SUMS checked over HTTPS only"; return 0
+    fi
   fi
   GNUPGHOME="$gh" gpg --batch --status-fd 1 --verify "$CACHE/SHA256SUMS.gpg" "$CACHE/SHA256SUMS" 2>/dev/null \
     | grep -q "VALIDSIG $UBUNTU_CD_KEY" || die "SHA256SUMS signature does NOT verify against Ubuntu's key $UBUNTU_CD_KEY"
