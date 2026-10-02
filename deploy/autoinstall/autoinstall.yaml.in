@@ -1,0 +1,59 @@
+# Ubuntu 24.04 Server autoinstall for the ENIAC touch kiosk (docs/deploy-x86.md,
+# "One-stick install"). TEMPLATE: scripts/make-install-stick.sh fills the
+# @...@ fields and puts the result on the stick at /eniac/autoinstall.yaml.
+# The grub entry points subiquity at it with subiquity.autoinstallpath=, so
+# the stock "Try or Install Ubuntu Server" entry stays a normal manual install.
+#
+# THIS ERASES THE TARGET MACHINE'S INTERNAL DISK.
+# Safety, in order:
+#   1. Unless the stick was built with --unattended-wipe, the kernel cmdline
+#      has no `autoinstall` keyword, so subiquity stops and asks
+#      "Continue with autoinstall? (yes|no)" before it writes anything.
+#   2. early-commands runs stick-guard.sh, which picks the one internal
+#      (non-USB, non-removable) disk, refuses if there are zero or several,
+#      refuses if that disk holds a kiosk (jersey-shore 3280/os32, or an ENIAC
+#      kiosk, or this stick's own previous install) unless the cmdline has
+#      eniac.overwrite-kiosk=yes, and only then writes the disk's path into
+#      storage.layout.match.path below. Until it does, the path is a
+#      placeholder that matches no disk, so storage fails rather than guesses.
+version: 1
+locale: en_US.UTF-8
+keyboard:
+  layout: us
+timezone: @TIMEZONE@
+refresh-installer:
+  update: false
+source:
+  id: ubuntu-server
+  search_drivers: false
+apt:
+  # No network (or no mirror) at install time: install from the stick's pool.
+  fallback: offline-install
+codecs:
+  install: false
+drivers:
+  install: false
+identity:
+  hostname: @HOSTNAME@
+  realname: ENIAC kiosk admin
+  username: @ADMIN_USER@
+  password: "@PASSWORD_HASH@"
+ssh:
+  install-server: true
+  allow-pw: @SSH_ALLOW_PW@
+  authorized-keys: @SSH_KEYS@
+storage:
+  layout:
+    name: lvm
+    sizing-policy: all
+    match:
+      path: __ENIAC_TARGET_DISK__
+early-commands:
+  - ["bash", "/cdrom/eniac/stick-guard.sh"]
+late-commands:
+  - ["bash", "/cdrom/eniac/late-commands.sh"]
+# After the install: reboot into the new system. late-commands puts the new
+# Ubuntu entry first in the UEFI boot order, so the machine boots the disk
+# even with the stick still in; the guard also refuses to re-install over its
+# own fresh install.
+shutdown: reboot
