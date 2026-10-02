@@ -390,3 +390,42 @@ content:
 	expectUnavailable(t, Load(write(strings.Replace(noRule4, "ordered: true", "ordered: true\nincludes: { inc.e: \""+sha([]byte(inc))+"\" }\n", 1)), up), "not pinned in assets")
 	expectUnavailable(t, Load(write(strings.Replace(noRule4, "ordered: true", "ordered: true\nincludes: { inc.e: \""+sha([]byte(inc))+"\" }\nassets: { in.card: \"00\" }\n", 1)), up), "asset in.card sha256 mismatch")
 }
+
+// Trajectory (M2, UX 8.3 v0.4): trajdemo.e with drag.e and demo.card, 5
+// steps, 293 cables and 1,147 switches preset (drag.e included), READ bound
+// to b c then b r, INIT after the card is read, frozen at the landing.
+func TestTrajectoryValid(t *testing.T) {
+	dir, up := paths(t)
+	m := Load(filepath.Join(dir, "trajectory.yaml"), up)
+	if !m.Available {
+		t.Fatalf("trajectory unavailable: %v", m.Errors)
+	}
+	c := m.Compiled()
+	if c.Counts != (Counts{PresetCables: 293, PresetSwitches: 1147, StepCables: 4, StepSwitches: 1}) {
+		t.Fatalf("counts %+v", c.Counts)
+	}
+	if got := m.WithheldFor("read"); strings.Join(got, "|") != "b c|b r" {
+		t.Fatalf("READ sends %v, want b c then b r (spike S2)", got)
+	}
+	if got := m.WithheldFor("init"); strings.Join(got, "|") != "b i" {
+		t.Fatalf("INIT sends %v", got)
+	}
+	if c.ReadCard == nil || !strings.HasPrefix(c.ReadCard.Text, "0000097367") || len(c.ReadCard.Text) != 70 {
+		t.Fatalf("readCard %+v", c.ReadCard)
+	}
+	r := m.File.Run
+	if !r.InitOnce || r.InitAfter != "card-read" || r.FreezeAt != "landed" || len(c.Run.Speeds) != 1 || c.Run.Plot == nil {
+		t.Fatalf("run %+v", r)
+	}
+	s := c.Steps[1]
+	if s.Switch != "pr.6" || s.Family != econfig.FamPrField || strings.Join(s.Choices, ",") != "P,0" {
+		t.Fatalf("step 2 %+v", s)
+	}
+	if c.Steps[0].From != "i.ro" || c.Steps[2].To != "i.pi" || c.Steps[4].To != "p.Hi" {
+		t.Fatalf("steps %+v", c.Steps)
+	}
+	// The real line text is what the core gets (i.Ro, i.Pi as written).
+	if txt, _ := m.StepText("reader-done-to-1-2"); txt != "p i.Ro 1-2" {
+		t.Fatalf("step text %q", txt)
+	}
+}

@@ -62,6 +62,14 @@
   --share-fit: #CC79A7;
   --share-prime: #009E73;
   --share-off: #3A3D42;
+  /* Trajectory figures and the arc (stage/trajfig.ts, run/filmstage.ts):
+     a dot (a card), the joined path, the air, gravity, a punched card. */
+  --traj-dot: #FFB000;
+  --traj-path: #F4EFE3;
+  --traj-air: #56B4E9;
+  --traj-gravity: #CC79A7;
+  --traj-card: #009E73;
+  --traj-grid: #2a2e35;
   --font-ui: "Atkinson Hyperlegible", system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --space-1: 8px;

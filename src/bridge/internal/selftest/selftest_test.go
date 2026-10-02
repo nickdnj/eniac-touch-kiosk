@@ -58,3 +58,16 @@ func TestPrimesSelftest(t *testing.T) {
 	}
 	t.Logf("ready in %s, %d cards", res.ReadyIn.Round(1e6), len(res.Cards))
 }
+
+// Trajectory (UX 8.3.6 v0.4, rule 8): READ sends b c then b r, INIT, and the
+// first card is hop 1 at 0014128681 / 0005693229 (spike S2, with patch 0003).
+func TestTrajectorySelftest(t *testing.T) {
+	m, corePath, rt := loadMission(t, "trajectory")
+	self, _ := os.Executable()
+	res, err := Run(context.Background(), Options{Mission: m, CorePath: corePath, VlinkExe: self, Runtime: rt,
+		RunDir: testenv.ShortTempDir(t)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("ready in %s, first card %q", res.ReadyIn.Round(1e6), res.Cards[0].Text)
+}

@@ -96,6 +96,31 @@ export const COPY = {
     readSub: "Pull the card into ENIAC",
     initDone: "INIT pressed",
   },
+  // Trajectory figures (UX 8.3.3): explanatory art, no units.
+  traj: {
+    dots: (n: number) => (n === 1 ? "1 dot" : `${n} dots`),
+    joined: "Each dot is a card. Join the dots: that is the path.",
+    air: "air slows it",
+    gravity: "gravity pulls",
+    punched: "hop! a card is punched",
+    stillFlying: "still flying? yes: hop again",
+    card: (n: number) => `card ${n}`,
+    reader: "Card reader",
+    onTheCard: "On the card:",
+  },
+  // Trajectory run view (UX 8.3.5 S6): helper readouts, labelled with the
+  // accumulator number so a technician can find them. No units on screen.
+  trajRun: {
+    readouts: [
+      ["15", "Hop"],
+      ["18", "Along"],
+      ["20", "Up"],
+      ["6", "Along speed"],
+      ["4", "Up speed"],
+    ] as [string, string][],
+    acc: (n: string) => `Acc ${n}`,
+    atWork: "Units at work",
+  },
   // Primes run view labels (UX 8.2.5 S6 wireframe).
   primesRun: {
     testing: "Testing",

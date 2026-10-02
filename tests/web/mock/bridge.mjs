@@ -22,7 +22,10 @@ const load = (id) => {
 };
 export const SQUARES = load("squares");
 export const PRIMES = load("primes");
-export const MISSIONS = { squares: SQUARES, primes: PRIMES };
+export const TRAJECTORY = load("trajectory");
+/** One real first flight of trajdemo.e (recorded from the real core; test fixture). */
+export const FLIGHT = JSON.parse(readFileSync(join(here, "missions", "trajectory-flight.json"), "utf8")).cards;
+export const MISSIONS = { squares: SQUARES, primes: PRIMES, trajectory: TRAJECTORY };
 /** The mission speed tables (rates), as in missions/*.yaml. */
 export const RATES = { squares: { slow: 13, full: 0 }, primes: { slow: 100, full: 0 }, trajectory: { full: 0 } };
 /** The 14 group checkers of sieve.e: Acc n watches the nth odd prime. */
@@ -73,6 +76,8 @@ export class MockBridge {
     // Primes: ms per odd number tested (the real core: about 1.85 s at Slow,
     // a card every 0.6 s at Full; the mock is faster so tests stay short).
     this.sieveMs = { slow: 120, full: 25 };
+    // Trajectory: ms per card (the real core: 1.43 s on the Mac).
+    this.hopMs = 150;
     this.missionsAvailable = true;
     this.refuseUntil = 0;
     this.tick = setInterval(() => this.onTick(), 33);
@@ -207,12 +212,16 @@ export class MockBridge {
         if (!s.mission.run.buttons.includes(m.b)) return err("NOT_ALLOWED", "button");
         if (s.run !== "idle") return err("BUSY", "machine busy");
         if (m.b === "init" && s.mission.run.initOnce && s.inits > 0) return err("NOT_ALLOWED", "INIT was already pressed");
-        s.stdin.push(`b ${m.b[0]}`);
+        if (m.b === "init" && s.mission.run.initAfter && !s.fired.has(s.mission.run.initAfter)) return err("NOT_ALLOWED", "INIT needs the card read");
+        if (m.b === "read" && s.inits > 0) return err("NOT_ALLOWED", "READ is only allowed before INIT");
+        if (m.b === "read") s.stdin.push("b c", "b r"); // the withheld lines bound to READ, in file order
+        else s.stdin.push(`b ${m.b[0]}`);
         if (s.state === "armed") {
           s.state = "running";
           this.sendSession();
         }
         if (s.mission.id === "primes") return this.runSieve(s);
+        if (s.mission.id === "trajectory") return m.b === "read" ? this.runRead(s) : this.runFlight(s);
         return m.b === "init" ? this.runInit(s) : this.runClear(s);
       }
     }
@@ -363,6 +372,65 @@ export class MockBridge {
     this.later(step, this.sieveMs[s.speed] ?? 100);
   }
 
+  /** READ: the reader flip-flop, then the card's first number in Acc 1 (97,367). */
+  runRead(s) {
+    const gen = s.gen;
+    s.run = "busy";
+    this.broadcast({ t: "run", state: "busy", inits: s.inits });
+    const ok = () => this.session === s && s.gen === gen;
+    this.patch({ init: setBit(s.machine.init, 6, "1") });
+    this.later(() => {
+      if (!ok()) return;
+      this.patch({ init: setBit(s.machine.init, 6, "0") });
+      this.setAcc("1", 97367);
+      if (!s.fired.has("card-read")) {
+        s.fired.add("card-read");
+        this.broadcast({ t: "checkpoint", id: "card-read" });
+      }
+    }, 400);
+    this.later(() => ok() && this.settle(s), 600);
+  }
+
+  /** One flight: the recorded real cards, at the mock's pace; freeze on the landing card. */
+  runFlight(s) {
+    const gen = s.gen;
+    s.run = "busy";
+    s.inits++;
+    this.broadcast({ t: "run", state: "busy", inits: s.inits });
+    const ok = () => this.session === s && s.gen === gen && this.health.core === "up";
+    FLIGHT.forEach((c, i) => {
+      this.later(() => {
+        if (!ok() || s.frozen) return;
+        const n = s.cards.length + 1;
+        const fields = [];
+        for (let k = 0; k < 80; k += 5) fields.push(c.text.slice(k, k + 5));
+        const num = (a, b) => Number((fields[a] + fields[b]).trim());
+        this.setAcc("15", Number(fields[5]));
+        this.setAcc("18", num(10, 11));
+        const up = num(14, 15);
+        this.patch({ acc: { 20: { digits: digitsOf(up), value: up, sign: up < 0 ? "M" : "P" } } });
+        this.patch({ mult: { stage: (i % 13) + 1 }, mp: { stage: "0000000" + String(i % 3) + "00" } });
+        const card = { n, text: c.text, fields };
+        s.cards.push(card);
+        this.broadcast({ t: "punch", ...card });
+        if (n === 1 && !s.fired.has("first-hop")) {
+          s.fired.add("first-hop");
+          this.broadcast({ t: "checkpoint", id: "first-hop" });
+        }
+        if (fields[14].startsWith("-") && !s.fired.has("landed")) {
+          s.fired.add("landed");
+          s.frozen = true;
+          s.stdin.push("s cy.op 1a"); // run.freezeAt
+          this.broadcast({ t: "checkpoint", id: "landed" });
+          if (s.state === "running") {
+            s.state = "result";
+            this.sendSession();
+          }
+        }
+      }, (i + 1) * this.hopMs);
+    });
+  }
+
   punchCard(s, value) {
     const n = s.cards.length + 1;
     const text = " ".repeat(60) + String(value).padStart(10, "0") + " ".repeat(10);
@@ -459,6 +527,7 @@ export class MockBridge {
     this.refuseUntil = 0;
     this.speedMs = { slow: 200, full: 8 };
     this.sieveMs = { slow: 120, full: 25 };
+    this.hopMs = 150;
   }
 }
 

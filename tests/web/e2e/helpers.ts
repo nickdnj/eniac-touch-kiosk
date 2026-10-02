@@ -151,3 +151,12 @@ export async function cardValues(page: Page, fields: number[]): Promise<number[]
     return app.cards.cards.map((c: any) => Number(fields.map((i: number) => c.fields[i]).join("").trim()));
   }, fields);
 }
+
+/** The five Trajectory steps as element ids (UX 8.3.2); `line` is the canonical form. */
+export const TRAJ_STEPS = [
+  { id: "reader-done-to-1-2", kind: "plug", ids: ["jack:i.ro", "trunk:1-2"], line: "p i.ro 1-2" },
+  { id: "punch-hop-number", kind: "switch", ids: ["sw:pr.6"], value: "P", line: "s pr.6 P" },
+  { id: "trunk25-to-punch", kind: "plug", ids: ["trunk:2-5", "jack:i.pi"], line: "p 2-5 i.pi" },
+  { id: "a19-keep-going", kind: "plug", ids: ["jack:a19.5o", "trunk:1-4"], line: "p a19.5o 1-4" },
+  { id: "trunk14-to-h", kind: "plug", ids: ["trunk:1-4", "jack:p.Hi"], line: "p 1-4 p.Hi" },
+];

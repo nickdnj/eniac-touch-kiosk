@@ -12,6 +12,7 @@ import { StepWindows } from "../stage/windows.ts";
 import { roomPlanSvg, unitsForPlan } from "../stage/roomplan.ts";
 import { TileFigure } from "../stage/tiles.ts";
 import { CheckersFigure, SharingFigure, type Figure } from "../stage/primesfig.ts";
+import { DotsFigure, HopFigure } from "../stage/trajfig.ts";
 import { PICKER, RAIL, STAGE } from "../stage/layout.ts";
 import { LampRenderer } from "../lamps/render.ts";
 import { h, s, svgFromString, wait } from "../ui/dom.ts";
@@ -254,12 +255,14 @@ export function missionScreen(app: App, view: View): Screen {
   function briefingFigure(): Figure | null {
     if (mission.id === "squares") return TileFigure.briefing();
     if (mission.id === "primes") return new SharingFigure(reduceMotion());
+    if (mission.id === "trajectory") return new DotsFigure(reduceMotion());
     return null;
   }
 
   function planFigure(math: string): Figure | null {
     if (mission.id === "squares") return TileFigure.plan(math, reduceMotion());
     if (mission.id === "primes") return new CheckersFigure(math, reduceMotion());
+    if (mission.id === "trajectory") return new HopFigure(math, reduceMotion());
     return null;
   }
 
