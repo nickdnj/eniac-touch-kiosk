@@ -21,7 +21,7 @@ test("capture key screens", async ({ page }) => {
   await expect(view(page)).toHaveAttribute("data-view", "start");
   await shot(page, "01-start");
   await tap(page, page.locator(".screen.start"));
-  await expect(page.locator(".mc-meta")).toHaveText(/You wire/);
+  await expect(page.locator(".mc-steps").first()).toHaveText(/You wire/);
   await shot(page, "02-picker");
 
   await devMission(page);

@@ -487,7 +487,7 @@ Severity definitions for a museum kiosk (used in every gate):
 | # | Gate |
 |---|---|
 | G-M2-1 | U1 resolved (sieve punches cards at the pin or an approved patch, and `sieve-canary` passes) or Primes formally deferred by Nick |
-| G-M2-2 | Mission tests for Primes and Trajectory analogous to M1-02 to M1-13: every step, wrong-tap ladder, Do it for me, Skip, speed, result. Primes: card count and latest prime equal the punch file; run reaches 407 cards; Trajectory: READ shows the card, each part has its own INIT and caption, "Skip to the trajectory" works |
+| G-M2-2 | Mission tests for Primes and Trajectory analogous to M1-02 to M1-13: every step, wrong-tap ladder, Do it for me, Skip, speed, result. Primes: card count and latest prime equal the punch file; the result appears at card 100 (547) with every card a true prime, and the live line reaches 407 cards; Trajectory (PRD FR-19 v0.3): READ shows the real card and sends `b c` then `b r`, one INIT, the arc is drawn from the real cards, the flight lands on the first card with `-` in column 71 and the machine stops there (nothing more is punched), INIT is never sent twice |
 | G-M2-3 | Card pane: newest first, last 20 kept, punch order matches the punch file byte for byte; `punch` messages never coalesced or lost under a slow client |
 | G-M2-4 | Mission lengths (FR-10) checked with a timed scripted run and the dry-run testers: Squares 2 to 3 min, Primes 3 to 4, Trajectory 4 to 6, all three 15 min or less |
 | G-M2-5 | Section 9.2 performance gates on the test box with trajdemo and the worst-case synthetic load (and sieve if available) |
@@ -578,7 +578,7 @@ Severity definitions for a museum kiosk (used in every gate):
 
 ### 17.2 Inconsistencies in the source docs that affect tests (flagged, not resolved here)
 
-1. **Slow speed.** FR-17 says Squares at Slow shows about 1 to 3 squares per second. The UX spec says "Keep pressing" is about 1 per 3 s in Slow. Architecture proposes `cy.rate 100` (5 additions a second; about 0.6 s per INIT). M1-07 tests legibility by intermediate values, not by a rate. The rate needs to be fixed in spike S4, and then this test gets a number.
+1. **Slow speed.** *Settled (2026-10-01):* Squares Slow is `cy.rate 13` (spike S4, PRD FR-17 v0.3): each addition visible for about 1 s, one press about 13 s. M1-07 still tests legibility by intermediate values; the real-core suite allows 45 s per Slow press.
 2. **Reading level.** PRD FR-22: grade 6 to 8. UX: grade 4 to 5. The lint uses grade 8 as the fail line.
 3. **"Without help" (NFR-09).** Whether on-screen aids count as help needs a decision (section 14.5).
 4. **Admin gesture.** FR-52 "hold the top-left corner" vs FR-70 "5 taps". UX F5 settles on 5 taps. The tests use 5 taps.

@@ -104,6 +104,7 @@ type sess struct {
 	stop      chan struct{}
 	startedAt time.Time
 	speed     string
+	frozen    bool // the clock was stopped at run.freezeAt (no more speed changes)
 }
 
 // New creates the manager, its vlink socket and its recovery loop.
@@ -474,24 +475,61 @@ func (m *Manager) button(x protocol.Button) []any {
 	if e != nil {
 		return e
 	}
-	if x.B == "read" || !s.m.HasButton(x.B) {
+	if !s.m.HasButton(x.B) {
 		return errMsg(x.ID, protocol.ErrNotAllowed, "button %s is not available in this mission", x.B)
 	}
 	// Server-side guard for UX-07: never stack INITs or clear mid-run.
 	if s.run.State() != machine.RunIdle {
 		return errMsg(x.ID, protocol.ErrBusy, "the machine is still running")
 	}
-	cmd := core.ButtonInit()
-	if x.B == "clear" {
-		cmd = core.ButtonClear()
+	run := s.m.File.Run
+	switch x.B {
+	case "init":
+		// Primes and Trajectory run until they finish: a second INIT would
+		// corrupt the run (spike S2), so it is refused, not queued.
+		if run.InitOnce && s.run.Inits() > 0 {
+			return errMsg(x.ID, protocol.ErrNotAllowed, "INIT was already pressed in this session")
+		}
+		if run.InitAfter != "" && !s.cps.Fired(run.InitAfter) {
+			return errMsg(x.ID, protocol.ErrNotAllowed, "INIT needs %s first", run.InitAfter)
+		}
+	case "read":
+		// READ (with its CLEAR) is only for loading the card before the run.
+		if s.run.Inits() > 0 {
+			return errMsg(x.ID, protocol.ErrNotAllowed, "READ is only allowed before INIT")
+		}
 	}
-	if _, err := s.core.Do(cmd); err != nil {
-		return nil
+	// A mission may bind withheld .e lines to the button (Trajectory's READ
+	// is `b c` then `b r`, spike S2); otherwise the button's own command.
+	var cmds []core.Command
+	for _, text := range s.m.WithheldFor(x.B) {
+		c, err := core.WithheldLine(text)
+		if err != nil {
+			return errMsg(x.ID, protocol.ErrNotAllowed, "%v", err)
+		}
+		cmds = append(cmds, c)
+	}
+	if len(cmds) == 0 {
+		switch x.B {
+		case "init":
+			cmds = []core.Command{core.ButtonInit()}
+		case "clear":
+			cmds = []core.Command{core.ButtonClear()}
+		default:
+			return errMsg(x.ID, protocol.ErrNotAllowed, "button %s has no command in this mission", x.B)
+		}
+	}
+	for _, c := range cmds {
+		if _, err := s.core.Do(c); err != nil {
+			return nil
+		}
 	}
 	ev := s.run.Pressed(x.B == "init")
 	m.mu.Lock()
-	changed := s.state != protocol.StateRunning
-	s.state = protocol.StateRunning
+	changed := s.state != protocol.StateRunning && s.state != protocol.StateResult
+	if changed {
+		s.state = protocol.StateRunning
+	}
 	m.mu.Unlock()
 	m.hub.Broadcast(protocol.Run{T: "run", State: ev.State, Inits: ev.Inits})
 	if changed {
@@ -508,6 +546,12 @@ func (m *Manager) setSpeed(x protocol.SetSpeed) []any {
 	spd, ok := s.m.Speed(x.Speed)
 	if !ok {
 		return errMsg(x.ID, protocol.ErrNotAllowed, "speed %q is not offered by this mission", x.Speed)
+	}
+	m.mu.Lock()
+	frozen := s.frozen
+	m.mu.Unlock()
+	if frozen {
+		return errMsg(x.ID, protocol.ErrNotAllowed, "the machine is stopped at %s", s.m.File.Run.FreezeAt)
 	}
 	rc, err := core.SetRate(spd.Rate)
 	if err != nil {
@@ -669,6 +713,9 @@ func (m *Manager) tick(s *sess) {
 		if st == protocol.StateArmed || st == protocol.StateRunning || st == protocol.StateResult {
 			state := s.mirror.State()
 			for _, id := range s.cps.Evaluate(&state) {
+				if id == s.m.File.Run.FreezeAt {
+					m.freeze(s)
+				}
 				m.hub.Broadcast(protocol.Checkpoint{T: "checkpoint", ID: id})
 				if id == s.m.File.Result {
 					m.mu.Lock()
@@ -685,6 +732,30 @@ func (m *Manager) tick(s *sess) {
 			}
 		}
 	}
+}
+
+// freeze stops the clock where it is (`s cy.op 1a`, whitelisted): the
+// machine keeps its state and nothing more is computed or punched
+// (Trajectory's landing card, spike S2). It runs on the tick goroutine, so
+// it takes the operation lock like a client action.
+func (m *Manager) freeze(s *sess) {
+	op, err := core.SetCycleOp("1a")
+	if err != nil {
+		return
+	}
+	m.opMu.Lock()
+	defer m.opMu.Unlock()
+	if m.current() != s || s.core == nil {
+		return
+	}
+	if _, err := s.core.Do(op); err != nil {
+		m.log.Warn("freeze failed", "id", s.id, "err", err)
+		return
+	}
+	m.mu.Lock()
+	s.frozen = true
+	m.mu.Unlock()
+	m.log.Info("machine frozen at checkpoint", "id", s.id, "checkpoint", s.m.File.Run.FreezeAt)
 }
 
 // background: periodic health broadcast and orphan reaping.

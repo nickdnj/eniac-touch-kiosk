@@ -17,6 +17,7 @@ import { installGuards } from "./ui/guards.ts";
 import { installTapDispatcher, type TapPoint } from "./ui/tap.ts";
 import { h, clear } from "./ui/dom.ts";
 import { COPY } from "./copy.ts";
+import { CardLog } from "./run/cards.ts";
 
 export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error";
 export interface View {
@@ -62,6 +63,14 @@ export class App {
   checkpoints = new Set<string>();
   /** Watched accumulator values when the result checkpoint fired. */
   answerAt: Record<string, number> | null = null;
+  /** Punched cards of the current session (missions with run.cards). */
+  cards: CardLog = new CardLog(null);
+  /**
+   * Missions whose result screen (S7) this visitor reached: the picker's
+   * "Done" badges and "UP NEXT" chip (UX 8.4). In memory only; cleared by
+   * the idle reset, never stored.
+   */
+  readonly done = new Set<string>();
   errorCode: string | null = null;
   /** A mission the bridge listed failed to load (E-MISSION until the next hello). */
   missionBroken = false;
@@ -182,17 +191,29 @@ export class App {
         this.screen?.onMachine?.(null);
         break;
       }
-      case "state":
+      case "state": {
+        const prior = this.mirror.session?.id ?? null;
         this.mirror.onState(m.session && m.session.state !== "none" ? m.session : null, m.seq, m.machine, m.run);
+        // A new session (or a resync) replaces the cards with the bridge's
+        // last 20; within the same session, never go backwards.
+        if (this.mirror.session && (this.mirror.session.id !== prior || (m.cards?.length && m.cards[m.cards.length - 1].n > this.cards.count))) this.cards.fromState(m.cards ?? []);
+        else if (!this.mirror.session) this.cards.reset();
         this.afterSession();
         this.screen?.onMachine?.(null);
         break;
+      }
       case "session": {
         const { t: _t, ...s } = m;
+        const prior = this.mirror.session?.id ?? null;
         this.mirror.onSession(s.state === "none" ? null : s);
+        if ((this.mirror.session?.id ?? null) !== prior) this.cards.reset();
         this.afterSession();
         break;
       }
+      case "punch":
+        // Cards belong to the current session only (no session: nothing drawn).
+        if (this.mirror.session) this.cards.add({ n: m.n, text: m.text, fields: m.fields });
+        break;
       case "frame": {
         const units = this.mirror.onFrame(m.seq, m.d);
         if (units) this.screen?.onMachine?.(units);
@@ -293,12 +314,14 @@ export class App {
   /** Start (or restart) a mission with a fresh core (ADR-002). */
   async startMission(id: string, entry: "briefing" | "step1"): Promise<void> {
     this.resetVisitor();
+    this.cards = new CardLog(null);
     this.expectingSession = true;
     this.priorSessionId = this.mirror.session?.id ?? null;
     this.show({ name: "waking", entry });
     this.send({ t: "start_mission", mission: id, mode: "visitor" });
     try {
       this.mission = await fetchMission(id);
+      this.cards = new CardLog(this.mission.run.cards, this.mission.run.plot);
     } catch {
       this.mission = null;
       // The bridge offered it but it can't be loaded or run: show S10, never a half-built screen.
@@ -321,9 +344,11 @@ export class App {
     this.checkpoints.clear();
     this.answerAt = null;
     this.expectingSession = false;
+    this.cards.reset();
   }
 
   private idleExpired(): void {
+    this.done.clear(); // the next visitor starts at mission 1 again
     this.metric({ t: "metric", ev: "idle_reset", screen: this.view.name });
     this.endSession("idle");
     this.overlayHooks.onIdleDismiss?.();

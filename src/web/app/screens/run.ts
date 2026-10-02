@@ -1,7 +1,10 @@
-// S6 Run view (issue #19; UX 7.5, 8.1.4 S6, 9.3).
-// Everything on the stage is real: lamps, helper readouts and the notebook
-// tape come only from the bridge (state/frame/run.settled). Captions fire on
-// real lamp changes, never on a timer.
+// S6 Run view (issue #19; UX 7.5, 8.1.4 S6, 8.2.5 S6, 9.3).
+// Everything on the stage is real: lamps, helper readouts, the notebook
+// tape and the punched cards come only from the bridge (state/frame/
+// run.settled/punch). Captions fire on real lamp changes and cards, never on
+// a timer. Squares has the two lamp grids and the tape; card missions
+// (Primes) get a card stage (run/stackstage.ts), INIT once, and extras that
+// appear with the Nth card.
 
 import type { App, Screen } from "../app.ts";
 import type { ButtonName, ServerMsg } from "../protocol.ts";
@@ -12,7 +15,19 @@ import { h, svgFromString } from "../ui/dom.ts";
 import { onTap, setDisabled } from "../ui/tap.ts";
 import { button, confirm } from "../ui/overlays.ts";
 import { RAIL, STAGE } from "../stage/layout.ts";
+import { stackStage, type RunStage } from "../run/stackstage.ts";
 import { COPY } from "../copy.ts";
+
+const REDUCE_MOTION = false; // UX 9.5: staff setting; wired to config in M3
+function reduceMotion(): boolean {
+  return REDUCE_MOTION || (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches);
+}
+
+/**
+ * Optional stages by card-pane style. Squares (no run.cards) keeps its own
+ * stage below; "stack" is Primes. Other styles register here.
+ */
+export const RUN_STAGES: Record<string, (app: App, reduceMotion: boolean) => RunStage> = { stack: stackStage };
 
 export const INIT_DEBOUNCE_MS = 400;
 const PENDING_TIMEOUT_MS = 2000;
@@ -77,9 +92,12 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   const stage = h("div", { class: "stage run-stage" });
   stage.style.left = `${STAGE.x}px`;
   stage.style.top = `${STAGE.y}px`;
+  const cardStyle = mission.run.cards?.style;
+  const cardStage: RunStage | null = cardStyle && RUN_STAGES[cardStyle] ? RUN_STAGES[cardStyle](app, reduceMotion()) : null;
+  const extrasAt = run.extras.afterCards ?? 0; // card missions: extras with the Nth card
   const readouts: Record<string, HTMLElement> = {};
   const grids = h("div", { class: "grids" });
-  for (const n of watch.slice(0, 2)) {
+  for (const n of cardStage ? [] : watch.slice(0, 2)) {
     const ro = h("span", { class: "readout-value", "data-acc": n }, "–");
     readouts[n] = ro;
     const col = h(
@@ -95,10 +113,13 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     );
     grids.append(col);
   }
-  const cyc = h("div", { class: "cyc-strip" }, svgFromString(cyclingPanel().markup));
   const tapeRows = h("div", { class: "tape-rows" });
-  const tape = h("div", { class: "tape" }, h("div", { class: "tape-title" }, COPY.run.tape), tapeRows);
-  stage.append(grids, cyc, tape);
+  if (cardStage) stage.append(cardStage.el);
+  else {
+    const cyc = h("div", { class: "cyc-strip" }, svgFromString(cyclingPanel().markup));
+    const tape = h("div", { class: "tape" }, h("div", { class: "tape-title" }, COPY.run.tape), tapeRows);
+    stage.append(grids, cyc, tape);
+  }
 
   // Rail.
   const prompt = h("h2", { class: "run-prompt" });
@@ -117,6 +138,9 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   if (!mission.run.buttons.includes("clear")) clearBtn.classList.add("hidden");
   const speedBtns: Record<string, HTMLElement> = {};
   const speedRow = h("div", { class: "speed-row" });
+  const speedLabel = h("div", { class: "speed-label" }, COPY.run.speed);
+  // One speed (Trajectory: Full only) means no speed control at all.
+  const hasSpeeds = mission.run.speeds.length > 1;
   for (const sp of mission.run.speeds) {
     const label = sp === "slow" ? COPY.run.slow : sp === "full" ? COPY.run.full : sp;
     const b = h("div", { class: "btn speed-btn", role: "button", "data-speed": sp, "aria-pressed": "false" }, speedIcon(sp), label);
@@ -125,31 +149,46 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     speedRow.append(b);
   }
   const showMe = button(run.extras.showResult, "primary show-me hidden", () => goResult());
-  const rail = h("div", { class: "rail run-rail" }, card, initBtn, clearBtn, h("div", { class: "speed-label" }, COPY.run.speed), speedRow);
+  const rail = h("div", { class: "rail run-rail" }, card, initBtn, clearBtn, speedLabel, speedRow);
+  if (!hasSpeeds) {
+    speedLabel.classList.add("hidden");
+    speedRow.classList.add("hidden");
+  }
   rail.style.left = `${RAIL.x}px`;
   rail.style.top = `${RAIL.y}px`;
   el.append(header, stage, rail);
 
-  const renderer = new LampRenderer(stage, () => app.mirror.machine);
+  const renderer = cardStage ? null : new LampRenderer(stage, () => app.mirror.machine);
 
   // ------------------------------------------------------------------ state
   const busy = () => app.mirror.run.state === "busy" || pending;
+  /** INIT once per session (Primes, Trajectory): pressed already? */
+  const initUsed = () => !!mission.run.initOnce && (presses > 0 || app.mirror.run.inits > 0);
+  const extrasOn = () => (extrasAt > 0 ? app.cards.count >= extrasAt : presses >= run.extras.afterPress);
 
   function refreshButtons(): void {
     const b = busy();
     const noMachine = app.mirror.machine === null;
     initBtn.classList.toggle("busy", b);
-    setDisabled(initBtn, b || noMachine);
+    initBtn.classList.toggle("used", initUsed());
+    setDisabled(initBtn, b || noMachine || initUsed());
     setDisabled(clearBtn, b || noMachine);
     for (const [sp, btn] of Object.entries(speedBtns)) {
       btn.setAttribute("aria-pressed", String(sp === speed));
       btn.classList.toggle("selected", sp === speed);
     }
-    prompt.textContent = captions.prompt(b);
+    const extras = extrasOn();
+    const done = app.checkpoints.has(mission.result);
+    prompt.textContent = done && run.done ? run.done.headline : extras && run.extras.headline ? run.extras.headline : captions.prompt(b);
     captionEl.textContent = caption || (presses === 0 && !b ? captions.sub() : "");
-    const extras = presses >= run.extras.afterPress;
-    hint.classList.toggle("hidden", !extras || speed !== mission.run.defaultSpeed);
-    showMe.classList.toggle("hidden", !extras && !app.checkpoints.has(mission.result));
+    hint.classList.toggle("hidden", !extras || !hasSpeeds || speed !== mission.run.defaultSpeed);
+    showMe.classList.toggle("hidden", !extras && !done);
+    skipBtn?.classList.toggle("hidden", !extras || done);
+    if (extrasAt > 0 && hasSpeeds) {
+      // Card missions: the speed control arrives with the extras (UX 8.2.5).
+      speedLabel.classList.toggle("hidden", !extras);
+      speedRow.classList.toggle("hidden", !extras);
+    }
     rail.classList.toggle("extras", extras);
   }
 
@@ -179,6 +218,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   function press(b: ButtonName, auto = false): boolean {
     const t = app.now();
     if (busy() || (!auto && t - lastPress < INIT_DEBOUNCE_MS) || app.mirror.machine === null) return false;
+    if (b === "init" && initUsed()) return false;
     if (app.send({ t: "button", b }) === null) return false;
     lastPress = t;
     lastButton = b;
@@ -209,6 +249,17 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     app.show({ name: "result" });
   }
 
+  /**
+   * Card missions' "Skip to the answer" (UX 8.2.5): Full speed, then S7 at
+   * once. The punch cannot go faster than the machine, so S7 waits for the
+   * answer checkpoint with a live count; nothing is made up.
+   */
+  function skipToAnswer(): void {
+    app.metric({ t: "metric", ev: "skip_to_answer", mission: mission.id });
+    if (hasSpeeds && mission.run.speeds.includes("full") && speed !== "full") setSpeed("full");
+    goResult();
+  }
+
   async function backToMissions(): Promise<void> {
     if (!(await confirm(app, COPY.confirm.textMenu, COPY.confirm.yesMenu))) return;
     app.endSession("menu");
@@ -237,7 +288,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
           captions.onClear();
           for (const fn of clearListeners) fn();
         } else if (lastButton === "init" && watch.every((w) => typeof settled[w] === "number")) {
-          app.tape.push({ x: settled[watch[0]], sq: settled[watch[1]], text: fill(run.tape, settledVars(settled)) });
+          if (run.tape) app.tape.push({ x: settled[watch[0]], sq: settled[watch[1]], text: fill(run.tape, settledVars(settled)) });
           const c = captions.onRun("idle", app.mirror.machine, settled);
           if (c) caption = c;
         }
@@ -246,12 +297,26 @@ function runScreen(app: App, hooks: RunHooks): Screen {
       }
       refreshButtons();
     }
+    if (m.t === "punch") {
+      cardStage?.onCards();
+      const c = captions.onCards(app.mirror.machine, { count: app.cards.count, apex: !!app.cards.apex, landed: !!app.cards.landed });
+      if (c) caption = c;
+      refreshButtons();
+    }
+    if (m.t === "checkpoint" && m.id === mission.result && run.extras.autoResultMs) {
+      autoTimer = setTimeout(() => goResult(), run.extras.autoResultMs);
+    }
     if (m.t === "checkpoint" || m.t === "health" || m.t === "session") refreshButtons();
     for (const fn of runListeners) fn(m);
   }
 
-  const extrasEls =
-    hooks.extras?.({
+  let autoTimer: ReturnType<typeof setTimeout> | null = null;
+  // Squares: "Keep pressing for me" and its "Skip to the answer" loop (#20).
+  // Card missions: Skip goes to S7 at Full (no loop: one INIT runs it all).
+  const skipBtn = extrasAt > 0 && run.extras.skipToAnswer ? button(run.extras.skipToAnswer, "skip-answer-btn", () => skipToAnswer()) : null;
+  const extrasEls = skipBtn
+    ? [skipBtn]
+    : hooks.extras?.({
       app,
       pressInit: () => press("init", true),
       setSpeed,
@@ -261,7 +326,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
       getSpeed: () => speed,
       onClear: (fn) => clearListeners.push(fn),
     }) ?? [];
-  const extrasBox = h("div", { class: "run-extras" }, ...extrasEls, showMe);
+  const extrasBox = h("div", { class: "run-extras" }, ...(skipBtn ? [showMe, ...extrasEls] : [...extrasEls, showMe]));
   rail.append(extrasBox);
 
   return {
@@ -271,16 +336,22 @@ function runScreen(app: App, hooks: RunHooks): Screen {
       renderTape();
       refreshReadouts();
       refreshButtons();
-      renderer.invalidate(null);
+      renderer?.invalidate(null);
+      cardStage?.mount();
+      // Re-entering the run view mid-run: the card captions catch up.
+      if (app.cards.count) captions.onCards(app.mirror.machine, { count: app.cards.count, apex: !!app.cards.apex, landed: !!app.cards.landed });
     },
     unmount: () => {
-      renderer.dispose();
+      renderer?.dispose();
+      cardStage?.dispose();
+      if (autoTimer) clearTimeout(autoTimer);
       if (pendingTimer) clearTimeout(pendingTimer);
       for (const fn of runListeners) fn({ t: "session", id: "", mission: "", mode: "visitor", state: "none", applied: [], remaining: 0 });
     },
     onMessage,
     onMachine: (units) => {
-      renderer.invalidate(units);
+      renderer?.invalidate(units);
+      cardStage?.onMachine(units);
       if (units === null || units.some((u) => u.startsWith("acc."))) refreshReadouts();
       const c = captions.onMachine(app.mirror.machine);
       if (c) {

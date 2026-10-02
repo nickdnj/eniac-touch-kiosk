@@ -12,7 +12,7 @@ import { readFile, stat } from "node:fs/promises";
 import { dirname, extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { MockBridge, SQUARES, defaultConfig } from "./bridge.mjs";
+import { MockBridge, MISSIONS, defaultConfig } from "./bridge.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(here, "..", "..", "..", "src", "web");
@@ -76,7 +76,8 @@ export function startDevServer({ port = PORT, host = HOST } = {}) {
         return res.end(r.outputFiles[0].contents);
       }
       if (p === "/api/missions") return json(res, 200, bridge.missionsList());
-      if (p === "/api/missions/squares") return json(res, 200, SQUARES);
+      const mid = p.startsWith("/api/missions/") ? decodeURIComponent(p.slice("/api/missions/".length)) : "";
+      if (MISSIONS[mid]) return json(res, 200, MISSIONS[mid]);
       if (p.startsWith("/api/missions/")) return json(res, 404, { error: "not found" });
       if (p === "/healthz") return json(res, 200, { status: bridge.health.core === "up" ? "ok" : "down", mock: true });
 
@@ -103,6 +104,9 @@ export function startDevServer({ port = PORT, host = HOST } = {}) {
             return json(res, 200, { ok: true });
           case "/__mock/speed":
             bridge.speedMs = { ...bridge.speedMs, ...body };
+            return json(res, 200, { ok: true });
+          case "/__mock/sieve":
+            bridge.sieveMs = { ...bridge.sieveMs, ...body };
             return json(res, 200, { ok: true });
           case "/__mock/session":
             return json(res, 200, { session: bridge.sessionInfo(), stdin: bridge.session?.stdin ?? [], machine: bridge.session?.machine ?? null });

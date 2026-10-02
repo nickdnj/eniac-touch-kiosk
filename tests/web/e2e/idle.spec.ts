@@ -63,7 +63,7 @@ test("next visitor after a reset starts clean: new session, step 1, no tape", as
   expect(await page.evaluate(() => (window as any).__eniac.tape.length)).toBe(0);
   await tap(page, page.locator(".screen.start"));
   await page.waitForTimeout(650);
-  await tap(page, page.locator(".mc-start"));
+  await tap(page, page.locator('.mission-card[data-mission="squares"] .mc-start'));
   await expect(page.locator(".step-card h2")).toHaveText("What is a square?");
   const { session, machine } = await mockGet(page, "session");
   expect(session.applied).toEqual([]);

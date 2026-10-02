@@ -121,7 +121,7 @@ func Summary(lines []Line) (plugs, switches int) {
 	return
 }
 
-// Validate checks every p and s line against the M1 grammar and catalog
+// Validate checks every p and s line against the M1/M2 grammar and catalog
 // and returns one error per problem (with line numbers).
 func Validate(lines []Line) []error {
 	var errs []error
@@ -135,8 +135,8 @@ func Validate(lines []Line) []error {
 			for _, t := range []Terminal{l.Plug.From, l.Plug.To} {
 				if t.Err != "" {
 					errs = append(errs, fmt.Errorf("line %d: %s: %s", l.Num, t.Raw, t.Err))
-				} else if !t.M1 {
-					errs = append(errs, fmt.Errorf("line %d: %s is not in the M1 jack grammar (i, c, a1..a20, trunks)", l.Num, t.Raw))
+				} else if !t.Known() {
+					errs = append(errs, fmt.Errorf("line %d: %s is not in the jack grammar (i, c, a1..a20, p, f1..f3, m, ad, trunks)", l.Num, t.Raw))
 				}
 			}
 		case "s":

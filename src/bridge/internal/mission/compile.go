@@ -14,7 +14,9 @@ type Compiled struct {
 	Title       string         `json:"title"`
 	Order       int            `json:"order"`
 	Summary     string         `json:"summary"`
+	Minutes     int            `json:"minutes,omitempty"`
 	Ordered     bool           `json:"ordered"`
+	ReadCard    *ReadCard      `json:"readCard,omitempty"`
 	Config      []ConfigItem   `json:"config"`
 	Steps       []CompiledStep `json:"steps"`
 	Counts      Counts         `json:"counts"`
@@ -62,10 +64,21 @@ type Counts struct {
 }
 
 type CompiledRun struct {
-	Buttons      []string `json:"buttons"`
-	Speeds       []string `json:"speeds"`
-	DefaultSpeed string   `json:"defaultSpeed"`
-	Watch        []string `json:"watch"`
+	Buttons      []string  `json:"buttons"`
+	Speeds       []string  `json:"speeds"`
+	DefaultSpeed string    `json:"defaultSpeed"`
+	Watch        []string  `json:"watch"`
+	InitOnce     bool      `json:"initOnce,omitempty"`
+	InitAfter    string    `json:"initAfter,omitempty"`
+	Cards        *CardPane `json:"cards,omitempty"`
+	Plot         *Plot     `json:"plot,omitempty"`
+}
+
+// ReadCard is the first card of the mission's input file (the real
+// demo.card, pinned by sha256), for the READ graphic.
+type ReadCard struct {
+	File string `json:"file"`
+	Text string `json:"text"`
 }
 
 // Summary is one entry of GET /api/missions.
@@ -74,6 +87,8 @@ type Summary struct {
 	Title     string   `json:"title"`
 	Order     int      `json:"order"`
 	Summary   string   `json:"summary"`
+	Minutes   int      `json:"minutes,omitempty"`
+	Steps     int      `json:"steps"`
 	Buttons   []string `json:"buttons"`
 	Available bool     `json:"available"`
 	Reason    string   `json:"reason,omitempty"`
@@ -81,8 +96,8 @@ type Summary struct {
 
 func (m *Mission) compile() *Compiled {
 	f := m.File
-	c := &Compiled{ID: f.ID, Title: f.Title, Order: f.Order, Summary: f.Summary, Ordered: f.Ordered,
-		Result: f.Result, Content: f.Content, Credits: f.Credits}
+	c := &Compiled{ID: f.ID, Title: f.Title, Order: f.Order, Summary: f.Summary, Minutes: f.Minutes, Ordered: f.Ordered,
+		ReadCard: m.readCard, Result: f.Result, Content: f.Content, Credits: f.Credits}
 	owner := map[int]string{}
 	for id, l := range m.stepLine {
 		owner[l.Num] = "step:" + id
@@ -92,9 +107,23 @@ func (m *Mission) compile() *Compiled {
 	}
 	units := map[string]bool{}
 	trunks := false
+	// Included files (l drag.e) are preset too; their lines follow the
+	// program's, so S5 and the counts cover everything the core loads.
+	type ownedLine struct {
+		l   econfig.Line
+		inc bool
+	}
+	all := make([]ownedLine, 0, len(m.lines)+len(m.incLines))
 	for _, l := range m.lines {
+		all = append(all, ownedLine{l, false})
+	}
+	for _, l := range m.incLines {
+		all = append(all, ownedLine{l, true})
+	}
+	for _, ol := range all {
+		l := ol.l
 		o := owner[l.Num]
-		if o == "" {
+		if o == "" || ol.inc {
 			o = "preset"
 		}
 		switch {
@@ -162,7 +191,8 @@ func (m *Mission) compile() *Compiled {
 		}
 		return speeds[i] < speeds[j]
 	})
-	c.Run = CompiledRun{Buttons: f.Run.Buttons, Speeds: speeds, DefaultSpeed: f.Run.DefaultSpeed, Watch: f.Run.Watch}
+	c.Run = CompiledRun{Buttons: f.Run.Buttons, Speeds: speeds, DefaultSpeed: f.Run.DefaultSpeed, Watch: f.Run.Watch,
+		InitOnce: f.Run.InitOnce, InitAfter: f.Run.InitAfter, Cards: f.Run.Cards, Plot: f.Run.Plot}
 	for _, cp := range f.Checkpoints {
 		c.Checkpoints = append(c.Checkpoints, cp.ID)
 	}
@@ -204,5 +234,5 @@ func isNum(s string) bool {
 // SummaryOf returns the /api/missions entry for a mission.
 func SummaryOf(m *Mission) Summary {
 	return Summary{ID: m.File.ID, Title: m.File.Title, Order: m.File.Order, Summary: m.File.Summary,
-		Buttons: m.File.Run.Buttons, Available: m.Available, Reason: m.Reason}
+		Minutes: m.File.Minutes, Steps: len(m.File.Steps), Buttons: m.File.Run.Buttons, Available: m.Available, Reason: m.Reason}
 }

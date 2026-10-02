@@ -105,7 +105,7 @@ test("speed: Slow is default; Full and back send only table speeds (M1-11)", asy
   const speeds = (await sent(page)).filter((m) => m.t === "set_speed").map((m) => m.speed);
   expect(speeds).toEqual(["full", "slow"]);
   const stdin: string[] = (await mockGet(page, "session")).stdin;
-  expect(stdin.filter((l) => l.startsWith("s cy.rate"))).toEqual(["s cy.rate 0", "s cy.rate 100"]);
+  expect(stdin.filter((l) => l.startsWith("s cy.rate"))).toEqual(["s cy.rate 0", "s cy.rate 13"]);
 });
 
 test("lamps go blank if the core goes down mid-run", async ({ page }) => {

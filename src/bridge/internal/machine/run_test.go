@@ -1,6 +1,7 @@
 package machine
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -13,7 +14,7 @@ func TestQuietFor(t *testing.T) {
 		want           time.Duration
 	}{
 		{0, 0, 120 * time.Millisecond},
-		{100, 0, 600 * time.Millisecond}, // addition 200 ms
+		{100, 0, 600 * time.Millisecond},  // addition 200 ms
 		{1000, 0, 120 * time.Millisecond}, // addition 20 ms -> 60 < 120
 		{500, 0, 120 * time.Millisecond},
 		{10, 0, 6 * time.Second},
@@ -27,8 +28,8 @@ func TestQuietFor(t *testing.T) {
 
 type clock struct{ t time.Time }
 
-func (c *clock) now() time.Time          { return c.t }
-func (c *clock) add(d time.Duration)     { c.t = c.t.Add(d) }
+func (c *clock) now() time.Time      { return c.t }
+func (c *clock) add(d time.Duration) { c.t = c.t.Add(d) }
 func ev(k status.Kind, u, i, v int) status.Event {
 	return status.Event{Kind: k, Unit: u, Index: i, Value: v}
 }
@@ -175,5 +176,64 @@ func TestPredicateForms(t *testing.T) {
 		if bad.Validate() == nil {
 			t.Errorf("%+v accepted", bad)
 		}
+	}
+}
+
+// M2 predicates: punchCount and punchField over the session's cards (any
+// card so far), and the reader/printer flip-flops keep the run busy.
+func TestPunchPredicates(t *testing.T) {
+	m := NewMirror(nil)
+	card := func(text string) {
+		m.ApplyLine("punch " + text)
+	}
+	pad := func(s string, at int) string {
+		b := []byte(strings.Repeat(" ", 80))
+		copy(b[at:], s)
+		return string(b)
+	}
+	five, hundred := 5, 100
+	cnt := Predicate{PunchCount: &CountCmp{Gte: &five}}
+	last := Predicate{PunchField: &FieldMatch{Index: 13, Eq: "02801"}}
+	landed := Predicate{PunchField: &FieldMatch{Index: 14, StartsWith: "-"}}
+	for _, p := range []Predicate{cnt, last, landed, {PunchCount: &CountCmp{Eq: &hundred}}} {
+		if err := p.Validate(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, bad := range []Predicate{{PunchCount: &CountCmp{}}, {PunchField: &FieldMatch{Index: 16, Eq: "1"}}, {PunchField: &FieldMatch{Index: 1}}, {PunchCount: &CountCmp{Gte: &five}, Acc: "1"}} {
+		if bad.Validate() == nil {
+			t.Errorf("%+v validated", bad)
+		}
+	}
+	for i, v := range []string{"0000000003", "0000000005", "0000000007", "0000000011"} {
+		card(pad(v, 60))
+		st := m.State()
+		if st.Punched != i+1 || cnt.Eval(&st) {
+			t.Fatalf("card %d: punched %d, count predicate %v", i+1, st.Punched, cnt.Eval(&st))
+		}
+	}
+	card(pad("0000002801", 60))
+	st := m.State()
+	if !cnt.Eval(&st) || !last.Eval(&st) || landed.Eval(&st) {
+		t.Fatal("after card 5")
+	}
+	card(pad("0390417741          -002951425", 50))
+	st = m.State()
+	if !landed.Eval(&st) || st.Cards[5].Fields[14] != "-0029" {
+		t.Fatalf("landing card %q", st.Cards[5].Fields)
+	}
+	// A READ or a punch in progress is not idle (init bits 6 and 7).
+	s := Initial()
+	s.Init = "000000100000000"
+	if s.GatesIdle() {
+		t.Error("reader busy counted as idle")
+	}
+	s.Init = "000000010000000"
+	if s.GatesIdle() {
+		t.Error("printer busy counted as idle")
+	}
+	s.Init = "000000000000000"
+	if !s.GatesIdle() {
+		t.Error("all clear not idle")
 	}
 }

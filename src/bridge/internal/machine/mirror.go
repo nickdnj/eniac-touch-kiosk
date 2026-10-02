@@ -84,6 +84,12 @@ func (m *Mirror) Apply(ev status.Event) {
 		if len(m.cards) > 20 {
 			m.cards = m.cards[len(m.cards)-20:]
 		}
+		m.st.Punched = m.nCards
+		if len(m.st.Cards) >= MaxCards {
+			// Copy, never shift in place: State copies share the backing array.
+			m.st.Cards = append([]Punch(nil), m.st.Cards[len(m.st.Cards)-MaxCards/2:]...)
+		}
+		m.st.Cards = append(m.st.Cards, p)
 		m.lastNonCy = m.now()
 		cb := m.OnPunch
 		m.mu.Unlock()

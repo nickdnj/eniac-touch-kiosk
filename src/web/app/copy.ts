@@ -14,9 +14,14 @@ export const COPY = {
   picker: {
     title: "Pick a mission",
     startHere: "Start here",
+    upNext: "Up next",
+    done: "Done",
     start: "Start",
+    then: "then",
+    order: "Suggested order",
+    orderLine: (orders: number[]) => orders.join(", then "),
     about: (min: number) => `About ${min} min`,
-    wire: (n: number) => `You wire ${n} steps`,
+    wire: (n: number, read = false) => `You wire ${n} steps${read ? " and read a card" : ""}`,
   },
   header: {
     missions: "Missions",
@@ -47,6 +52,7 @@ export const COPY = {
     switches: (n: number) => `${n} switches`,
     pickNumber: "Pick a number for this dial:",
     pickRepeat: "How many times?",
+    pickPrinter: "Punch this field, or leave it blank?",
     roomPlan: "The ENIAC room, seen from above. Not to scale.",
   },
   // Squares tile figures (docs/handoff-squares-tiles.md): briefing captions,
@@ -77,6 +83,45 @@ export const COPY = {
     next: (t: string) => `Next: ${t}`,
     tryAgain: "Try again",
     menu: "Menu",
+    finish: "Finish",
+  },
+  // Card pane, plot and run rail extras for the M2 missions. Mission copy
+  // (labels, captions) comes from the mission JSON; these are generic.
+  cards: {
+    showing: (n: number) => `Card ${n}`,
+    tapToSee: "Tap a card to see it large",
+  },
+  run2: {
+    read: "READ",
+    readSub: "Pull the card into ENIAC",
+    initDone: "INIT pressed",
+  },
+  // Primes run view labels (UX 8.2.5 S6 wireframe).
+  primesRun: {
+    testing: "Testing",
+    helper: (n: string) => `Accumulator ${n}`,
+    checkers: "Group checkers",
+    acc: (n: string) => `Acc ${n}`,
+    fits: "fits!",
+  },
+  // Primes figures (UX 8.2.3): briefing (cookies as tiles) and plan (group
+  // checkers). Numbers are the ones the real program uses.
+  primes: {
+    cookies: (n: number) => `${n} cookies`,
+    shares: "3 equal groups of 4. It shares evenly!",
+    now7: "Now 7",
+    leftOver: (g: number) => `${g} groups: 1 left over`,
+    left: (r: number) => `${r} left over`,
+    prime7: "7 won't split evenly. Prime!",
+    fits: "fits",
+    fitsBang: "fits!",
+    groupsOf: (k: number) => `groups of ${k}`,
+    more: "+ 11 more group sizes",
+    out: "out: no card",
+    prime: "prime: punch a card",
+    slowed: "How it works, slowed down",
+    punch: "Punch",
+    candidate: (n: number) => `Testing ${n}`,
   },
   still: {
     title: "Still there?",

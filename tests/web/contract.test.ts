@@ -17,7 +17,7 @@ import { accLamps } from "../../src/web/app/lamps/derive.ts";
 import { toView } from "../../src/web/app/mission/view.ts";
 import { PROTOCOL_VERSION, type MachineState, type MissionCompiled } from "../../src/web/app/protocol.ts";
 // @ts-expect-error: plain ESM mock without types
-import { MockBridge, SQUARES } from "./mock/bridge.mjs";
+import { MockBridge, SQUARES, PRIMES } from "./mock/bridge.mjs";
 
 const repo = join(import.meta.dirname, "..", "..");
 const FIXTURES = process.env.ENIAC_FIXTURES ?? join(repo, "tests", "fixtures", "protocol");
@@ -141,6 +141,14 @@ test("mock messages have the fixtures' shapes", { skip: !haveFixtures && "no fix
   await sleep(400);
   ws.client({ t: "button", id: 6, b: "read" });
   await sleep(50);
+  // Primes: one INIT punches cards (punch messages, M2).
+  b.sieveMs = { slow: 2, full: 2 };
+  ws.client({ t: "start_mission", id: 7, mission: "primes", mode: "visitor" });
+  await sleep(450);
+  ws.client({ t: "skip_setup", id: 8 });
+  await sleep(50);
+  ws.client({ t: "button", id: 9, b: "init" });
+  await sleep(100);
   b.fault({ recoverAfterMs: 100 });
   await sleep(200);
   b.close();
@@ -170,39 +178,43 @@ test("mock messages have the fixtures' shapes", { skip: !haveFixtures && "no fix
   assert.deepEqual(diffs, []);
 });
 
-// ---------------------------------------------------------------- 3. mock mission == squares.yaml
+// ---------------------------------------------------------------- 3. mock missions == missions/*.yaml
 
-const yamlPath = join(MISSIONS, "squares.yaml");
-test("mock compiled mission agrees with missions/squares.yaml", { skip: !existsSync(yamlPath) && `no ${yamlPath}` }, () => {
-  const require = createRequire(join(repo, "src", "web", "package.json"));
-  const YAML = require("yaml");
-  const y = YAML.parse(readFileSync(yamlPath, "utf8"));
-  const c = SQUARES as MissionCompiled;
-  const strip = (o: any): any => {
-    if (Array.isArray(o)) return o.map(strip);
-    if (o && typeof o === "object") return Object.fromEntries(Object.entries(o).filter(([k]) => k !== "review").map(([k, v]) => [k, strip(v)]));
-    return o;
-  };
-  assert.equal(c.id, y.id);
-  assert.equal(c.title, y.title);
-  assert.equal(c.summary, y.summary);
-  assert.equal(c.result, y.result);
-  assert.deepEqual(c.checkpoints, y.checkpoints.map((k: { id: string }) => k.id));
-  assert.deepEqual(c.run.buttons, y.run.buttons);
-  assert.deepEqual(c.run.watch, y.run.watch);
-  assert.deepEqual(c.run.speeds, Object.keys(y.run.speeds));
-  assert.equal(c.run.defaultSpeed, y.run.defaultSpeed);
-  assert.deepEqual(strip(c.content), strip(y.content));
-  assert.deepEqual(c.steps.map((s) => s.id), y.steps.map((s: { id: string }) => s.id));
-  for (const [i, ys] of y.steps.entries()) {
-    const s = c.steps[i];
-    const line = s.kind === "plug" ? `p ${s.from} ${s.to}` : `s ${s.switch} ${s.value}`;
-    assert.equal(line, ys.line, `step ${s.id} line`);
-    assert.deepEqual(strip(s.text), strip(ys.text), `step ${s.id} text`);
-    if (ys.choices) assert.deepEqual(s.choices, ys.choices, `step ${s.id} choices`);
-  }
-  const v = toView(c);
-  assert.equal(v.steps.length, 7);
-  assert.equal(v.config.filter((x) => x.owner === "preset" && x.kind === "plug").length, c.counts.presetCables);
-  assert.equal(v.config.filter((x) => x.owner === "preset" && x.kind === "switch").length, c.counts.presetSwitches);
-});
+const strip = (o: any): any => {
+  if (Array.isArray(o)) return o.map(strip);
+  if (o && typeof o === "object") return Object.fromEntries(Object.entries(o).filter(([k]) => k !== "review").map(([k, v]) => [k, strip(v)]));
+  return o;
+};
+
+for (const [id, mock] of [["squares", SQUARES], ["primes", PRIMES]] as const) {
+  const yamlPath = join(MISSIONS, `${id}.yaml`);
+  test(`mock compiled mission agrees with missions/${id}.yaml`, { skip: !existsSync(yamlPath) && `no ${yamlPath}` }, () => {
+    const require = createRequire(join(repo, "src", "web", "package.json"));
+    const YAML = require("yaml");
+    const y = YAML.parse(readFileSync(yamlPath, "utf8"));
+    const c = mock as MissionCompiled;
+    assert.equal(c.id, y.id);
+    assert.equal(c.title, y.title);
+    assert.equal(c.summary, y.summary);
+    assert.equal(c.result, y.result);
+    assert.deepEqual(c.checkpoints, y.checkpoints.map((k: { id: string }) => k.id));
+    assert.deepEqual(c.run.buttons, y.run.buttons);
+    assert.deepEqual(c.run.watch, y.run.watch);
+    assert.deepEqual([...c.run.speeds].sort(), Object.keys(y.run.speeds).sort());
+    assert.equal(c.run.defaultSpeed, y.run.defaultSpeed);
+    assert.deepEqual(strip(c.content), strip(y.content));
+    assert.deepEqual(c.steps.map((s) => s.id), y.steps.map((s: { id: string }) => s.id));
+    for (const [i, ys] of y.steps.entries()) {
+      const s = c.steps[i];
+      const line = s.kind === "plug" ? `p ${s.from} ${s.to}` : `s ${s.switch} ${s.value}`;
+      assert.equal(line, ys.line, `step ${s.id} line`);
+      assert.deepEqual(strip(s.text), strip(ys.text), `step ${s.id} text`);
+      if (ys.choices) assert.deepEqual(s.choices, ys.choices, `step ${s.id} choices`);
+    }
+    const v = toView(c);
+    assert.equal(v.steps.length, y.steps.length);
+    assert.equal(v.config.filter((x) => x.owner === "preset" && x.kind === "plug").length, c.counts.presetCables);
+    assert.equal(v.config.filter((x) => x.owner === "preset" && x.kind === "switch").length, c.counts.presetSwitches);
+    if (y.run.cards) assert.deepEqual(strip(c.run.cards), strip(y.run.cards));
+  });
+}

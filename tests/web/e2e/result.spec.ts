@@ -13,10 +13,13 @@ test("Skip to the answer lands on S7 with the full real tape and the takeaway", 
   expect(rows).toHaveLength(12);
   expect(rows[0]).toBe("1 x 1 = 1");
   expect(rows[11]).toBe("12 x 12 = 144");
-  // M1: nothing follows Squares, so Menu is primary and there is no Next.
-  await expect(page.locator(".next-btn")).toHaveCount(0);
-  await expect(page.locator(".menu-btn")).toHaveClass(/primary/);
+  // M2: Primes follows Squares in the suggested order (UX 8.4), so Next is primary.
+  await expect(page.locator(".next-btn")).toHaveText("Next: Primes");
+  await expect(page.locator(".next-btn")).toHaveClass(/primary/);
   for (const b of await page.locator(".result-actions .btn").all()) expect((await b.boundingBox())!.height).toBeGreaterThanOrEqual(96);
+  await tapSlow(page, page.locator(".next-btn"));
+  await expect(page.locator(".step-card h2")).toHaveText("What is a prime?");
+  expect((await sent(page)).filter((m) => m.t === "metric" && m.ev === "picker_next_used")).toHaveLength(1);
 });
 
 test("result reached via 'Show me what happened' shows only the presses made", async ({ page }) => {

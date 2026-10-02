@@ -27,6 +27,7 @@ func TestRealSessionMessagesMatchProtocol(t *testing.T) {
 	cl.wait(3*time.Second, "step_applied", is("step_applied"))
 	cl.send(`{"t":"skip_setup"}`)
 	cl.wait(10*time.Second, "setup_complete", is("setup_complete"))
+	cl.send(`{"t":"set_speed","speed":"full"}`)
 	cl.initAndWait()
 	cl.seen(2*time.Second, "checkpoint", is("checkpoint"))
 	time.Sleep(6 * time.Second) // one periodic health broadcast

@@ -35,3 +35,26 @@ func TestSquaresSelftest(t *testing.T) {
 		t.Logf("%s: ready in %s, settled %v", speed, res.ReadyIn.Round(1e6), res.Settled)
 	}
 }
+
+func loadMission(t *testing.T, id string) (*mission.Mission, string, string) {
+	t.Helper()
+	corePath, rt := testenv.Core(t)
+	root, _ := testenv.RepoRoot()
+	m := mission.Load(filepath.Join(root, "missions", id+".yaml"), rt)
+	if !m.Available {
+		t.Fatal(m.Errors)
+	}
+	return m, corePath, rt
+}
+
+// Primes (UX 8.2.6, rule 8): one INIT at Full, the first five primes.
+func TestPrimesSelftest(t *testing.T) {
+	m, corePath, rt := loadMission(t, "primes")
+	self, _ := os.Executable()
+	res, err := Run(context.Background(), Options{Mission: m, CorePath: corePath, VlinkExe: self, Runtime: rt,
+		RunDir: testenv.ShortTempDir(t), Speed: "full"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("ready in %s, %d cards", res.ReadyIn.Round(1e6), len(res.Cards))
+}

@@ -250,3 +250,143 @@ func TestAPI(t *testing.T) {
 		}
 	}
 }
+
+// Primes (M2): sieve.e at the pin, 5 steps, 264 cables / 285 switches
+// preset (UX 8.2.2), the M2 jacks resolved to their classes, the card pane
+// and the patch requirement.
+func TestPrimesValid(t *testing.T) {
+	dir, up := paths(t)
+	m := Load(filepath.Join(dir, "primes.yaml"), up)
+	if !m.Available {
+		t.Fatalf("primes unavailable: %v", m.Errors)
+	}
+	c := m.Compiled()
+	if c.Counts != (Counts{PresetCables: 264, PresetSwitches: 285, StepCables: 4, StepSwitches: 1}) {
+		t.Fatalf("counts %+v", c.Counts)
+	}
+	if c.Minutes != 4 || !c.Run.InitOnce || c.Run.Cards == nil || c.Run.Cards.Window != [2]int{51, 80} || c.Result != "hundred" {
+		t.Fatalf("compiled %+v run %+v", c, c.Run)
+	}
+	want := map[string][2]string{
+		"a1-fits":          {"program-out", "program-trunk"},
+		"trunk17-to-mp":    {"program-trunk", "program-in"},
+		"trunk19-to-punch": {"program-trunk", "program-in"},
+		"punch-done-to-14": {"program-out", "program-trunk"},
+	}
+	for _, s := range c.Steps {
+		if w, ok := want[s.ID]; ok && (s.FromClass != w[0] || s.ToClass != w[1] || s.Cable != "program") {
+			t.Errorf("step %s classes %s -> %s (%s)", s.ID, s.FromClass, s.ToClass, s.Cable)
+		}
+	}
+	if s := c.Steps[0]; s.Switch != "c.k1" || s.Family != econfig.FamConstDigit || s.Value != "2" {
+		t.Fatalf("step 1 %+v", s)
+	}
+	if txt, _ := m.StepText("trunk17-to-mp"); txt != "p 1-7 p.Adi" {
+		t.Fatalf("step text %q", txt)
+	}
+	sum := SummaryOf(m)
+	if sum.Steps != 5 || sum.Minutes != 4 {
+		t.Fatalf("summary %+v", sum)
+	}
+}
+
+// requires: without patch 0002 sieve.e punches nothing (spike S3), so the
+// mission must be unavailable rather than fail on the floor.
+func TestPrimesRequiresPatch(t *testing.T) {
+	dir, up := paths(t)
+	old := Patches
+	defer func() { Patches = old }()
+	Patches = func(string) ([]string, error) { return []string{"0001-mult-stage-format"}, nil }
+	expectUnavailable(t, Load(filepath.Join(dir, "primes.yaml"), up), "requires upstream patch 0002-ft-repeat-default")
+}
+
+func primesVariant(t *testing.T, from, to string) *Mission {
+	t.Helper()
+	dir, up := paths(t)
+	b, _ := os.ReadFile(filepath.Join(dir, "primes.yaml"))
+	if !strings.Contains(string(b), from) {
+		t.Fatalf("fixture text %q not in primes.yaml", from)
+	}
+	p := filepath.Join(t.TempDir(), "primes.yaml")
+	os.WriteFile(p, []byte(strings.Replace(string(b), from, to, 1)), 0o644)
+	return Load(p, up)
+}
+
+func TestPrimesNegative(t *testing.T) {
+	cases := []struct{ name, from, to, want string }{
+		{"read without withheld", `buttons: [init]`, `buttons: [init, read]`, "withheld line is bound to read"},
+		{"clear with initOnce", `buttons: [init]`, `buttons: [init, clear]`, "initOnce missions cannot offer clear"},
+		{"bad punchField", `{ punchField: { index: 13, eq: "02801" } }`, `{ punchField: { index: 16, eq: "02801" } }`, "index 16"},
+		{"bad punchCount", `{ punchCount: { gte: 100 } }`, `{ punchCount: { } }`, "punchCount needs"},
+		{"card window", `window: [51, 80]`, `window: [51, 81]`, "run.cards.window"},
+		{"card style", `style: stack`, `style: pile`, "stack or film"},
+		{"bad caption trigger", `trigger: { punchCount: { gte: 5 } }`, `trigger: { punchCount: { gte: 5 }, run: busy }`, "exactly one of"},
+		{"live doneAt", `doneAt: last`, `doneAt: nope`, "content.result.live.doneAt"},
+		{"freezeAt", `initOnce: true`, `initOnce: true
+  freezeAt: nope`, "run.freezeAt"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) { expectUnavailable(t, primesVariant(t, c.from, c.to), c.want) })
+	}
+}
+
+// Includes and assets (UX 8.5 items 1, 2): pinned by sha256, the include's
+// lines count as preset for rule 4, the asset's first card is served.
+func TestIncludesAndAssets(t *testing.T) {
+	up := t.TempDir()
+	os.MkdirAll(filepath.Join(up, "programs"), 0o755)
+	inc := "s a3.op1 α\ns a1.op5 β\n"
+	prog := "f r in.card\nl inc.e\np c.o 1\np 1 a1.α\np 1 a2.α\ns a1.op5 α\nb r\nb i\n"
+	card := "00000973670000013975\n"
+	os.WriteFile(filepath.Join(up, "programs", "inc.e"), []byte(inc), 0o644)
+	os.WriteFile(filepath.Join(up, "programs", "x.e"), []byte(prog), 0o644)
+	os.WriteFile(filepath.Join(up, "in.card"), []byte(card), 0o644)
+	y := func(extra string) string {
+		return `schema: 1
+id: x
+title: X
+program: x.e
+programSha256: "` + sha([]byte(prog)) + `"
+ordered: true
+steps:
+  - { id: s1, line: "s a1.op5 α", text: { headline: h, body: b, done: d } }
+  - { id: s2, line: "p 1 a1.α", text: { headline: h, body: b, done: d } }
+withheld:
+  - { line: "b r", button: read }
+  - { line: "b i", button: init }
+run: { buttons: [read, init], watch: ["1"], speeds: { full: { rate: 0 } }, defaultSpeed: full }
+content:
+  briefing: { headline: h, body: b }
+  plan: { headline: h, body: b }
+  rest: { headline: h, body: b }
+  read: { before: { headline: "Press READ" }, headline: r, captions: [], initLocked: "Read the card first" }
+  result: { headline: h, body: b }
+` + extra
+	}
+	write := func(s string) string {
+		p := filepath.Join(t.TempDir(), "x.yaml")
+		os.WriteFile(p, []byte(s), 0o644)
+		return p
+	}
+	good := "includes: { inc.e: \"" + sha([]byte(inc)) + "\" }\nassets: { in.card: \"" + sha([]byte(card)) + "\" }\n"
+	m := Load(write(strings.Replace(y(""), "ordered: true", "ordered: true\n"+good, 1)), up)
+	// Rule 4 sees the include: its s a1.op5 β clashes with step s1.
+	expectUnavailable(t, m, "sets a1.op5")
+	noRule4 := strings.Replace(y(""), `line: "s a1.op5 α"`, `line: "p 1 a2.α"`, 1)
+	m = Load(write(strings.Replace(noRule4, "ordered: true", "ordered: true\n"+good, 1)), up)
+	if !m.Available {
+		t.Fatalf("%v", m.Errors)
+	}
+	c := m.Compiled()
+	if c.ReadCard == nil || c.ReadCard.File != "in.card" || c.ReadCard.Text != "00000973670000013975" {
+		t.Fatalf("read card %+v", c.ReadCard)
+	}
+	if c.Counts.PresetSwitches != 3 { // s a1.op5 α and both include lines are preset
+		t.Fatalf("counts %+v", c.Counts)
+	}
+	if got := m.WithheldFor("read"); strings.Join(got, "|") != "b r" {
+		t.Fatalf("read lines %v", got)
+	}
+	expectUnavailable(t, Load(write(strings.Replace(noRule4, "ordered: true", "ordered: true\nincludes: { inc.e: \""+sha([]byte(inc))+"\" }\n", 1)), up), "not pinned in assets")
+	expectUnavailable(t, Load(write(strings.Replace(noRule4, "ordered: true", "ordered: true\nincludes: { inc.e: \""+sha([]byte(inc))+"\" }\nassets: { in.card: \"00\" }\n", 1)), up), "asset in.card sha256 mismatch")
+}

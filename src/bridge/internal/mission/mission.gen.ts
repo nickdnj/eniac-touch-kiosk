@@ -15,7 +15,9 @@ export interface Compiled {
   title: string;
   order: number /* int */;
   summary: string;
+  minutes?: number /* int */;
   ordered: boolean;
+  readCard?: ReadCard;
   config: ConfigItem[];
   steps: CompiledStep[];
   counts: Counts;
@@ -67,6 +69,18 @@ export interface CompiledRun {
   speeds: string[];
   defaultSpeed: string;
   watch: string[];
+  initOnce?: boolean;
+  initAfter?: string;
+  cards?: CardPane;
+  plot?: Plot;
+}
+/**
+ * ReadCard is the first card of the mission's input file (the real
+ * demo.card, pinned by sha256), for the READ graphic.
+ */
+export interface ReadCard {
+  file: string;
+  text: string;
 }
 /**
  * Summary is one entry of GET /api/missions.
@@ -76,6 +90,8 @@ export interface Summary {
   title: string;
   order: number /* int */;
   summary: string;
+  minutes?: number /* int */;
+  steps: number /* int */;
   buttons: string[];
   available: boolean;
   reason?: string;
@@ -99,6 +115,9 @@ export interface File {
   title: string;
   order: number /* int */;
   summary: string;
+  minutes: number /* int */; // picker: "About N min" (UX 8.4, FR-10)
+  requires: string[]; // local upstream patches the mission needs (e.g. 0002-ft-repeat-default)
+  assets: { [key: string]: string}; // input files in the upstream runtime dir, by sha256 (e.g. demo.card)
   program: string;
   programSha256: string;
   includes: { [key: string]: string};
@@ -180,6 +199,56 @@ export interface RunSpec {
   idle: IdleSpec;
   speeds: { [key: string]: Speed};
   defaultSpeed: string;
+  /**
+   * InitOnce: INIT may be pressed once per session (Primes and
+   * Trajectory run until they finish; a second INIT would corrupt the
+   * run, spike S2). The bridge rejects the second one.
+   */
+  initOnce: boolean;
+  /**
+   * InitAfter: INIT is rejected until this checkpoint fired (Trajectory:
+   * the card has been read).
+   */
+  initAfter: string;
+  /**
+   * FreezeAt: when this checkpoint fires the bridge stops the clock with
+   * `s cy.op 1a` (whitelisted), keeping the machine as it is (Trajectory:
+   * the landing card; otherwise trajdemo flies again by itself).
+   */
+  freezeAt: string;
+  /**
+   * Cards and Plot tell the UI how to draw punched cards and the
+   * trajectory from card fields (UX 8.5 item 9), so no mission is code.
+   */
+  cards?: CardPane;
+  plot?: Plot;
+}
+/**
+ * CardPane: which columns the card graphic shows, which fields make the
+ * card's number, and the pane style (UX 8.2.5 / 8.3.5, FR-21).
+ */
+export interface CardPane {
+  window: number /* int */[]; // first and last card column shown (1..80)
+  value: number /* int */[]; // field indices (0..15) joined into the card's number
+  hop?: number /* int */[]; // field indices holding a hop/sequence number
+  style: string; // stack (newest large, older rows) | film (film strip)
+  keep: number /* int */; // cards kept on screen (20)
+  bars?: Bars;
+}
+/**
+ * Bars: one bar per `per` numbers from 1 to upTo, each card adds 1 to the
+ * bar of its number (UX 8.2.5 "primes per hundred").
+ */
+export interface Bars {
+  per: number /* int */;
+  upTo: number /* int */;
+}
+/**
+ * Plot: a dot per card at (x, y) from card fields (UX 8.3.5 "the arc").
+ */
+export interface Plot {
+  x: number /* int */[];
+  y: number /* int */[];
 }
 /**
  * IdleSpec: QuietMs is "auto" or a number of milliseconds.
@@ -196,10 +265,23 @@ export interface Speed {
 }
 /**
  * Selftest is the headless known-answer check (architecture 5.9.5 rule 8).
+ * M1: INIT n times with idle waits, then compare accumulators. M2 adds
+ * READ first, a wait-until predicate instead of idle (runs that never go
+ * idle), and expected card fields.
  */
 export interface Selftest {
+  read: boolean; // press READ (its withheld lines) and wait for idle first
   inits: number /* int */;
+  until?: any /* machine.Predicate */; // wait for this after the INITs instead of idle
   expect: { [key: string]: number /* int64 */}; // accumulator -> decoded value after the INITs
+  cards: CardExpect[]; // the first len(values) cards' field[index]
+}
+/**
+ * CardExpect: cards 1..len(Values) carry Values in field Index (0..15).
+ */
+export interface CardExpect {
+  index: number /* int */;
+  values: string[];
 }
 /**
  * Content is the non-step copy of a mission. It is an M1 amendment to the
@@ -211,8 +293,51 @@ export interface Content {
   briefing: Card;
   plan: Card;
   rest: Card;
+  read?: ReadContent;
   run: RunContent;
   result: Card;
+}
+/**
+ * ReadContent is the READ beat before INIT (Trajectory, UX 8.3.5).
+ */
+export interface ReadContent {
+  before: RailPrompt; // "Press READ"
+  headline: string; // while reading
+  captions: Caption[];
+  initLocked: string; // INIT's label until the card is read
+}
+/**
+ * LiveLine is the result screen's line that keeps counting with the
+ * machine (UX 8.2.5 / 8.3.5). {n} is the number of cards.
+ */
+export interface LiveLine {
+  waiting?: string; // before the result checkpoint
+  pending?: string; // after it, while the machine still works
+  done?: string; // after doneAt
+  doneAt?: string; // checkpoint id
+}
+/**
+ * CardsCopy is the card pane's text. {n} card number, {v} card value.
+ */
+export interface CardsCopy {
+  title: string;
+  label: string; // under the big card, e.g. "Prime number {n}: {v}"
+  count: string; // "Cards: {n}"
+  latest?: string; // "Latest: {v}"
+  empty: string; // "No cards yet."
+  bars?: string;
+}
+/**
+ * PlotCopy is the trajectory plot's text (no units until fact-checked).
+ */
+export interface PlotCopy {
+  x: string;
+  y: string;
+  dot: string; // "Each dot is one card."
+  stretch: string; // "Height stretched so you can see it."
+  apex: string;
+  landed: string;
+  cross: string; // label of the interpolated ground crossing
 }
 /**
  * Card is a headline/body screen with optional extras.
@@ -224,6 +349,7 @@ export interface Card {
   math?: string;
   takeaway?: string;
   takeawaySub?: string;
+  live?: LiveLine;
   buttons?: string[];
 }
 /**
@@ -232,8 +358,12 @@ export interface Card {
 export interface RunContent {
   before: RailPrompt;
   presses: PressCopy[];
-  tape: string; // notebook tape line template, e.g. "{a1} x {a1} = {a2}"
+  tape?: string; // notebook tape line template, e.g. "{a1} x {a1} = {a2}"
   extras: RunExtras;
+  done?: RailPrompt; // rail after the result checkpoint (Trajectory "You did it!")
+  cards?: CardsCopy;
+  plot?: PlotCopy;
+  note?: string; // one line under the readouts ("ENIAC does a lot of arithmetic for every hop.")
 }
 /**
  * RailPrompt is the rail headline with an optional sub-line.
@@ -263,17 +393,32 @@ export interface Caption {
 export interface Trigger {
   accProg?: AccProgTrigger;
   run?: string;
+  acc?: AccEqTrigger; // that accumulator reads exactly eq
+  punchCount?: CountTrigger; // that many cards punched
+  init?: string; // that initiating-unit lamp lit (rdff, prff, ...)
+  derived?: string; // apex | landed, computed by the UI from the cards
+}
+export interface AccEqTrigger {
+  acc: string;
+  eq: number /* int64 */;
+}
+export interface CountTrigger {
+  gte: number /* int */;
 }
 export interface AccProgTrigger {
   acc: string;
   program: number /* int */;
 }
 /**
- * RunExtras are the controls that appear after a given press (UX 8.1.4).
+ * RunExtras are the controls that appear after a given press (UX 8.1.4),
+ * or after a number of cards (Primes and Trajectory).
  */
 export interface RunExtras {
   afterPress: number /* int */;
-  keepPressing: string;
+  afterCards?: number /* int */;
+  autoResultMs?: number /* int */; // go to S7 this long after the result checkpoint
+  headline?: string; // rail headline once the extras show ("Primes pile up")
+  keepPressing?: string;
   showResult: string;
   skipToAnswer: string;
   hint?: string;

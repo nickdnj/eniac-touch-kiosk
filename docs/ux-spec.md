@@ -1,7 +1,7 @@
 # UX Design Specification: ENIAC Touch Kiosk
 
-**Version:** 0.1
-**Last Updated:** 2026-09-30
+**Version:** 0.4
+**Last Updated:** 2026-10-01
 **Author:** Nick DeMarco with AI assistance (ux-design agent)
 **Status:** Draft for review
 **PRD Reference:** `docs/PRD.md` v0.1 (sections 4, 5, 12)
@@ -338,14 +338,14 @@ Goal: make people curious, and be honest that it is live.
 |            +----------------------------------------------+                        |
 |            |        TOUCH TO PROGRAM ENIAC                |  pill 720x120 at (600,800)
 |            +----------------------------------------------+   pulsing, 1 Hz        |
-|  live caption 24px (bottom-left): "Live: ENIAC adding 97,367 to itself 5,000 times" |
+|  live caption 24px (bottom-left): "Live: ENIAC is working out a shell's path. Hop 12"   |
 +------------------------------------------------------------------------------------+
 | ENIAC simulator by Brian L. Stuart, Drexel University                               |
 +------------------------------------------------------------------------------------+
 ```
 
 - The **whole screen** is the touch target. Any touch goes to S2 and does nothing else (FR-31).
-- The picture is the perspective view drawn from live status (FR-30). The caption is taken from the part of trajdemo currently running, so it is always true. If no live run exists, the screen is S10, not a fake.
+- The picture is the perspective view drawn from live status (FR-30). **Caption (fixed in v0.4, 8.5.1 Q6):** at the pin the only live thing trajdemo can honestly show is the trajectory loop (spike S2: INIT goes straight to the artillery trajectory, and after landing it flies again by itself), so attract runs READ, INIT and lets it fly, and the caption reads "Live: ENIAC is working out a shell's path. Hop {n}", with {n} the hop number of the latest real card. The old "adding 97,367 to itself 5,000 times" was a part that never runs. If no live run exists, the screen is S10, not a fake. (The live attract session itself is still to be built.)
 - No timeout.
 
 ### 7.2 S2 Mission picker
@@ -754,7 +754,7 @@ All three run beats use **Slow** by default. The lamps are real; the captions fi
 
 After press 3 the rail adds:
 
-- **Keep pressing for me**: the front end presses INIT, waits until the machine is ready, and presses again, at about 2 squares per second in Full, about 1 per 3 s in Slow. Stops at x = 12 (144). (FR-17 adapted to F1.)
+- **Keep pressing for me**: the front end presses INIT, waits until the machine is ready, and presses again, at about 2 squares per second in Full. In Slow (`cy.rate 13` since spike S4, v0.4) one press already takes about 13 s with every addition visible, so it waits only half a second between presses: about one square every 13 to 14 s. Stops at x = 12 (144). (FR-17 adapted to F1.)
 - **Show me what happened** (primary, 96 h): goes to S7.
 - Speed control and "Skip to the answer" (auto-presses to x = 12 at unthrottled speed, then S7).
 - Hint: "Want it faster? Try Full."
@@ -1034,7 +1034,7 @@ The punched-card display (FR-21):
 
 After the 5th card the rail adds:
 
-- **Speed:** Slow | Full. Full is `rate 0`. (Slow is `rate 100`, untuned until spike #33.) The hint chip "Want it faster? Try Full." appears with the 5th card. There is no auto-switch.
+- **Speed:** Slow | Full. Full is `rate 0`. Slow is `rate 100` (kept after spike S4: about 1.8 s per odd number tested). The hint chip "Want it faster? Try Full." appears with the 5th card. There is no auto-switch.
 - **Show me what happened** (primary, 96 h): goes to S7 now. The result screen is live (below).
 - **Skip to the answer:** sets Full and goes to S7 immediately. **It cannot make the machine faster than about 0.6 s per card**, so S7 first shows a waiting state ("ENIAC is counting primes: 37 of the first 100") until card 100 (the `hundred` checkpoint), and then the result headline appears. At Full from the start this takes about 1:00 on the Mac. If ENIAC has already punched more than 100 cards, S7 is instant.
 
@@ -1089,7 +1089,7 @@ run:
   watch: ["19"]
   idle: { quietMs: auto }            # the sieve is busy until 2801; the UI never waits for idle
   speeds:
-    slow: { rate: 100 }              # about 1.85 s per odd number [V on the Mac], untuned until spike #33
+    slow: { rate: 100 }              # about 1.85 s per odd number [V on the Mac], kept after spike S4
     full: { rate: 0 }
   defaultSpeed: slow
 
@@ -1112,6 +1112,14 @@ selftest:                            # rule 8; needs a new "until" and per-card 
 ### 8.3 Trajectory (Mission 3): the complete script
 
 Tags as in 8.2: **[V]** verified by the UX agent by running the pinned core on 2026-10-01 (c4b94f2 plus patches 0001 and 0002, macOS arm64); **[I]** my reading, to be confirmed; **[A]** timing assumption. `docs/spikes/S2-trajdemo.md` did not exist when I finished this section, so every number here is mine and must be replaced by the S2 numbers when they land (see 8.3.7). The Pi 5 has not been measured.
+
+> **v0.4: decisions after spike S2 (Nick, 2026-10-01). These override the rest of 8.3 where they differ.**
+>
+> 1. **Structure:** READ, then INIT, then **one flight of 34 cards**, the arc drawn from the real punched cards (PRD FR-19 rewritten; the six-part run stays Plan B, 8.3.8).
+> 2. **Start:** one READ tap sends **`b c` then `b r`** (both withheld lines are bound to READ). The CLEAR prevents the all-zero first card: with it, 10 of 10 S2 runs punched hop 1 first, so a flight is **34** cards, not 35.
+> 3. **Landing:** the first card with `-` in column 71 (punch field 14 starts with `-`) is the `landed` checkpoint; the bridge then freezes the machine with **`s cy.op 1a`** (already whitelisted; S2 showed nothing more is punched or even reported). The mission never sends a second INIT: INIT is pressed once (`run.initOnce`), because a second INIT mid-flight corrupts the flight. **Full speed only, no speed control.**
+> 4. **Timings (S2, Mac, quiet):** READ about 0.4 s; first card about 1.5 s after INIT; **one card every 1.43 s**; landing at about **49 s**. Plan on 1.5 to 2.5 s a card on the Pi until it is measured. These replace the [A] numbers below (8.3.7).
+> 5. **Units:** no feet or seconds on screen until Stuart or the Fact-Checker confirms them. Captions say "each dot is one card" and so on; the axes are "Along" and "Up".
 
 #### 8.3.1 What trajdemo.e really does (read this first)
 
@@ -1158,7 +1166,7 @@ Each line appears exactly once across `trajdemo.e` and `drag.e`, and rule 4 (per
 
 **Not usable as a step: `p i.Io 1-1`.** The file also plugs `p i.Io 3-10`, the same jack (`i.Io`), so rule 4 would reject it. For the same reason INIT's wiring cannot be a Trajectory step.
 
-**Withheld** (architecture 5.9.2): `b r` becomes the READ button, `b i` becomes the INIT button, and `b c` is dropped. `f r demo.card` stays preset (the card is in the hopper from the start; READ reads it). `l drag.e` is an include, with its sha256, and its 705 lines are preset.
+**Withheld** (architecture 5.9.2): `b r` becomes the READ button, `b i` becomes the INIT button, and `b c` is bound to READ as well, sent first (v0.4, spike S2: it prevents the all-zero first card). `f r demo.card` stays preset (the card is in the hopper from the start; READ reads it). `l drag.e` is an include, with its sha256, and its 705 lines are preset.
 
 Preset totals: **293 cables and 1,147 switches.** (297 − 4 cables = 293, and 1,148 − 1 switch = 1,147.) By group:
 
@@ -1222,7 +1230,7 @@ The arrows, glyphs and numbers in this canvas are explanatory art, labelled "how
 | Steps 1 to 5 (about 12 s each) | 1:00 |
 | "Rest done for you" | 0:08 |
 | READ (button, card slides, lamps) | 0:20 |
-| INIT and one flight, 35 hops at 2.0 to 3.4 s | 1:10 to 2:00 [A] |
+| INIT and one flight, 34 hops at 1.43 s (S2, Mac) | about 0:50 (Pi: 1:00 to 1:30 until measured) |
 | Result | 0:25 |
 | **Total** | **about 3:50 to 4:40**; Pi 5 slower hop times push toward 5 to 6 min. |
 
@@ -1357,14 +1365,14 @@ The big wait is the hop time, 2.0 to 3.4 s [A]. The captions are timed to the ev
 - **Skip to the answer**: goes to S7 at once. **There is no way to make the machine faster than Full**, so S7 starts with the live arc and a chip "The shell is still flying: hop 14". The headline appears at landing. Nothing is made up: if the visitor skips at hop 14, the arc is cut there, and keeps growing as hops arrive.
 - No speed control is shown. A one-line explanation lives under the hop counter: "ENIAC does a lot of arithmetic for every hop."
 
-**Fast-forward and skip, for this mission.** The PRD's idea (FR-19) of fast-forwarding inside a part and skipping to the trajectory does not apply: Full is already unthrottled and the trajectory is the only part that runs. The honest equivalents are "Skip to the answer" (above) and the live arc on the result screen. After landing the core keeps going and starts another flight. The bridge should stop the machine at the `landed` checkpoint, for example by switching the cycling unit to single pulse (`s cy.op 1p`), which freezes the machine without clearing it. **Not tested.** If it does not hold, the UI ignores cards after landing (the arc and the film strip freeze at the landing).
+**Fast-forward and skip, for this mission.** The PRD's idea (FR-19) of fast-forwarding inside a part and skipping to the trajectory does not apply: Full is already unthrottled and the trajectory is the only part that runs. The honest equivalents are "Skip to the answer" (above) and the live arc on the result screen. After landing the core keeps going and starts another flight. The bridge stops the machine at the `landed` checkpoint by switching the cycling unit to one addition (`s cy.op 1a`, already whitelisted), which freezes the machine without clearing it (v0.4: verified in spike S2, and the run view also ignores any card after the landing).
 
 **Result (S7) copy**
 
 - Headline: **ENIAC flew the shell!**
 - Body: "Each card was one hop. Joined up, the dots show the whole flight: up, over the top, and down. ENIAC worked it out from a card of numbers and the cables you placed." (33 words)
 - Takeaway strip: **Numbers and cables made a flight path.** Sub-line: "That is what programming ENIAC meant."
-- Left: the full arc from the real cards (landing tagged), the film strip of the last 20 cards, and a line "35 hops, 35 cards" (the real count). The chart is labelled "Height stretched so you can see it."
+- Left: the full arc from the real cards (landing tagged), the film strip of the last 20 cards, and a line "34 hops, 34 cards" (the real count, read live). The chart is labelled "Height stretched so you can see it."
 - Tell me more: "The real ENIAC could work out a trajectory like this much faster than a shell takes to fly. By hand, the same work took days. Our simulator is slower, so you can watch every hop." (35 words) [FC: both comparisons; the old outline said 30 seconds and days: to be checked with Doug]
 - Buttons: **Finish**, Try again, Menu. **Finish** goes to S8.
 
@@ -1406,7 +1414,7 @@ steps:
 withheld:
   - { line: "b r", button: read }
   - { line: "b i", button: init }
-  # "b c" is dropped (bound to nothing); the file's last three lines are b c, b r, b i
+  - { line: "b c", button: read }   # v0.4: sent before b r (spike S2); the file's last three lines are b c, b r, b i
 
 run:
   buttons: [read, init]
@@ -1433,7 +1441,7 @@ The first hop's numbers `0014128681` (along) and `0005693229` (up) were identica
 
 `content:` keys: `briefing`, `plan` (with `math`), `rest`, `read` (new: `before`, `captions` for the READ beat), `run` (`before`, `presses` with one entry and five captions with triggers `{run: busy}`, `{punchCount: {gte: 1}}`, `{punchCount: {gte: 3}}`, `{derived: apex}`, `{derived: landed}`; `extras` with `afterPress` (hop 5), `showResult`, `skipToAnswer`, no speed control, `stopAt: landed`), `result`. `credits`: "Brian L. Stuart, programs/trajdemo.e and programs/drag.e".
 
-#### 8.3.7 Timings the S2 spike should replace
+#### 8.3.7 Timings the S2 spike should replace (v0.4: replaced, see the box at the top of 8.3)
 
 | Assumption in this section | Where |
 |---|---|
@@ -1442,7 +1450,7 @@ The first hop's numbers `0014128681` (along) and `0005693229` (up) were identica
 | One flight is 35 cards | 8.3.1, the S7 line "35 hops" is read live, not assumed |
 | The first card may be all zeros | 8.3.1, selftest |
 | INIT after landing cannot be used to fire again from the same core | 8.3.5 (Try again = new core) |
-| The bridge can freeze the machine at landing (`s cy.op 1p`) | 8.3.5 |
+| The bridge can freeze the machine at landing (`s cy.op 1a`, v0.4: verified in S2) | 8.3.5 |
 
 If `docs/spikes/S2-trajdemo.md` shows a way to run the six parts (for example, a different INIT order, or a gap of a given length between presses), change the run section to 8.3.8.
 
@@ -1523,9 +1531,27 @@ The M1 schema and `squares.yaml` cover steps, withheld, run, checkpoints and the
 | 8 | `run.speeds` with one speed (Full only): the UI hides the speed control. | Trajectory |
 | 9 | `run.cardPane: {fields: [...], window: "cols 51-80"}` and `run.plot: {x: [10,11], y: [14,15], count: [5], stretch: auto}` so the UI draws cards and the arc from fields, not from code | Both |
 | 10 | `content.read`, `content.result.liveLine`, and a `minutes` field for the picker | Both |
-| 11 | `s cy.op 1p` added to the core command whitelist (5.2), to freeze the machine at the landing checkpoint | Trajectory (untested) |
+| 11 | Freeze the machine at the landing checkpoint. v0.4: `s cy.op 1a` (already on the whitelist, 5.2; verified in S2) via `run.freezeAt`; no whitelist change | Trajectory |
 | 12 | Mission `requires: [0002-ft-repeat-default]`. A missing patch makes Primes unavailable (sieve canary, test plan 3.2). | Primes |
 | 13 | S5 batch animation for large preset sets (hundreds of cables, over a thousand switches) | Both |
+
+**v0.4: how the M2 build implements this table** (names as in `missions/*.yaml`; architecture 5.9.6 has the details):
+
+| # | Implemented as |
+|---|---|
+| 1 | `includes:` pinned by sha256; the included lines are preset for rules 3 and 4 and counted in S5 |
+| 2 | `assets: {demo.card: sha}`; the first card is served as `readCard` in the compiled mission |
+| 3 | Predicates `punchCount: {gte\|eq}` and `punchField: {index, eq\|startsWith}` (true once any card of the session matches) |
+| 4 | Caption triggers `{derived: apex\|landed}`, plus `{punchCount: {gte}}`, `{acc: {acc, eq}}` and `{init: rdff}` |
+| 5 | `selftest: {read, inits, until, cards: [{index, values}]}` |
+| 6 | Switch catalog `pr.N` = `P`/`0`, `pr.N-M` = `C`/`0`; the other M2 switches are shape-checked |
+| 7 | `run.buttons: [read, init]` with `run.initAfter: card-read`; READ sends the withheld lines bound to it, in file order |
+| 8 | One speed means no speed control in the UI |
+| 9 | `run.cards: {window, value, hop, style: stack\|film, keep, bars: {per, upTo}}` and `run.plot: {x, y}` |
+| 10 | `content.read`, `content.result.live: {waiting, pending, done, doneAt}`, `content.run.cards`, `content.run.plot`, `content.run.done`, `minutes` |
+| 11 | `run.freezeAt: landed` sends `s cy.op 1a` (no new whitelist entry) |
+| 12 | `requires: [0002-ft-repeat-default]`, checked against the core's `.provenance.json` |
+| 13 | S5 draws cables in waves and clicks dials in blocks for large presets (at most about 8 s) |
 
 #### History claims for the Fact-Checker and Doug Crawford (every [FC] in 8.2 and 8.3)
 
@@ -1550,12 +1576,12 @@ The M1 schema and `squares.yaml` cover steps, withheld, run, checkpoints and the
 
 1. **Does `trajdemo.e` ever reach its other parts?** This is spike S2. At the pin, I found that INIT starts the trajectory, and every INIT restarts it (8.3.1). If Stuart's repository has a newer `trajdemo.e` that fixes the routing, the pin bump could restore the six-part mission (Plan B, 8.3.8).
 2. **Units of the trajectory.** My reading is one card per second, units of about 100 feet, flight about 35 s and 39,000 ft [I]. Needs Stuart or the Fact-Checker before any unit appears on screen.
-3. **Primes: answer at 100 cards or all 407?** The punch pace makes all 407 cost about 4:10 at Full. The design gives the result at 100 cards (about 1 minute) and lets the live count carry on. Nick may prefer the full run, or a result at 50 cards.
-4. **Stopping at landing.** Is `s cy.op 1p` enough to freeze the machine? If not, the UI hides later cards.
+3. **Primes: answer at 100 cards or all 407?** *Decided (Nick, v0.4):* the answer checkpoint is card 100 (547); the result screen stays live and keeps counting to 407.
+4. **Stopping at landing.** *Resolved (v0.4):* `s cy.op 1a` freezes it (S2); the UI also ignores any card after the landing.
 5. **Pi 5 timings** for both missions (hop time, punch pace, load). Mine are from a Mac.
-6. **The attract mode (7.1)** assumed "trajdemo parts" with a live caption. The only live thing it can honestly show is the trajectory loop, which restarts itself forever, so attract can be READ, INIT and let it fly again and again. Needs a decision and a re-check of the caption copy.
+6. **The attract mode (7.1)** assumed "trajdemo parts" with a live caption. *Fixed in v0.4:* attract is READ, INIT and the trajectory flying again and again; the caption is "Live: ENIAC is working out a shell's path. Hop {n}" from the latest real card (7.1). The caption copy still goes through the Fact-Checker with the rest.
 7. **Printer switch catalog** for `pr.N` (P or 0) is from `prctl`; confirm there is no "C" meaning for plain `pr.N`.
-8. **Zero first card.** Depending on the READ to INIT gap, the trajectory sometimes starts with an all-zero card (shell at the gun). Is that wanted, or should the UI skip it?
+8. **Zero first card.** *Resolved (v0.4, spike S2):* it comes from load-time stepper state, not the gap; `b c` before `b r` prevents it (10 of 10 runs), so READ sends both.
 9. **Who approves the "six women programmers" sentence and any names** (UX Q10).
 
 ---
@@ -1651,7 +1677,7 @@ Lamp states are smoothed (80 ms decay) so no element flashes more than 3 times p
 - [ ] The M2 open questions in 8.5.1 (S2 and the trajdemo routing, units, the Primes answer checkpoint, stopping at landing, Pi 5 timings).
 - [ ] Fact-Checker review of every [FC] line; Doug's approval of the About wording (Q10 on crediting the ENIAC programmers).
 - [ ] Mounting height and whether the production screen matches 1920x1080 (Q2).
-- [ ] Should the attract view show trajdemo (the current exhibit) or rotate missions? This spec assumed trajdemo parts with a true live caption. At the pin only the trajectory loop is reachable (F9), so attract can only show that loop, with its caption.
+- [x] Should the attract view show trajdemo (the current exhibit) or rotate missions? *v0.4:* trajdemo's trajectory loop, with the caption fixed in 7.1 (the only part reachable at the pin, F9).
 - [ ] Usability test plan (NFR-09): include one gloved tester and one child aged 8 to 12 on the Squares flow; watch where they pause at the jack windows.
 
 ## 14. Revision history
@@ -1661,3 +1687,4 @@ Lamp states are smoothed (80 ms decay) so no element flashes more than 3 times p
 | 0.1 | 2026-09-30 | ux-design agent | Initial draft: screens, zoom model, guided help, visual language, Squares script, Primes and Trajectory outlines |
 | 0.2 | 2026-10-01 | ux-design agent | Primes (8.2) and Trajectory (8.3) outlines replaced by complete scripts, mapped to `missions/*.yaml`; picker for three missions (8.4); loader and bridge needs, Fact-Checker list and open questions (8.5); flags F8 (resolved), F9, F10; the picker counts in 7.2 |
 | 0.3 | 2026-10-01 | ux-design agent | Primes reframed around sharing evenly / equal groups (Nick, 2026-10-01): briefing, plan, steps 1 to 4, S5, run captions, result and both canvases; "watcher" kept only as an engineering nickname in 8.2.1 and 8.2.2 |
+| 0.4 | 2026-10-01 | software-developer agent (M2 build), recording Nick's decisions | Trajectory after spike S2 (box at the top of 8.3): READ sends `b c` then `b r`; one INIT; one 34-card flight; frozen on the landing card with `s cy.op 1a`; Full only; S2 timings replace the [A] ones; no units on screen. Primes: the answer is card 100 (547) and S7 stays live to 407 (8.5.1 Q3); Slow stays `rate 100`. Squares Slow is `cy.rate 13` (S4) and "Keep pressing" waits 0.5 s at Slow (8.1.4). Attract caption fixed to the trajectory loop (7.1, 8.5.1 Q6). Zero first card and stopping at landing resolved (8.5.1 Q4, Q8) |

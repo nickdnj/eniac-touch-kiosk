@@ -1,10 +1,13 @@
 // DEV/TEST ONLY: a mock of eniac-bridge's websocket + mission API, driven by
 // the message schema in docs/architecture.md 5.4-5.6. It simulates sq.e
 // (one square per INIT: program 6 twice, then program 5 via trunk 1-3, then
-// program 7) so the UI is runnable in a browser before the Go bridge (#8,
-// #10, #11) exists. It is NOT the simulator and is never shipped: the
-// production bundle is built from src/web/app only and is checked for
-// fixture markers (tests/web/bundle.test.ts).
+// program 7) and, for M2, sieve.e's outline (odd numbers in Acc 19, a
+// checker's program 12 lamp when its group size fits, a punched card for
+// every prime) so the UI is runnable in a browser without the Go bridge. It
+// is NOT the simulator and is never shipped: the production bundle is built
+// from src/web/app only and is checked for fixture markers
+// (tests/web/bundle.test.ts). The real-bridge suite (e2e-real) checks the
+// real machine.
 
 import { randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -12,12 +15,22 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
-export const SQUARES = JSON.parse(readFileSync(join(here, "missions", "squares.json"), "utf8"));
-delete SQUARES._comment;
+const load = (id) => {
+  const m = JSON.parse(readFileSync(join(here, "missions", `${id}.json`), "utf8"));
+  delete m._comment;
+  return m;
+};
+export const SQUARES = load("squares");
+export const PRIMES = load("primes");
+export const MISSIONS = { squares: SQUARES, primes: PRIMES };
+/** The mission speed tables (rates), as in missions/*.yaml. */
+export const RATES = { squares: { slow: 13, full: 0 }, primes: { slow: 100, full: 0 }, trajectory: { full: 0 } };
+/** The 14 group checkers of sieve.e: Acc n watches the nth odd prime. */
+export const CHECKERS = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
 
 const WL = new Set(["start_mission", "apply_step", "skip_setup", "button", "set_speed", "end_session", "metric", "ping"]);
 // UI metric whitelist (architecture 8.3, protocol.gen.ts Metric.ev); bridge-owned names are NOT_ALLOWED.
-const METRICS = new Set(["wrong_tap", "step_done", "speed", "skip_to_answer", "setup_skipped", "idle_reset"]);
+const METRICS = new Set(["wrong_tap", "step_done", "speed", "skip_to_answer", "setup_skipped", "idle_reset", "mission_picked", "picker_next_used"]);
 
 export function defaultConfig() {
   return {
@@ -57,6 +70,9 @@ export class MockBridge {
     this.session = null;
     this.seq = 0; // monotonic for the life of the bridge (architecture 5.4 v0.2)
     this.speedMs = { slow: 200, full: 8 };
+    // Primes: ms per odd number tested (the real core: about 1.85 s at Slow,
+    // a card every 0.6 s at Full; the mock is faster so tests stay short).
+    this.sieveMs = { slow: 120, full: 25 };
     this.missionsAvailable = true;
     this.refuseUntil = 0;
     this.tick = setInterval(() => this.onTick(), 33);
@@ -98,23 +114,23 @@ export class MockBridge {
       session: this.sessionInfo(),
       seq: this.seq,
       machine: s && s.state !== "starting" ? s.machine : null,
-      cards: [],
+      cards: s ? s.cards.slice(-20) : [],
       run: s ? { state: s.run, inits: s.inits } : { state: "idle", inits: 0 },
     };
   }
 
   missionsList() {
-    return [
-      {
-        id: "squares",
-        title: SQUARES.title,
-        order: 1,
-        summary: SQUARES.summary,
-        buttons: SQUARES.run.buttons,
-        available: this.missionsAvailable,
-        ...(this.missionsAvailable ? {} : { reason: "mock: disabled" }),
-      },
-    ];
+    return Object.values(MISSIONS).map((m) => ({
+      id: m.id,
+      title: m.title,
+      order: m.order,
+      summary: m.summary,
+      ...(m.minutes ? { minutes: m.minutes } : {}),
+      steps: m.steps.length,
+      buttons: m.run.buttons,
+      available: this.missionsAvailable,
+      ...(this.missionsAvailable ? {} : { reason: "mock: disabled" }),
+    }));
   }
 
   // ------------------------------------------------------------- connection
@@ -145,8 +161,8 @@ export class MockBridge {
         return;
       case "start_mission":
         if (this.health.core !== "up") return err("BAD_STATE", "core down");
-        if (m.mission !== "squares" || !this.missionsAvailable) return err("NOT_ALLOWED", "unknown mission");
-        return this.startSession(m.mode || "visitor");
+        if (!MISSIONS[m.mission] || !this.missionsAvailable) return err("NOT_ALLOWED", "unknown mission");
+        return this.startSession(m.mode || "visitor", MISSIONS[m.mission]);
       case "end_session":
         return this.endSession();
       case "apply_step": {
@@ -184,24 +200,26 @@ export class MockBridge {
         if (!s || !["armed", "running", "result"].includes(s.state)) return err("BAD_STATE", "not armed");
         if (!s.mission.run.speeds.includes(m.speed)) return err("NOT_ALLOWED", "speed");
         s.speed = m.speed;
-        s.stdin.push(`s cy.rate ${m.speed === "full" ? 0 : 100}`);
+        s.stdin.push(`s cy.rate ${RATES[s.mission.id]?.[m.speed] ?? 0}`);
         return;
       case "button": {
         if (!s || !["armed", "running", "result"].includes(s.state)) return err("BAD_STATE", "not armed");
         if (!s.mission.run.buttons.includes(m.b)) return err("NOT_ALLOWED", "button");
         if (s.run !== "idle") return err("BUSY", "machine busy");
+        if (m.b === "init" && s.mission.run.initOnce && s.inits > 0) return err("NOT_ALLOWED", "INIT was already pressed");
         s.stdin.push(`b ${m.b[0]}`);
         if (s.state === "armed") {
           s.state = "running";
           this.sendSession();
         }
+        if (s.mission.id === "primes") return this.runSieve(s);
         return m.b === "init" ? this.runInit(s) : this.runClear(s);
       }
     }
   }
 
   // ------------------------------------------------------------- sessions
-  startSession(mode) {
+  startSession(mode, mission = SQUARES) {
     // Like the real bridge: the previous session is still reported (it was
     // current when start_mission arrived), then visibly ended, before the
     // new one starts.
@@ -211,7 +229,7 @@ export class MockBridge {
     }
     const s = {
       id: randomBytes(4).toString("hex"),
-      mission: SQUARES,
+      mission,
       mode,
       state: "starting",
       applied: [],
@@ -219,10 +237,11 @@ export class MockBridge {
       pending: {},
       run: "idle",
       inits: 0,
-      speed: SQUARES.run.defaultSpeed,
+      speed: mission.run.defaultSpeed,
       fired: new Set(),
       stdin: [],
       gen: 0,
+      cards: [],
     };
     this.session = s;
     this.sendSession();
@@ -309,6 +328,63 @@ export class MockBridge {
     for (const [when, fn] of steps) this.later(() => this.session === s && s.gen === gen && fn(), when);
   }
 
+  /** sieve.e's outline: test each odd number, checkers call "fits", primes are punched. */
+  runSieve(s) {
+    const gen = s.gen;
+    s.run = "busy";
+    s.inits++;
+    this.broadcast({ t: "run", state: "busy", inits: s.inits });
+    let x = 1;
+    const step = () => {
+      if (this.session !== s || s.gen !== gen || this.health.core !== "up") return;
+      // Clear the previous number's checker lamps.
+      const off = {};
+      CHECKERS.forEach((_, i) => (off[String(i + 1)] = { prog: setBit(s.machine.acc[String(i + 1)].prog, 11, "0") }));
+      this.patch({ acc: off });
+      x += 2;
+      if (x > 2801) {
+        s.run = "idle";
+        this.broadcast({ t: "run", state: "idle", inits: s.inits, settled: { 19: 2801, 1: 0 } });
+        return;
+      }
+      this.setAcc("19", x);
+      const on = {};
+      let fit = false;
+      CHECKERS.forEach((p, i) => {
+        if (x !== p && x % p === 0) {
+          fit = true;
+          on[String(i + 1)] = { prog: setBit(s.machine.acc[String(i + 1)].prog, 11, "1") };
+        }
+      });
+      if (fit) this.patch({ acc: on });
+      else this.punchCard(s, x);
+      this.later(step, this.sieveMs[s.speed] ?? 100);
+    };
+    this.later(step, this.sieveMs[s.speed] ?? 100);
+  }
+
+  punchCard(s, value) {
+    const n = s.cards.length + 1;
+    const text = " ".repeat(60) + String(value).padStart(10, "0") + " ".repeat(10);
+    const fields = [];
+    for (let i = 0; i < 80; i += 5) fields.push(text.slice(i, i + 5));
+    const card = { n, text, fields };
+    s.cards.push(card);
+    this.broadcast({ t: "punch", ...card });
+    const fire = (id) => {
+      if (s.fired.has(id)) return;
+      s.fired.add(id);
+      this.broadcast({ t: "checkpoint", id });
+      if (id === s.mission.result && s.state === "running") {
+        s.state = "result";
+        this.sendSession();
+      }
+    };
+    if (n >= 1) fire("first-card");
+    if (n >= 100) fire("hundred");
+    if (fields[13] === "02801") fire("last");
+  }
+
   runClear(s) {
     const T = this.speedMs[s.speed] ?? 200;
     const gen = s.gen;
@@ -382,6 +458,7 @@ export class MockBridge {
     this.missionsAvailable = true;
     this.refuseUntil = 0;
     this.speedMs = { slow: 200, full: 8 };
+    this.sieveMs = { slow: 120, full: 25 };
   }
 }
 

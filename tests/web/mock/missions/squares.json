@@ -4,6 +4,7 @@
   "title": "Squares",
   "order": 1,
   "summary": "Make ENIAC count in squares.",
+  "minutes": 3,
   "ordered": true,
   "config": [
     { "kind": "plug", "from": "c.o", "to": "1", "cable": "data", "owner": "step:const-to-trunk1" },

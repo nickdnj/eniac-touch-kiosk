@@ -1,11 +1,13 @@
-// Interim S1 start, S2 mission picker and S0 waking screens (issue #22;
-// UX 7.1, 7.2, 3.1). Live attract is M2. No machine is drawn on any of
-// these: there is nothing to show until a session exists (no demo fallback).
+// Interim S1 start, S2 mission picker (UX 8.4: three missions, suggested
+// order, START HERE / UP NEXT / Done) and S0 waking screens (issue #22;
+// UX 7.1, 3.1). Live attract is still to come. No machine is drawn on any
+// of these: there is nothing to show until a session exists (no demo
+// fallback).
 
 import type { App, Screen } from "../app.ts";
 import type { MissionSummary } from "../protocol.ts";
 import { fetchMission } from "../net/api.ts";
-import { h } from "../ui/dom.ts";
+import { h, svgFromString } from "../ui/dom.ts";
 import { onTap } from "../ui/tap.ts";
 import { COPY } from "../copy.ts";
 
@@ -35,35 +37,78 @@ export function pickerScreen(app: App): Screen {
   const armed = () => app.now() >= armedAt;
   const list = (app.missions ?? []).filter((m) => m.available).sort((a, b) => a.order - b.order);
   const cards = h("div", { class: "mission-cards" });
-  list.forEach((m, i) => cards.append(missionCard(app, m, i, armed)));
+  // UX 8.4: START HERE on card 1 until a mission is done this visit; then
+  // UP NEXT on the lowest-numbered card not done; no chip when all are done.
+  const nextUp = list.find((m) => !app.done.has(m.id))?.id ?? null;
+  const anyDone = list.some((m) => app.done.has(m.id));
+  list.forEach((m, i) => {
+    if (i > 0) cards.append(h("div", { class: "mc-then", "aria-hidden": "true" }, h("span", { class: "chev" }, "›"), h("span", {}, COPY.picker.then)));
+    cards.append(missionCard(app, m, armed, m.id === nextUp ? (anyDone ? COPY.picker.upNext : COPY.picker.startHere) : null));
+  });
   if (!list.length) cards.append(h("div", { class: "waiting" }, h("span", { class: "spinner" }), COPY.waitingMachine));
   const el = h(
     "div",
     { class: "screen mission-picker" },
     h("div", { class: "header" }, h("span", { class: "screen-title" }, COPY.picker.title)),
     cards,
+    list.length > 1 ? h("div", { class: "mc-order" }, h("span", {}, COPY.picker.order), h("span", {}, COPY.picker.orderLine(list.map((m) => m.order)))) : null,
   );
   return { el, idle: "setup" };
 }
 
-function missionCard(app: App, m: MissionSummary, i: number, armed: () => boolean): HTMLElement {
-  const steps = h("div", { class: "mc-meta" });
-  // Step count comes from the compiled mission (not in the summary).
-  fetchMission(m.id)
-    .then((c) => (steps.textContent = COPY.picker.wire(c.steps.length)))
-    .catch(() => {});
+/**
+ * Static card art (UX 8.4): the tile floor from the missions, drawn in the
+ * lamp colour on the panel colour with a cream outline. Not animated.
+ */
+export function pickerArt(id: string): string {
+  const W = 480, H = 200;
+  const tile = (x: number, y: number, s = 30) => `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="4" fill="#FFB000" stroke="#F4EFE3" stroke-width="2"/>`;
+  let b = `<rect x="0" y="0" width="${W}" height="${H}" rx="12" fill="#1B1D21"/>`;
+  if (id === "squares") {
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) b += tile(186 + c * 38, 46 + r * 38);
+  } else if (id === "primes") {
+    // 12 as a 3 x 4 block (it shares evenly) beside 7 in a row with a star (prime).
+    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) b += tile(44 + c * 34, 50 + r * 34, 28);
+    for (let c = 0; c < 7; c++) b += tile(212 + c * 34, 118, 28);
+    b += `<path d="M427 64l8 16 18 3-13 12 3 18-16-9-16 9 3-18-13-12 18-3z" fill="#F4EFE3"/>`;
+  } else if (id === "trajectory") {
+    b += `<path d="M30 176H450" stroke="#9AA0A8" stroke-width="2" stroke-dasharray="6 6"/>`;
+    b += `<g transform="rotate(-35 54 166)"><rect x="40" y="156" width="54" height="16" rx="4" fill="#F4EFE3"/></g><circle cx="52" cy="172" r="12" fill="#1B1D21" stroke="#F4EFE3" stroke-width="3"/>`;
+    for (let i = 0; i < 8; i++) {
+      const t = (i + 1) / 9;
+      const x = 70 + t * 360, y = 176 - 4 * 130 * t * (1 - t) - 4;
+      b += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9" fill="#FFB000" stroke="#F4EFE3" stroke-width="2"/>`;
+    }
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="mc-art" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true">${b}</svg>`;
+}
+
+function missionCard(app: App, m: MissionSummary, armed: () => boolean, chip: string | null): HTMLElement {
+  const done = app.done.has(m.id);
+  const reads = (m.buttons ?? []).includes("read");
+  const steps = h("div", { class: "mc-meta mc-steps" });
+  if (typeof m.steps === "number" && m.steps > 0) steps.textContent = COPY.picker.wire(m.steps, reads);
+  else
+    fetchMission(m.id)
+      .then((c) => (steps.textContent = COPY.picker.wire(c.steps.length, reads)))
+      .catch(() => {});
   const start = h("div", { class: "btn primary mc-start", role: "button" }, COPY.picker.start);
   const card = h(
     "div",
-    { class: "mission-card", "data-mission": m.id },
-    h("div", { class: "mc-top" }, h("span", { class: "mc-badge" }, String(m.order)), i === 0 ? h("span", { class: "mc-here" }, COPY.picker.startHere) : null),
+    { class: `mission-card${done ? " done" : ""}`, "data-mission": m.id },
+    svgFromString(pickerArt(m.id)) as unknown as HTMLElement,
+    h("span", { class: "mc-badge" }, String(m.order)),
+    chip ? h("span", { class: "mc-here" }, h("span", { class: "mc-finger", "aria-hidden": "true" }, "☞"), chip) : null,
+    done ? h("span", { class: "mc-done" }, h("span", { class: "mc-check", "aria-hidden": "true" }, "✓"), COPY.picker.done) : null,
     h("div", { class: "mc-title" }, m.title),
+    m.minutes ? h("div", { class: "mc-meta mc-min" }, COPY.picker.about(m.minutes)) : null,
     steps,
     h("div", { class: "mc-teaser" }, m.summary),
     start,
   );
   const go = () => {
     if (!armed()) return;
+    app.metric({ t: "metric", ev: "mission_picked", mission: m.id, n: m.order });
     void app.startMission(m.id, "briefing");
   };
   onTap(card, go);

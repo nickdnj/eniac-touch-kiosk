@@ -10,11 +10,12 @@ import { COPY } from "../copy.ts";
 
 /**
  * Pacing between presses, by speed (ms after the machine goes idle).
- * UX: about 2 squares/s at Full, about 1 per 3 s at Slow. FR-17 says Slow
- * should show 1-3 squares per second; these conflict and are tuned after
- * spike #33 on the Pi.
+ * Full: about 2 squares/s. Slow is `cy.rate 13` since spike S4 (decision
+ * 2026-10-01): one press already takes about 13 s with every addition
+ * visible for about 1 s, so the loop waits only half a second before the
+ * next press (about one square every 13-14 s at Slow).
  */
-export const GAP_MS: Record<string, number> = { slow: 1200, full: 300, skip: 30 };
+export const GAP_MS: Record<string, number> = { slow: 500, full: 300, skip: 30 };
 
 export function autopressControls(ctx: RunContext): HTMLElement[] {
   const { app } = ctx;
@@ -23,7 +24,8 @@ export function autopressControls(ctx: RunContext): HTMLElement[] {
   let mode: "keep" | "skip" | null = null;
 
   const extras = mission.content.run.extras;
-  const keep = h("div", { class: "btn keep-btn", role: "button" }, extras.keepPressing);
+  const keepLabel = extras.keepPressing ?? "";
+  const keep = h("div", { class: "btn keep-btn", role: "button" }, keepLabel);
   const skip = h("div", { class: "btn skip-answer-btn", role: "button" }, extras.skipToAnswer);
 
   const auto = new AutoPress({
@@ -38,7 +40,7 @@ export function autopressControls(ctx: RunContext): HTMLElement[] {
     onStop: (reason: StopReason) => {
       const was = mode;
       mode = null;
-      keep.textContent = extras.keepPressing;
+      keep.textContent = keepLabel;
       keep.classList.remove("running");
       if (was === "skip" && reason === "answer") ctx.goResult();
     },
