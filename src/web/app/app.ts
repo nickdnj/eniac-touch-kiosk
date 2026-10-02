@@ -19,6 +19,7 @@ import { h, clear } from "./ui/dom.ts";
 import { COPY } from "./copy.ts";
 import { CardLog } from "./run/cards.ts";
 import { Visit } from "./state/visit.ts";
+import { AttractController, AttractStore } from "./attract/store.ts";
 
 export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor";
 export interface View {
@@ -82,6 +83,10 @@ export class App {
   get done(): Set<string> {
     return this.visit.done;
   }
+  /** Live attract (UX 14.2): the flight's status, cards and caption; S1 draws from it. */
+  readonly attract = new AttractStore();
+  /** Asks for attract while home (S1) and hands off on the visitor's touch. */
+  readonly attractCtl: AttractController;
   errorCode: string | null = null;
   /** A mission the bridge listed failed to load (E-MISSION until the next hello). */
   missionBroken = false;
@@ -132,6 +137,7 @@ export class App {
       },
       onReload: () => location.reload(),
     });
+    this.attractCtl = new AttractController({ send: (m) => this.send(m), store: this.attract, fetchMission });
   }
 
   // ------------------------------------------------------------------ boot
@@ -186,8 +192,11 @@ export class App {
   }
 
   private onServer(m: ServerMsg): void {
+    this.attractCtl.onMessage(m, this.now());
+    if (m.t === "attract" || m.t === "state") this.root.dataset.attract = this.attract.phase;
     switch (m.t) {
       case "hello":
+        this.attractCtl.onHello();
         this.helloSeen = true;
         this.missionBroken = false;
         this.config = m.config;
@@ -320,7 +329,8 @@ export class App {
     const s = this.mirror.session;
     // The bridge may still report the previous visitor's session (running,
     // then ending) after start_mission: only a NEW session id counts.
-    if (this.view.name === "waking" && s && s.state !== "starting" && s.id !== this.priorSessionId) {
+    // An attract flight's session (mode attract) is never the visitor's.
+    if (this.view.name === "waking" && s && s.state !== "starting" && s.id !== this.priorSessionId && s.mode !== "attract") {
       this.expectingSession = false;
       this.show({ name: "mission", entry: this.view.entry ?? "briefing" });
       return;
@@ -386,6 +396,11 @@ export class App {
       if (this.view.name !== "waking") this.show({ name: "waking", entry: view.entry });
       return;
     }
+    // Home is attract (FR-30): S1 runs it; leaving S1 for the visitor flow is
+    // the hand-off (FR-31: the bridge kills the attract core). The error
+    // state leaves it running: the bridge resumes it after recovery (FR-51).
+    if (view.name === "start") this.attractCtl.enter();
+    else if (this.view.name === "start" && view.name !== "error" && view.name !== "boot") this.attractCtl.leave("touch");
     this.screen?.unmount?.();
     clear(this.screenHost);
     // Attract is between visitors: the next one starts at mission 1 (FR-33).

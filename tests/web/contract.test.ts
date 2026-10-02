@@ -131,6 +131,8 @@ test("mock messages have the fixtures' shapes", { skip: !haveFixtures && "no fix
   const ws = new FakeWs();
   b.accept(ws);
   ws.client({ t: "ping", id: 1 });
+  ws.client({ t: "attract_start", id: 20 });
+  ws.client({ t: "attract_stop", id: 21, reason: "touch" });
   ws.client({ t: "start_mission", id: 2, mission: "squares", mode: "visitor" });
   await sleep(450);
   ws.client({ t: "apply_step", id: 3, step: "j1-one", assisted: false });
@@ -160,7 +162,8 @@ test("mock messages have the fixtures' shapes", { skip: !haveFixtures && "no fix
     const richer = !cur || (m.t === "state" && m.session && !cur.session) || (m.t === "run" && m.settled && !cur.settled) || (m.t === "session" && m.applied?.length > (cur.applied?.length ?? 0));
     if (richer) byType.set(m.t, m);
   }
-  const optional = new Set(["re", "session.t", "code", "detail", "attempt", "of", "final"]);
+  // attract: session/holdMs/landing only exist mid-flight and on landing (the mock never flies).
+  const optional = new Set(["re", "session.t", "code", "detail", "attempt", "of", "final", "attract.session", "attract.holdMs", "attract.landing", "state.attract"]);
   const diffs: string[] = [];
   for (const f of readdirSync(FIXTURES).filter((x) => x.endsWith(".json"))) {
     const want = JSON.parse(readFileSync(join(FIXTURES, f), "utf8"));
