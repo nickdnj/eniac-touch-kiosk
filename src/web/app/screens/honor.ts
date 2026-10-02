@@ -75,15 +75,14 @@ function pageExhibit(): HTMLElement {
       h("div", { class: "src" }, h("span", { class: "src-badge", "aria-hidden": "true" }, String(i + 1)), h("div", {}, h("div", { class: "src-what" }, s.what), h("div", { class: "src-from" }, s.from))),
     ),
   );
-  const left = h("div", { class: "hp-left" }, h("p", { class: "lead" }, e.lead), sources);
+  const left = h("div", { class: "hp-left" }, h("p", { class: "lead" }, e.lead), sources, h("p", { class: "body small type-credit" }, e.type));
   const right = h(
     "div",
     { class: "hp-right museum-card" },
     h("div", { class: "src-title" }, e.museumTitle),
     h("p", { class: "body" }, e.museum),
     qrBlock(e.qr, 150, "museum-qr"),
-    h("p", { class: "body" }, e.madeBy),
-    h("p", { class: "body small" }, e.type),
+    h("p", { class: "body made-by" }, h("strong", {}, e.madeBy), h("br", {}), h("span", { class: "small" }, e.madeByRole)),
     h("p", { class: "body welcome" }, e.welcome),
   );
   return h("div", { class: "honor-page page-exhibit" }, left, right);
