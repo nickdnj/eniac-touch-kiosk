@@ -10,6 +10,9 @@ import { fetchMission } from "../net/api.ts";
 import { h, svgFromString } from "../ui/dom.ts";
 import { onTap } from "../ui/tap.ts";
 import { COPY } from "../copy.ts";
+import { button } from "../ui/overlays.ts";
+import { HONOR } from "../content/honor.ts";
+import { openHonor } from "./honor.ts";
 
 /** Taps landing on S2 this soon after S1 are the same visitor's double tap (FR-31). */
 export const PICKER_ARM_MS = 600;
@@ -52,8 +55,16 @@ export function pickerScreen(app: App): Screen {
     h("div", { class: "header" }, h("span", { class: "screen-title" }, COPY.picker.title)),
     cards,
     list.length > 1 ? h("div", { class: "mc-order" }, h("span", {}, COPY.picker.order), h("span", {}, COPY.picker.orderLine(list.map((m) => m.order)))) : null,
+    honorButton(app, armed),
   );
   return { el, idle: "setup" };
+}
+
+/** UX 14.9: "About and honor roll", 480 x 96 at x912 y848 (S11; Back returns here). */
+function honorButton(app: App, armed: () => boolean): HTMLElement {
+  return button(HONOR.pickerButton, "primary light outline picker-honor", () => {
+    if (armed()) openHonor(app, 1, { name: "picker" });
+  });
 }
 
 /**

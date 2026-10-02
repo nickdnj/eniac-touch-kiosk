@@ -1,0 +1,216 @@
+/* S11 About and honor roll (UX 14.6) and the engraved-plate components
+   (ui/plates.ts) shared with attract (14.2.1) and the finale (14.5).
+   Plates: the --plate token of UX 12, #0E0F11 with #D9D0B0 ink, a bevel,
+   an engraved double rule and four rivets, like the machine's own name
+   plates. No photographs anywhere (14.6.3). */
+
+:root {
+  --plate: #0E0F11;
+  --plate-ink: #D9D0B0;
+  --plate-rule: #3b3a33;
+  --plate-sub: #B9B095;
+}
+
+/* ---------------------------------------------------------------- plates */
+.plate {
+  position: relative;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #17181b 0%, var(--plate) 40%, #0a0b0c 100%);
+  color: var(--plate-ink);
+  border-radius: 10px;
+  border: 2px solid #2a2b2f;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.6),
+    0 6px 18px rgba(0, 0, 0, 0.45);
+}
+/* The engraved double rule, inset from the edge. */
+.plate::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border: 1px solid var(--plate-rule);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 3px var(--plate), inset 0 0 0 4px rgba(217, 208, 176, 0.12);
+  pointer-events: none;
+}
+.rivet {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #8d8a80 0%, #4a4943 45%, #1c1c1c 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 1px rgba(0, 0, 0, 0.6);
+}
+.rivet.tl { left: 18px; top: 18px; }
+.rivet.tr { right: 18px; top: 18px; }
+.rivet.bl { left: 18px; bottom: 18px; }
+.rivet.br { right: 18px; bottom: 18px; }
+.plate-kicker {
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--plate-sub);
+}
+.plate-name {
+  font-weight: 700;
+  color: var(--plate-ink);
+  /* engraved: a dark cut above, a light lip below */
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.10);
+}
+.plate-sub { color: var(--plate-sub); }
+
+/* The Stuart plate (FR-43): never smaller than 56 px for the name. */
+.stuart-plate { display: flex; flex-direction: column; justify-content: center; }
+.stuart-plate.size-attract { width: 512px; height: 156px; padding: 18px 44px; }
+.stuart-plate.size-attract .plate-name { font-size: 56px; line-height: 62px; }
+.stuart-plate.size-attract .plate-sub { font-size: 28px; line-height: 34px; }
+.stuart-plate.size-beat { width: 1100px; padding: 36px 72px; }
+.stuart-plate.size-beat .plate-name { font-size: 72px; line-height: 84px; letter-spacing: 4px; text-transform: uppercase; }
+.stuart-plate.size-beat .plate-sub { font-size: 36px; line-height: 44px; }
+.stuart-plate.size-page { width: 1100px; height: 248px; padding: 28px 72px; }
+.stuart-plate.size-page .plate-kicker { margin-bottom: 4px; }
+.stuart-plate.size-page .plate-name { font-size: 96px; line-height: 108px; letter-spacing: 6px; text-transform: uppercase; }
+.stuart-plate.size-page .plate-sub { font-size: 36px; line-height: 44px; }
+
+/* Person and institution plates (S11 pages 2 and 3, finale F4). */
+.person-plate { width: 864px; height: 140px; padding: 18px 56px; display: flex; flex-direction: column; justify-content: center; }
+.person-plate .plate-name { font-size: 44px; line-height: 50px; white-space: nowrap; }
+.person-plate .plate-later { font-size: 26px; line-height: 32px; color: var(--plate-sub); font-style: italic; }
+.person-plate .plate-line { font-size: 24px; line-height: 30px; color: #C9C2A8; }
+.person-plate.builder .plate-name { font-size: 40px; line-height: 48px; }
+.person-plate.builder .plate-line { font-size: 26px; line-height: 34px; margin-top: 6px; }
+.person-plate.institution .plate-name { font-size: 36px; line-height: 44px; }
+.person-plate.institution .plate-later { font-style: normal; font-weight: 700; }
+
+/* The rotating attract plate (14.2.1): 512 x 156, 8 s, 400 ms cross-fade. */
+.honor-rotator { width: 512px; height: 156px; padding: 18px 40px; overflow: hidden; }
+.honor-rotator .rot-slide { position: absolute; inset: 18px 40px; display: flex; flex-direction: column; justify-content: center; opacity: 0; transition: opacity 400ms ease-in-out; }
+.honor-rotator.cut .rot-slide { transition: none; }
+.honor-rotator .rot-slide.on { opacity: 1; }
+.rot-names { display: flex; flex-wrap: wrap; gap: 0 18px; font-size: 28px; line-height: 34px; font-weight: 700; color: var(--plate-ink); }
+.rot-names.n6 { font-size: 24px; line-height: 30px; gap: 0 14px; }
+
+/* ---------------------------------------------------------------- QR blocks */
+.qr-block { display: flex; align-items: center; gap: 24px; }
+.qr-tile { background: #fff; border-radius: 10px; padding: 6px; line-height: 0; flex: none; }
+.qr-tile svg { display: block; }
+.qr-label { font-size: 28px; line-height: 36px; font-weight: 700; }
+.qr-print { font-size: 24px; line-height: 32px; font-family: var(--font-mono); overflow-wrap: anywhere; }
+
+/* ---------------------------------------------------------------- S11 frame */
+.honor { background: radial-gradient(ellipse at 30% 30%, #16181c 0%, var(--bg-stage) 70%); }
+.honor .header .title { font-size: 44px; }
+.honor-tabs { position: absolute; left: 80px; top: 112px; width: 1760px; height: 96px; display: flex; gap: 16px; }
+.honor-tab {
+  width: 428px;
+  min-height: 96px;
+  height: 96px;
+  padding: 0 16px;
+  background: transparent;
+  color: var(--card);
+  border-color: #4a4e57;
+  font-size: 30px;
+}
+.honor-tab.on { background: var(--card); color: var(--ink); border-color: var(--card); }
+.honor-host { position: absolute; left: 80px; top: 232px; width: 1760px; height: 668px; }
+.honor-page { position: absolute; inset: 0; animation: fade-in 250ms ease-out; }
+.honor-page p { margin: 0; }
+.honor-page .lead { font-size: 32px; line-height: 46px; color: var(--card); }
+.honor-page .lead.strong { font-weight: 700; color: var(--jack-block); }
+.honor-page .body { font-size: 28px; line-height: 40px; color: #C9C2A8; }
+.honor-page .body.muted { color: var(--muted); }
+.honor-page .body.small { font-size: 24px; line-height: 32px; }
+.honor-actions { position: absolute; left: 80px; top: 916px; width: 1760px; height: 96px; display: flex; justify-content: space-between; }
+.honor-back { width: 320px; }
+.honor-next { min-width: 480px; }
+.honor-next.hidden { visibility: hidden; }
+
+/* Page 1: Brian L. Stuart. */
+.page-stuart .hp-left { position: absolute; left: 0; top: 0; width: 1100px; display: flex; flex-direction: column; gap: 22px; }
+.page-stuart .hp-left .stuart-plate { margin-bottom: 6px; }
+.page-stuart .qr-card {
+  position: absolute;
+  left: 1160px;
+  top: 0;
+  width: 600px;
+  height: 668px;
+  background: var(--card);
+  color: var(--ink);
+  border-radius: var(--radius-card);
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.qr-card .qr-block .qr-tile { padding: 0; }
+.qr-card .qr-block.main { align-items: flex-start; gap: 20px; }
+.qr-card .qr-block.main .qr-text { flex: 1; min-width: 0; padding-top: 8px; display: flex; flex-direction: column; gap: 10px; }
+.qr-card .qr-more { display: flex; gap: 24px; border-top: 2px solid #d8d1bd; padding-top: 20px; }
+.qr-card .qr-block.small { flex-direction: column; align-items: flex-start; gap: 10px; width: 256px; }
+.qr-card .qr-block.small .qr-text { width: 256px; }
+.qr-card .qr-block.small .qr-label { font-size: 26px; line-height: 32px; }
+.qr-card .qr-print { color: #3a3e46; }
+
+/* Pages 2 and 3: plates in two columns by three rows. */
+.page-programmers .lead, .page-builders .lead { width: 1760px; }
+.plate-role { margin: 14px 0 0; font-size: 24px; line-height: 30px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--plate-sub); }
+.plate-grid { display: grid; grid-template-columns: 864px 864px; gap: 16px 32px; margin-top: 16px; }
+.page-programmers .plate-grid { margin-top: 12px; }
+.page-builders .plate-grid { margin-top: 24px; }
+.honor-page .foot { position: absolute; left: 0; bottom: 0; width: 1760px; font-size: 28px; line-height: 40px; color: var(--jack-block); }
+
+/* Page 4: this exhibit. */
+.page-exhibit .hp-left { position: absolute; left: 0; top: 0; width: 1060px; }
+.page-exhibit .sources { margin-top: 28px; display: flex; flex-direction: column; gap: 22px; }
+.src-title { font-size: 24px; line-height: 30px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--plate-sub); }
+.src { display: flex; gap: 24px; align-items: flex-start; }
+.src-badge {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 3px solid var(--card);
+  color: var(--card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  font-weight: 700;
+}
+.src-what { font-size: 32px; line-height: 40px; font-weight: 700; color: var(--card); }
+.src-from { font-size: 28px; line-height: 38px; color: #C9C2A8; }
+.page-exhibit .museum-card {
+  position: absolute;
+  left: 1120px;
+  top: 0;
+  width: 640px;
+  height: 668px;
+  box-sizing: border-box;
+  padding: 28px 32px;
+  border-radius: var(--radius-card);
+  background: var(--card);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.museum-card .src-title { color: #5a5e66; }
+.museum-card .body { color: var(--ink); }
+.museum-card .body.small { color: #4a4e57; }
+.museum-card .welcome { margin-top: auto; padding: 14px 20px; border-radius: 12px; background: var(--guide); color: var(--ink); font-weight: 700; font-size: 26px; line-height: 34px; }
+.museum-card .qr-block .qr-tile { padding: 0; }
+.museum-card .qr-print { color: #3a3e46; }
+
+/* ---------------------------------------------------------------- entry points */
+/* S2 picker (UX 14.9): "About and honor roll", x912-1392, y848-944. */
+.picker-honor { position: absolute; left: 912px; top: 848px; width: 480px; }
+/* S7 Trajectory (UX 14.6.3): a 64 px text link. */
+.result-right .honor-link { color: var(--card); min-height: 64px; padding: 0 4px; margin-top: 16px; justify-content: flex-start; }
+
+@media (prefers-reduced-motion: reduce) {
+  .honor-rotator .rot-slide { transition: none; }
+}

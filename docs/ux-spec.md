@@ -1,6 +1,6 @@
 # UX Design Specification: ENIAC Touch Kiosk
 
-**Version:** 0.6
+**Version:** 0.7
 **Last Updated:** 2026-10-02
 **Author:** Nick DeMarco with AI assistance (ux-design agent)
 **Status:** Draft for review
@@ -1725,7 +1725,7 @@ Tags as before: **[FC]** = a history or technical claim for the Fact-Checker and
 Design rules for all of it:
 
 1. **One panorama component.** Attract, Explore and (later) the finale draw the same unrolled room. Build it once. It takes a lamp source (`live`, or `dark`) and nothing else, so it cannot show a fake lamp.
-2. **One copy table.** Card text, glossary text and honor text live in data files (like the mission files, FR-24), each block with a `review: approved | pending` flag. A `pending` block is **not rendered at all**; there is no placeholder text on a museum screen.
+2. **One copy table.** Card text, glossary text and honor text live in data files (like the mission files, FR-24), each block with its [FC] claim and source as an internal note that is never shown. **(0.7, PRD FR-46 v0.5)** Review status is not a render gate: everything renders with our best sourced wording (`docs/fact-check.md`), and corrections are welcome. Only a block marked `hold: true` is not rendered; there is no placeholder text on a museum screen.
 3. **Honest by construction.** A lamp is lit only from real core status. A number on a result or finale screen comes from this visit's real runs, or it is left out.
 4. **Taps first.** No new screen needs a gesture. A one-finger horizontal swipe on the panorama is an optional extra with a tap equivalent for everything it does (UX-03, 14.3.5).
 
@@ -2095,7 +2095,7 @@ The tabs are four large buttons (each 440 x 96); the open page is filled. No swi
 
 **Page 4: This exhibit.** The mission sources and who made the screen (14.6.4).
 
-#### 14.6.2 Honor copy (every line [FC]; Doug approves; blocks with `review: pending` are not shown)
+#### 14.6.2 Honor copy (every line [FC]; 0.7: all of it renders, see FR-46 v0.5; the shipped wording is in `src/web/app/content/honor.ts`, corrected per `docs/fact-check.md`)
 
 **Page 1, Stuart** (38 words + 17): "Every lamp, cable and switch on this screen is run by a simulator that Brian L. Stuart wrote. It follows the real 1946 machine pulse by pulse [FC]. Without his work, this exhibit would be an empty screen." Then: "His paper, "Simulating the ENIAC," is in IEEE [FC]. Scan the code to visit his simulator page." (QR and the URL, in 28 px, so a glove or glare cannot defeat it.) The paper's journal and year are for the Fact-Checker; the upstream README links it as `ieeexplore.ieee.org/document/8326772`.
 
@@ -2149,7 +2149,7 @@ The tabs are four large buttons (each 440 x 96); the open page is filled. No swi
 | Core down | Works (static, 14.3.8). A pill is not needed here (no machine state is shown). |
 | Reduced motion | Pages change by cross-fade; no slide. |
 | Metrics | `honor_page_view{1..4}` |
-| Content flags | `review: approved` blocks only. A page with no approved block is not offered (its tab is hidden). The Stuart page's wording is **also** sent to Stuart for his approval (Q18). |
+| Content flags | **0.7:** every page renders (FR-46 v0.5); [FC] notes stay in the data, unseen. A block marked `hold: true` is not drawn, and a page with nothing left to show is not offered (its tab is hidden). The Stuart page's wording is still sent to Stuart, and his corrections are welcome (Q18). |
 
 ### 14.7 Idle, core-down and reduced-motion, per screen
 
@@ -2272,3 +2272,4 @@ Sixteen terms for S15 (14.4), and a map from the words the **missions** use to t
 | 0.4 | 2026-10-01 | software-developer agent (M2 build), recording Nick's decisions | Trajectory after spike S2 (box at the top of 8.3): READ sends `b c` then `b r`; one INIT; one 34-card flight; frozen on the landing card with `s cy.op 1a`; Full only; S2 timings replace the [A] ones; no units on screen. Primes: the answer is card 100 (547) and S7 stays live to 407 (8.5.1 Q3); Slow stays `rate 100`. Squares Slow is `cy.rate 13` (S4) and "Keep pressing" waits 0.5 s at Slow (8.1.4). Attract caption fixed to the trajectory loop (7.1, 8.5.1 Q6). Zero first card and stopping at landing resolved (8.5.1 Q4, Q8) |
 | 0.5 | 2026-10-01 | software-developer agent (M2 follow-ups) | Trajectory readouts freeze on the landing card (8.3.5); a stalled Primes or Trajectory run goes to S10 (8.2.5) |
 | 0.6 | 2026-10-02 | ux-design agent, for Nick's 24-inch museum install | New section 14: live attract (trajdemo, Full speed, one flight per core, 60 s loop; 14.2); **Explore ENIAC** panorama of the 40-panel U with pan arrows, minimap strip, 12 unit cards (at most 40 words, [FC]-tagged), mission cross-links both ways, optional swipe (14.3; mockup in `docs/mockups/explore-eniac.html`); glossary S15 and section 15 (with the mission-word to real-word map); finale S8 rebuilt as five beats from this visit's real results (14.5); honor roll S11 in four pages crediting Stuart prominently and the original programmers, Eckert, Mauchly, the Goldstines, the Moore School and the Army BRL (14.6); idle, core-down and reduced-motion for every screen (14.7); [FC] list (14.8); picker row (14.9); Q15 to Q23. Flags F11 to F16. Gestures (9.2) and the 24-inch panel (9.4) updated; 7.1, 7.2, 7.7 and 7.10 point to section 14; the revision history is now section 16. |
+| 0.7 | 2026-10-02 | software-developer agent, recording Nick's direction for the honor roll | FR-46 relaxed (PRD 0.5): review status is an internal note, not a render gate; all four S11 pages render (14.1 rule 2, 14.6.2, 14.6.4); only `hold: true` blocks stay off screen. S11 page 3's tab reads "The project team" and the attract slide for the Goldstines "THE PROJECT TEAM" (fact-check B18); honor copy follows `docs/fact-check.md`. |

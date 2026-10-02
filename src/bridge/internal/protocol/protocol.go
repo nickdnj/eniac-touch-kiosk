@@ -231,7 +231,7 @@ type EndSession struct {
 type Metric struct {
 	T       string `json:"t" tstype:"'metric'"`
 	ID      *int64 `json:"id,omitempty"`
-	Ev      string `json:"ev" tstype:"'wrong_tap' | 'step_done' | 'speed' | 'skip_to_answer' | 'setup_skipped' | 'idle_reset' | 'mission_picked' | 'picker_next_used'"`
+	Ev      string `json:"ev" tstype:"'wrong_tap' | 'step_done' | 'speed' | 'skip_to_answer' | 'setup_skipped' | 'idle_reset' | 'mission_picked' | 'picker_next_used' | 'honor_page_view'"`
 	Mission string `json:"mission,omitempty"`
 	Step    string `json:"step,omitempty"`
 	Speed   string `json:"speed,omitempty"`
