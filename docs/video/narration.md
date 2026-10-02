@@ -1,6 +1,19 @@
-# Walkthrough video narration: Squares, Primes, Trajectory
+# Walkthrough video narration
 
-Voice-over scripts for the three walkthrough videos, keyed to the `card(...)` and `cap(...)` beats in `tests/web/video/walkthrough.spec.ts` (Squares), `walkthrough-primes.spec.ts` and `walkthrough-trajectory.spec.ts`.
+Voice-over scripts for the narrated videos in `docs/video/`, keyed to the `card(...)`, `cap(...)` and `say(...)` beats in `tests/web/video/`:
+
+| Video | File | Spec |
+|---|---|---|
+| 1 Squares | `eniac-touch-walkthrough-squares.mp4` | `walkthrough.spec.ts` |
+| 2 Primes | `eniac-touch-walkthrough-primes.mp4` | `walkthrough-primes.spec.ts` |
+| 3 Trajectory | `eniac-touch-walkthrough-trajectory.mp4` | `walkthrough-trajectory.spec.ts` |
+| 4 The tour (flagship) | `eniac-touch-tour.mp4` | `walkthrough-tour.spec.ts` |
+| Clip A Attract | `attract.mp4` | `clip-attract.spec.ts` |
+| Clip B Explore | `explore.mp4` | `clip-explore.spec.ts` |
+| Clip C Tubes | `tubes.mp4` | `clip-tubes.spec.ts` |
+| Clip D Finale | `finale.mp4` | `clip-finale.spec.ts` |
+
+**Voice:** Nick's own cloned ElevenLabs voice ("Nick 2", `eleven_multilingual_v2`, stability 0.5, similarity 0.75, style 0.4, speed 1.12), rendered by `tests/web/video/narration-gen.py`. The narrator speaks as Nick, a docent at the Vintage Computer Federation museum. Every historical line uses the wording of `docs/fact-check.md`.
 
 **Status: DRAFT. Not reviewed. Do not release outside the team.**
 
@@ -12,6 +25,8 @@ Voice-over scripts for the three walkthrough videos, keyed to the `card(...)` an
 - **[FC]** at the end of a line means it contains a historical claim taken from the repo docs. Doug and the fact-checker should review every [FC] line before anyone outside the team sees a video. Remove the tag only when the claim is confirmed.
 - **[pause: let the lamps play]** means say nothing and let the machine be the show.
 - "(caption cleared)" is the beat where the spec calls `cap(page, null)`.
+- A beat in parentheses with a video tag, like "(tour: f3)", is a line said with no caption change (`say(...)` in the spec).
+- Where a video says it fast-forwards (the tour and the finale clip do Missions 2 and 3 off camera), the spec marks a cut (`cutFrom`/`cutTo`) and `narration-mux.py` removes it. Long waits (a slow flight) are trimmed the same way (`trimWait`). Nothing is ever sped up, and nothing is said inside a cut.
 
 ## Running threads across the three videos
 
@@ -21,7 +36,8 @@ Voice-over scripts for the three walkthrough videos, keyed to the `card(...)` an
 
 ## Pronunciation notes for whoever sets up the voice
 
-- ENIAC is written as plain "ENIAC" throughout.
+- ENIAC is written as plain "ENIAC" throughout. **ElevenLabs needs no respelling.** Checked on 2026-10-02 with whisper.cpp (base model): Nick's voice says the all-caps "ENIAC" as one word (transcribed "NEAC", that is EN-ee-ack), not letter by letter, and more cleanly than the "Eniac" respelling, which garbled the words after it. Kokoro still gets "Eniac" (the generator does that for `--engine kokoro` only).
+- The "Find the dead tube" re-enactment labels its panels ACC 1 to ACC 4. The narration says "the third one" rather than reading the label aloud.
 - **The narration does not speak Lehmer's name.** The earlier note said it is "LAY-mer", but no authoritative source was found (fact-check C10). A web search on 2026-10-02 (Wikipedia's D. H. Lehmer and Emma Lehmer pages, the MacTutor biographies, the IEEE Computer Society "Computer Pioneers" page, the Berkeley obituary of Emma Lehmer) turned up no pronunciation guide, no IPA and no family or colleague statement. The only hits were crowd-sourced sites (howtopronounce.com gives "leh-mer"; a Forvo entry for "D. N. Lehmer" exists but could not be checked), which are not good enough for a museum. So the two lines that named him (the Primes title card and end card) were reworded to leave the name out. If a recording of a colleague or a family member turns up, the name can go back in.
 - Numbers are spelled out. "Twenty-eight oh one" is 2,801.
 
@@ -31,7 +47,7 @@ Voice-over scripts for the three walkthrough videos, keyed to the `card(...)` an
 
 | Beat (exact caption) | About | Narration |
 |---|---|---|
-| title card | 6 s | This is the ENIAC Touch Kiosk, running Brian L. Stuart's ENIAC simulator, live. |
+| title card | 7 s | Hi, I'm Nick, a docent at the Vintage Computer Federation museum. This is our ENIAC Touch Kiosk, running Brian L. Stuart's ENIAC simulator, live. |
 | Attract screen: a visitor walks up and touches | 5 s | A visitor walks up and touches the screen. That is the whole invitation. |
 | Pick a mission | 5 s | Pick a mission. We will start with Squares. |
 | What is a square? Tiles on a floor | 8 s | Picture tiles on a floor. Three rows of three makes nine tiles. So nine is the square of three. |
@@ -100,6 +116,134 @@ Voice-over scripts for the three walkthrough videos, keyed to the `card(...)` an
 
 ---
 
+## Video 4: The tour
+
+The flagship, about five minutes: S1 attract live, the picker, Explore ENIAC, the glossary, Keeping ENIAC alive with "Find the dead tube", the honor roll, Squares the quick way, a fast-forward through Missions 2 and 3 (cut), and the finale.
+
+| Beat (exact caption) | About | Narration |
+|---|---|---|
+| title card | 9 s | Hi, I'm Nick, a docent at the Vintage Computer Federation museum. Come take a tour of our new ENIAC exhibit with me. Everything you'll see runs live, on Brian L. Stuart's ENIAC simulator. |
+| Nobody is touching it, so ENIAC flies a shell, live | 10 s | When nobody's at the screen, the kiosk doesn't play a canned video. It runs ENIAC. Right now it's working out the path of a cannon shell, and every lamp in this room is the simulator's real state. |
+| Every dot is a real punched card from the simulator | 8 s | Every dot is a real punched card. ENIAC was built to work out firing tables for Army guns, so a cannon shell is just the right thing to keep it busy. [FC] |
+| A visitor walks up and touches the screen | 3 s | But the moment someone touches the screen... |
+| Three missions, a walk around the room, and an honor roll | 6 s | you're in. Three missions, in a suggested order. But first, let's look around the room itself. |
+| Explore ENIAC: the real room, with live lamps | 10 s | This is ENIAC, the way it stood. Forty panels in a U shape. Laid in a line, they'd stretch about eighty feet. And these lamps are live: that shell is still flying while we look around. [FC] |
+| (tour: pan) | 5 s | Tap the arrows, or the map along the bottom, to walk down the room. |
+| Walk the room: one card for each kind of unit | 10 s | Or press Walk the room, and meet the units one at a time. The Cycling Unit is ENIAC's clock. It ticks about a hundred thousand times a second, and one addition takes twenty ticks. [FC] |
+| (tour: master programmer) | 8 s | The Master Programmer is the conductor. It counts, and decides what happens next. It has ten steppers, a bit like a music box with pins. [FC] |
+| Right now: a live number from the simulator | 10 s | Here's one of ENIAC's twenty accumulators. Each one adds, and remembers one ten-digit number. And that number on the card is live. It changes as the shell flies. [FC] |
+| Tap a mission to light up the units it uses | 9 s | Tap a mission, and the room lights up every unit it uses. The cannon shell needs nineteen accumulators, a function table, and the multiplier, which works on every hop. |
+| The glossary: ENIAC's words, in plain English | 5 s | Stuck on a word? The glossary explains them all, in plain English. |
+| Keeping ENIAC alive: about 18,000 vacuum tubes | 13 s | Now, my favorite part: keeping ENIAC alive. It had about eighteen thousand vacuum tubes. Each dot here is one. A radio had about ten! And here's a surprise: the glowing lamps you see are neon. The tubes sat inside. [FC] |
+| About 150 kilowatts: as much as 1,500 bright bulbs | 8 s | ENIAC used about a hundred and fifty kilowatts, as much as fifteen hundred bright light bulbs. More than half of it just kept the tubes hot. [FC] |
+| Myth check: did the lights of Philadelphia dim? | 8 s | So, did ENIAC dim the lights of Philadelphia when it switched on? It's a great story. But Eckert, who built it, called it total fiction. [FC] |
+| Why tubes burned out | 7 s | Tubes wear out like light bulbs, and switching on and off is hard on them. So early on, the crew left the heaters on overnight. [FC] |
+| The hunt: which unit, which circuit, which tube? | 7 s | When an answer came out wrong, the crew went hunting. Which unit? Which circuit? Which tube? Let's try it. [FC] |
+| Find the dead tube: a re-enactment | 9 s | This part is a re-enactment. The panels are drawn and the fault is made up, but the steps follow the nineteen forty-six maintenance manual. First, run a test problem. [FC] |
+| Every accumulator should show 5555555555 | 5 s | Every accumulator should end up showing all fives. One of them doesn't. Which one? |
+| (tour: not that one) | 3 s | Hmm, not that one. It lines up with the others. |
+| (tour: acc 3) | 4 s | There it is, the third one. One of its lamps is out of line. |
+| (tour: place 4) | 5 s | Place four shows a nine instead of a five. So out comes its plug-in unit. |
+| (tour: warm) | 4 s | Now touch the tubes. Warm means that one works. |
+| (tour: cold) | 3 s | Cold! That's our dead tube. |
+| Fixed! Every lamp lines up again | 8 s | Plug in a fresh unit, run the test again, and every lamp lines up. Eckert said a hunt like this took up to fifteen minutes. [FC] |
+| The honor roll: Brian L. Stuart | 12 s | None of this would exist without Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it follows the real machine pulse by pulse. Without his work, this exhibit would be an empty screen. [FC] |
+| ENIAC's first programmers | 16 s | And these are ENIAC's first programmers: Kay McNulty, Betty Jean Jennings, Betty Snyder, Marlyn Wescoff, Fran Bilas, and Ruth Lichterman. There was no programming language and no manual yet. They learned the machine from its diagrams, and worked out every cable by hand. [FC] |
+| Mission 1, Squares: now I program ENIAC | 7 s | Now it's my turn to program ENIAC. Mission one is Squares. Picture tiles on a floor: three rows of three make nine. |
+| (tour: the trick) | 7 s | To grow the square, add a row, a column, and one corner tile. ENIAC never multiplies here. It just adds. |
+| Step 1: set a dial to 1 | 4 s | Step one: set a dial on the Constant Transmitter to one. |
+| Step 2: plug a cable, one jack, then the other | 4 s | Step two: plug in a cable. Tap one jack, then the other. |
+| Short on time? Skip: the rest is wired for you | 7 s | In nineteen forty-six, setting up a new problem could take a day or more. I'll let the kiosk wire the rest for me. [FC] |
+| Press INIT, ENIAC's GO button | 3 s | Now press INIT, ENIAC's go button. |
+| (tour: one) | 3 s | One times one is one. [pause: let the lamps play] |
+| Skip to the answer: every square up to 12 × 12 | 6 s | Or skip to the answer: every square up to twelve times twelve, a hundred forty-four, all by adding. |
+| Fast-forward: Missions 2 and 3, the quick way | 6 s | I'll fast-forward through missions two and three, the primes and the cannon shell. They each have their own video. |
+| All three missions done: Finish | 5 s | And we're back. The shell has landed, all three missions are done, and the button says Finish. |
+| (tour: f1) | 9 s | The finale. You programmed ENIAC, and it shows what this visit really did: the squares, the primes ENIAC punched, and the shell's flight. |
+| (tour: f2) | 6 s | Here's every unit we used, lit up in the room. That's almost the whole machine. |
+| (tour: f3) | 6 s | And again, Brian L. Stuart, who wrote this simulator. Every lamp we saw was run by his program. |
+| (tour: f4) | 9 s | The people who made ENIAC. Six women were its first programmers. Engineers and an Army team built it. Thank you to all of them. [FC] |
+| (tour: f5) | 4 s | Thanks for visiting! From here, a visitor can start over, or go exploring. |
+| end card | 8 s | A huge thank-you to Brian L. Stuart, whose simulator is the beating heart of this exhibit. And thank you for watching. |
+
+---
+
+## Clip A: Attract
+
+About a minute: one whole live flight on S1, its landing, the next flight, and a touch. The middle of a slow flight is trimmed (cut, not sped up).
+
+| Beat (exact caption) | About | Narration |
+|---|---|---|
+| title card | 5 s | When nobody's using the kiosk, it doesn't play a canned video. It runs ENIAC, live. |
+| The ENIAC room, lit by the live simulator | 9 s | This is the ENIAC room, panel by panel, and every lamp is the simulator's real state. The room drifts slowly, so people walking by see the whole machine. |
+| Each dot is a real punched card: one hop of the shell | 11 s | ENIAC is working out the path of a cannon shell, one hop at a time. Each hop, it punches a card, and each card becomes a dot. ENIAC was built to work out firing tables for Army guns. [FC] |
+| Landed: the hop and the card count, held for a moment | 6 s | Landed! The kiosk holds the landing for a moment, with the hop it landed on and the cards it punched. |
+| Then a fresh flight, on a fresh run of the simulator | 4 s | Then it starts over, on a fresh run of the simulator. |
+| One touch, and the visitor is in | 5 s | And the moment someone touches the screen, the flight stops and the missions appear. |
+| end card | 5 s | Thanks to Brian L. Stuart, whose simulator flies every one of these shells. |
+
+---
+
+## Clip B: Explore
+
+About a minute and a half: the room, a pan, Walk the room, a live accumulator, two missions' units, and the glossary.
+
+| Beat (exact caption) | About | Narration |
+|---|---|---|
+| title card | 5 s | Explore ENIAC lets a visitor walk around the whole machine, panel by panel. |
+| Forty panels in a U, with live lamps | 10 s | ENIAC's forty panels stood in a U shape. Laid in a line, they'd stretch about eighty feet. And the lamps are live: ENIAC is flying a cannon shell while we look. [FC] |
+| (explore: pan) | 5 s | Tap the arrows, or the map along the bottom, to walk down the room. |
+| Walk the room: twelve cards, one for each kind of unit | 7 s | Walk the room, and you meet each kind of unit. The Initiating Unit has ENIAC's go button, called INIT. |
+| (explore: cycling) | 5 s | The Cycling Unit is the clock. It ticks about a hundred thousand times a second. [FC] |
+| (explore: master programmer) | 6 s | The Master Programmer is the conductor, with ten steppers, a bit like a music box with pins. [FC] |
+| Tap any panel: this number is live | 9 s | Tap any panel to meet it. An accumulator adds, and remembers one ten-digit number. ENIAC had twenty. This card shows this one's number, live. [FC] |
+| Tap a mission: the room lights up the units it uses | 6 s | Tap a mission, and the room lights up the units it uses. Squares needs just four. |
+| (explore: trajectory) | 6 s | The cannon shell needs nineteen accumulators, a function table, and the multiplier. |
+| The glossary: ENIAC's words, in plain English | 6 s | And the glossary explains every word in plain English, from accumulator to vacuum tube. |
+| end card | 5 s | Thanks to Brian L. Stuart, whose simulator lights every lamp in the room. |
+
+---
+
+## Clip C: Tubes
+
+About a minute and a half: Keeping ENIAC alive (four cards and the myth check), then "Find the dead tube" played through, with two misses so the hint ring shows.
+
+| Beat (exact caption) | About | Narration |
+|---|---|---|
+| title card | 5 s | How do you keep a machine with about eighteen thousand vacuum tubes running? Let's find out. [FC] |
+| Each dot is one vacuum tube | 11 s | Each dot is one of ENIAC's tubes. A radio had about ten! A tube is a sealed bulb that switches a signal on and off, with nothing moving. The glowing lamps you see are neon. The tubes sat inside. [FC] |
+| Power and heat: about 150 kilowatts | 9 s | ENIAC used about a hundred and fifty kilowatts. In one hour, that's as much electricity as a typical American home uses today in five to six days. [FC] |
+| Myth check | 10 s | Did it dim the lights of Philadelphia? No. Eckert, who built it, called that story total fiction. ENIAC took its power from the city grid, through its own regulators. [FC] |
+| Why tubes burned out | 9 s | Switching on and off is hard on tubes, so early on, the crew left the heaters on overnight. Eckert remembered losing about one tube every two days. [FC] |
+| The hunt: which unit, which circuit, which tube? | 5 s | So when an answer came out wrong, the crew went hunting. Let's try it. |
+| A re-enactment that follows the 1946 maintenance manual | 8 s | This is a re-enactment: drawn panels and a made-up fault, but the real steps from the nineteen forty-six maintenance manual. Run the test. [FC] |
+| (tubes: which panel) | 4 s | Every accumulator should show all fives. Which one doesn't? |
+| (tubes: the ring) | 5 s | Two misses, so the kiosk helps: a glowing ring around the right panel. |
+| (tubes: which place) | 4 s | Now, which digit place? Look for the lamp that's lit at the wrong number. |
+| (tubes: which tube) | 6 s | Place four shows nine, not five. Its plug-in unit slides out. Now touch each tube. |
+| (tubes: cold) | 5 s | The first two were warm, and this one is cold. That's the dead tube. |
+| Fixed! Every lamp lines up on 5 | 8 s | A fresh unit, the test runs again, and every lamp lines up. A real crew would also write the dead tube in the log. [FC] |
+| end card | 5 s | Thanks to Brian L. Stuart, and to the crews who kept the real ENIAC running. |
+
+---
+
+## Clip D: Finale
+
+About a minute: a real visit's finale. The three missions are done off camera first (cut).
+
+| Beat (exact caption) | About | Narration |
+|---|---|---|
+| title card | 6 s | Finish all three missions, and the kiosk ends with a finale. Here's one, from a real visit. |
+| Mission 3 done: all three missions, so the button says Finish | 6 s | This visitor just landed the cannon shell, the last of the three missions, so the button says Finish. |
+| (finale: f1) | 9 s | First: you programmed ENIAC. The kiosk remembers what this visit really did: the squares counted, the cards ENIAC punched, the shell's flight. |
+| (finale: f2) | 6 s | Then every unit the visitor used, lit up in the room. Almost the whole machine. |
+| (finale: f3) | 8 s | Then the person who made it all possible: Brian L. Stuart, who wrote the simulator. Scan the code to visit his page. |
+| (finale: f4) | 9 s | Then the people who made ENIAC. Six women were its first programmers. Engineers and an Army team built it. Thank you to all of them. [FC] |
+| (finale: f5) | 3 s | And finally: thanks for visiting! |
+| end card | 5 s | And my thanks to Brian L. Stuart, whose simulator makes all of this real. |
+
+---
+
 ## Notes for reviewers
 
 - **Trajectory scope.** The mission flies one shell path of 34 cards. The narration says "one shell path" and "one shell's whole flight" and never claims the full six-part 1946 demo. The title line says "recreation of the nineteen forty-six demo", which mirrors the on-screen title card, and it is tagged [FC].
@@ -108,4 +252,6 @@ Voice-over scripts for the three walkthrough videos, keyed to the `card(...)` an
 - **"About three thousand additions."** This is arithmetic from two doc claims: an addition took one five-thousandth of a second (ux-spec 8.1.4, tagged [FC] there), and a card takes 0.6 seconds. It is tagged [FC] and is easy to cut: remove that one line and the pause after it.
 - **No claims about Professor Stuart's views.** He is only credited as the author of the simulator and the programs, and as the source of the recreation.
 - **Possible tight spots.** The title card lines are a little longer than the 5 to 6 second cards. Hold each card for an extra second, or let the voice start as the card fades in.
-- **Left out on purpose:** the 18,000 vacuum tubes, the six women programmers (names need Doug's approval), "adding is what it did best" (flagged in the tiles handoff), any sieve of Eratosthenes remarks, and the claim that ENIAC could fly a shell faster than the shell flies.
+- **Left out of the three mission videos on purpose:** the 18,000 vacuum tubes, the six women programmers, "adding is what it did best" (flagged in the tiles handoff), any sieve of Eratosthenes remarks, and the claim that ENIAC could fly a shell faster than the shell flies.
+- **The tour and the clips** follow the kiosk's own screens: the tube, power and myth lines are S16's copy (fact-check group E; Eckert's figures are always said as his memory, never as a plain fact), and the six names are the honor roll's, as on screen (fact-check B11: Marlyn, Betty Jean). The finale lines are the F1 to F5 copy (B13). Nothing in them is new history.
+- **Cuts.** The tour and the finale clip say out loud that Missions 2 and 3 are fast-forwarded; that stretch is cut. The attract clip trims the middle of the flight if it runs long. Cuts only remove time; no clip is sped up or staged.

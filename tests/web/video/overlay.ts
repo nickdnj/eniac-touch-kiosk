@@ -2,7 +2,7 @@
 // end cards, a caption over the left stage, and a visible ripple on every
 // touch. Injected with bypassCSP; nothing here is in the kiosk bundle.
 import type { Page } from "@playwright/test";
-import { afterSpeech, lineMs, speak } from "./narrate.ts";
+import { afterSpeech, lineMs, speak, speakNoWait } from "./narrate.ts";
 
 // Overlay helpers: title/end cards, captions, and a visible tap ripple.
 export async function overlays(page: Page) {
@@ -48,5 +48,18 @@ export async function cap(page: Page, text: string | null) {
   }, text);
   await speak(page, text ?? "(caption cleared)");
 }
+/** Move the caption (centre x and distance from the bottom, in px) so it
+ *  does not cover what is being tapped; capAt(page) puts it back. */
+export async function capAt(page: Page, x = 700, bottom = 40) {
+  await page.evaluate(({ x, bottom }) => {
+    let c = document.getElementById("vid-cap");
+    if (!c) { c = document.createElement("div"); c.id = "vid-cap"; document.body.append(c); }
+    c.style.left = x + "px"; c.style.bottom = bottom + "px";
+  }, { x, bottom });
+}
+/** Narration with no caption: the line keyed by `beat` (e.g. "(tour: f3)"). */
+export const say = (page: Page, beat: string) => speak(page, beat);
+/** The same, but the action goes on while it is said. */
+export const sayOver = (_page: Page, beat: string) => speakNoWait(beat);
 export const pause = (page: Page, ms: number) => page.waitForTimeout(afterSpeech(ms));
 
