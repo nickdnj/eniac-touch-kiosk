@@ -8,12 +8,14 @@
 import { test, expect, type Page } from "@playwright/test";
 import { tap, tapSlow, hit, mainBtn, feedback, view } from "../e2e/helpers.ts";
 import { card, cap, overlays, pause } from "./overlay.ts";
+import { finishNarration, narration } from "./narrate.ts";
 
 const cards = (page: Page) => page.evaluate(() => (window as any).__eniac.cards.count as number);
 
 test("ENIAC touch kiosk walkthrough: Primes", async ({ page }) => {
   test.setTimeout(600_000);
   await overlays(page);
+  await narration(page, "primes");
   await page.goto("/");
   await expect(view(page)).toHaveAttribute("data-view", "start");
   await card(page, "<h1>Mission 2: Primes</h1><p>ENIAC hunts for prime numbers, the way D. H. Lehmer ran it in July 1946. Brian L. Stuart's simulator, live.</p><small>Prototype · Primes mission · recorded live on the real simulator</small>", 5000);
@@ -89,4 +91,5 @@ test("ENIAC touch kiosk walkthrough: Primes", async ({ page }) => {
   await cap(page, null);
 
   await card(page, "<h1>Thank you</h1><p>Simulator: Brian L. Stuart, Drexel University — github.com/blstuart/eniac-simulator</p><p>Program: sieve.e, after D. H. Lehmer's July 1946 runs, as reconstructed by L. De Mol and M. Bullynck</p><small>Primes mission · M2 prototype · not for distribution</small>", 6000);
+  await finishNarration(page);
 });
