@@ -1,11 +1,11 @@
 # Product Requirements Document: ENIAC Touch Kiosk
 
-**Version:** 0.3
-**Last Updated:** 2026-10-01
+**Version:** 0.4
+**Last Updated:** 2026-10-02
 **Author:** Nick DeMarco with AI assistance (product-requirements agent)
 **Status:** Draft
 
-**Sources:** `docs/handoff-from-vcf.md` (including the Decisions of 2026-09-30); wiki `teams/vcf-museum/eniac-exhibit.md` and `teams/vcf-museum/_team.md`; upstream `blstuart/eniac-simulator` at commit `c4b94f2` (2026-09-22): `README.md`, `src/eniac.go`, `src/engine.go`, `src/cycle.go`, `vis/eniactk.go`, `programs/{sq,sieve,trajdemo,cube}.e`.
+**Sources:** `docs/ux-spec.md` v0.6 section 14 (the screens for the items added in 0.4); `docs/handoff-from-vcf.md` (including the Decisions of 2026-09-30); wiki `teams/vcf-museum/eniac-exhibit.md` and `teams/vcf-museum/_team.md`; upstream `blstuart/eniac-simulator` at commit `c4b94f2` (2026-09-22): `README.md`, `src/eniac.go`, `src/engine.go`, `src/cycle.go`, `vis/eniactk.go`, `programs/{sq,sieve,trajdemo,cube}.e`.
 
 ---
 
@@ -21,13 +21,16 @@ The simulator is the real thing: every jumper cable and switch of the 1946 machi
 
 Build a touch-first kiosk that takes a walk-up visitor through three guided missions: **squares → primes → the 1946 trajectory demo**. In each mission the visitor does the key plugging and switch steps, with plain-language explanations along the way. Then they run the machine and see the result. It runs unattended on a dedicated Pi 5, and the museum staff operate it without Nick.
 
+Version 0.4 adds four things for the museum install (Nick, 2026-10-02): a **live attract mode** (the idle screen is the real simulator running), a **finale** after the missions, **honor screens** that credit Brian L. Stuart prominently and the people who built and programmed the original ENIAC, and **Explore ENIAC**, a plain-language walkthrough of the whole machine with a glossary.
+
 ### 1.3 Settled decisions (not re-opened here)
 
 | # | Decision |
 |---|---|
 | D1 | A new **web front end** rendered in Chromium, like the other museum kiosks. A **Go websocket bridge** wraps Stuart's simulator core. Tk `eniactk` is reference only. |
 | D2 | **Guided missions:** squares → primes → the 1946 trajectory demo. Each mission covers its key plugging and switch steps with explanations, then READ → INIT → lamps and card output. |
-| D3 | **Production hardware** is a new dedicated Pi 5 with a touchscreen. **Dev and test hardware** is the Model 4 kiosk's Pi 5 for now (10.130.10.37 Wi-Fi / .36 wired, the current trial install). |
+| D3 | **Production hardware** is a new dedicated Pi 5 with a touchscreen. **Dev and test hardware** is the Model 4 kiosk's Pi 5 for now (10.130.10.37 Wi-Fi / .36 wired, the current trial install). *(0.4: the production screen is a **24-inch landscape touch panel on the museum's existing mount**, which today shows the old simulator as static screens. Which computer drives it is open, Q15.)* |
+| D4 | **Install target (0.4):** the first museum install is the **M3-lite** milestone (10.1): the three missions, live attract and the honor roll on the 24-inch screen, targeted for the week of 2026-10-05. It is a supervised preview, not the ownership handoff (M4). |
 
 ### 1.4 Target users
 
@@ -47,6 +50,8 @@ Measured by on-box, anonymous, local-only counters (FR-60). No cameras, no perso
 | Time on kiosk | Median session length, from the first touch out of attract to the idle reset or return to attract | 3–6 min |
 | Progression | Sessions that start a 2nd mission ÷ sessions that complete their 1st | ≥ 25% |
 | Engagement from attract | Sessions started per open hour | Baseline in weeks 1–2, then tracked (no target yet) |
+| Explore reach (0.4) | Sessions that open Explore ENIAC ÷ sessions; median unit cards viewed per Explore visit | Baseline in weeks 1–2 (no target yet) |
+| Finale reach (0.4) | Sessions that reach the finale ÷ sessions that finish their 1st mission; honor-roll page views per open hour | Baseline in weeks 1–2 (no target yet) |
 | Availability | Open-hours minutes not in the error state and not needing staff action | ≥ 99% |
 | Operational independence | Nick interventions needed after handoff | 0 |
 
@@ -57,8 +62,9 @@ Measured by on-box, anonymous, local-only counters (FR-60). No cameras, no perso
 ### 2.1 In scope (v1)
 
 - A Go websocket bridge that runs the unmodified upstream core (plus the local `mult.go` fix) and relays commands and status.
-- A web front end: attract mode, mission menu, three guided missions, run view (lamps and punched cards), about/credits, error state, and a hidden admin screen.
+- A web front end: **live attract mode**, mission menu, three guided missions, run view (lamps and punched cards), **finale**, **About and honor roll**, **Explore ENIAC with a glossary**, error state, and a hidden admin screen.
 - Mission content (step text, explanations, "tell me more") for squares, primes and trajdemo.
+- Explore ENIAC content: a card for each unit of the machine, mission cross-links, a glossary (all [FC]-tagged for the Fact-Checker and Doug Crawford), and the honor-roll text.
 - Boot-to-kiosk install on Pi OS (trixie arm64), with health, auto-restart, update and rollback.
 - Clean install and removal on the Model 4 kiosk for dev and test (FR-80–83).
 - A runbook, staff training and handoff (Section 8).
@@ -68,7 +74,8 @@ Measured by on-box, anonymous, local-only counters (FR-60). No cameras, no perso
 
 - Free-play mode (arbitrary plugging of the whole machine, or loading arbitrary `.e` files) for visitors.
 - Missions beyond the three, such as cube.e, hellorld.e and turing.e. The design should make adding them a content task, not a code change (FR-24).
-- 3D/first-person views (`eniacfp`, `eniac3d`, `eniact5`) and the GPIO control station (`-c`).
+- 3D/first-person views (`eniacfp`, `eniac3d`, `eniact5`) and the GPIO control station (`-c`). The Explore ENIAC panorama is a flat, drawn elevation of the room, not a 3D view.
+- Photographs of people or of the real ENIAC on the honor screens (rights are not cleared); the honor roll uses engraved-plate typography.
 - Replacing or modifying the existing ENIAC exhibit Pi at 10.130.10.27. Its autologin and under-voltage fixes are tracked on the wiki page, not here.
 - Remote/cloud monitoring, accounts, online analytics, internet dependency.
 - Sound, multiple languages, and screen-reader support (see Open Questions).
@@ -77,7 +84,7 @@ Measured by on-box, anonymous, local-only counters (FR-60). No cameras, no perso
 
 ### 2.3 Constraints
 
-- **Hardware:** Pi 5 (8 GB on the dev box). The dev touchscreen is a 15.6" USB panel with a wch.cn multitouch controller, assumed 1920×1080 landscape. The production screen is TBD (Q2).
+- **Hardware:** Pi 5 (8 GB on the dev box). The dev touchscreen is a 15.6" USB panel with a wch.cn multitouch controller, assumed 1920×1080 landscape. **The production screen is a 24" landscape touch panel on the museum's existing mount** (0.4); its native resolution, touch technology and mounting height are to be confirmed (Q2, Q16). Assumed 1920×1080 until then. The design is authored at 1920×1080 and scaled as one unit, so a 24" 1080p panel makes every touch target physically larger than on the dev panel (a 64 px target is about 17.7 mm there, 11.5 mm on the dev panel).
 - **OS/runtime:** Raspberry Pi OS trixie arm64, Chromium in kiosk mode, Go toolchain (apt `golang-go`).
 - **Network:** museum LAN only. There must be no runtime internet dependency.
 - **Licensing:** the upstream repo has no license (R1).
@@ -150,20 +157,31 @@ Priorities: **P0** = MVP, **P1** = before the floor, **P2** = nice to have.
 
 ### 4.3 Attract and idle
 
+**User story:** As a passer-by, I want the screen to show the real machine working, so that I'm curious enough to touch it, and I want it to say whose simulator it is.
+
 | ID | Requirement | Pri |
 |---|---|---|
-| FR-30 | **Attract mode** is the home state. It shows a **live** simulator run (for example, trajdemo or squares at a visible speed), a clear call to action ("Touch to program ENIAC"), and the Stuart credit. It must not use a canned video or animation. | P1 |
+| FR-30 | **Live attract** is the home state (S1). It shows the **real simulator running** (FR-34): live lamps in a panorama of the machine, a live shell's-path plot built from the real punched cards, a live caption, the call to action "Touch to program ENIAC", a plate crediting Brian L. Stuart (FR-43) and a rotating plate honoring the original programmers and builders (FR-44). It must not use a canned video, a recorded run or any animation of machine state that does not come from the core (no demo fallback). **M3-lite ships "attract-lite":** the same live run drawn with the existing Trajectory widgets (arc plot, Accumulators 15, 18 and 20 lamp grids, caption) instead of the full panorama; the panorama replaces it when Explore ENIAC ships (UX 14.2). | P1 (P0 as attract-lite for M3-lite) |
 | FR-31 | Any touch in attract goes to the mission menu. The first touch never triggers a mission action. | P0 |
-| FR-32 | **Inactivity:** 90 s with no touch during setup shows a "Still there?" overlay with a 15 s countdown and a large "I'm here" button, then resets to attract. While a computation is running the timeout is 3 min, because people watch. Both values are configurable. | P0 |
-| FR-33 | A reset kills and restarts the core session and clears all visitor state. The next visitor always starts clean. | P0 |
+| FR-32 | **Inactivity** (all values configurable). **Setup screens and the menu** (S2, S3 to S5, S11, S15): 90 s with no touch shows a "Still there?" overlay with a 15 s countdown and a large "I'm here" button, then returns to attract. **Explore ENIAC (S14): 120 s**, because visitors read cards. **While a computation is running: 3 min**, because people watch. **Attract: no timeout.** **Finale:** its own timers (FR-45). | P0 |
+| FR-33 | A reset kills and restarts the core session and clears all visitor state. The next visitor always starts clean. (A reset from a screen that has no mission session, such as S14 or S11, only returns to attract; the attract session keeps running.) | P0 |
+| FR-34 | **Attract program and loop.** The attract session runs **`trajdemo.e` with `drag.e`** (the same program as Mission 3 and as the museum's current exhibit) at **Full speed** (`cy.rate 0`; the trajectory has no useful Slow, spike S2). The bridge starts it like Mission 3's run: `b c`, then `b r`, then one `b i`, with every cable and switch preset and **no visitor steps**. At the **landing card** (the first card with `-` in column 71) the bridge freezes the machine with `s cy.op 1a` (as FR-19); the screen holds the finished plot for **8 s**; then the bridge ends the session and starts a fresh attract session. **One flight per core process**, so a loop is about 60 s (flight about 49 s on the Mac, S2; Pi 5 to be measured). The caption comes from the latest real card ("Live: ENIAC is working out a shell's path. Hop {n}"). Which program and why: UX 14.2.2. | P1 |
+| FR-35 | **Hand-off.** A touch in attract opens the menu (S2); the **attract core keeps running** behind S2, S11, S14 and S15. Starting a mission ends the attract session and starts a fresh mission core (FR-03). After a mission, a reset or a finale, returning to attract starts a **new** attract session ("Waking ENIAC..." with dark lamps for up to 3 s, then live). | P1 |
+| FR-36 | **Attract failure states (no demo fallback).** If no live status arrives for 5 s, the screen is the error state (FR-50). Between flights the panorama holds the last real frame dimmed with the caption "Starting another flight."; if the next session is not live in 5 s, the error state shows. A run with no new card for **20 s** is treated as a hang (FR-05). Attract never shows canned lamps, recorded runs or fake cards. | P0 |
 
-### 4.4 Credit and about
+### 4.4 Credit, honor and finale
+
+**User story:** As Brian Stuart, the ENIAC programmers and the museum, we want to be credited where visitors will see it, and as a visitor I want a payoff after my missions.
 
 | ID | Requirement | Pri |
 |---|---|---|
 | FR-40 | A persistent footer on every visitor screen reads: "ENIAC simulator by Brian L. Stuart, Drexel University". | P0 |
-| FR-41 | An About screen (one tap from the menu) credits Stuart and his paper "Simulating the ENIAC" (IEEE), with a QR code to his simulator page. It credits the primes mission source (Lehmer, July 1946; De Mol and Bullynck's reconstruction) and the Feb 15, 1946 demo for the trajectory mission. It also credits the VCF museum. The wording is approved by Doug Crawford (the museum's approver for exhibit copy). | P1 |
+| FR-41 | **About and honor roll** (S11, one tap from the menu): four pages, each fitting one screen with no scrolling: (1) **Brian L. Stuart**: his name on an engraved plate, what he built, his paper "Simulating the ENIAC" (IEEE), a QR code and a printed URL to his simulator page; (2) **the first programmers**; (3) **the builders**; (4) **this exhibit**: the mission sources (Lehmer, July 1946, and De Mol and Bullynck's reconstruction, for Primes; the Feb 15, 1946 demo, for Trajectory) and the VCF museum. Wording approved by Doug Crawford (and, recommended, by Stuart for page 1). Replaces the single About screen of 0.3. (UX 14.6) | P1 (P0 for M3-lite: Stuart's page and the exhibit page) |
 | FR-42 | Upstream panel photographs (`images/`) are used only once Stuart's permission covers them. Otherwise original artwork is used (R1). | P1 |
+| FR-43 | **Stuart's credit is prominent**, not only a footer: a plate with his name at 56 px or larger on the attract screen (always on, never rotated), page 1 of the honor roll, and a beat of the finale. The copy says plainly that the exhibit depends on his simulator ("Without his work, this exhibit would be an empty screen"). | P0 |
+| FR-44 | **Honor roll.** The people and bodies honored, as Nick specified: the six original ENIAC programmers (**Jean Jennings Bartik, Kathleen McNulty Mauchly Antonelli, Frances Bilas Spence, Marlyn Wescoff Meltzer, Ruth Lichterman Teitelbaum, Betty Snyder Holberton**); **J. Presper Eckert and John W. Mauchly**; **Herman and Adele Goldstine**; the **Moore School of Electrical Engineering, University of Pennsylvania**; and the **U.S. Army Ordnance and the Ballistic Research Laboratory**. It shows on honor-roll pages 2 and 3, as a rotating plate in attract, in the finale, and as links from the Trajectory result and from the Explore card for the program trays. Engraved-plate typography, **no photographs**. Every statement about a person is [FC]-tagged and approved by Doug before it shows (FR-46). | P1 |
+| FR-45 | **Finale** (S8). Appears when the visitor taps **Finish** after **all three missions** have reached their result in this visit. Five beats, each advancing on tap or on a timer (15 to 20 s), skippable at any moment, at most 85 s in all: (F1) "You programmed ENIAC", with this visit's real results; (F2) the panorama with every unit the visitor used ringed (when Explore exists); (F3) the Stuart credit; (F4) the honor roll; (F5) thanks, with **Start over for the next visitor** and **Explore ENIAC**, returning to attract after 20 s. Every number comes from this visit's real runs or is left out. A finale with the core down keeps its static beats and skips F2 (UX 14.5). | P1 |
+| FR-46 | **Content review gate.** Every block of new visitor text (unit cards, glossary, honor roll, finale) is data with a `review: approved \| pending` flag. A `pending` block is **not rendered at all**; there is no placeholder text on a museum screen. A history claim ships only when approved by the Fact-Checker and Doug (extends FR-22 and R6). | P0 |
 
 ### 4.5 Error state (no demo fallback)
 
@@ -177,7 +195,7 @@ Priorities: **P0** = MVP, **P1** = before the floor, **P2** = nice to have.
 
 | ID | Requirement | Pri |
 |---|---|---|
-| FR-60 | Anonymous local counters are recorded: session start and end, mission start and complete per mission, steps done-for-me, setup skipped, run fast-forwarded, idle resets, error-state entries and duration. They're stored on the box (for example, SQLite or JSONL) and retained for ≥ 1 year. | P1 |
+| FR-60 | Anonymous local counters are recorded: session start and end, mission start and complete per mission, steps done-for-me, setup skipped, run fast-forwarded, idle resets, error-state entries and duration; and (0.4, FR-98) attract flights and touches, Explore visits and cards viewed, honor-roll pages and finale beats. They're stored on the box (for example, SQLite or JSONL) and retained for ≥ 1 year. | P1 |
 | FR-61 | The admin screen shows today's, the last 7 days' and all-time metrics (Section 1.5), with a CSV export to a USB stick. | P1 |
 
 ### 4.7 Operator and admin
@@ -204,13 +222,29 @@ Priorities: **P0** = MVP, **P1** = before the floor, **P2** = nice to have.
 
 ---
 
+### 4.9 Explore ENIAC and glossary
+
+**User story:** As a curious visitor (or an adult learning ENIAC myself), I want to look along the whole machine and learn in plain words what each part does and which parts my missions used.
+
+| ID | Requirement | Pri |
+|---|---|---|
+| FR-90 | **Explore ENIAC** (S14) is a pannable panorama of the whole machine: the **40 panels in a U (about 80 feet, [FC])**, with the layout taken from Stuart's simulator (UX 14.3.1): Initiating Unit, Cycling Unit, Master Programmer, the 20 accumulators, the Divider and Square-Rooter, the High-Speed Multiplier, three Function Tables with their portable tables, the Constant Transmitter with the IBM card reader, the Printer with the IBM card punch, and the **digit trays** (numbers) and **program trays** (control pulses) that connect them. Reached from the menu, from a mission briefing and result, and from the finale. | P1 |
+| FR-91 | **Panning is by large tap targets**: left and right arrows (6 panels a step, each at least 96 x 200 px) and a **minimap strip** of the whole room (one target, at least 64 px high; tap a spot to go there). A one-finger horizontal swipe may be offered **as an extra, never required**, never taught on screen, and under 24 px of movement is still a tap. Nothing in Explore requires drag, pinch or any gesture (UX-03). | P1 |
+| FR-92 | **A card for each unit**, shown in the rail when the visitor taps it (twelve cards: UX 14.3.6). Plain language at about a grade 5 to 6 reading level, **at most 40 words** (FR-22), every history or technical claim tagged [FC]. Each card names the missions that used the unit. Cards are data with review flags (FR-46). | P1 |
+| FR-93 | **Mission cross-links, both ways.** A unit card links to the missions that use it; a mission chip rings and numbers every unit that mission uses (derived from the programs and mission files, never typed); the mission briefing and result link to Explore with their units ringed; Explore can start a mission. The tour teaches the vocabulary the missions use (accumulator, program pulse, data and program trunk, program control, and so on). | P1 |
+| FR-94 | **Live-only lamps.** Where Explore shows lamps they are lit only from a live core; otherwise they are dark. With the core down but the bridge up, Explore keeps working as a static tour with every lamp dark and a visible notice ("Live lamps are off: ENIAC is resting. The tour still works."), and mission starts are disabled. With the websocket or bridge down it is the error state (FR-50). **Explore v0 may ship with no session at all** (all lamps dark). | P1 |
+| FR-95 | **Walk the room**: a Previous / Next sequence through the twelve stops in teaching order, panning the room to each. | P1 |
+| FR-96 | **Glossary** (S15): at least 14 terms, each at most 25 words, in two pages, with "Show me" links to the unit card. A term whose wording is unverified (the transceiver) is held and not shown (FR-46). A table in the UX spec maps the words the missions use to the words the real machine used (UX 15.1). | P1 |
+| FR-97 | **Reduced motion.** The attract drift, the Explore pans and the finale animations are replaced by cross-fades when the box setting or the browser's `prefers-reduced-motion` asks for it (UX 14.7). | P1 |
+| FR-98 | **Counters** for the new screens (FR-60): `attract_flight_started`, `attract_flight_landed`, `attract_touch`, `explore_open`, `explore_card{unit}`, `explore_walk_completed`, `explore_mission_chip{m}`, `glossary_open`, `honor_page_view{1..4}`, `finale_reached`, `finale_beat{n}`, `finale_skipped_at`. | P2 |
+
 ## 5. Touch and UX Requirements
 
 | ID | Requirement |
 |---|---|
-| UX-01 | All interactive targets are ≥ 64×64 CSS px (about 11.5 mm on a 15.6" 1080p panel), with ≥ 16 px between targets. Primary actions (READ, INIT, Next, Skip, I'm here) are ≥ 96 px tall. |
+| UX-01 | All interactive targets are ≥ 64×64 CSS px (about 11.5 mm on a 15.6" 1080p panel, **about 17.7 mm on the 24" 1080p production panel**), with ≥ 16 px between targets. Primary actions (READ, INIT, Next, Skip, I'm here) are ≥ 96 px tall. |
 | UX-02 | Panel jacks and switches are drawn small for realism, but their **hit areas** are enlarged to ≥ 64 px. Each step zooms the view so that only the relevant jacks are active. |
-| UX-03 | **No hover** states carry meaning. **No long-press, double-tap, pinch or multi-finger gesture** is required. Actions fire on touch release. |
+| UX-03 | **No hover** states carry meaning. **No drag, long-press, double-tap, pinch or multi-finger gesture is required anywhere.** *(0.4)* The only gesture the app recognises is an **optional** one-finger horizontal swipe on the Explore ENIAC panorama (FR-91): it is never taught or labelled, it has a tap equivalent for everything it does (arrows, minimap, Previous and Next), and a drag under 24 px is still a tap. Actions fire on touch release. |
 | UX-04 | **Gloves and small hands:** targets and tolerances work with winter gloves on a capacitive panel. Test with gloves and with a child tester (NFR-09). |
 | UX-05 | **No keyboard** anywhere in the visitor UI. On-screen keyboards are disabled. The only numeric entry is the admin PIN pad. |
 | UX-06 | **No accidental exits:** browser gestures (swipe back, pull-to-refresh, pinch-zoom), the context menu, text selection, drag-out and link navigation are all disabled. Palm or multi-touch contact doesn't trigger actions (only the first touch point counts). No visitor path leaves the app. |
@@ -218,7 +252,9 @@ Priorities: **P0** = MVP, **P1** = before the floor, **P2** = nice to have.
 | UX-08 | Visual feedback within 100 ms of every touch. |
 | UX-09 | Colour is never the only cue (for example, the highlighted target also pulses or shows an arrow). Text contrast meets WCAG 2.1 AA. |
 | UX-10 | A visible "Back to missions" and "Start over" are always available during a mission. "Start over" confirms first. |
-| UX-11 | Landscape layout for a 15.6" 1920×1080 panel, and it must scale to the production screen (Q2). |
+| UX-11 | Landscape layout authored at 1920×1080 and scaled as one unit. The dev panel is 15.6" (1920×1080); **the production panel is 24" landscape** (0.4; resolution to be confirmed, Q16). A 16:10 panel is letterboxed; a larger-pixel panel scales the vector art. Portrait is out of scope. |
+| UX-12 | **Explore targets (0.4):** a unit is tapped on its whole block of panels (at least 176 × 400 px, hit area inset so neighbours are 16 px apart) or on its label chip (at least 176 × 80 px). Pan arrows are at least 96 × 200 px. The minimap is one target at least 64 px high. Mission chips are 64 px high. Previous and Next are 96 px high. |
+| UX-13 | **Reduced motion (0.4):** under the box setting or `prefers-reduced-motion`, no screen slides, drifts or pulses; changes are cross-fades (FR-97). Nothing flashes more than 3 times a second (WCAG 2.3.1) in any case. |
 
 ---
 
@@ -230,6 +266,7 @@ Priorities: **P0** = MVP, **P1** = before the floor, **P2** = nice to have.
 | NFR-02 | Boot-to-kiosk | Power-on reaches attract with no login, keyboard or touch. This avoids the existing exhibit's `login:` failure. Target: ≤ 60 s from power-on. It also recovers unattended from a power cut mid-run. |
 | NFR-03 | Responsiveness | Touch feedback ≤ 100 ms. A mission's fresh core is ready in ≤ 3 s. |
 | NFR-04 | Rendering | Lamp and card updates are rendered at ≥ 20 fps sustained on the Pi 5 in all three missions, including the sieve and trajdemo at full speed. The front end may coalesce updates (the core emits about every 30 ms in timed mode). |
+| NFR-04b | Panorama rendering (0.4) | The attract and Explore panorama draws 40 panels but updates lamps **only for the panels on screen** (about 8 of 40). It sustains ≥ 20 fps on the Pi 5 at the production resolution, and attract on its own stays at or under 50% of one core. The panorama never lights a lamp that the core did not report. |
 | NFR-05 | Stability | No memory growth that needs a restart over 7 days of continuous attract and mission cycling, measured by a soak test. (Upstream needed the `-K` restart hack for Tk on ARM; the web stack must not inherit that.) |
 | NFR-06 | Legibility | Lamp digits and card text are readable at about 1 m. Body text is ≥ 24 px and step headlines ≥ 36 px. |
 | NFR-07 | Uptime | ≥ 99% of open hours available without staff action (Section 1.5). A nightly scheduled restart is allowed, at 03:00 by default. |
@@ -280,6 +317,9 @@ Nick must not stay in the loop. The kiosk doesn't ship to the floor until all of
 | R4 | Fast-forward and skipping trajdemo parts may be limited by the program's master-programmer sequencing. | FR-19 may need a different approach. | **Happened (spike S2):** only the trajectory is reachable. FR-19 rewritten in 0.3 to READ, INIT and one flight; Plan B kept in UX 8.3.8. |
 | R5 | Dev on shared hardware (the Model 4 kiosk). | Could disrupt a live exhibit. | FR-80–83, and test only when the Model 4 kiosk isn't needed on the floor. |
 | R6 | Historical accuracy of mission text. | A wrong claim on the floor. | Fact-Checker review, and Doug's approval of the copy (FR-22, FR-41). |
+| R7 | **New history claims (0.4)**: twelve unit cards, a glossary and an honor roll naming people and roles (UX 14.8 lists all 19 claims). Crediting people wrongly is worse than not crediting them. | A wrong or disputed credit on the floor. | One-line roles; the FR-46 gate (only `approved` blocks render); the names and roles go to Doug first; ship what is approved by install day. |
+| R8 | **Production hardware unknown (0.4)**: which computer drives the 24" mount, its OS and architecture, the panel's resolution and touch technology (Q15, Q16). | M3-lite slips or runs poorly; touch behaves differently with gloves or leaning palms. | Settle Q15 and Q16 first; on install day run a one-finger, palm and glove check; keep the design resolution-independent (UX 9.4). |
+| R9 | **Attract runs 24 hours a day (0.4)** and has not been soaked. | Memory growth or a stuck run on the floor. | One flight per core process (FR-34), the 20 s hang rule (FR-36), the nightly 03:00 restart (NFR-07), and an overnight soak of attract before install. |
 
 ### 9.2 Gating items before the floor
 
@@ -300,16 +340,35 @@ Nick must not stay in the loop. The kiosk doesn't ship to the floor until all of
 | Phase | Scope | Exit criteria |
 |---|---|---|
 | **M1: MVP (one mission end to end)** on the Model 4 kiosk (test) | Bridge (FR-01–06), fresh-core-per-mission, **Squares** mission with guided plugging and switches, skip, speed, live lamps, error state (FR-50–51), credit footer, idle reset, clean install and removal (FR-80–83). Spikes: Pi 5 performance for the sieve and trajdemo (R3), and trajdemo fast-forward (R4). | A visitor can do Squares start to finish by touch. Killing the core shows the error state and it recovers. Removal leaves the Model 4 kiosk unchanged. |
-| **M2: All missions** | Primes and Trajectory missions, card output, READ flow, mission-definition format (FR-24), attract mode, About screen, text through Fact-Checker. | All three missions meet their length targets (FR-10) and NFR-04. |
+| **M2: All missions** | Primes and Trajectory missions, card output, READ flow, mission-definition format (FR-24), text through Fact-Checker. *(0.4: live attract and the About screen moved to M3-lite; the interim start screen stands in.)* | All three missions meet their length targets (FR-10) and NFR-04. |
+| **M3-lite: museum install on the 24" screen (target: the week of 2026-10-05)** | Run the three missions on the 24" production panel with **live attract-lite** (FR-30 to FR-36), the **honor roll** and Stuart credit (FR-41, FR-43, FR-44, FR-46), boot-to-kiosk with auto-restart, and a one-page staff card. Optional if time allows: Explore ENIAC v0 and the finale (10.1). | A visitor can walk up, touch, do a mission and see the honor roll on the 24" panel. Power-on reaches live attract with no login. A killed core shows the error state and recovers. Staff can power-cycle it from the card. |
 | **M3: Operable** | Admin escape and screen, health endpoint, update and rollback, metrics, boot-to-kiosk hardening, soak test. | NFR-02, NFR-05 and NFR-07 pass on the test box. |
 | **M4: Production hardware and handoff** | Provision the dedicated Pi 5, usability test, runbook, sticker, credentials, handoff drill, remove from the Model 4 kiosk. | G1–G7 all pass. |
 | **M5: Floor trial** | 2-week trial, metrics review, fixes. | OT-7 met, and the museum owner signs off. |
+
+### 10.1 M3-lite: what is the minimum for the install next week
+
+M3-lite is a **supervised preview** on the museum's own screen. It is **not** the ownership handoff: G1 to G7 and OT-1 to OT-7 still gate M4 and M5. Nick may be on call for the preview week only, and that is recorded here so it is not mistaken for the end state.
+
+| Tier | Item | PRD | Why |
+|---|---|---|---|
+| **Must** | The kiosk app on the 24" panel at its native resolution; touch checked (one finger, palm, glove) | UX-11, UX-06, R8 | Nothing else matters if it does not fit and respond |
+| **Must** | Boot-to-kiosk and auto-restart: power-on reaches attract with no login, no keyboard; services restart; the core restarts (FR-05); error state works (FR-50, FR-51); nightly 03:00 restart | NFR-02, NFR-07 | The old exhibit stops at a `login:` prompt; this one must not |
+| **Must** | The three missions as built | M1, M2 | Already done; no regressions |
+| **Must** | **Live attract-lite**: the real `trajdemo.e` run in a loop, plot and caption from real cards, the Stuart plate, error state if the core is down | FR-30, FR-34 to FR-36, FR-43 | Nick's first ask |
+| **Must** | **Honor roll** pages 1 and 4 (Stuart; this exhibit) and, **as approved by Doug by install day**, pages 2 and 3 (the first programmers; the builders) | FR-41, FR-43, FR-44, FR-46 | Nick's third ask; unapproved blocks are not shown |
+| **Must** | A one-page staff card: what it is, how to power-cycle it, who to call; no credentials on it | OT-2, OT-3 (minimum) | Staff must be able to recover it |
+| **Should** | **Explore ENIAC v0**: the panorama and twelve cards with all lamps dark (no session needed), mission chips, glossary | FR-90 to FR-96 | Pure front end, no core dependency: it can be built in parallel with the attract work |
+| **Should** | **Finale** with the real recap and the honor beats (without F2) | FR-45 | Cheap once the honor components exist |
+| Later | Live lamps in the panorama (attract and Explore), finale F2, the admin screen, update and rollback, metrics, the soak and usability tests, the dedicated-Pi provisioning and the full OT list | FR-60 to FR-75, NFR-05, NFR-09, OT | M3, M4 and M5 |
+
+**Install prerequisites that are not software** (each blocks the milestone): Q15 which computer drives the mount; Q16 the panel's native resolution and touch technology; Q1 a named museum owner; and Doug's review of the new copy (R7).
 
 ---
 
 ## 11. Assumptions
 
-- The dev touchscreen (15.6", 1920×1080, wch.cn multitouch) is representative of the production screen.
+- The dev touchscreen (15.6", 1920×1080, wch.cn multitouch) is representative of the production screen's **layout**; the production panel is a 24" landscape panel assumed to be 1920×1080 until confirmed (Q16). Its touch behaviour is not assumed to match the dev panel's (R8).
 - Chromium on Pi OS trixie arm64 is the same runtime the other museum kiosks use.
 - The core runs unmodified (except `mult.go`) as a child of the bridge, using its existing `-v` display protocol.
 - The museum allows a small always-on exhibit with its own power and wired LAN.
@@ -322,19 +381,28 @@ Nick must not stay in the loop. The kiosk doesn't ship to the floor until all of
 | # | Question | Default used in this PRD | Whose call |
 |---|---|---|---|
 | Q1 | Who is the named museum owner for the kiosk? | Doug Crawford, as exhibit approver, until someone else is named | Doug / museum |
-| Q2 | **Dedicated Pi 5 procurement and timing:** who buys it (and the touchscreen, case, 27 W PSU, active cooler), budget, screen size and orientation, mounting, and a date before the floor? | Pi 5 8 GB, 15.6" 1080p landscape capacitive touchscreen matching the dev panel. Procurement is needed before M4. | Nick / Doug |
+| Q2 | **Dedicated Pi 5 procurement and timing:** who buys it (and the case, 27 W PSU, active cooler), budget, mounting, and a date before the floor? *(0.4: the screen is now a 24" landscape touch panel on the museum's existing mount, so screen size and orientation are answered; see Q15 and Q16.)* | Pi 5 8 GB driving the 24" panel. Procurement is needed before M4; M3-lite may use the dev Pi 5 or the mount's existing computer (Q15). | Nick / Doug |
 | Q3 | Where does it go on the floor? Next to the existing ENIAC exhibit Pi (10.130.10.27) as a companion, or replacing it? | A companion next to the existing exhibit. The existing Pi is untouched. | Doug |
 | Q4 | Mission lengths and how many steps the visitor does (FR-10, FR-11) | Squares 2–3 min / 6–8 steps, Primes 3–4 min / 3–5 steps, Trajectory 4–6 min / 3–5 steps + READ | Nick (to validate in usability testing) |
 | Q5 | Where does the code live long-term: Nick's GitHub, or a VCF-controlled org? Public or private? | Private repo, with the museum owner granted access at handoff. It goes public only after R1. | Nick / Doug / Stuart |
-| Q6 | Idle timeouts (FR-32) | 90 s in setup, 3 min while running, 15 s "Still there?" countdown | Nick |
+| Q6 | Idle timeouts (FR-32) | 90 s in setup and on the menu, **120 s in Explore ENIAC**, 3 min while running, 15 s "Still there?" countdown | Nick |
 | Q7 | Operating hours: power on and off with the museum lights, or always on? | Always on, with a nightly 03:00 restart | Museum staff |
 | Q8 | Sound (relay clicks, card punch)? | No sound in v1 | Nick / Doug |
 | Q9 | Languages other than English, and screen-reader/audio description? | English only. Visual accessibility per UX-09 only. | Doug |
-| Q10 | Credit wording, and should the ENIAC programmers (such as the six women who programmed it) be credited on the About screen? | Stuart credit per FR-40/41. People credits are proposed to the Fact-Checker and Doug. | Doug |
+| Q10 | Credit wording, and should the ENIAC programmers (such as the six women who programmed it) be credited on the About screen? *(0.4: **decided yes**, by Nick: the honor roll, FR-44. What remains is Doug's approval of the names, their format and each role, Q17.)* | The names in FR-44; roles as one short line each; approved blocks only (FR-46). | Doug |
 | Q11 | If Stuart declines permission for the `images/` photographs, is original artwork acceptable? | Yes. Plan for original artwork if needed. | Nick |
 | Q12 | Admin escape gesture and PIN | 5 taps top-left within 3 s, then a museum-set PIN | Museum staff |
 | Q13 | Mission gating: free choice, or must Squares come first? | All unlocked, with the suggested order marked | Nick |
 | Q14 | Updates: USB-only, or network pull from GitHub when the LAN has internet? | Both, with USB as the guaranteed path | Museum IT volunteer |
+| Q15 | **What computer drives the 24" mount?** The old exhibit Pi at 10.130.10.27 (older Pi: which model, which OS, 32- or 64-bit?), the Model 4 kiosk's Pi 5, or the new dedicated Pi 5? The release bundle is arm64. | A Pi 5 (arm64), as in D3 | Nick |
+| Q16 | The 24" panel's **native resolution and aspect**, its **touch technology** (projected-capacitive or infrared frame), and the **mounting height**. | 1920×1080 (16:9); touch to be tested with a finger, a palm and a glove on install day | Nick / Doug |
+| Q17 | The honor roll: which names, what **format** (the women's names as known later in life, as given, or with their earlier names too), what **one-line role** for each builder, and **anyone else** to honor (for example other engineers or the Moore School's human computers). | The people and bodies in FR-44; roles in UX 14.6.2 | Doug (Fact-Checker first) |
+| Q18 | Does Stuart approve the wording of his credit, and how is the maker of this screen credited (Nick, the museum, or neither)? | His wording goes to Stuart with the R1 permission request; the maker line is left out until decided | Nick / Stuart |
+| Q19 | Attract loop: **recycle the core after each flight** (default), or let `trajdemo.e` run on by itself once a follow-up spike shows later flights are clean? | Recycle after each flight (FR-34) | Nick |
+| Q20 | When the **core is down but the bridge is up**, should the static screens (Explore, honor roll, glossary, finale recap) keep working with a visible notice, or should every screen become the error state? | Keep working with a notice; the menu and attract show the error state (FR-94) | Nick |
+| Q21 | The wording for **"transceiver"** (Nick listed it as tour vocabulary; no mission uses it). | Held and not shown until Stuart or Doug confirm | Stuart / Doug |
+| Q22 | The Printer's panel span and the whole panel layout against the 1946 floor plan (the layout is read from Stuart's simulator, with the Printer's 4-panel span my own reading). | As in UX 14.3.1 | Doug / Stuart |
+| Q23 | Finale trigger: after **all three** missions are done (default), or after Finish on any mission? | All three | Nick |
 
 ---
 
@@ -345,3 +413,4 @@ Nick must not stay in the loop. The kiosk doesn't ship to the floor until all of
 | 0.1 | 2026-09-30 | Nick DeMarco with AI assistance | Initial draft from the VCF handoff, first-session decisions, the dev-on-Model-4 hardware update, and an upstream code review |
 | 0.2 | 2026-10-01 | software-developer agent, recording Nick's decision #36 | NFR-12: from "only the `mult.go` fix" to a documented, minimal set of local upstream patches, each with an upstream bug report pending and dropped once upstream fixes it. We patch upstream bugs ourselves now and take Stuart's official fixes later. Patches carried: 0001 `mult.go` stage format, 0002 `ft.go` repeat-switch default (unblocks Primes, U1), 0003 `accumulator.go` 1PP race (trajdemo cards, spike #31). R2 widened. Verified: `sieve.e` punches the 407 primes from 3 to 2801. |
 | 0.3 | 2026-10-01 | software-developer agent, recording Nick's M2 decisions | FR-19 rewritten: Trajectory is READ (`b c` then `b r`), one INIT, one 34-card flight drawn from the real cards, frozen on the landing card with `s cy.op 1a`, Full only; the six-part run kept as Plan B (S2, R4 happened). FR-18: the Primes answer is card 100 (547), the result screen stays live to 407. FR-17: Squares Slow is `cy.rate 13` (S4), each addition visible for about 1 s. |
+| 0.4 | 2026-10-02 | product-requirements, with Nick's request for the 24" museum install | **Live attract** specified (FR-30, FR-34 to FR-36: `trajdemo.e` at Full, one flight per core, 60 s loop, hand-off, failure states, "attract-lite" for M3-lite); inactivity table amended (FR-32, Explore 120 s); **Stuart credit prominence** (FR-43) and **honor roll** (FR-41, FR-44) naming the six programmers, Eckert, Mauchly, the Goldstines, the Moore School and the Army BRL; **finale** (FR-45); **content review gate** (FR-46); **Explore ENIAC** and **glossary** (new 4.9, FR-90 to FR-98); UX-03 amended for an optional swipe, UX-01 and UX-11 for the 24" panel, UX-12 and UX-13 added; NFR-04b; D3 and D4, constraints, scope and metrics updated; risks R7 to R9; **M3-lite** milestone and its minimum (10.1); Q2, Q6 and Q10 updated, Q15 to Q23 added. |

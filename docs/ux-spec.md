@@ -1,11 +1,13 @@
 # UX Design Specification: ENIAC Touch Kiosk
 
-**Version:** 0.5
-**Last Updated:** 2026-10-01
+**Version:** 0.6
+**Last Updated:** 2026-10-02
 **Author:** Nick DeMarco with AI assistance (ux-design agent)
 **Status:** Draft for review
-**PRD Reference:** `docs/PRD.md` v0.1 (sections 4, 5, 12)
-**Architecture Reference:** `docs/architecture.md` (being written in parallel; this spec does not define the protocol)
+**PRD Reference:** `docs/PRD.md` v0.4 (sections 4, 5, 10, 12)
+**Architecture Reference:** `docs/architecture.md` v0.5 (this spec does not define the protocol)
+
+**v0.6 (2026-10-02)** adds the screens for the museum's 24-inch install: a live attract (14.2), **Explore ENIAC** with its glossary (14.3, 14.4, 15), a finale (14.5) and an honor roll (14.6). It is in section 14; the older sections are patched only where they must point there. A mockup of Explore ENIAC is in `docs/mockups/explore-eniac.html` (and `.png`).
 
 **Grounding sources:** `docs/PRD.md`; `docs/handoff-from-vcf.md`; upstream `blstuart/eniac-simulator` at `c4b94f2` (`programs/sq.e`, `doc/example.tex` and `programs/sq2.e` for the Squares explanation, `src/accumulator.go`, `src/constant.go`, `vis/eniactk.go`, `images/*.ppm`, the header comments of `programs/sieve.e` and `programs/trajdemo.e`).
 
@@ -25,6 +27,12 @@
 | F8 | The exact sieve and trajdemo switch choices in section 8 were **candidates** read from the `.e` headers. In v0.2 they are confirmed line by line (8.2.2, 8.3.2): each is unique in the file and passes validation rule 4, checked by script on 2026-10-01. **Open: S2 may still change the Trajectory run (F9).** | Resolved for M2 steps |
 | F9 | **At the pinned commit `trajdemo.e` does not run its 6 demo parts one per INIT.** INIT starts the artillery trajectory at once, and every later INIT restarts it (8.3.1, verified by running the core). FR-19 as written cannot be met with the unmodified file (PRD R4). Mission 3 is therefore READ, INIT, then one flight drawn as dots from the real punched cards. The six-part run is kept as Plan B (8.3.8). Attract mode (7.1) is affected (8.5.1, item 6). | PRD owner, S2 spike, Nick |
 | F10 | **The sieve is punch-bound.** The simulator waits 600 ms per punched card, so all 407 primes take about 4:10 at Full on any machine, and "Skip to the answer" cannot shorten it. The design gives the result at card 100 (about 1 minute) and lets the live count carry on (8.2.1, 8.2.5). | Nick |
+| F11 | **The production screen is a 24-inch landscape touch panel** (PRD Q2, UX-11 updated). At 1920 x 1080 one CSS px is about 0.277 mm, so the 64 px and 96 px minimums become about 17.7 mm and 26.6 mm: bigger than on the 15.6-inch dev panel, so every target rule still holds. Native resolution, aspect and touch technology are not confirmed (Q16); a 16:10 or 4K panel scales as one unit (9.4). | Nick |
+| F12 | **Panel numbers in `src/web/app/stage/roomplan.ts` look inconsistent** (a mix of 0-based and 1-based: for example `i: 1` and `p: 3` are 1-based but `a1: 6` and `c: 34` are the upstream 0-based offsets). Explore ENIAC takes the table in 14.3.1 (0-based, from `vis/eniactk.go`) as its single source, and `roomplan.ts` should read the same table. | Developer |
+| F13 | **The room layout (which panel holds which unit) is read from Stuart's simulator**, not from a 1946 floor plan. The Printer's span (panels 36 to 39) is my reading from one lamp position [I]. | Doug / Stuart (Q22) |
+| F14 | **Attract is a flat panorama, not the perspective room of 7.1.** No perspective art exists. The unrolled room (14.3.2) needs no new art and is the same component as Explore. The perspective view stays an option for later. | Design decision |
+| F15 | **The attract loop recycles the core after each flight** because the program's own restart after a landing is not verified clean (8.3.1 item 3). | Nick (Q19) |
+| F16 | **"Transceiver" is held.** It is not used in any mission and its wording is unverified (15). | Stuart / Doug (Q21) |
 
 ---
 
@@ -46,6 +54,8 @@ A visitor walks up to a dark screen where a room-sized machine is visibly runnin
 | Step pacing | The visitor taps an explicit **Next step** after each success. There is no auto-advance. | Family groups read at different speeds. Kids touch, adults read. |
 | Squares length | 7 hands-on steps, 2:40 at a normal pace | FR-10, FR-11 |
 | Visitor-facing numbers | A big readout number sits above each lamp grid, labelled "helper readout" | The real lamps show one lit lamp per digit column, which is hard to read for a 10-year-old. The lamps stay as the real thing. |
+| The whole machine (v0.6) | **Unrolled panorama** of the 40-panel U, panned by arrows and a minimap strip (swipe optional) | A U of about 80 feet cannot be shown at once. Large targets, no gesture required (UX-03). One component serves attract, Explore and the finale. |
+| Credit (v0.6) | Stuart's name on a plate in attract and as its own honor page; the original programmers and builders on an honor roll | Credit prominently, in the machine's own engraved-plate style, with no photographs. |
 
 ### 1.3 Design principles
 
@@ -75,19 +85,21 @@ A visitor walks up to a dark screen where a room-sized machine is visibly runnin
 | ID | Screen | Purpose | Timeout |
 |---|---|---|---|
 | S0 | Waking up | Shown while a fresh core starts (at most about 3 s) | none |
-| S1 | Attract | Live ENIAC in the room, "Touch to program ENIAC" | none |
+| S1 | Attract | **Live** ENIAC in the room (14.2), Stuart plate, "Touch to program ENIAC" | none |
 | S2 | Mission picker | Choose 1, 2 or 3; About | 90 s to attract |
 | S3 | Mission screen, briefing | Intro card and overview of the units used | 90 s |
 | S4 | Mission screen, setup steps | Step card + Workbench + jack windows or switch picker | 90 s |
 | S5 | Mission screen, "rest done for you" | Animated batch placement with counts | none (about 6 s) |
 | S6 | Mission screen, run | READ (if the mission needs it), INIT, lamps and cards, speed | 3 min |
 | S7 | Result | Explanation, tape or cards, takeaway, Next / Try again / Menu | 90 s |
-| S8 | Finale | After mission 3: thanks and credits, auto-return | 45 s |
+| S8 | Finale | After all three missions: recap, the room you used, Stuart, the honor roll (14.5) | beats 15 to 20 s; holds 20 s at the end |
 | S9 | Still there? | Overlay | 15 s countdown |
 | S10 | ENIAC is resting | Error state (no demo fallback) | none, self-recovers |
-| S11 | About / credits | Stuart, sources, VCF | 90 s |
+| S11 | About and honor roll | Four pages: Stuart, the first programmers, the builders, this exhibit (14.6) | 90 s |
 | S12 | Admin PIN pad | Hidden | 30 s |
 | S13 | Admin | Health, metrics, actions | 2 min (FR-74) |
+| S14 | Explore ENIAC | Pannable panorama of the whole machine; a card for each unit; mission cross-links (14.3) | 120 s |
+| S15 | Glossary | Sixteen terms in two pages (14.4, 15) | 90 s |
 | D1 | Confirm: Start over | Overlay | none |
 | D2 | Tell me more | Slide-over | follows mission timeout |
 
@@ -126,6 +138,8 @@ Hidden: 5 taps in the top-left corner within 3 s -> S12 PIN -> S13 Admin -> Retu
 ```
 
 Rules: the first touch in attract never acts on anything underneath (FR-31). **Steps are not undoable** because the core cannot unplug (PRD section 3); "Start over" starts a fresh core. "Try again" does the same.
+
+**v0.6 additions to the flow:** S2 also leads to **S14 Explore ENIAC** (and from there to S15 Glossary, S11 page 2 and, through "Start Mission N", to S0). S3 and S7 lead to S14 and back. After all three missions S7's primary button is **Finish**, which leads to **S8 Finale** (14.5), which ends at S1. S1 is a live session (14.2) that keeps running behind S2, S11, S14 and S15 until a mission starts. The timeouts and the core-down behaviour of every screen are in 14.7.
 
 ---
 
@@ -178,7 +192,7 @@ Every step uses the same choreography, so visitors learn it once:
 
 ### 4.4 Look-around
 
-Two 96x96 arrow buttons at the stage's left and right middle edges step the Workbench to the neighbouring unit. A 200x130 minimap (bottom-left of the stage, y 870 to 1000) shows the room plan with a "You are here" dot. The minimap and the arrows are **never required**; the guide re-frames automatically. Tapping the minimap goes to L0 for 4 s, then returns.
+Two 96x96 arrow buttons at the stage's left and right middle edges step the Workbench to the neighbouring unit. A 200x130 minimap (bottom-left of the stage, y 870 to 1000) shows the room plan with a "You are here" dot. The minimap and the arrows are **never required**; the guide re-frames automatically. (The same arrows and minimap, at a larger size and with the whole U, make up S14 Explore ENIAC, 14.3.) Tapping the minimap goes to L0 for 4 s, then returns.
 
 ---
 
@@ -324,6 +338,8 @@ Common frame (S2 to S7, S11): Header y0 to 96, content y96 to 1032, Footer y1032
 
 ### 7.1 S1 Attract
 
+> **Superseded by 14.2 (v0.6).** Attract is now a flat panorama with live lamps, a live shell's-path plot, the Stuart plate and a rotating honor plate. The text below is kept for the layout history.
+
 Goal: make people curious, and be honest that it is live.
 
 ```
@@ -349,6 +365,8 @@ Goal: make people curious, and be honest that it is live.
 - No timeout.
 
 ### 7.2 S2 Mission picker
+
+> **Superseded by 8.4 for the cards and by 14.9 for the row under them** (Explore ENIAC and About and honor roll).
 
 *Superseded by 8.4 for the final copy, counts and the "Start here" rules; this wireframe is kept for the layout.*
 
@@ -483,6 +501,8 @@ After mission 3 the primary button is **Finish** and leads to S8.
 
 ### 7.7 S8 Finale
 
+> **Superseded by 14.5 (v0.6).**
+
 Title "You programmed ENIAC." A line of credits (Stuart, the museum), a small picture of the live room, and a **Start over for the next visitor** button (96 h). Returns to attract after 45 s (no countdown overlay needed, since nothing is pending).
 
 ### 7.8 S9 "Still there?"
@@ -519,6 +539,8 @@ It appears after 90 s with no touch in setup or 3 min in the run (FR-32, both co
 - The top-left corner remains the admin zone here too.
 
 ### 7.10 S11 About and credits
+
+> **Superseded by 14.6 (v0.6):** four pages, with the original programmers and builders credited and the Stuart credit made prominent. The mission-source wording below moves to page 4.
 
 ```
 +-------------------------------------------------------------------------------------+
@@ -1512,7 +1534,7 @@ Final copy and counts for the three cards (the wireframe in 7.2 is superseded by
 | Arrows | Chevrons between cards labelled "then" (24 px). They show the order, and do not lock anything. |
 | **Done and UP NEXT** | State is in memory only and is cleared by the idle reset (no PII, no storage). When a visitor returns to the picker after reaching the result screen (S7) of a mission, that card gets a check badge and the word "Done". The "START HERE" chip moves, with the words "UP NEXT", to the lowest-numbered card that is not done. If all three are done there is no chip. |
 | Whole card tappable | The card and its Start button both start the mission. Hit area at least 96 px. Focus order 1, 2, 3. |
-| S7 primary button | Names the next mission in the suggested order: "Next: Primes" after Squares, "Next: Trajectory" after Primes, **Finish** after Trajectory. (If a visitor skipped around, the order stays 1, 2, 3.) |
+| S7 primary button | Names the next mission in the suggested order: "Next: Primes" after Squares, "Next: Trajectory" after Primes, **Finish** after Trajectory. (If a visitor skipped around, the order stays 1, 2, 3.) **v0.6 (14.5.1):** the button names the next mission **not yet done**, in the order 1, 2, 3, and reads **Finish** only when all three are done. |
 | Metrics | `mission_picked{m, order_position}` and `picker_next_used` (to see if visitors follow the order). |
 
 ### 8.5 What these scripts need from the mission loader and the bridge
@@ -1603,7 +1625,7 @@ The M1 schema and `squares.yaml` cover steps, withheld, run, checkpoints and the
 
 ### 9.2 Gestures and exits
 
-No gestures are required or recognised. Swipe-back, pull-to-refresh, pinch-zoom, context menu, text selection and link navigation are disabled. There is no on-screen keyboard; the only numeric entry is the PIN pad (UX-05, UX-06).
+No gesture is **required** anywhere. The only gesture the app **recognises** is the optional one-finger horizontal swipe on the Explore ENIAC panorama (14.3.5): it is never taught or labelled, it has a tap equivalent for everything it does, and a drag under 24 px is still a tap. Swipe-back, pull-to-refresh, pinch-zoom, context menu, text selection and link navigation are disabled. There is no on-screen keyboard; the only numeric entry is the PIN pad (UX-05, UX-06).
 
 ### 9.3 Debounce
 
@@ -1613,9 +1635,11 @@ INIT, READ and step buttons ignore a second tap within 400 ms and while their ac
 
 The design is authored for **1920 x 1080 landscape** and scaled as one unit (letterboxed) for other 16:9 panels. Minimum sizes are preserved by scaling up only: on a smaller panel the target minimums hold in physical size, so the guide rail narrows first and the stage is reduced to three panels. A portrait orientation is **out of scope** (Q2).
 
+**The 24-inch production panel (v0.6, F11).** At 1920 x 1080 the 24-inch panel is about 531 x 299 mm, so one CSS px is about 0.277 mm (the 15.6-inch dev panel is about 0.18 mm). Sizes become physically larger than the PRD's dev figures: 64 px is about 17.7 mm, 96 px about 26.6 mm, the 28 px body text has an em of about 7.8 mm, and a 14 px lamp is about 3.9 mm. If the production panel is 16:10 (1920 x 1200) the stage is letterboxed top and bottom; a 2560 x 1440 or 4K panel scales the vector art as one unit (all art is SVG). Resolution, aspect, touch technology (projected-capacitive or infrared frames behave differently with gloves and leaning palms; only the first touch counts either way, UX-06) and mounting height are Q16; the first install day includes a touch-calibration and "one-finger, palm, glove" check on the actual panel.
+
 ### 9.5 Photosensitivity and motion
 
-Lamp states are smoothed (80 ms decay) so no element flashes more than 3 times per second in a region larger than about 10% of the screen (WCAG 2.3.1). Full speed cannot strobe the screen. A "Reduce motion" setting is set on the box by staff; it replaces zooms with cross-fades.
+Lamp states are smoothed (80 ms decay) so no element flashes more than 3 times per second in a region larger than about 10% of the screen (WCAG 2.3.1). Full speed cannot strobe the screen. A "Reduce motion" setting is set on the box by staff, and the browser's `prefers-reduced-motion` is honoured too; either one replaces zooms, pans and drifts with cross-fades. What each v0.6 screen does under it is in 14.7.
 
 ---
 
@@ -1666,6 +1690,8 @@ Lamp states are smoothed (80 ms decay) so no element flashes more than 3 times p
 | `--space-1..6` | 8, 16, 24, 32, 48, 64 px |
 | `--target-min` | 64 px; `--target-primary` 96 px; `--jack-hit` 88 px; `--dial-hit` 120 px |
 | `--radius` | 16 px cards, 12 px buttons |
+| `--select` (v0.6) | #F4EFE3, the ring on a selected unit (Explore); `--guide` yellow stays "look here" |
+| `--plate` (v0.6) | #0E0F11 fill with #D9D0B0 ink, the engraved name plate (honor roll, Stuart plate); from the panel art |
 
 ---
 
@@ -1678,9 +1704,565 @@ Lamp states are smoothed (80 ms decay) so no element flashes more than 3 times p
 - [ ] Fact-Checker review of every [FC] line; Doug's approval of the About wording (Q10 on crediting the ENIAC programmers).
 - [ ] Mounting height and whether the production screen matches 1920x1080 (Q2).
 - [x] Should the attract view show trajdemo (the current exhibit) or rotate missions? *v0.4:* trajdemo's trajectory loop, with the caption fixed in 7.1 (the only part reachable at the pin, F9).
+- [ ] **v0.6 (14.10): Q15 to Q23**: the machine that drives the 24-inch mount; its resolution and touch; the honor-roll names and roles (Doug); Stuart's approval of his credit; the attract recycle; static screens when the core is down; the Transceiver wording; the Printer's panel span; the finale trigger. The [FC] list of every new claim is 14.8.
 - [ ] Usability test plan (NFR-09): include one gloved tester and one child aged 8 to 12 on the Squares flow; watch where they pause at the jack windows.
 
-## 14. Revision history
+## 14. v0.6: live attract, Explore ENIAC, finale, honor roll and glossary
+
+Added in 0.6 for the 24-inch museum install (PRD 0.4, FR-30 to FR-46 and FR-90 to FR-98). Where this section and an earlier one disagree, **this section wins**: it supersedes 7.1 (S1 Attract), 7.7 (S8 Finale) and 7.10 (S11 About). Everything here keeps the approved panel art (6.1) and the colour and touch rules of 6 and 9.
+
+Tags as before: **[FC]** = a history or technical claim for the Fact-Checker and Doug Crawford (F7); **[V]** = verified by reading the pinned upstream source (`c4b94f2`) or an earlier spike; **[I]** = my reading, to be confirmed; **[A]** = assumption.
+
+### 14.1 What is new, and how the pieces share parts
+
+| Piece | Screen | PRD | Shares |
+|---|---|---|---|
+| Live attract | S1 | FR-30, FR-34 to FR-36 | The **panorama** (14.3.2) and the Trajectory arc plot |
+| Explore ENIAC | S14 (and S15 glossary) | FR-90 to FR-98 | The panorama; the unit table (14.3.1); the glossary |
+| Finale | S8 | FR-45 | The honor components (14.6) and, later, the panorama |
+| Honor roll and About | S11 (four pages) | FR-41, FR-43, FR-44 | The engraved-plate component |
+
+Design rules for all of it:
+
+1. **One panorama component.** Attract, Explore and (later) the finale draw the same unrolled room. Build it once. It takes a lamp source (`live`, or `dark`) and nothing else, so it cannot show a fake lamp.
+2. **One copy table.** Card text, glossary text and honor text live in data files (like the mission files, FR-24), each block with a `review: approved | pending` flag. A `pending` block is **not rendered at all**; there is no placeholder text on a museum screen.
+3. **Honest by construction.** A lamp is lit only from real core status. A number on a result or finale screen comes from this visit's real runs, or it is left out.
+4. **Taps first.** No new screen needs a gesture. A one-finger horizontal swipe on the panorama is an optional extra with a tap equivalent for everything it does (UX-03, 14.3.5).
+
+### 14.2 S1 Attract (live), supersedes 7.1
+
+**Goal:** make a passer-by curious, be honest that it is the real machine running, and put Brian L. Stuart's name in front of every visitor.
+
+#### 14.2.1 Layout (1920 x 1080)
+
+```
++------------------------------------------------------------------------------------+
+| ENIAC                                                       +-----------------------+|
+| (120 px, x135 y60-200)                                      | THE SHELL'S PATH      ||
+| The room-sized computer of 1946. Now you program it. (40)   |  (live arc, 460x240)  ||
+|                                                              |  dot by dot from the  ||
+|                                                              |  real cards           ||
+|                                                              +-----------------------+|
+| [LIVE] +-------------------------------------------------------------------------+  |
+|        |  PANORAMA of the whole room, y 300-740, panel pitch 150 px:              |  |
+|        |  live lamps; the camera drifts slowly along the 40 panels                |  |
+|        +-------------------------------------------------------------------------+  |
+|   Live: ENIAC is working out a shell's path. Hop 12            (32 px, y 756-796)   |
+|                                                                                    |
+| +---------------------+   +----------------------------------+  +-----------------+ |
+| | THE SIMULATOR BEHIND|   |      TOUCH TO PROGRAM ENIAC      |  | ENIAC'S FIRST   | |
+| | THIS SCREEN         |   |   pill 720 x 120, pulsing 1 Hz   |  | PROGRAMMERS     | |
+| | Brian L. Stuart     |   +----------------------------------+  | (rotating)      | |
+| | Drexel University   |    x600-1320, y836-956                  | names, 8 s each | |
+| +---------------------+                                         +-----------------+ |
+|  x48-560, y820-976                                               x1360-1872, y820-976|
++------------------------------------------------------------------------------------+
+| ENIAC simulator by Brian L. Stuart, Drexel University                     (footer)  |
++------------------------------------------------------------------------------------+
+```
+
+| Element | Spec |
+|---|---|
+| Panorama | The 14.3.2 component at a smaller scale: panel pitch 150 px, 40 panels (6,000 px). Lamps are live (14.2.3). Under the panorama a 60% scrim keeps the text readable. No panel is tappable here; the whole screen is one touch target (FR-31). |
+| **LIVE** chip | 64 x 40 px at the panorama's top-left: a dot icon and the word "LIVE" (shape and word, not colour). It shows only while status frames are arriving. If none arrive for 3 s it reads "WAITING"; at 5 s the screen becomes S10 (14.2.4). |
+| Shell's path card | A drawn arc, "Along" and "Up" axes, no units on screen (8.3 box, item 5). A dot is added for each real card (columns 51 to 60 along, 71 to 80 up). It is the same plot as the Trajectory mission (`run.plot`). Empty axes and the words "Waiting for the first card" until card 1. |
+| Live caption | 32 px. Run: "Live: ENIAC is working out a shell's path. Hop {n}", where {n} is the hop number from the latest real card (columns 26 to 30). Before card 1: "Live: ENIAC is reading its card of numbers." After the landing card: "The shell has landed. ENIAC worked out the whole path." Between flights: "Starting another flight." |
+| **Stuart plate** (left) | An engraved plate (dark #0E0F11, cream text, the 6.1 plate style). Line 1, 24 px caps: "THE SIMULATOR BEHIND THIS SCREEN". Line 2, **56 px bold: "Brian L. Stuart"**. Line 3, 28 px: "Drexel University". It is always on screen in attract; it never rotates. |
+| **Honor plate** (right) | The same plate style. Heading, 24 px: "ENIAC'S FIRST PROGRAMMERS" (slide 1) with the six names in 28 px; slide 2: "THE BUILDERS: J. Presper Eckert, John W. Mauchly" [FC]; slide 3: "THE BUILDERS: Herman Goldstine, Adele Goldstine" [FC]; slide 4: "MOORE SCHOOL OF ELECTRICAL ENGINEERING, U.S. ARMY BALLISTIC RESEARCH LABORATORY" [FC]. 8 s each with a 400 ms cross-fade. Only `approved` slides show; if none is approved the plate is not drawn. |
+| Call to action | The existing pill, "Touch to program ENIAC" (720 x 120). |
+| Footer | FR-40, unchanged. |
+
+#### 14.2.2 What runs (FR-34)
+
+| Question | Decision |
+|---|---|
+| Which program? | **`trajdemo.e` with `drag.e`**: the same program as Mission 3 and as the existing exhibit, so the museum's screen keeps showing what it showed before. It is the only demo that moves many lamps (Accumulators 4 to 20, the Multiplier, Function Table 2, the Master Programmer) and gives a picture (the arc). `sq.e` stops after one square per INIT [V: F1]; `sieve.e` is punch-bound at 0.6 s a card and takes 4 minutes (F10). |
+| Which speed? | **Full** (`cy.rate 0`). The trajectory has no useful Slow (8.3.1), and at Full a card comes about every 1.4 s on the Mac (S2); **Pi 5 to be measured, plan on 1.5 to 2.5 s**. |
+| How does a run start? | The same two actions as Mission 3 READ and INIT: `b c`, then `b r`, then one `b i`. No visitor steps; the whole configuration is preset. |
+| What loops? | **One flight per core process.** At the landing card (the first with `-` in column 71) the bridge sends `s cy.op 1a` (FR-19), the screen holds the finished arc for **8 s**, then the bridge ends the session and starts a fresh attract session. A loop is about 49 s of flight + 8 s hold + 3 s start = **about 60 s** (Mac figures). |
+| Why not let it fly on by itself? | After the landing `trajdemo.e` starts another flight on its own, but a second and later flight starts from different register contents [V: 8.3.1, item 3], so a plot built from them might not match the first. Recycling the core is cheap and uses the same freeze logic as Mission 3. **Open (Q19):** if S2 shows free-running later flights are clean, drop the recycle and let it fly. |
+| Camera | The panorama **drifts** left to right over one flight (about 80 px a second), then right to left over the next, with ease-in and ease-out at each end. The camera never stops on a blank part of the room: the lamps that move are spread along the whole U. |
+
+#### 14.2.3 What is lit (live-only rule)
+
+A lamp in the panorama is lit **only** from the core's status stream. Lamp sets the core reports and the bridge relays (architecture 5.1 and 6.1; the M1 and M2 builds draw Accumulators 1 to 20, the Initiating Unit, the Cycling Unit, the Master Programmer, a Function Table ring and the Multiplier [I: confirm each set is wired for every instance, for example all three Function Tables]) are drawn live. A unit whose lamps are not relayed (Divider and Square-Rooter, Constant Transmitter, Printer) is drawn **unlit**, never decorated. If a lamp set is not yet wired in the build, that unit is unlit too. Only the panels on screen update (about 8 of 40), so the render cost stays near the Squares run view (NFR-04, NFR-13).
+
+#### 14.2.4 Hand-off, return and failure
+
+| Situation | Behaviour |
+|---|---|
+| **First touch** | The whole screen is the target. A touch goes to S2 and does nothing else (FR-31). A second tap within 600 ms (the same visitor's double tap) is ignored by S2. The attract core **keeps running** behind S2, S11, S14 and S15 so the picker and Explore stay alive. |
+| Start a mission | The attract session is ended and a fresh mission core starts (S0, FR-03). |
+| Return to S1 | From S2, S11, S14, S15 after the inactivity timeouts (14.7): the attract session is still running, so S1 comes back at once. From a mission or S8: a **new attract session** starts. S1 shows the panorama **dark** with the caption "Waking ENIAC..." and a spinner icon for up to 3 s, then goes live. |
+| No live status for 5 s | **S10.** S1 never shows canned lamps, recorded runs or fake cards (FR-50, FR-36). |
+| Between flights | The panorama keeps the last real frame, dimmed to 50%, with the caption "Starting another flight." If the new session is not live in 5 s: S10. |
+| A stalled run | No new card for **20 s** while a flight is running (a hop is about 1.4 to 2.5 s) is a hang (FR-05): the bridge restarts the core (counts toward the 3 in 5 minutes) and S10 shows if the budget runs out. |
+| Idle | None. Attract has no timeout. Screen blanking is disabled; the nightly 03:00 restart (NFR-07) bounds long-run state. |
+| Reduced motion | No drift. The camera **cuts** with a 250 ms cross-fade every 10 s through four fixed framings (the control end, the accumulator wall, the multiplier and tables, the output end). The call-to-action pill does not pulse; it shows a static double ring. |
+| Metrics (FR-60) | `attract_flight_started`, `attract_flight_landed`, `attract_touch` (the touch that left attract). |
+
+### 14.3 S14 Explore ENIAC
+
+**Goal:** let a visitor walk the whole machine, learn what each unit is for in plain words, and see which units each mission used. Reached from S2, from the S3 briefing and S7 result of each mission, and from the finale.
+
+#### 14.3.1 The room (data, not opinion)
+
+The layout below is read from Stuart's simulator (`vis/eniactk.go`: `accoff`, `ftuoff`, `drawfixed` and `ray`). Panels are numbered **0 to 39 (0-based, as the upstream offsets)**. In `ray()` panels 0 to 15 form the **left wall**, 16 to 23 the **back wall** and 24 to 39 the **right wall**, so the U is 16 + 8 + 16 panels [V]. The real machine was a U of about 40 panels, roughly 80 feet end to end [FC]; the same count and the U shape appear in the simulator's geometry.
+
+| Unit (id) | Panels | Wall | Evidence |
+|---|---|---|---|
+| Initiating Unit (`init`) | 0 | left | `drawfixed`: `.ih1` at x 425 of panel 0 [V] |
+| Cycling Unit (`cyc`) | 1 | left | `.cycst` at 70+642 [V] |
+| Master Programmer (`mp`) | 2 to 3 | left | `.ph1` 320+2x642, `.ph3` 927+2x642 [V] |
+| Function Table 1 (`ft1`) | 4 to 5 | left | `ftuoff[0] = 4`; lamps at 428 and 1028 [V] |
+| Accumulators 1, 2 | 6, 7 | left | `accoff` [V] |
+| Divider and Square-Rooter (`div`) | 8 | left | `.dh1` at 342+8x642 [V] |
+| Accumulators 3 to 10 | 9 to 16 | left, then back (A10 = panel 16) | `accoff` [V] |
+| High-Speed Multiplier (`mult`) | 17 to 19 | back | `.mh*` at (17+i)x642, i = 0..2 [V] |
+| Accumulators 11 to 14 | 20 to 23 | back | `accoff` [V] |
+| Accumulators 15 to 18 | 24 to 27 | right | `accoff` [V] |
+| Function Table 2 (`ft2`) | 28 to 29 | right | `ftuoff[1] = 28` [V] |
+| Function Table 3 (`ft3`) | 30 to 31 | right | `ftuoff[2] = 30` [V] |
+| Accumulators 19, 20 | 32, 33 | right | `accoff` [V] |
+| Constant Transmitter (`ct`) | 34 to 35 | right | `.conh1` 427+34x642, `.conh3` 1085+34x642 [V] |
+| Printer (`pr`) | 36 to 39 | right | Printer lamps are on panel 38 (1060+37x642); **the span 36 to 39 is my reading** [I] (Q22) |
+
+Where things stand on the room's three walls, with the mission colour numerals used in 14.3.7:
+
+```
+ panel:  0   1   2-3   4-5   6   7   8   9..16 (A3-A10)  17-19    20..23 (A11-A14)
+         I   C   MP    FT1   A1  A2  D/SR  accumulators   MULT     accumulators      <- left wall 0-15 | back wall 16-23
+ panel: 24..27 (A15-A18)   28-29  30-31   32   33   34-35   36-39                   <- right wall 24-39
+        accumulators       FT2    FT3     A19  A20  CT      PRINTER
+```
+
+*Dev note:* `src/web/app/stage/roomplan.ts` mixes 0-based and 1-based panel numbers (for example `i: 1` and `a1: 6`, but `f1: 4` while upstream puts Function Table 1 at 4 and Accumulator 1 at 6). The Explore build should take the table above as the single source and `roomplan.ts` should read it too (F12).
+
+#### 14.3.2 Layout (1920 x 1080)
+
+```
++------------------------------------------------------------------------------------------------+
+| [wordmark 0-120] [< Missions] x136-416      Explore ENIAC                       [ Glossary ] 64h |
++---------------------------------------------------------------+--------------------------------+
+| ROOM viewport  x24-1384, y112-752 (1360 x 640)                | RAIL  x1408-1896, y112-1016     |
+|  DIGIT TRAYS band  y112-184 (72 h, tappable)                  |                                |
+|  +-----+ +-----+ +-------+ +-------+ +-----+ ...  panels     |  state A: "ENIAC filled a room." |
+|  |INIT | |CYCL | |MASTER | |FUNCT. | |ACC 1|     y184-584     |  intro, plan of the U from above,|
+|  |     | |     | |PROGR. | |TABLE 1| |     |     176 x 400,   |  [ Walk the room > ] 96 h        |
+|  +-----+ +-----+ +-------+ +-------+ +-----+     pitch 184   |                                |
+|  PROGRAM TRAYS band  y584-656 (72 h, tappable)                |  state B: a unit card (14.3.4)  |
+|  [Initiating][Cycling][Master Programmer][Function Table 1][Accum. 1]  chips y660-740 (80 h)     |
+|  [<] arrow x36-132 y284-484 (96 x 200)             [>] x1276-1372 y284-484                       |
++---------------------------------------------------------------+                                |
+| MINIMAP  x24-1384, y768-864 (96 h): 40 cells, 33 px each       |                                |
+|  [I][C][MP][MP][F][F][A][A][/][A]...      cream bracket = what is on screen                      |
+| LEFT WALL | BACK WALL | RIGHT WALL   labels y868-904                                            |
+| You are looking at: Initiating Unit to Accumulator 2          (24 px, y906-946)                  |
+| Show the units for: (1) Squares  (2) Primes  (3) Trajectory   64 h chips, y952-1016              |
++---------------------------------------------------------------+--------------------------------+
+| ENIAC simulator by Brian L. Stuart, Drexel University                                  (footer) |
++------------------------------------------------------------------------------------------------+
+```
+
+The picture is in `docs/mockups/explore-eniac.html` (open in Chrome; it scales to the window) and the PNGs beside it: `explore-eniac.png` (a unit card open), `explore-eniac-browse.png` (Mission 3's units ringed) and `explore-eniac-glossary.png`.
+
+| Element | Spec |
+|---|---|
+| The room strip | 40 panels x pitch 184 px = 7,360 px, moved with a `translateX`. A panel is the approved art at 176 x 400 (the 300 x 680 kit at 0.588). The viewport shows about 7.4 panels. |
+| Trays | The **digit trays** (blue, `--cable-data`) run the whole length above the panels; the **program trays** (reddish purple, `--cable-prog`) run below. This matches the Workbench (4.2: data trunks above, program trunks below) and Stuart's `example.tex` [V]. Short stubs drop from the trays to each unit as a hint that units connect to trays; they are decoration and claim no particular wiring. Each tray band is **72 px high and a tap target** (cards 11 and 12). A tag on the tray ("DIGIT TRAYS: numbers travel here") repeats every 1,500 px. |
+| Unit | One tap target for each unit's block of panels (176 px wide for a one-panel unit, up to 4 x 184 for the Printer). Hit areas are **inset 4 px on each side**, so neighbours are 16 px apart (UX-01); a tap in the gap picks the nearest unit (6.6). |
+| Label chips | Cream, ink text 24 px bold, 80 px high, two lines ("Accumulator" and "7"). They are a second target for the same unit and are what a screen reader and the Tab order use. |
+| **Portable tables** | A wheeled cart drawn in front of each Function Table's two panels (about 220 x 130 px, bottom-left of the pair). A separate tap target; opens card 8. [FC: the portable table] |
+| **Card reader and punch** | An IBM card reader drawn at the foot of the Constant Transmitter and an IBM card punch at the foot of the Printer. They are part of those two units (cards 9 and 10), not separate targets. Not tappable on their own. [FC] |
+| Arrows | 96 x 200 px, at the left and right of the viewport, vertically centred on the panels. Each moves the room by **6 panels** (1,104 px) in 450 ms (ease in and out). At an end the arrow dims to 25% and does nothing. Never required (14.3.5). |
+| Minimap | One target, 1,360 x 96. 40 cells (33 px each) coloured by unit kind **with a letter** (I, C, MP, F, A, the divide and times signs, CT, P) so colour is not the only cue (UX-09). Tapping puts that spot in the middle of the screen. A cream bracket shows what is on screen. The three **wall** labels (LEFT, BACK, RIGHT) sit under the cells with a U-shaped bracket line so the visitor sees the room is a U. |
+| Readout | "You are looking at: {first unit} to {last unit}" (24 px), computed from the position. |
+| Mission chips | "Show the units for: (1) Squares (2) Primes (3) Trajectory", 64 px high, one active at a time; a **Clear** chip appears when one is active (14.3.7). |
+| Header | "< Missions" returns to the screen Explore was opened from (the picker, or "< Back to Mission 2" from a briefing or result). "Glossary" opens S15. |
+
+#### 14.3.3 States
+
+| State | Panorama | Rail |
+|---|---|---|
+| **A. Browse** (entry) | Position 0 (the control end), no ring | Intro card and the plan of the room from above; **Walk the room** (96 px) |
+| **B. Unit selected** | A cream 6 px ring (and a black 2 px edge) around the unit and its chip; the room pans so the unit is in the middle (nearest legal position) | The unit card (14.3.4) |
+| **C. Mission shown** | Every unit that mission uses gets a **yellow ring and a numeral badge** (1, 2 or 3 in a black circle); the rest dim to 36%; the trays ring too. The room pans to the first used unit. | A mission card: title, up to 40 words naming the units, the plan with the used panels marked, **Start Mission N >** (96 px) |
+| **B + C** | Both rings; a selected unit that is also a mission unit keeps the yellow ring and adds the cream chip outline | The unit card; its "Used in" chip for the shown mission is filled yellow |
+
+Yellow keeps its meaning of "look here" (6.4); the cream ring means "selected".
+
+#### 14.3.4 The unit card (rail, state B)
+
+```
++----------------------------------------+
+| 3 OF 12 . THE CONDUCTOR        [ X ]   |  24 px caps; Close 64 x 64
+| +------------------------------------+ |
+| | engraved plate crop of the unit     | |  banner 112 px high (72 px for trays)
+| +------------------------------------+ |
+| Master Programmer                       |  title 40 px bold (2 lines allowed)
+| The conductor. It counts, and decides   |  body 28 / 40, <= 40 words, grade 6 or lower
+| what happens next, ...                  |
+| [ link, 56+ px, optional ]              |  "Light up all 20 accumulators" or
+|                                         |  "Meet the first programmers >"
+| USED IN                                 |  24 px bold
+| (2) Primes   (3) Trajectory             |  64 px chips, wrap to a second row
+| [ < Previous ]        [ Next > ]        |  96 px, y912-1008
++----------------------------------------+
+```
+
+- **Words:** at most 40 per card body (FR-22). The twelve cards below are 28 to 35 words. A card is never scrolled; the build fails if a card overflows the rail.
+- **Tagline** (the words after the number in the top line) is the unit's job in two to four words.
+- **Previous / Next** follow the Walk-the-room order (12 stops). On card 12 Next reads **Finish** and returns to state A. Previous is disabled on card 1.
+- **Accumulators:** one card for all 20. The title carries the number tapped ("Accumulator 7") and the tagline reads "One of 20". The link "Light up all 20 accumulators" rings all of them (and toggles back).
+- **Function Tables:** one card; the title carries the number ("Function Table 2"). The portable cart opens its own card.
+- **Used in:** chips come from the mission files' `units` lists and the programs themselves (14.3.7). A chip **switches state C to that mission** (the visitor stays on the card); the "Start Mission N >" button in state C starts it. A unit no mission uses says so in words ("None of our missions."; the Cycling Unit says "Every mission, but you never plug it in.").
+- **Live line (P2):** a one-line live readout under the body, from real status, such as "Right now, Accumulator 18 holds 0000031277" (shown only while that accumulator's lamps are live). Never shown without data.
+
+#### 14.3.5 Interaction
+
+| Input | Result |
+|---|---|
+| Tap a unit, its chip, a tray band or a cart | State B for it; the room pans if the unit is not in the middle 60% of the viewport |
+| Tap the same unit again | No change. (Closing is **X**, so a second tap is never a surprise.) |
+| Tap **X**, or Finish | State A (or the mission card if a mission is shown) |
+| Tap an **arrow** | Pan 6 panels; the selected unit stays selected |
+| Tap the **minimap** | Centre that position |
+| Tap **Previous / Next** | The neighbouring stop; the room pans to it (a long pan is capped at 900 ms) |
+| Tap **Walk the room** | Stop 1 (the Initiating Unit); Previous and Next from there |
+| Tap a **mission chip** | State C for that mission; the same chip again, or **Clear**, returns to B or A |
+| Tap **Glossary** | S15 |
+| Tap **< Missions** | Back to the origin screen |
+| **Optional swipe** | A one-finger horizontal drag on the room moves it. A move under 24 px is still a tap on release (glove jitter). No inertia. **Not taught, labelled or required**: every pan has the arrows, the minimap and Previous/Next. Browser swipe-back and pull-to-refresh stay disabled (UX-06); the room element alone handles the drag. |
+
+All actions fire on release (UX-03); only the first touch point counts (UX-06); feedback within 100 ms (UX-08).
+
+#### 14.3.6 Copy (proposed; every card is for the Fact-Checker and Doug)
+
+Vocabulary matches the missions: "data trunk" and "program trunk" are the mission words, "digit tray" and "program tray" are Nick's and the real machine's [FC]; the cards give both; the glossary (15) ties them together. The Master Programmer is "the conductor" because Primes calls it that; Primes also calls Accumulators 1 to 14 "group checkers"; the accumulator card does not rename them (15.1).
+
+**State A, the intro** (34 words): "ENIAC filled a room. Forty panels stood in a U shape, about 80 feet end to end [FC]. Each panel had one job, and cables joined them. Tap any panel to meet it, or press Walk the room."
+
+**State C, the mission cards** (20 to 26 words):
+- Squares: "Squares uses 4 units: the Initiating Unit, the Constant Transmitter, and Accumulators 1 and 2. You plug cables between them."
+- Primes: "Primes uses the Initiating Unit, the Constant Transmitter, the Master Programmer, Function Table 1, the Printer, and 15 accumulators: 1 to 14, and 19."
+- Trajectory: "The shell uses the Initiating Unit, Constant Transmitter, Master Programmer, High-Speed Multiplier, Function Table 2, the Printer, and 19 accumulators: 1, 2, and 4 to 20."
+
+**The twelve cards** (stop order = the Walk the room order; `Used in` is derived from the programs, 14.3.7). Each body is at most 40 words; the build checks it.
+
+| # | Stop | Card title | Tagline | Copy (<= 40 words) | Words | Used in |
+|---|---|---|---|---|---|---|
+| 1 | init | Initiating Unit | The GO button | This unit has ENIAC's GO button, called INIT. Press it and a first signal shoots out and starts the job. It also holds CLEAR, and the button that starts the card reader. | 32 | 1 Squares, 2 Primes, 3 Trajectory |
+| 2 | cyc | Cycling Unit | The heartbeat | ENIAC's clock. It ticks about 100,000 times a second [FC]. Every unit follows this beat, so numbers and signals arrive at exactly the right moment. One addition takes 20 ticks [FC]. | 31 | none |
+| 3 | mp | Master Programmer | The conductor | The conductor. It counts, and decides what happens next, like "do this ten times, then do that." It has ten steppers [FC], a bit like a music box with pins. | 30 | 2 Primes, 3 Trajectory |
+| 4 | acc | Accumulator | Adds and remembers | An accumulator adds numbers and remembers them. Each holds one 10-digit number, shown in neon lamps [FC]. ENIAC had 20, so it could keep 20 numbers at once. | 28 | 1 Squares, 2 Primes, 3 Trajectory |
+| 5 | mult | High-Speed Multiplier | Times tables, fast | It knows the times table [FC]. It multiplies two 10-digit numbers in about 3 thousandths of a second [FC]. Adding again and again would be far slower. The shell mission uses it on every hop. | 35 | 3 Trajectory |
+| 6 | div | Divider and Square-Rooter | Divides, and finds roots | One unit, two jobs: it divides one number by another, and it finds square roots [FC]. It is slower than the multiplier [FC]. None of our missions need it, but it is still here. | 34 | none |
+| 7 | ft | Function Table | A look-up table | A function table is a look-up table. Give it a number and it hands back the matching answer, like a dictionary. ENIAC had three [FC], each with 104 rows [FC], set with switches. | 33 | 2 Primes, 3 Trajectory |
+| 8 | pft | Portable Function Table | Switches on wheels | The switches sit on a wheeled cart called a portable table [FC]. People set them by hand, one number at a time. The shell mission's air-drag table takes 711 switches. | 30 | 3 Trajectory |
+| 9 | ct | Constant Transmitter | Numbers in | This is how numbers get into ENIAC. Dials hold numbers that never change. The IBM card reader beside it feeds in new ones from punched cards [FC]. Mission 3 reads a card here. | 33 | 1 Squares, 2 Primes, 3 Trajectory |
+| 10 | pr | Printer | Answers out | ENIAC's answers come out here as punched cards, made by an IBM card punch [FC]. Each card holds the numbers ENIAC was told to print. Missions 2 and 3 watch the cards pile up. | 34 | 2 Primes, 3 Trajectory |
+| 11 | dt | Digit Trays | Number highways | Long trays of cables carry numbers between units, like a highway. A number travels on a bundle of wires, one wire for each place: ones, tens, hundreds [FC]. Also called data trunks. | 32 | 1 Squares, 2 Primes, 3 Trajectory |
+| 12 | pt | Program Trays | "Go!" signals | These trays carry signals, not numbers. A program pulse is one "go!" on one wire [FC]. It tells a unit to start its next job. Change the cables and you change the program. | 33 | 1 Squares, 2 Primes, 3 Trajectory |
+
+Notes on specific claims:
+- **Cards 1, 9** [V]: the initiating unit carries INITIATE, CLEAR and READ in the approved art, and the reader is wired through the Constant Transmitter (`constant.go`, `proccard`).
+- **Card 2**: 20 ticks is `len(clocks)/2` in `cycle.go` [V]; 100,000 a second is the same as 1/5,000 s for an addition [FC] (already in the Squares copy).
+- **Card 7**: 104 rows is the switch range `-2` to `101` in `ref.tex` [V] (Primes and Trajectory use Function Tables 1 and 2; `f1.*` in `sieve.e`, `f2.*` in `drag.e` [V]).
+- **Card 8**: 711 switches for Function Table 2 is 705 in `drag.e` plus 6 in `trajdemo.e` (8.3.2) [V].
+- **Card 6**: "None of our missions need it" is true for `sieve.e`, `trajdemo.e`, `drag.e` and `sq.e` (no `d.` lines) [V].
+- **Cards 5, 10, 11, 12**: [FC] throughout; the multiplier "3 thousandths of a second" is the published figure for a 10 by 10 digit multiply and needs a source.
+
+#### 14.3.7 Mission cross-links (both ways)
+
+| From | To | How |
+|---|---|---|
+| Unit card | Mission | "Used in" chips switch the room to that mission (state C); **Start Mission N >** starts it (S0 then S3) |
+| Mission chips on S14 | Units | State C rings the units and shows the numeral badges |
+| S3 briefing | S14 | A text button "See these units in the room" (64 px) opens S14 in state C for that mission; the header reads "< Back to Mission N" |
+| S7 result | S14 | "See where they stand" (64 px) does the same |
+| S11 page 2 | S14 | "See the cables they plugged >" opens card 12 (Program Trays) |
+| S14 card 12 | S11 page 2 | "Meet the first programmers >" |
+| S15 glossary | S14 | "Show me >" opens the card for that word |
+
+The mission-to-unit lists are **derived from the programs, not typed**: `missions/*.yaml` `units` and the plugs and switches of the `.e` files. Checked on 2026-10-02 against the pinned programs [V]: Squares uses `i`, `c`, `a1`, `a2` (8.1.2); Primes uses `i`, `c`, `p`, `f1`, `pr`, `a1` to `a14` and `a19` (`sieve.e`); Trajectory uses `i`, `c`, `p`, `m`, `f2`, `pr`, `a1`, `a2`, `a4` to `a20` (`trajdemo.e`, `drag.e`). No program uses `d` (the divider) or `f3`.
+
+*Starting a mission from Explore ends the attract session and starts a fresh mission core (FR-03).* Opening Explore from S3 or S7 does **not** touch the mission session; it uses the mission's own lamps if it has any, so the room is still the real machine.
+
+#### 14.3.8 Core-down, no-core and idle
+
+| Situation | Behaviour |
+|---|---|
+| Core up and live | Lamps are live (14.2.3). |
+| **Core down, bridge up** | **S14 keeps working** as a static tour. Every lamp is dark. A pill sits at the top of the room: an icon and "Live lamps are off: ENIAC is resting. The tour still works." The "Start Mission N" buttons and "Used in" chips show but are disabled with the words "ENIAC is resting". Nothing is lit that is not real. This is a deliberate narrowing of FR-50 for **static screens** (S11, S14, S15, S8 recap): they show no machine state, so they stay up and say so; as soon as the visitor leaves for S1 or S2 (which need the core), **S10** shows. **Q20** asks Nick to confirm. |
+| Websocket or bridge down for more than 5 s | **S10**, as everywhere (FR-50). |
+| Recovery | The pill disappears and lamps go live. The visitor's place (position and card) is kept. |
+| Idle | **120 s** with no touch (configurable), then S9 (15 s), then S1. A visitor reading a card is touching nothing, so the value is longer than the 90 s of the picker. |
+| Reduced motion | The room does not slide: it **cross-fades** (200 ms) to the new position; the arrows still step 6 panels; the swipe has no inertia; the walk uses fades; no ring pulses. |
+| Explore v0 (no session at all) | Allowed as the first build: the same screen with all lamps dark and no pill needed (no core is expected). See PRD M3-lite. |
+
+#### 14.3.9 Accessibility and reach
+
+| Area | Spec |
+|---|---|
+| Targets | Units at least 176 x 400 (hit area 168 x 392); chips 176 x 80; arrows 96 x 200; minimap 1,320 x 56 inside a 96-high target; mission chips 64 high; Close 64 x 64; Previous and Next 96 high; 16 px between hit areas. On the 24-inch panel one CSS px is about 0.277 mm, so 64 px is about 17.7 mm and 96 px about 26.6 mm (9.4). |
+| Text | 24 px minimum on stage; card body 28 px; card title 40 px (NFR-06). Engraved text on the panel art is decoration only. |
+| Order | Tab and reading order: header, room (units left to right, then trays), minimap, mission chips, rail. Each unit and chip is a button with a label such as "Accumulator 7, one of 20. Opens its card." |
+| Colour | Ring colour is never the only cue: the yellow ring comes with a numeral badge; the cream ring comes with a chip outline and the card; minimap cells carry a letter. |
+| Reach | Primary actions (Walk the room, Previous, Next, Start Mission) are in the lower right. The arrows are mid-screen at the sides, within reach of a short visitor on a mount at a normal height (mount height Q16). |
+| Motion | Pans are 450 ms and never move while a finger is down (9.1). Nothing flashes. |
+
+### 14.4 S15 Glossary
+
+A full-screen page under the header (the same header as S14), reached from the **Glossary** button on S14 and, later, from "Tell me more" links in the missions (P2). 16 terms in two pages of 8 (2 columns x 4 rows). The words are in section 15.
+
+| Element | Spec |
+|---|---|
+| Tile | 904 x 184, cream, ink text. Term 30 px bold; meaning 26 px, at most **25 words**; a "Show me >" link (24 px bold, 64 px target) at the bottom right opens that unit's card on S14 when the term has a place in the room. |
+| Page control | One 300 x 64 button: "More words >" on page 1, "< First words" on page 2. Close (200 x 64). |
+| Idle | 90 s, then S9 and S1. |
+| Core down | Works (static screen, 14.3.8). |
+| Held terms | A term with `review: hold` (the Transceiver) is **not shown**. |
+
+### 14.5 S8 Finale, supersedes 7.7
+
+**Goal:** an end-of-tour payoff that says what the visitor did, shows where it happened, and honours the people behind it, in under 90 seconds, skippable at any moment.
+
+#### 14.5.1 When it appears
+
+- **Trigger:** the visitor taps **Finish** on a result screen (S7) once **all three missions have reached their result in this visit** (state kept in memory only and cleared at the idle reset, 8.4). S7's primary button names the next mission **not yet done**, in the order 1, 2, 3, and reads **Finish** when none is left. (Replaces the 8.4 rule "Finish after Trajectory".)
+- **Also:** when all three are done the picker (S2) replaces its "Suggested order" text with a "See the finale >" chip (14.9), so a visitor who went back to the menu can still reach it.
+- A visitor who does only one or two missions never sees S8; they see S7 and the picker with "UP NEXT" (8.4).
+
+#### 14.5.2 The beats
+
+Each beat is a full screen with the footer. A beat advances on **Next >** (96 px, bottom right), on a touch anywhere on the beat (except Skip), or on its timer. **Skip to the end** (64 px, top right) goes to beat 5. No beat needs a gesture.
+
+| Beat | Time | Content |
+|---|---|---|
+| **F1 You programmed ENIAC.** | 15 s | Headline 96 px: "You programmed ENIAC." Line 2 (28 px): "In 1946, setting up a job like this took people days [FC]. You did it in about {m} minutes." {m} is this visit's real session time, shown only if 3 to 30. Three engraved plates (one per mission) with this visit's **real** results: "Squares: you counted up to {n} x {n} = {n2}." / "Primes: {c} cards punched. The last prime was {v}." / "Trajectory: a shell's flight, in {h} hops." And, if the visitor placed anything by hand: "You placed {c} cables and set {s} switches yourself." (hand-placed counts only; "done for me" steps are not counted) |
+| **F2 Here is every unit you used.** | 15 s | **Only when S14 exists.** The panorama (14.3.2) plays one slow pass of the whole room with every unit used in the three missions ringed in yellow, with live lamps if a core is up. Caption: "You used {p} of ENIAC's 40 panels. Yellow rings show them. ENIAC did all of this with cables and switches." {p} is computed from the room table and the missions' `units` lists (all three done: 36 of 40 on the table in 14.3.1, with the Printer span [I]). Button: **Explore the whole machine >**. |
+| **F3 Brian L. Stuart wrote this simulator.** | 15 s | The Stuart page (14.6.1) in beat form: the engraved plate at 72 px, the line "Every lamp you saw was run by his program. Without his work, there would be nothing here to touch." and the QR code. |
+| **F4 The people who made ENIAC.** | 20 s | The honor roll in beat form (14.6.2 and 14.6.3): the six names fade in one by one (400 ms apart), then the builders, then the institutions. Line: "Six women programmed it. Engineers and an Army team built it. Thank you to all of them. [FC]" |
+| **F5 Thanks for visiting!** | holds 20 s | "Come back and try the other missions, or explore the whole machine." Buttons: **Start over for the next visitor** (96 px, primary; resets as FR-33 and goes to S1) and **Explore ENIAC** (96 px). After 20 s with no touch it returns to S1 as the primary button does. |
+
+Total worst case: 15 + 15 + 15 + 20 + 20 = **85 s**. No "Still there?" overlay is needed (nothing is pending).
+
+#### 14.5.3 Honesty, failure and motion
+
+- Every number comes from this visit's real runs. If a run's number is not available (for example "Skip to the answer" went to a result with no tape), that plate shows the mission's words only ("Squares: ENIAC counted in squares.") with no figure. No placeholder numbers.
+- **Core down:** F1, F3, F4, F5 are static and keep working with the pill of 14.3.8; **F2 is skipped** (it needs the room). If the websocket or bridge is down for 5 s: S10.
+- **Reduced motion:** F2 shows four fixed framings with cross-fades instead of the slow pass, and the names in F4 appear at once. Timers are not motion and stay the same.
+- **Metrics:** `finale_reached`, `finale_beat_{n}`, `finale_skipped_at`, `finale_start_over`, `finale_explore`.
+- **Idle:** per beat timers above; a visitor who walks away reaches S1 on its own.
+
+### 14.6 S11 About and honor roll, supersedes 7.10
+
+**Goal:** credit **Brian L. Stuart** prominently ("without him, we got nothing"), and honour the people who built and programmed the real ENIAC. Reached from S2 (the "About and honor roll" button), from the finale, and from links on S7 (Trajectory) and S14.
+
+#### 14.6.1 Layout and pages
+
+```
++------------------------------------------------------------------------------------+
+| [wordmark]  About and honor roll                                          (64 px)   |
++------------------------------------------------------------------------------------+
+| [ Brian L. Stuart ]  [ The first programmers ]  [ The builders ]  [ This exhibit ]  |  4 tabs, 96 h, y112-208
++------------------------------------------------------------------------------------+
+| page content, x80-1840, y232-900                                                    |
++------------------------------------------------------------------------------------+
+| [ < Back ] 96 h x80-400 y916-1012                                                   |
++------------------------------------------------------------------------------------+
+```
+
+The tabs are four large buttons (each 440 x 96); the open page is filled. No swipe, no scrolling: every page fits on one screen.
+
+**Page 1: Brian L. Stuart** (open by default when entered from attract or the finale)
+
+```
++-----------------------------------------------------+------------------------------+
+| +---------------------------------------------+     |  QR code 280 x 280            |
+| |  BRIAN L. STUART        (plate, 96 px bold) |     |  (local image)                |
+| |  Drexel University      (36 px)             |     |  "Scan to visit his simulator |
+| +---------------------------------------------+     |   page."  (28 px)             |
+|  Every lamp, cable and switch on this screen is run |  cs.drexel.edu/~bls96/eniac/  |
+|  by a simulator that Brian L. Stuart wrote. ...     |   simulator.html  (28 px)     |
+|  His paper, "Simulating the ENIAC," ...             |                               |
++-----------------------------------------------------+------------------------------+
+```
+
+**Page 2: The first programmers.** Six engraved plates in two columns by three rows (each 840 x 120, name 44 px bold, a 24 px line "Programmer of ENIAC, 1945 to 1946 [FC]") under the lead. Buttons: "See the cables they plugged >" (opens S14 card 12).
+
+**Page 3: The builders.** Four person plates (name 40 px bold, a one-line role in 24 to 28 px) and two institution plates (2 x 3 grid), under the lead.
+
+**Page 4: This exhibit.** The mission sources and who made the screen (14.6.4).
+
+#### 14.6.2 Honor copy (every line [FC]; Doug approves; blocks with `review: pending` are not shown)
+
+**Page 1, Stuart** (38 words + 17): "Every lamp, cable and switch on this screen is run by a simulator that Brian L. Stuart wrote. It follows the real 1946 machine pulse by pulse [FC]. Without his work, this exhibit would be an empty screen." Then: "His paper, "Simulating the ENIAC," is in IEEE [FC]. Scan the code to visit his simulator page." (QR and the URL, in 28 px, so a glove or glare cannot defeat it.) The paper's journal and year are for the Fact-Checker; the upstream README links it as `ieeexplore.ieee.org/document/8326772`.
+
+**Page 2, the six** (34 words): "In 1945, six women were chosen to program ENIAC [FC]. There was no manual and no programming language. They learned the machine from its wiring diagrams and worked out every cable by hand [FC]." Then: "The shell mission follows the demo they prepared for February 15, 1946 [FC]."
+
+| Name (as given by Nick) | Line |
+|---|---|
+| Jean Jennings Bartik | Programmer of ENIAC [FC] |
+| Kathleen McNulty Mauchly Antonelli | Programmer of ENIAC [FC] |
+| Frances Bilas Spence | Programmer of ENIAC [FC] |
+| Marlyn Wescoff Meltzer | Programmer of ENIAC [FC] |
+| Ruth Lichterman Teitelbaum | Programmer of ENIAC [FC] |
+| Betty Snyder Holberton | Programmer of ENIAC [FC] |
+
+*Name format is for Doug (Q17):* these are the names the women are best known by later in life; in 1945 they worked under their earlier names (for example Jean Jennings and Kay McNulty). Doug may prefer "Betty Jean Jennings Bartik" or to show both. Nothing about their later careers is claimed.
+
+**Page 3, the builders** (27 words): "ENIAC was built at the Moore School of Electrical Engineering, University of Pennsylvania, for the U.S. Army [FC]. The Army needed firing tables for its guns [FC]."
+
+| Plate | Line (one line each) |
+|---|---|
+| J. Presper Eckert | Chief engineer of ENIAC. [FC] |
+| John W. Mauchly | Proposed the machine and helped design it. [FC] |
+| Herman Goldstine | Army officer who linked the Army to the project. [FC] |
+| Adele Goldstine | Mathematician who wrote ENIAC's manual and trained its programmers. [FC] |
+| Moore School of Electrical Engineering, University of Pennsylvania | Where ENIAC was designed and built. [FC] |
+| U.S. Army Ordnance and the Ballistic Research Laboratory | Paid for ENIAC, then ran it at Aberdeen from 1947. [FC] |
+
+*Roles are one line each on purpose:* the credit questions (who did what) are the part historians argue about, so each role is a short, widely agreed line for the Fact-Checker to confirm, or to shorten to "Designed and built ENIAC".
+
+**Page 4, this exhibit** (24 words): "This exhibit runs on Brian Stuart's simulator, on a screen of the Vintage Computer Federation at InfoAge. Our three missions come from real history." Then the mission sources, from 7.10: Squares (example by Brian Stuart); Primes (D. H. Lehmer's July 1946 runs, as reconstructed by Liesbeth De Mol and Maarten Bullynck [FC]); Trajectory (the public demo of February 15, 1946 [FC]); the museum (Vintage Computer Federation, InfoAge); type (Atkinson Hyperlegible, IBM Plex Mono; SIL Open Font License). **Who made this screen** (Nick DeMarco, or the museum's wording) is Q18.
+
+#### 14.6.3 Where the honor appears
+
+| Where | What | Source |
+|---|---|---|
+| Every screen | Footer: "ENIAC simulator by Brian L. Stuart, Drexel University" (FR-40) | footer |
+| S1 attract | The Stuart plate (always) and the rotating honor plate | 14.2.1 |
+| S2 picker | The button "About and honor roll" (now 96 px, beside Explore) | 14.9 |
+| S7 (Trajectory) | A text link "The women who programmed the demo >" opens S11 page 2 [FC] | 14.6.1 |
+| S14 | Card 12 (Program Trays) links to S11 page 2 | 14.3.4 |
+| S8 | Beats F3 and F4 | 14.5.2 |
+| S11 | Four pages | here |
+
+**No photographs** of people appear anywhere: portraits raise rights questions (R1 is about Stuart's images; museum and archive photos are another clearance) and the engraved-plate style fits the machine. If Doug has cleared photos, they are a later addition.
+
+#### 14.6.4 Behaviour
+
+| Item | Spec |
+|---|---|
+| Timeout | 90 s on any page, then S9 and S1. Opening from the finale returns to the finale's last beat. |
+| Core down | Works (static, 14.3.8). A pill is not needed here (no machine state is shown). |
+| Reduced motion | Pages change by cross-fade; no slide. |
+| Metrics | `honor_page_view{1..4}` |
+| Content flags | `review: approved` blocks only. A page with no approved block is not offered (its tab is hidden). The Stuart page's wording is **also** sent to Stuart for his approval (Q18). |
+
+### 14.7 Idle, core-down and reduced-motion, per screen
+
+| Screen | Idle | Core down (bridge up) | Core and bridge down (5 s) | Reduced motion |
+|---|---|---|---|---|
+| S1 Attract | none | S10 after 5 s | S10 | cuts with cross-fade; no pulse |
+| S2 Picker | 90 s | S10 (missions need the core) | S10 | cross-fade |
+| S3 to S7 | as 3.1 | S10 | S10 | as 9.5 |
+| **S8 Finale** | beat timers; F5 holds 20 s | F1, F3, F4, F5 work; F2 skipped | S10 | no timers; names at once |
+| **S11 Honor** | 90 s | works | S10 | cross-fade |
+| **S14 Explore** | 120 s | works, lamps dark, pill | S10 | cross-fade pans |
+| **S15 Glossary** | 90 s | works | S10 | cross-fade |
+
+"Reduced motion" is the box setting of 9.5 **or** the browser's `prefers-reduced-motion`.
+
+### 14.8 [FC] list for the Fact-Checker and Doug Crawford (all new claims)
+
+| # | Claim | Where | Evidence I have |
+|---|---|---|---|
+| 1 | ENIAC was a U of about 40 panels, about 80 feet end to end | S14 intro | The simulator's `ray()` has 16 + 8 + 16 panels; the 80 feet is Nick's figure |
+| 2 | About 100,000 clock ticks a second; an addition takes 20 ticks | Cycling card, glossary | 20 pulse slots in `cycle.go` [V]; 1/5,000 s is in the Squares copy. The 100,000 figure needs a source |
+| 3 | Ten steppers in the Master Programmer | Card 3 | The simulator has ten (A to K without I) [V]; the real count needs a source (also in Primes) |
+| 4 | An accumulator holds one 10-digit number, shown in neon lamps; ENIAC had 20 | Card 4, glossary | `accoff` has 20; the 10-digit width is in the Squares copy |
+| 5 | The multiplier knows the times table; about 3 thousandths of a second for two 10-digit numbers | Card 5 | Published figure from memory; needs a source |
+| 6 | The divider and square-rooter is one unit; it is slower than the multiplier | Card 6 | Likely, from the machine's design; needs a source |
+| 7 | Three function tables, each with 104 rows, set with switches; portable tables on carts; set by hand | Cards 7, 8 | 104 rows from `ref.tex` [V]; "portable" and "by hand" need a source |
+| 8 | The IBM card reader is attached to the Constant Transmitter; the IBM card punch makes the printed cards | Cards 9, 10 | `constant.go` reads cards [V]; the IBM equipment and its pairing need a source |
+| 9 | A number travels on a bundle of wires, one for each place (ones, tens, hundreds) | Card 11 | From memory; needs a source |
+| 10 | A program pulse is one "go!" on one wire | Card 12, glossary | From memory; needs a source |
+| 11 | Digit trays and program trays; "data trunk" and "program trunk" are the same things | Cards 11, 12, glossary | The simulator's words are trunks; the real names are trays [I] |
+| 12 | Six women were chosen in 1945, no manual or programming language, learned from wiring diagrams | S11 page 2, S8 F4 | Common history; for the Fact-Checker |
+| 13 | The six names and the Programmer line | S11 page 2, S1 plate | The names are Nick's; format is Q17 |
+| 14 | They prepared the February 15, 1946 demo | S11 page 2, S7 link | Trajectory copy already carries "Six women programmers set up ENIAC for it" [FC] |
+| 15 | Moore School; the Army; firing tables; the Ballistic Research Laboratory ran it at Aberdeen from 1947 | S11 page 3 | Common history; for the Fact-Checker |
+| 16 | Eckert, chief engineer; Mauchly, proposed and designed; Herman Goldstine, Army liaison; Adele Goldstine, wrote the manual and trained the programmers | S11 page 3 | Common history; roles are the most disputed lines; Doug to approve or shorten |
+| 17 | "In 1946, setting up a job like this took people days" | F1 | Already in the mission "rest done for you" copy [FC] |
+| 18 | Stuart's simulator "follows the real machine pulse by pulse"; his IEEE paper | S11 page 1 | The upstream README says "pulse-level simulator" [V] |
+| 19 | The transceiver | Glossary (held) | Not in the missions or sim docs beyond one comment [V]; do not show until confirmed |
+
+### 14.9 Entry points: the picker (S2) and the briefing
+
+The picker keeps its three cards (8.4). The row under them changes (y 848 to 944):
+
+```
+|  [ Explore ENIAC: tour the whole machine ]  [ About and honor roll ]     Suggested order  |
+|    x80-880 (800 x 96, filled cream)           x912-1392 (480 x 96)         1, then 2, then 3 |
+```
+
+- **Explore ENIAC** is a primary-size button (96 px) with a small drawing of the U on its left. It is **not** a fourth mission card and has no number, so the suggested order (1, 2, 3) stays clear.
+- When all three missions are done the order text is replaced by the chip "See the finale >" (14.5.1).
+- S3 gains a text button "See these units in the room" (64 px) under the briefing buttons, and S7 gains "See where they stand" (64 px) in the right column (14.3.7).
+
+### 14.10 New open questions (from this section)
+
+| # | Question | Default used here | Whose call |
+|---|---|---|---|
+| Q15 | What computer drives the 24-inch mount (the old exhibit Pi, the Model 4 Pi 5 or the new Pi 5)? Its OS and architecture? | Pi 5, arm64, as the PRD | Nick |
+| Q16 | The panel's native resolution, aspect and touch technology; the mount's height | 1920 x 1080 (16:9); projected-capacitive or infrared untested | Nick / Doug |
+| Q17 | The honor roll names: format, roles, anyone else to include | The names in 14.6.2 | Doug |
+| Q18 | Stuart's approval of his credit wording; who is named as making this screen | Wording sent to Stuart with the R1 request | Nick / Stuart |
+| Q19 | Attract: recycle the core after each flight, or let the program fly on? | Recycle (14.2.2) | Nick (S2 follow-up) |
+| Q20 | Static screens when the core is down: keep working with a pill, or S10 everywhere? | Keep working, with a pill (14.3.8) | Nick |
+| Q21 | The Transceiver wording | Held | Stuart / Doug |
+| Q22 | The Printer's panel span and the whole layout against the 1946 floor plan | 36 to 39 [I] | Doug / Stuart |
+| Q23 | Finale trigger: all three missions done, or Finish on any mission? | All three done (14.5.1) | Nick |
+
+---
+
+## 15. Glossary
+
+Sixteen terms for S15 (14.4), and a map from the words the **missions** use to the words the **real machine** used, for visitors and for anyone (Nick included) learning ENIAC from this exhibit. Each meaning is at most 25 words and every one is **[FC]**. The mission files' own words ("number highway", "the conductor") are kept in the missions; this glossary is where the two vocabularies meet.
+
+| # | Term | Meaning (<= 25 words) | Words | Show me (card) |
+|---|---|---|---|---|
+| 1 | Accumulator | ENIAC's adding machine and memory. Each holds one 10-digit number and shows it in neon lamps. ENIAC had 20. [FC] | 19 | 4 |
+| 2 | Digit tray (data trunk) | A tray of cables that carries numbers between units. Our missions call it a data trunk, a highway for numbers. [FC] | 20 | 11 |
+| 3 | Program tray (program trunk) | A tray of cables that carries "go!" signals, not numbers. Our missions call them program trunks, like 1-1 and 1-3. [FC] | 20 | 12 |
+| 4 | Program pulse | One "go!" signal on one wire. It tells a unit to start a job. When the job ends, the unit sends its own pulse. [FC] | 24 | 12 |
+| 5 | Program control | The small circuit that waits for a program pulse, does its job once or several times, then sends "done" on its output. [FC] | 22 | 4 |
+| 6 | INIT (initiating pulse) | The GO signal. Pressing INIT on the Initiating Unit sends it out on a program tray to start the whole job. [FC] | 21 | 1 |
+| 7 | Clock tick (add time) | ENIAC's beat, from the Cycling Unit: about 100,000 a second. One addition takes 20 ticks, about 1/5,000 of a second. [FC] | 20 | 2 |
+| 8 | Stepper | A part of the Master Programmer that counts through stages, one at a time. It hands the work from one job to the next. [FC] | 24 | 3 |
+| 9 | Constant | A number that does not change while a program runs. It is set on dials in the Constant Transmitter. [FC] | 19 | 9 |
+| 10 | Function table | A look-up table of 104 numbers, set with switches. Give it a number and it hands back the matching answer. [FC] | 20 | 7 |
+| 11 | Punched card | A stiff paper card with holes. The holes are digits. ENIAC reads cards in, and punches its answers onto cards. [FC] | 20 | 10 |
+| 12 | Jack and cable | A jack is a socket. A plug on a cable goes into it. Plugging cables in is how ENIAC was programmed. [FC] | 21 | 12 |
+| 13 | Receive and send jacks | An accumulator takes numbers in on alpha to epsilon. It sends its number out on A, or on S, which sends it as a subtraction. [FC] | 25 | 4 |
+| 14 | Operation and repeat switches | Each program has two switches: what to do (take in on alpha, send on A) and how many times to do it. [FC] | 22 | 4 |
+| 15 | Neon lamp | A small glowing bulb. Each accumulator shows its number with lamps: one lit lamp for each digit. [FC] | 17 | 4 |
+| 16 | Transceiver | HOLD: do not show until confirmed. Draft: a part that sends numbers onto a tray, or receives them from it. [FC] | 20 | - |
+
+### 15.1 Mission words and real words
+
+| In the missions we say | The real machine's word | Where it is explained |
+|---|---|---|
+| "Number highway", "Trunk 1", "data trunk" | **Digit tray** (data trunk in Stuart's simulator) | Card 11, glossary 2 |
+| "Program trunk 1-3", "a highway for signals" | **Program tray** (program trunk in the simulator) | Card 12, glossary 3 |
+| "Go signal", "done signal", "the signal that starts the next job" | **Program pulse** | Glossary 4 |
+| "The GO button", "INIT" | **Initiating pulse**, from the Initiating Unit | Card 1, glossary 6 |
+| "Adding machine", "memory" | **Accumulator** | Card 4, glossary 1 |
+| "Group checker" (Accumulators 1 to 14 in Primes), "fits!" | An accumulator running **program 12** (Stuart's engineering name: "watcher") | Primes copy; not renamed on the card |
+| "The conductor" | **Master Programmer** and its **steppers** | Card 3, glossary 8 |
+| "Take in on alpha", "send on A", "send twice" | **Receive and send jacks**; **operation and repeat switches** | Glossary 13, 14 |
+| "Look-up table", "drag table" | **Function table** (portable table: its switches on a cart) | Cards 7, 8, glossary 10 |
+| "Card of numbers" | **Punched card**, read through the Constant Transmitter | Card 9, glossary 11 |
+| "Hop" | One pass of the trajectory loop; one punched card | Trajectory copy |
+| "The beat", "one addition" | **Clock tick**; one **add time** (20 ticks) | Card 2, glossary 7 |
+
+**Held term, not shown on screen:** *Transceiver.* Nick listed it as vocabulary; the only mention in the pinned simulator is one comment in `mp.go` (a quotation from Huskey's technical memo about the "slow buffer output of a transceiver") [V]. It is not used in any mission. A draft meaning sits in the table above marked HOLD. **It must be confirmed (Q21) before it appears.**
+
+---
+
+## 16. Revision history
 
 | Version | Date | Author | Changes |
 |---|---|---|---|
@@ -1689,3 +2271,4 @@ Lamp states are smoothed (80 ms decay) so no element flashes more than 3 times p
 | 0.3 | 2026-10-01 | ux-design agent | Primes reframed around sharing evenly / equal groups (Nick, 2026-10-01): briefing, plan, steps 1 to 4, S5, run captions, result and both canvases; "watcher" kept only as an engineering nickname in 8.2.1 and 8.2.2 |
 | 0.4 | 2026-10-01 | software-developer agent (M2 build), recording Nick's decisions | Trajectory after spike S2 (box at the top of 8.3): READ sends `b c` then `b r`; one INIT; one 34-card flight; frozen on the landing card with `s cy.op 1a`; Full only; S2 timings replace the [A] ones; no units on screen. Primes: the answer is card 100 (547) and S7 stays live to 407 (8.5.1 Q3); Slow stays `rate 100`. Squares Slow is `cy.rate 13` (S4) and "Keep pressing" waits 0.5 s at Slow (8.1.4). Attract caption fixed to the trajectory loop (7.1, 8.5.1 Q6). Zero first card and stopping at landing resolved (8.5.1 Q4, Q8) |
 | 0.5 | 2026-10-01 | software-developer agent (M2 follow-ups) | Trajectory readouts freeze on the landing card (8.3.5); a stalled Primes or Trajectory run goes to S10 (8.2.5) |
+| 0.6 | 2026-10-02 | ux-design agent, for Nick's 24-inch museum install | New section 14: live attract (trajdemo, Full speed, one flight per core, 60 s loop; 14.2); **Explore ENIAC** panorama of the 40-panel U with pan arrows, minimap strip, 12 unit cards (at most 40 words, [FC]-tagged), mission cross-links both ways, optional swipe (14.3; mockup in `docs/mockups/explore-eniac.html`); glossary S15 and section 15 (with the mission-word to real-word map); finale S8 rebuilt as five beats from this visit's real results (14.5); honor roll S11 in four pages crediting Stuart prominently and the original programmers, Eckert, Mauchly, the Goldstines, the Moore School and the Army BRL (14.6); idle, core-down and reduced-motion for every screen (14.7); [FC] list (14.8); picker row (14.9); Q15 to Q23. Flags F11 to F16. Gestures (9.2) and the 24-inch panel (9.4) updated; 7.1, 7.2, 7.7 and 7.10 point to section 14; the revision history is now section 16. |
