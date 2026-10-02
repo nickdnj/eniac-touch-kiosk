@@ -210,8 +210,9 @@ test("S7 Trajectory links to the programmers page; Back returns to S7; the visit
   expect(rec.flight).toEqual({ hops: 34, along: landed.x, top: expect.any(Number) });
   expect(landed.n).toBe(34);
 
-  // The visit ends when attract shows (Finish goes to S1 until the finale exists).
-  await tap(page, page.locator(".finish-btn"));
+  // The visit ends when attract shows (Finish opens the finale only after all three: finale.spec.ts).
+  await expect(page.locator(".next-btn")).toHaveText("Next: Squares");
+  await page.evaluate(() => (window as any).__eniac.show({ name: "start" }));
   await expect(view(page)).toHaveAttribute("data-view", "start");
   expect(await page.evaluate(() => (window as any).__eniac.visit.summary())).toMatchObject({ done: [], missions: {}, handCables: 0, handSwitches: 0, minutes: null });
 });

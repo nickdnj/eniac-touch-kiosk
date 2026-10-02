@@ -135,7 +135,9 @@ test("run: READ first (b c, b r), INIT locked until the card is read, the arc fr
   await expect(view(page)).toHaveAttribute("data-view", "result", { timeout: 6000 });
   await expect(page.locator(".result-answer h2")).toHaveText("ENIAC flew the shell!");
   await expect(page.locator(".live-line")).toHaveText("34 hops, 34 cards");
-  await expect(page.locator(".finish-btn")).toHaveText("Finish");
+  // UX 14.5.1: Trajectory alone this visit, so S7 names the next mission not done (Finish only after all three).
+  await expect(page.locator(".next-btn")).toHaveText("Next: Squares");
+  await expect(page.locator(".finish-btn")).toHaveCount(0);
   const ups = await cardValues(page, [14, 15]);
   expect(ups).toHaveLength(34);
   expect(ups.findIndex((u) => u < 0)).toBe(33);
@@ -154,6 +156,6 @@ test("Skip to the answer: S7 waits with the live hop count, then the headline at
   await expect(page.locator(".waiting-text")).toHaveText(/The shell is still flying: hop \d+/);
   await expect(page.locator(".result-answer")).toBeVisible({ timeout: 15_000 });
   await expect(page.locator(".live-line")).toHaveText("34 hops, 34 cards");
-  await tapSlow(page, page.locator(".finish-btn"));
-  await expect(view(page)).toHaveAttribute("data-view", "start");
+  await tapSlow(page, page.locator(".result-actions .menu-btn"));
+  await expect(view(page)).toHaveAttribute("data-view", "picker");
 });

@@ -14,6 +14,7 @@ import { button } from "../ui/overlays.ts";
 import { HONOR } from "../content/honor.ts";
 import { openHonor } from "./honor.ts";
 import { EXPLORE } from "../explore/content.ts";
+import { FINALE } from "../content/finale.ts";
 
 /** Taps landing on S2 this soon after S1 are the same visitor's double tap (FR-31). */
 export const PICKER_ARM_MS = 600;
@@ -55,7 +56,12 @@ export function pickerScreen(app: App): Screen {
     { class: "screen mission-picker" },
     h("div", { class: "header" }, h("span", { class: "screen-title" }, COPY.picker.title)),
     cards,
-    list.length > 1 ? h("div", { class: "mc-order" }, h("span", {}, COPY.picker.order), h("span", {}, COPY.picker.orderLine(list.map((m) => m.order)))) : null,
+    // UX 14.5.1 / 14.9: once every mission is done, "See the finale" replaces the suggested order.
+    list.length && !nextUp
+      ? button(`${FINALE.pickerChip} ›`, "light pk-finale", () => armed() && app.show({ name: "finale", beat: 1 }))
+      : list.length > 1
+        ? h("div", { class: "mc-order" }, h("span", {}, COPY.picker.order), h("span", {}, COPY.picker.orderLine(list.map((m) => m.order))))
+        : null,
     exploreButton(app, armed),
     honorButton(app, armed),
   );
