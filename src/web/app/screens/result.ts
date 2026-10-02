@@ -6,8 +6,9 @@
 // skipped ahead, S7 first waits for the answer checkpoint with a real count
 // and then shows the headline: nothing is made up (no demo fallback).
 // Right: the explanation and takeaway from the mission content. The primary
-// action names the next mission in the suggested order (UX 8.4), else Menu
-// (or Finish where the mission says so).
+// action names the next mission not yet done this visit, in the order 1, 2,
+// 3, and reads Finish when none is left: Finish opens the S8 finale (UX
+// 14.5.1). Without a mission list it is Menu.
 
 import type { App, Screen } from "../app.ts";
 import type { ServerMsg } from "../protocol.ts";
@@ -29,7 +30,10 @@ export function resultScreen(app: App): Screen {
   const mission = app.mission!;
   const r = mission.content.result;
   const labels = r.buttons ?? [];
-  const next = (app.missions ?? []).filter((m) => m.available && m.order > mission.order).sort((a, b) => a.order - b.order)[0];
+  const available = (app.missions ?? []).filter((m) => m.available).sort((a, b) => a.order - b.order);
+  // This mission counts as done (mount marks it); the next is the first one not done yet.
+  const next = available.find((m) => m.id !== mission.id && !app.done.has(m.id));
+  const allDone = available.length > 0 && !next;
   const cardMission = !!mission.run.cards;
   const live = r.live;
 
@@ -83,9 +87,9 @@ export function resultScreen(app: App): Screen {
     app.show({ name: "picker" });
   };
   const finish = () => {
-    // S8 finale is not built yet: Finish ends the visit at the start screen.
+    // Every mission reached its result this visit: the finale (UX 14.5.1).
     app.endSession("done");
-    app.show({ name: "start" });
+    app.show({ name: "finale", beat: 1 });
   };
   const actions = h("div", { class: "result-actions" });
   if (next) {
@@ -97,7 +101,7 @@ export function resultScreen(app: App): Screen {
       tryAgain,
       button(labels[2] ?? COPY.result.menu, "menu-btn", menu),
     );
-  } else if (labels[0] === COPY.result.finish) {
+  } else if (allDone) {
     actions.append(button(COPY.result.finish, "primary main finish-btn", finish), tryAgain, button(labels[2] ?? COPY.result.menu, "menu-btn", menu));
   } else {
     actions.append(button(labels[2] ?? COPY.result.menu, "primary main menu-btn", menu), tryAgain);

@@ -1,0 +1,92 @@
+/* S8 Finale (UX 14.5): five full-screen beats over the footer. Plates and
+   QR blocks come from honor.css; the room from explore.css (.pano).
+   Targets: Skip 64 px (top right), Next 96 px (bottom right), F5's two
+   buttons 96 px. Reduced motion: no fades, the names in F4 at once. */
+
+.finale { background: radial-gradient(ellipse at 30% 25%, #17191d 0%, var(--bg-stage) 70%); }
+.fin-host { position: absolute; left: 0; top: 0; width: 1920px; height: 1032px; }
+.fin-beat { position: absolute; inset: 0; animation: fade-in 400ms ease-out; }
+.finale.reduced .fin-beat { animation: none; }
+.fin-beat p { margin: 0; }
+
+/* ---------------------------------------------------------------- chrome */
+.fin-dots { position: absolute; left: 136px; top: 40px; display: flex; gap: 16px; z-index: 5; }
+.fin-dot { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #5b606a; }
+.fin-dot.on { background: var(--lamp-on); border-color: var(--lamp-on); }
+.fin-skip { position: absolute; right: 24px; top: 16px; min-height: 64px; height: 64px; font-size: 26px; z-index: 5; }
+.fin-next { position: absolute; right: 80px; top: 912px; min-width: 280px; z-index: 5; }
+.fin-skip.hidden, .fin-next.hidden { display: none; }
+
+.fin-title { position: absolute; left: 80px; top: 104px; width: 1600px; margin: 0; font-size: 64px; line-height: 76px; font-weight: 700; color: var(--card); }
+.fin-title.big { top: 136px; font-size: 96px; line-height: 108px; }
+.fin-line { position: absolute; left: 80px; top: 268px; width: 1760px; font-size: 32px; line-height: 44px; color: #C9C2A8; }
+
+/* ---------------------------------------------------------------- F1 */
+.fin-mplates { position: absolute; left: 80px; top: 360px; width: 1760px; display: flex; gap: 28px; }
+.fin-mplate { width: 568px; height: 300px; padding: 44px 52px; display: flex; flex-direction: column; }
+.fin-mhead { display: flex; align-items: center; gap: 20px; }
+.fin-badge { flex: none; width: 56px; height: 56px; border-radius: 50%; border: 3px solid var(--plate-ink); display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; color: var(--plate-ink); }
+.fin-mtext { margin-top: 28px; font-size: 38px; line-height: 50px; font-weight: 700; color: var(--plate-ink); text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.9), 0 1px 0 rgba(255, 255, 255, 0.10); }
+.fin-mtext .num { color: var(--lamp-on); }
+.fin-mplate:not(.figure) .fin-mtext { font-weight: 400; color: var(--plate-sub); }
+.fin-hand { position: absolute; left: 80px; top: 712px; width: 1760px; font-size: 36px; line-height: 48px; font-weight: 700; color: var(--guide); }
+
+/* ---------------------------------------------------------------- F2 */
+.fin-room { position: absolute; left: 80px; top: 200px; width: 1760px; height: 492px; overflow: hidden; border-radius: 8px; background: #0b0c0f; border: 2px solid #2a2e35; }
+.fin-room .pano { position: absolute; left: 0; top: 0; }
+.fin-pill { position: absolute; left: 50%; top: 20px; transform: translateX(-50%); z-index: 3; display: flex; align-items: center; gap: 14px; height: 64px; padding: 0 28px; border-radius: 32px; background: #000; border: 3px solid var(--card); font-size: 26px; font-weight: 700; white-space: nowrap; color: var(--card); }
+.fin-live { position: absolute; right: 80px; top: 128px; z-index: 3; display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 20px; border-radius: 24px; background: rgba(0, 0, 0, .82); border: 2px solid var(--card); font-size: 24px; font-weight: 700; color: var(--card); white-space: nowrap; }
+.fin-ldot { width: 16px; height: 16px; border-radius: 50%; background: var(--lamp-on); }
+.fin-pill.hidden, .fin-live.hidden { display: none; }
+/* The strip's repeating tray tags would clip at this width: fixed labels instead. */
+.fin-room .pano-tray .tag { display: none; }
+.fin-tray-tag { position: absolute; left: 50%; transform: translateX(-50%); z-index: 2; height: 44px; padding: 0 16px; border-radius: 22px; background: #0b0c0f; border: 3px solid var(--card); font-size: 24px; font-weight: 700; line-height: 38px; white-space: nowrap; color: var(--card); pointer-events: none; }
+.fin-tray-tag.d { top: 10px; }
+.fin-tray-tag.p { bottom: 8px; }
+.fin-caption { position: absolute; left: 80px; top: 716px; width: 1760px; font-size: 32px; line-height: 44px; font-weight: 700; color: var(--card); }
+.fin-tubes-line { position: absolute; left: 80px; top: 776px; width: 1760px; font-size: 28px; line-height: 40px; color: #C9C2A8; }
+.fin-actions.f2 { position: absolute; left: 80px; top: 912px; height: 96px; display: flex; align-items: center; gap: 24px; }
+.fin-tubes { min-height: 64px; height: 64px; }
+
+/* ---------------------------------------------------------------- F3 */
+.fin-stuart { position: absolute; left: 80px; top: 264px; width: 1100px; }
+.fin-stuart-line { margin-top: 40px !important; font-size: 40px; line-height: 56px; font-weight: 700; color: var(--card); }
+.fin-qr { position: absolute; left: 1260px; top: 264px; width: 580px; padding: 32px; border-radius: var(--radius-card); background: var(--card); color: var(--ink); }
+.fin-qr .qr-block { flex-direction: column; align-items: flex-start; gap: 18px; }
+.fin-qr .qr-tile { padding: 0; }
+.fin-qr .qr-print { color: #3a3e46; }
+
+/* ---------------------------------------------------------------- F4 */
+.fin-group { position: absolute; left: 80px; width: 1760px; }
+.fin-group.programmers { top: 192px; }
+.fin-group.team { top: 516px; }
+.fin-group.bodies { top: 698px; }
+.fin-grid { display: grid; gap: 12px 24px; margin-top: 8px; }
+.programmers .fin-grid { grid-template-columns: repeat(3, 1fr); }
+.team .fin-grid { grid-template-columns: repeat(4, 1fr); }
+.bodies .fin-grid { grid-template-columns: repeat(2, 1fr); }
+.fin-grid .person-plate { width: auto; height: 128px; padding: 12px 40px; }
+.fin-grid .person-plate .plate-name { font-size: 28px; line-height: 34px; }
+.fin-grid .person-plate .plate-later { font-size: 22px; line-height: 28px; }
+.fin-grid .person-plate .plate-line { font-size: 20px; line-height: 26px; }
+.fin-grid .person-plate.builder .plate-name { font-size: 28px; line-height: 34px; }
+.fin-grid .person-plate.builder .plate-line { font-size: 20px; line-height: 26px; margin-top: 4px; }
+.fin-grid .person-plate.institution .plate-name { font-size: 28px; line-height: 34px; }
+.fin-thanks { position: absolute; left: 80px; top: 912px; width: 1480px; font-size: 30px; line-height: 40px; font-weight: 700; color: var(--jack-block); }
+.person-plate.reveal { opacity: 0; transform: translateY(10px); transition: opacity 600ms ease-out, transform 600ms ease-out; }
+.person-plate.reveal.on { opacity: 1; transform: none; }
+.finale.reduced .person-plate.reveal { transition: none; }
+
+/* ---------------------------------------------------------------- F5 */
+.beat-f5 .fin-title.big { left: 80px; top: 280px; width: 1760px; text-align: center; }
+.beat-f5 .fin-line { top: 420px; text-align: center; font-size: 36px; line-height: 50px; color: var(--card); }
+.fin-actions.f5 { position: absolute; left: 80px; top: 560px; width: 1760px; display: flex; justify-content: center; gap: 32px; }
+.fin-actions.f5 .btn { min-width: 560px; }
+
+/* ---------------------------------------------------------------- S2 picker chip (UX 14.9) */
+.mission-picker .pk-finale { position: absolute; right: 80px; top: 864px; min-height: 64px; height: 64px; font-size: 28px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fin-beat { animation: none; }
+  .person-plate.reveal { transition: none; }
+}

@@ -16,6 +16,7 @@ import { injectDefs } from "./panels/load.ts";
 import { exploreScreen } from "./screens/explore.ts";
 import { glossaryScreen } from "./screens/glossary.ts";
 import { tubesScreen } from "./screens/tubes.ts";
+import { finaleScreen } from "./screens/finale.ts";
 
 const screens: Record<string, ScreenFactory> = {
   explore: exploreScreen,
@@ -30,6 +31,7 @@ const screens: Record<string, ScreenFactory> = {
   run: runScreenFactory({ extras: autopressControls }),
   result: resultScreen,
   honor: honorScreen,
+  finale: finaleScreen,
 };
 
 const root = document.getElementById("app");

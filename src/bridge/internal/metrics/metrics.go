@@ -57,6 +57,12 @@ var uiFields = map[string][]string{
 	"tubes_try_step":  {"n"},
 	"tubes_try_done":  {"n", "assisted"},
 	"tubes_try_skip":  {"n"},
+	// The finale (UX 14.5.3, FR-98): n is the beat (1..5) shown, or the beat Skip left.
+	"finale_reached":    {},
+	"finale_beat":       {"n"},
+	"finale_skipped_at": {"n"},
+	"finale_start_over": {},
+	"finale_explore":    {},
 }
 
 // bridgeFields: bridge-only events and their fields.

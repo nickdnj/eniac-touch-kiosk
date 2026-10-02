@@ -21,16 +21,18 @@ import { CardLog } from "./run/cards.ts";
 import { Visit } from "./state/visit.ts";
 import { AttractController, AttractStore } from "./attract/store.ts";
 
-export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor" | "explore" | "glossary" | "tubes";
+export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor" | "explore" | "glossary" | "tubes" | "finale";
 
-/** Views that keep a running attract session (S1, and Explore with its glossary and honor links). */
-const ATTRACT_KEEPS = new Set<string>(["start", "explore", "glossary", "honor", "tubes"]);
+/** Views that keep a running attract session (S1, Explore with its glossary, honor and tubes links, and the finale's F2 room). */
+const ATTRACT_KEEPS = new Set<string>(["start", "explore", "glossary", "honor", "tubes", "finale"]);
 export interface View {
   name: ViewName;
   /** Where a new session lands: the briefing, or straight to step 1 (retry). */
   entry?: "briefing" | "step1";
   /** S11: the page to open (1 to 4). */
   page?: number;
+  /** S8 Finale: the beat to open (1 to 5; 5 when coming back from Explore or S16). */
+  beat?: 1 | 2 | 3 | 4 | 5;
   /** S11: where Back returns (default: the picker). */
   back?: View;
   /** S14 Explore ENIAC / S15 Glossary: where it was opened from and what to show (screens/explore.ts). */

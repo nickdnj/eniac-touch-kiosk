@@ -171,6 +171,39 @@ func TestTubesEvents(t *testing.T) {
 	}
 }
 
+// UX 14.5.3, FR-98: the finale counters; n is a beat number.
+func TestFinaleEvents(t *testing.T) {
+	w, dir := open(t)
+	n := func(v int64) *int64 { return &v }
+	ok := []protocol.Metric{
+		{Ev: "finale_reached"},
+		{Ev: "finale_beat", N: n(1)},
+		{Ev: "finale_skipped_at", N: n(2)},
+		{Ev: "finale_start_over"},
+		{Ev: "finale_explore"},
+	}
+	for _, m := range ok {
+		if err := w.UI(m, ""); err != nil {
+			t.Errorf("%+v: %v", m, err)
+		}
+	}
+	bad := []protocol.Metric{
+		{Ev: "finale_beat", Mission: "squares"}, // field not allowed
+		{Ev: "finale_reached", N: n(3)},         // no fields
+		{Ev: "finale_explore", Screen: "x"},
+	}
+	for _, m := range bad {
+		if err := w.UI(m, ""); !errors.Is(err, ErrNotAllowed) {
+			t.Errorf("%+v accepted (%v)", m, err)
+		}
+	}
+	w.SessionEnd()
+	recs, _ := Read(dir)
+	if len(recs) != len(ok) {
+		t.Fatalf("%d records: %v", len(recs), recs)
+	}
+}
+
 func TestTruncatedLastLineSkipped(t *testing.T) {
 	w, dir := open(t)
 	w.Bridge("session_start", "s1", nil)

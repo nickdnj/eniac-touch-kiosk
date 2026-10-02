@@ -864,6 +864,16 @@ styles/*.css, fonts/*.woff2 (OFL; license files alongside)
 
 **Copy** is data in `app/explore/content.ts` (cards, glossary, mission tails) with internal review notes citing `docs/fact-check.md`; nothing renders an [FC] mark. Mission unit lists and "Used in" come from the compiled missions' `units` (the programs' own plugs and switches), never typed.
 
+### 9.4 The finale (M3, UX 14.5, PRD FR-45)
+
+**Trigger.** S7's primary button names the next mission not yet done this visit (order 1, 2, 3) and reads **Finish** when none is left; Finish ends the visitor's session (`end_session {reason: "done"}`) and shows view `finale` (beat 1). The picker shows "See the finale" in place of the suggested order once all are done. The visit store (`state/visit.ts`) is the only source of numbers; it is cleared when S1 shows.
+
+**Parts.** `app/finale/beats.ts` is pure and unit-tested: the `BeatSequencer` (15 + 15 + 15 + 20 + 20 s, Next, a touch, Skip to F5, F5's 20 s hold restarted by a touch, F2 skipped when `canShowRoom()` is false), `f1Content` (a plate per mission done: the real figure, or the mission's words when no figure was seen; minutes only from 3 to 30; the hand-placed counts) and `unitsUsed` / `panelsUsed` (the union of the compiled missions' `units` through `missionTargets`; 38 of 40 panels for the three missions). `screens/finale.ts` draws the beats; words are in `content/finale.ts` and `content/honor.ts`.
+
+**Lamps and failure.** F2 draws the shared panorama (scale 0.9, inert) with `{kind: "live", machine: () => app.mirror.machine}`; the finale asks for the attract loop like Explore (`ensureAttract`) and `App.show` keeps it running through `finale`. The screen is `coreOptional`: with the core down F2 is skipped (and if the core goes down during F2 its lamps go dark with the resting notice); the link down is S10. Idle mode is `none`: the beat timers return a visitor who walked away to S1 in at most 85 s. F2's chip opens S16 with `app.openTubes({ from: "finale", back: { name: "finale", beat: 5 } })`; S16's Finish and X, like Explore's Back, return to F5. The strip's repeating tray tags are hidden in F2 for two fixed labels over the room window (no clipped repeats at this width).
+
+**Metrics.** `finale_reached`, `finale_beat {n}`, `finale_skipped_at {n}`, `finale_start_over`, `finale_explore` (UI whitelist, 8.3).
+
 ---
 
 ## 10. Update, rollback, install and uninstall
@@ -1119,3 +1129,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 | 0.5 | 2026-10-01 | software-developer agent (M2 follow-ups) | 5.8 and 5.9.6: the run stall guard (`stallMs` per speed, `E-CORE-DOWN`/`stall`). |
 | 0.6 | 2026-10-02 | software-developer agent (attract engine) | 5.10: the live attract loop (one `trajdemo.e` flight per core), `attract` message and `state.attract`, `attract_start`/`attract_stop`, config `attract:`, attract metrics; 5.4 and 5.6 rows. Soak: `docs/spikes/S5-attract-soak.md`. |
 | 0.7 | 2026-10-02 | software-developer agent (M3 Explore ENIAC) | 9.3: the panorama component and its API, Explore's live lamps from the 5.10 attract loop (kept through Explore, the Glossary and the honor roll; stopped with reason menu on to the picker or a mission), `hello.config.idle.exploreS` (120 s), `metric.unit` and the Explore / glossary counters (FR-98). 6.1: divider lamp IDs. |
+| 0.8 | 2026-10-02 | software-developer agent (M3 finale) | 9.4: the S8 finale (trigger, beat sequencer, real-number rules, F2 lamps and core-down behaviour, the S16 chip) and the finale counters. |
