@@ -1,0 +1,27 @@
+# Installed by deploy/kiosk/install.sh. Architecture 3.5 (bridge unit).
+[Unit]
+Description=ENIAC touch kiosk bridge (websocket + simulator core)
+Documentation=https://github.com/nickdnj/eniac-touch-kiosk/blob/main/docs/deploy-x86.md
+# Never give up restarting: an unattended exhibit has nobody to reset a
+# start-rate limit.
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=eniac
+Group=eniac
+ExecStart=/opt/eniac-touch-kiosk/current/bin/eniac-bridge serve --config /etc/eniac-touch-kiosk/config.yaml
+Restart=always
+RestartSec=1
+RuntimeDirectory=eniac-touch-kiosk
+RuntimeDirectoryMode=0750
+StateDirectory=eniac-touch-kiosk
+StateDirectoryMode=0750
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+MemoryMax=768M
+
+[Install]
+WantedBy=multi-user.target

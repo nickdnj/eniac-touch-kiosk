@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Admin helper for the dedicated kiosk. Installed to /usr/local/bin.
+#
+#   eniac-touch-kiosk status     bridge unit, release, display session
+#   eniac-touch-kiosk logs       follow bridge + session + chromium logs
+#   eniac-touch-kiosk selftest   boot Squares headless and check 3 / 9 (sudo)
+#   eniac-touch-kiosk restart    restart the bridge (sudo)
+#   eniac-touch-kiosk restart-display   restart X + Chromium on tty1 (sudo)
+#   eniac-touch-kiosk rollback   swap current <-> previous release (sudo)
+#   eniac-touch-kiosk version
+set -euo pipefail
+PREFIX=/opt/eniac-touch-kiosk
+CONFIG=/etc/eniac-touch-kiosk/config.yaml
+UNIT=eniac-touch-kiosk-bridge.service
+SVC_USER=eniac
+KIOSK_USER=eniac-kiosk
+RUN=/run/eniac-touch-kiosk
+
+need_root() { [ "$(id -u)" -eq 0 ] || { echo "$1 needs sudo" >&2; exit 1; }; }
+
+case "${1:-status}" in
+  status)
+    echo "release:  $(readlink "$PREFIX/current" 2>/dev/null || echo none)   previous: $(readlink "$PREFIX/previous" 2>/dev/null || echo none)"
+    "$PREFIX/current/bin/eniac-bridge" version 2>/dev/null || true
+    systemctl --no-pager status "$UNIT" | head -n 12 || true
+    echo
+    if pgrep -u "$KIOSK_USER" -x Xorg >/dev/null; then echo "display:  X running as $KIOSK_USER"; else echo "display:  X NOT running"; fi
+    if pgrep -u "$KIOSK_USER" -f 'chromium.*--kiosk' >/dev/null; then echo "browser:  Chromium kiosk running"; else echo "browser:  Chromium NOT running"; fi
+    ;;
+  logs)
+    exec journalctl -f -n 50 -u "$UNIT" -t eniac-touch-kiosk-session -t eniac-touch-kiosk-chromium
+    ;;
+  selftest)
+    need_root selftest
+    # The bridge's RuntimeDirectory only exists while it runs; selftest uses
+    # its own socket and session dir inside it, so it's safe beside the bridge.
+    install -d -o "$SVC_USER" -g "$SVC_USER" -m 0750 "$RUN"
+    exec runuser -u "$SVC_USER" -- "$PREFIX/current/bin/eniac-bridge" selftest --config "$CONFIG" "${@:2}"
+    ;;
+  restart)
+    need_root restart; systemctl restart "$UNIT"; echo "restarted $UNIT"
+    ;;
+  restart-display)
+    need_root restart-display
+    pkill -u "$KIOSK_USER" -x Xorg || true   # startx returns; agetty logs back in within ~5 s
+    echo "X for $KIOSK_USER restarting"
+    ;;
+  rollback)
+    need_root rollback
+    prev="$(readlink "$PREFIX/previous" 2>/dev/null)" || { echo "no previous release to roll back to" >&2; exit 1; }
+    cur="$(readlink "$PREFIX/current")"
+    ln -sfn "$prev" "$PREFIX/current.tmp" && mv -T "$PREFIX/current.tmp" "$PREFIX/current"
+    ln -sfn "$cur" "$PREFIX/previous.tmp" && mv -T "$PREFIX/previous.tmp" "$PREFIX/previous"
+    systemctl restart "$UNIT"
+    pkill -u "$KIOSK_USER" -x Xorg || true
+    echo "rolled back: current -> $prev (previous -> $cur)"
+    ;;
+  version)
+    cat "$PREFIX/current/BUILD-INFO"
+    ;;
+  *)
+    sed -n '2,11p' "$0"; exit 2
+    ;;
+esac

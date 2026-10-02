@@ -1,0 +1,21 @@
+# Dedicated-kiosk config (docs/deploy-x86.md). Installed once to
+# /etc/eniac-touch-kiosk/config.yaml and never overwritten by a re-install,
+# so local edits survive; the pristine copy is always at
+# /etc/eniac-touch-kiosk/config.yaml.dist.
+#
+# Floor posture: everything on loopback (the box is offline/inbound-locked).
+# Power actions and USB updates stay off until their M3 polkit/update units
+# exist; with them on, the admin screen would offer buttons that cannot work.
+profile: prod
+listen: 127.0.0.1:8740
+health: { listen: "127.0.0.1:8741" }
+core: { gomaxprocs: 2, nice: 5, readyTimeout: 5s, ackTimeout: 1.5s, silenceTimeout: 2s, probeEvery: 5s }
+recovery: { budget: 3, window: 5m, backoff: [2s, 5s, 10s], slowRetry: 10m }
+idle: { setupS: 90, runS: 180, countdownS: 15 }
+admin: { sessionTimeoutS: 120, allowPowerActions: false, allowUpdates: false }
+metrics: { retentionDays: 400 }
+assets: { upstreamPhotos: false }
+paths:
+  release: /opt/eniac-touch-kiosk/current
+  run: /run/eniac-touch-kiosk
+  state: /var/lib/eniac-touch-kiosk

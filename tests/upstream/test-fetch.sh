@@ -25,7 +25,7 @@ if [ $rc -ne 0 ] && grep -q 'does not apply cleanly' <<<"$out" && [ ! -d "$SCRAT
 # 3. Offline: unreachable URL and no Go proxy still fetch, verify, patch and build.
 sed 's|^URL=.*|URL=https://invalid.invalid/none|' "$ROOT/upstream.lock" > "$SCRATCH/offline.lock"
 out="$(GOPROXY=off GOFLAGS=-mod=mod ENIAC_UPSTREAM_LOCK="$SCRATCH/offline.lock" ENIAC_BUILD_DIR="$SCRATCH/b3" "$ROOT/scripts/fetch-upstream.sh" 2>&1)"; rc=$?
-if [ $rc -eq 0 ] && [ -x "$SCRATCH/b3/darwin-arm64/eniac-core" ] && [ -x "$SCRATCH/b3/linux-arm64/eniac-core" ]; then pass "offline rebuild works"; else bad "offline: rc=$rc out=$out"; fi
+if [ $rc -eq 0 ] && [ -x "$SCRATCH/b3/darwin-arm64/eniac-core" ] && [ -x "$SCRATCH/b3/linux-arm64/eniac-core" ] && [ -x "$SCRATCH/b3/linux-amd64/eniac-core" ]; then pass "offline rebuild works"; else bad "offline: rc=$rc out=$out"; fi
 
 # 4. The patched lines are present (patches/series).
 if grep -n 'Sprintf("%d ", stage)' "$SCRATCH/b3/upstream/src/mult.go" | grep -q '^66:'; then pass "mult.go:66 patched"; else bad "mult.go:66 not patched"; fi
@@ -35,8 +35,9 @@ for p in $(sed -e 's/#.*//' -e 's/\.patch$//' "$ROOT/patches/series"); do
   if grep -q "\"name\":\"$p\"" "$SCRATCH/b3/upstream/.provenance.json"; then pass "provenance lists $p"; else bad "provenance lacks $p: $(cat "$SCRATCH/b3/upstream/.provenance.json")"; fi
 done
 
-# 5. Linux core is a static aarch64 ELF.
+# 5. Linux cores are static ELFs (aarch64 for the Pi, x86-64 for the mini PC).
 if file "$SCRATCH/b3/linux-arm64/eniac-core" | grep -q 'ARM aarch64.*statically linked'; then pass "linux core static aarch64"; else bad "linux core: $(file "$SCRATCH/b3/linux-arm64/eniac-core")"; fi
+if file "$SCRATCH/b3/linux-amd64/eniac-core" | grep -q 'x86-64.*statically linked'; then pass "linux core static x86-64"; else bad "linux amd64 core: $(file "$SCRATCH/b3/linux-amd64/eniac-core")"; fi
 
 # 6. No upstream source tracked in git.
 if [ -z "$(git -C "$ROOT" ls-files build dist)" ] && ! git -C "$ROOT" ls-files | grep -Eq '(^|/)(mult|engine|eniac|accumulator)\.go$|(^|/)programs/.*\.e$'; then pass "no upstream source committed"; else bad "upstream-looking files are tracked"; fi
