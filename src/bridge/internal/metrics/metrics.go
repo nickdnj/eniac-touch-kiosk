@@ -50,6 +50,11 @@ var bridgeFields = map[string][]string{
 	"error_enter":      {"code"},
 	"error_exit":       {"code", "durS"},
 	"core_restart":     {"code"},
+	// Live attract (PRD FR-98, UX 14.2.4). attract_touch is the visitor
+	// touch that ended attract (attract_stop reason touch).
+	"attract_flight_started": {"n"},
+	"attract_flight_landed":  {"n", "durS"},
+	"attract_touch":          {},
 }
 
 var safe = regexp.MustCompile(`^[A-Za-z0-9_-]{1,64}$`)

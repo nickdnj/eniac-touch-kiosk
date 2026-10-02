@@ -90,6 +90,13 @@ type Manager struct {
 	noClientsAt time.Time
 	errorAt     time.Time
 	errorCode   string
+
+	// Attract loop (attract.go). attractMu serializes starting and
+	// stopping the loop; it is never held while waiting for opMu.
+	attractMu sync.Mutex
+	attract   *attractRun
+	ast       protocol.Attract // current status (guarded by mu)
+	astTotal  int              // flights landed since the bridge started (mu)
 }
 
 type sess struct {
@@ -110,6 +117,8 @@ type sess struct {
 	frozen    bool // the clock was stopped at run.freezeAt (no more speed changes)
 	stall     *machine.StallGuard
 }
+
+func (s *sess) isAttract() bool { return s.mode == protocol.ModeAttract }
 
 // New creates the manager, its vlink socket and its recovery loop.
 func New(ctx context.Context, o Options) (*Manager, error) {
@@ -156,6 +165,7 @@ func New(ctx context.Context, o Options) (*Manager, error) {
 
 // Close ends the session and stops listening.
 func (m *Manager) Close() {
+	m.stopAttract("shutdown", nil)
 	m.opMu.Lock()
 	m.endSession("shutdown")
 	m.opMu.Unlock()
@@ -223,6 +233,9 @@ func (m *Manager) Snapshot() protocol.State {
 	lastSeq := m.lastSeq
 	m.mu.Unlock()
 	st := protocol.State{T: "state", Seq: lastSeq, Cards: []protocol.Card{}, Run: protocol.RunInfo{State: machine.RunIdle}}
+	a := m.attractStatus(nil)
+	a.T = ""
+	st.Attract = &a
 	if s == nil || s.mirror == nil {
 		return st
 	}
@@ -271,6 +284,22 @@ func (m *Manager) Handle(ctx context.Context, c *server.Client, msg any) []any {
 		}
 		return nil
 	}
+	// The attract loop takes opMu itself, so it is started and stopped
+	// outside it. A mission start or an explicit end stops it first: only
+	// one core runs on the box at a time.
+	switch x := msg.(type) {
+	case protocol.AttractStart:
+		return m.attractStart(x)
+	case protocol.AttractStop:
+		return m.attractStop(x)
+	case protocol.StartMission:
+		if x.Mode == protocol.ModeAttract {
+			return errMsg(x.ID, protocol.ErrNotAllowed, "attract runs through attract_start")
+		}
+		m.stopAttract("mission", nil)
+	case protocol.EndSession:
+		m.stopAttract(x.Reason, nil)
+	}
 	m.opMu.Lock()
 	defer m.opMu.Unlock()
 	switch x := msg.(type) {
@@ -312,10 +341,18 @@ func (m *Manager) startMission(ctx context.Context, x protocol.StartMission) []a
 		return errMsg(x.ID, protocol.ErrBadState, "the core is recovering (%s)", h.Code)
 	}
 	m.endSession("replaced")
+	m.openSession(ctx, mi, x.Mode)
+	return nil
+}
 
+// openSession starts a fresh core for the mission and makes it the current
+// session (called with opMu held, after the previous session ended). It
+// returns the session once it is in setup, or nil if it faulted or was
+// replaced while starting (a fault has then been raised already).
+func (m *Manager) openSession(ctx context.Context, mi *mission.Mission, mode string) *sess {
 	spd, _ := mi.Speed(mi.File.Run.DefaultSpeed)
 	q, _ := mi.QuietOverrideMs()
-	s := &sess{id: randID(4), sid: randID(6), m: mi, mode: x.Mode, state: protocol.StateStarting, done: map[string]bool{},
+	s := &sess{id: randID(4), sid: randID(6), m: mi, mode: mode, state: protocol.StateStarting, done: map[string]bool{},
 		startedAt: time.Now(), stop: make(chan struct{}), speed: mi.File.Run.DefaultSpeed}
 	s.mirror = machine.NewMirror(m.drops)
 	m.mu.Lock()
@@ -326,13 +363,23 @@ func (m *Manager) startMission(ctx context.Context, x protocol.StartMission) []a
 	s.stall = machine.NewStallGuard(m.stallWindow(mi, mi.File.Run.DefaultSpeed))
 	s.cps = machine.NewCheckpoints(mi.Checkpoints())
 	s.mirror.OnPunch = func(p machine.Punch) {
-		if err := m.hub.BroadcastPunch(p); err != nil {
+		// A card from a core that is no longer the current session's (it
+		// is being killed after a hand-off) never reaches a client.
+		m.mu.Lock()
+		var err error
+		if m.cur == s {
+			err = m.hub.BroadcastPunch(p)
+		}
+		m.mu.Unlock()
+		if err != nil {
 			m.fault(s, core.Fault{Code: core.CodeDown, Detail: "punch-overflow"})
 		}
 	}
 	m.broadcastSession(s)
-	m.o.Metrics.Bridge("session_start", s.sid, nil)
-	m.o.Metrics.Bridge("mission_start", s.sid, map[string]any{"m": mi.File.ID})
+	if !s.isAttract() { // attract flights are counted as attract_flight_*, not visitor sessions
+		m.o.Metrics.Bridge("session_start", s.sid, nil)
+		m.o.Metrics.Bridge("mission_start", s.sid, map[string]any{"m": mi.File.ID})
+	}
 
 	dir := filepath.Join(m.o.Config.Paths.Run, "s", s.id)
 	preset, err := mi.WritePreset(dir)
@@ -344,6 +391,12 @@ func (m *Manager) startMission(ctx context.Context, x protocol.StartMission) []a
 	o.OnStatus = s.mirror.ApplyLine
 	o.OnFault = func(f core.Fault) { m.fault(s, f) }
 	c, err := core.Start(ctx, o)
+	if err != nil && s.isAttract() && ctx.Err() != nil {
+		// The attract loop was stopped (a visitor touched) while its core
+		// was booting: not a fault. core.Start has killed the process.
+		m.endSession("attract-stop")
+		return nil
+	}
 	if err != nil {
 		var f core.Fault
 		if !errors.As(err, &f) {
@@ -370,7 +423,7 @@ func (m *Manager) startMission(ctx context.Context, x protocol.StartMission) []a
 	m.hub.Broadcast(m.Snapshot())
 	m.broadcastSession(s)
 	go m.tick(s)
-	return nil
+	return s
 }
 
 func (m *Manager) requireState(re *int64, states ...string) (*sess, []any) {
@@ -591,6 +644,10 @@ func (m *Manager) endSession(reason string) {
 		if seq > m.lastSeq {
 			m.lastSeq = seq
 		}
+		// Frames and cards of this session still waiting in a client's
+		// queue are dropped: nothing of it may follow the "none" below
+		// (punches and frames are published only while m.cur == s).
+		m.hub.ResetFrames()
 	}
 	m.mu.Unlock()
 	if s == nil {
@@ -601,8 +658,10 @@ func (m *Manager) endSession(reason string) {
 		s.core.Close()
 	}
 	os.RemoveAll(filepath.Join(m.o.Config.Paths.Run, "s", s.id))
-	m.o.Metrics.Bridge("session_end", s.sid, map[string]any{"durS": int(time.Since(s.startedAt).Seconds()), "reason": reason})
-	m.o.Metrics.SessionEnd()
+	if !s.isAttract() {
+		m.o.Metrics.Bridge("session_end", s.sid, map[string]any{"durS": int(time.Since(s.startedAt).Seconds()), "reason": reason})
+		m.o.Metrics.SessionEnd()
+	}
 	m.hub.Broadcast(protocol.Session{T: "session", ID: s.id, Mission: s.m.File.ID, Mode: s.mode, State: protocol.StateNone,
 		Applied: []string{}, Remaining: 0})
 	m.log.Info("session ended", "id", s.id, "reason", reason)
@@ -708,13 +767,20 @@ func (m *Manager) tick(s *sess) {
 			return
 		case <-t.C:
 		}
+		// Publish only while this is the current session, under mu, so
+		// that endSession (which clears m.cur and drops queued frames
+		// under mu) is never followed by a frame or run event of it.
+		m.mu.Lock()
+		if m.cur != s {
+			m.mu.Unlock()
+			return
+		}
 		if seq, patch, ok := s.mirror.TakeDelta(); ok {
 			m.hub.BroadcastFrame(seq, patch)
 		}
 		if ev, ok := s.run.Tick(); ok {
 			m.hub.Broadcast(protocol.Run{T: "run", State: ev.State, Inits: ev.Inits, Settled: ev.Settled})
 		}
-		m.mu.Lock()
 		st := s.state
 		frozen := s.frozen
 		m.mu.Unlock()
@@ -736,7 +802,11 @@ func (m *Manager) tick(s *sess) {
 				if id == s.m.File.Run.FreezeAt {
 					m.freeze(s)
 				}
-				m.hub.Broadcast(protocol.Checkpoint{T: "checkpoint", ID: id})
+				m.mu.Lock()
+				if m.cur == s {
+					m.hub.Broadcast(protocol.Checkpoint{T: "checkpoint", ID: id})
+				}
+				m.mu.Unlock()
 				if id == s.m.File.Result {
 					m.mu.Lock()
 					changed := s.state == protocol.StateRunning
@@ -744,7 +814,9 @@ func (m *Manager) tick(s *sess) {
 						s.state = protocol.StateResult
 					}
 					m.mu.Unlock()
-					m.o.Metrics.Bridge("mission_complete", s.sid, map[string]any{"m": s.m.File.ID, "durS": int(time.Since(s.startedAt).Seconds())})
+					if !s.isAttract() {
+						m.o.Metrics.Bridge("mission_complete", s.sid, map[string]any{"m": s.m.File.ID, "durS": int(time.Since(s.startedAt).Seconds())})
+					}
 					if changed {
 						m.broadcastSession(s)
 					}
@@ -804,10 +876,16 @@ func (m *Manager) background() {
 			h.T = "health"
 			m.hub.Broadcast(h)
 		}
+		m.attractMu.Lock()
+		attracting := m.attract != nil
+		m.attractMu.Unlock()
 		m.mu.Lock()
-		orphan := m.cur != nil && m.clients == 0 && !m.noClientsAt.IsZero() && time.Since(m.noClientsAt) > m.o.OrphanAfter
+		orphan := (m.cur != nil || attracting) && m.clients == 0 && !m.noClientsAt.IsZero() && time.Since(m.noClientsAt) > m.o.OrphanAfter
 		m.mu.Unlock()
 		if orphan {
+			// No kiosk page for OrphanAfter: attract stops too (the page
+			// asks for it again when it reconnects at home).
+			m.stopAttract("orphan", nil)
 			m.opMu.Lock()
 			m.endSession("orphan")
 			m.opMu.Unlock()

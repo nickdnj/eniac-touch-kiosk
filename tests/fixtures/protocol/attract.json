@@ -1,0 +1,19 @@
+{
+  "cards": 34,
+  "flight": 1,
+  "holdMs": 2000,
+  "landed": 1,
+  "landing": {
+    "along": 390417741,
+    "card": 34,
+    "flightMs": 83983,
+    "hop": 34,
+    "text": "                         00034     00000          0390417741          -002951425",
+    "up": -2951425
+  },
+  "mission": "trajectory",
+  "phase": "landed",
+  "session": "cc52bb11",
+  "t": "attract",
+  "total": 1
+}
