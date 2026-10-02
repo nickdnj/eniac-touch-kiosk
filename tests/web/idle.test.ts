@@ -14,7 +14,7 @@ function mk() {
     onDismiss: () => ev.push("dismiss"),
     onExpire: () => ev.push("expire"),
   });
-  t.setConfig({ setupS: 90, runS: 180, countdownS: 15 });
+  t.setConfig({ setupS: 90, runS: 180, countdownS: 15, exploreS: 120 });
   return { clock, ev, t };
 }
 
@@ -109,10 +109,26 @@ test("switching to a none-screen while warning dismisses the overlay", () => {
 
 test("hello.config values are used", () => {
   const { clock, ev, t } = mk();
-  t.setConfig({ setupS: 6, runS: 9, countdownS: 3 });
+  t.setConfig({ setupS: 6, runS: 9, countdownS: 3, exploreS: 12 });
   t.setMode("setup");
   clock.advance(6000);
   assert.deepEqual(ev, ["warn:3"]);
   clock.advance(3000);
   assert.equal(ev.at(-1), "expire");
+});
+
+test("Explore ENIAC: 120 s (exploreS), longer than the picker's 90 s (FR-32 v0.4)", () => {
+  const { clock, ev, t } = mk();
+  t.setMode("explore");
+  clock.advance(90_000);
+  assert.deepEqual(ev, [], "no warning at the setup timeout");
+  clock.advance(30_000);
+  assert.deepEqual(ev, ["warn:15"]);
+  const b = mk();
+  b.t.setConfig({ setupS: 6, runS: 9, countdownS: 3, exploreS: 12 });
+  b.t.setMode("explore");
+  b.clock.advance(11_999);
+  assert.deepEqual(b.ev, []);
+  b.clock.advance(1);
+  assert.deepEqual(b.ev, ["warn:3"]);
 });

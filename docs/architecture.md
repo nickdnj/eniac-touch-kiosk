@@ -706,7 +706,7 @@ The panels are **our SVG art**, not upstream photos (U9, UX F3/6.1). The contrac
 | MP stepper stage / decade / input | `lamp:mp.s.S.K`, `lamp:mp.dec.D.V`, `lamp:mp.s.S.in` | `stage[S]==K`, `dec[D]==V`, `inff[S] != '0'` | M2 |
 | FT arg / ring / flags | `lamp:ft.U.arg1.V`, `lamp:ft.U.arg10.V`, `lamp:ft.U.ring.K` (K=ring+3, drawn only if in range), `lamp:ft.U.add`, `.sub`, `.argset` | per `ft[U]` | M2 |
 | Multiplier | `lamp:mult.stage.K`, `lamp:mult.prog.P` (1..24), `lamp:mult.r1`, `lamp:mult.r3` | per `mult` | M2 |
-| Divider | `lamp:div.*` (names from `divsrstat`) | per `div` | Later (no mission needs it yet) |
+| Divider | `lamp:div.place.K` (0..11), `lamp:div.prog.K` (0..9), `lamp:div.ff.N` (1..8), `lamp:div.flag.N` (1..30, `divsrstat` order) | per `div` | M3 (Explore panorama) |
 | Jack (hit target) | `jack:<term>` using `.e` grammar: `a2.6o`, `a1.α`, `c.o`, `i.io`, data trunk `trunk:1`, program trunk `trunk:1-3` | Mission target | M1 |
 | Switch | `sw:<unit>.<switch>` (e.g. `sw:a1.rp6`, `sw:c.j1`) | Mission target; shows the value from `config` / applied steps | M1 |
 
@@ -844,6 +844,25 @@ panels/*.svg               unit kit: initiating, cycling, accumulator, constant,
 panels/README.md           ID grammar (section 6.1)
 styles/*.css, fonts/*.woff2 (OFL; license files alongside)
 ```
+
+### 9.3 Explore ENIAC, the panorama and live lamps (M3, UX 14.3, PRD FR-90 to FR-98)
+
+**One panorama.** `app/explore/panorama.ts` draws the whole room unrolled: 40 panels at a 184 px pitch (7,360 px), the digit trays above and the program trays below, the portable-table carts and the IBM reader and punch. Explore (S14) uses it at full size; attract (S1, pitch 150) and the finale (S8 F2) are meant to reuse it with `scale`. Its API:
+
+| Call | Does |
+|---|---|
+| `new Panorama({ lamps, viewW?, scale?, chips?, onPick?, swipe?, onMove?, reduceMotion? })` then `el` into the page and `mount()` | Builds the strip. `lamps` is `{ kind: "live", machine: () => app.mirror.machine }` or `{ kind: "dark" }` and nothing else (UX 14.1 rule 1), so a lamp can only be lit by the core. `onPick` makes units, chips, carts and trays tap targets (unit id, `pft:ftN`, `dt`, `pt`); without it the strip is inert (attract). |
+| `setX(x, { ms?, easing? })`, `panBy(±1)`, `centreOn(target)`, `reveal(target)`, `x`, `maxX` | Positions in room px. Slides by CSS transform (450 ms default, the long-pan cap is `panMs`), a 200 ms cross-fade under reduced motion, `ms: 0` jumps. Promises resolve on a timer, never on a frame. A drift (attract) is one long `setX` with `ms`. |
+| `highlight(targets | null, badge)`, `select(targets | null)` | Yellow ring + numeral badge with the rest dimmed (a mission's units), and the cream "selected" ring. |
+| `invalidate(units | null)`, `setLamps(source)`, `flush()`, `dispose()` | Lamp updates through `LampRenderer` (6.2), only for touched units. |
+
+`app/explore/room.ts` is the room table (UX 14.3.1, 0-based like Stuart's `vis/eniactk.go`) and all the pure geometry (clamp, centre, visible range, readout, minimap, the walk). `stage/roomplan.ts` now reads its panel positions from it (UX F12). The panel art for the units the missions never showed close up (Cycling Unit, Divider, Multiplier, Function Tables, carts, continuation panels) is in `panels/roomart.ts`; lamps carry the 6.1 IDs, knobs and sockets there carry no IDs and claim no setting. A unit test checks that every lamp the core can report, for all 20 accumulators and all three function tables, has a node, and that no lamp node exists outside a reported set. The kiosk's CSP forbids `style` attributes in markup, so geometry is applied through the CSSOM.
+
+**Where the live lamps come from.** Opened from a mission's briefing or result, Explore shows that mission's own session and starts nothing (an `attract_start` would end the visitor's session). Opened from the picker (or anywhere with no visitor session), it asks for the **live attract loop** of 5.10 through the app's `AttractController` (`explore/live.ts` `ensureAttract`, rate-limited; `attract_start` is idempotent). `App.show` keeps attract running while the visitor stays in S1, Explore, the Glossary or the honor roll, and sends `attract_stop {reason: "menu"}` when they go on to the picker or a mission (S1's own hand-off stays `touch`). The lamps are the attract flight's ordinary session messages through `app.mirror`; between flights (`recycling`) the room is dark and the chip says "Starting another flight...". Attract cards never reach the visit store or the mission's card log (they live in `app.attract` only).
+
+**Core down.** Explore and the Glossary are `coreOptional` screens (shared with S11): with the core down and the bridge up they keep working, every lamp dark, with the notice "Live lamps are off: ENIAC is resting. The tour still works." and mission starts disabled (UX 14.3.8, Q20). Leaving for a screen that needs the core shows S10; the link down is S10 everywhere.
+
+**Copy** is data in `app/explore/content.ts` (cards, glossary, mission tails) with internal review notes citing `docs/fact-check.md`; nothing renders an [FC] mark. Mission unit lists and "Used in" come from the compiled missions' `units` (the programs' own plugs and switches), never typed.
 
 ---
 
@@ -1099,3 +1118,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 | 0.4 | 2026-10-01 | software-developer agent (M2 build) | 5.9.6: the M2 mission format (minutes, requires, includes as preset, assets and readCard, withheld lines per button, initOnce, initAfter, freezeAt, run.cards, run.plot, content.read, result.live); punchCount and punchField predicates implemented; M2 caption triggers; idle also needs the reader and printer flip-flops clear; M2 jack grammar and switch families; picker metrics; `mission compile`. 5.9.5 rules extended for M2. |
 | 0.5 | 2026-10-01 | software-developer agent (M2 follow-ups) | 5.8 and 5.9.6: the run stall guard (`stallMs` per speed, `E-CORE-DOWN`/`stall`). |
 | 0.6 | 2026-10-02 | software-developer agent (attract engine) | 5.10: the live attract loop (one `trajdemo.e` flight per core), `attract` message and `state.attract`, `attract_start`/`attract_stop`, config `attract:`, attract metrics; 5.4 and 5.6 rows. Soak: `docs/spikes/S5-attract-soak.md`. |
+| 0.7 | 2026-10-02 | software-developer agent (M3 Explore ENIAC) | 9.3: the panorama component and its API, Explore's live lamps from the 5.10 attract loop (kept through Explore, the Glossary and the honor roll; stopped with reason menu on to the picker or a mission), `hello.config.idle.exploreS` (120 s), `metric.unit` and the Explore / glossary counters (FR-98). 6.1: divider lamp IDs. |

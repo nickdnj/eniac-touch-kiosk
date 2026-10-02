@@ -67,6 +67,7 @@ type Idle struct {
 	SetupS     int `yaml:"setupS"`
 	RunS       int `yaml:"runS"`
 	CountdownS int `yaml:"countdownS"`
+	ExploreS   int `yaml:"exploreS"` // Explore ENIAC (S14), FR-32 v0.4
 }
 
 // Attract configures the live attract loop (PRD FR-34, FR-36; UX 14.2).
@@ -155,7 +156,7 @@ func Default() Config {
 			Backoff:   []Duration{Duration(2 * time.Second), Duration(5 * time.Second), Duration(10 * time.Second)},
 			SlowRetry: Duration(10 * time.Minute),
 		},
-		Idle: Idle{SetupS: 90, RunS: 180, CountdownS: 15},
+		Idle: Idle{SetupS: 90, RunS: 180, CountdownS: 15, ExploreS: 120},
 		Attract: Attract{Mission: "trajectory", Hold: Duration(8 * time.Second), Stall: Duration(20 * time.Second),
 			ReadTimeout: Duration(15 * time.Second), FlightMax: Duration(5 * time.Minute)},
 		Admin:  Admin{SessionTimeoutS: 120, AllowPowerActions: true, AllowUpdates: true, TapZone: TapZone{Corner: "top-left", WidthPx: 120, HeightPx: 96, Taps: 5}},

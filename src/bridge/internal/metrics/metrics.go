@@ -39,6 +39,13 @@ var uiFields = map[string][]string{
 	"picker_next_used": {"m"},
 	// UX 14.6.4: which honor-roll page (1..4) was opened.
 	"honor_page_view": {"n"},
+	// Explore ENIAC and the glossary (PRD FR-98). screen is where Explore
+	// was opened from (picker, briefing, result, glossary, honor); unit is the card.
+	"explore_open":           {"screen", "m"},
+	"explore_card":           {"unit"},
+	"explore_walk_completed": {},
+	"explore_mission_chip":   {"m"},
+	"glossary_open":          {},
 }
 
 // bridgeFields: bridge-only events and their fields.
@@ -228,6 +235,7 @@ func (w *Writer) UI(m protocol.Metric, sid string) error {
 		set("screen", m.Screen, m.Screen != ""),
 		set("assisted", deref(m.Assisted), m.Assisted != nil),
 		set("n", derefN(m.N), m.N != nil),
+		set("unit", m.Unit, m.Unit != ""),
 	} {
 		if e != nil {
 			return e

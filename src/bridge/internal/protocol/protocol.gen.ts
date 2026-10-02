@@ -153,6 +153,10 @@ export interface IdleConfig {
   setupS: number /* int */;
   runS: number /* int */;
   countdownS: number /* int */;
+  /**
+   * ExploreS is the Explore ENIAC timeout (S14, FR-32 v0.4: visitors read cards, so it is longer).
+   */
+  exploreS: number /* int */;
 }
 export interface AdminConfig {
   tapZone: TapZone;
@@ -396,13 +400,17 @@ export interface AttractStop {
 export interface Metric {
   t: 'metric';
   id?: number /* int64 */;
-  ev: 'wrong_tap' | 'step_done' | 'speed' | 'skip_to_answer' | 'setup_skipped' | 'idle_reset' | 'mission_picked' | 'picker_next_used' | 'honor_page_view';
+  ev: 'wrong_tap' | 'step_done' | 'speed' | 'skip_to_answer' | 'setup_skipped' | 'idle_reset' | 'mission_picked' | 'picker_next_used' | 'honor_page_view' | 'explore_open' | 'explore_card' | 'explore_walk_completed' | 'explore_mission_chip' | 'glossary_open';
   mission?: string;
   step?: string;
   speed?: string;
   screen?: string;
   assisted?: boolean;
   n?: number /* int64 */;
+  /**
+   * Unit is the Explore ENIAC card a visitor opened (explore_card, FR-98).
+   */
+  unit?: string;
 }
 export interface Ping {
   t: 'ping';

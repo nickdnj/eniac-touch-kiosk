@@ -13,8 +13,12 @@ import { installStillThere } from "./screens/still.ts";
 import { errorScreen } from "./screens/error.ts";
 import { honorScreen } from "./screens/honor.ts";
 import { injectDefs } from "./panels/load.ts";
+import { exploreScreen } from "./screens/explore.ts";
+import { glossaryScreen } from "./screens/glossary.ts";
 
 const screens: Record<string, ScreenFactory> = {
+  explore: exploreScreen,
+  glossary: glossaryScreen,
   boot: bootScreen,
   start: startScreen,
   picker: pickerScreen,

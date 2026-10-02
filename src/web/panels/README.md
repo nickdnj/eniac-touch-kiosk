@@ -23,6 +23,15 @@ a white pointer, amber neon lamps. **Not** the upstream photos (U9, R1).
 Accumulator cards for any N (e.g. `accumulatorPanel(19)`) are built at runtime
 from the same function; only accumulators 1 and 2 are written as files.
 
+**The whole room (M3, Explore ENIAC):** `app/panels/roomart.ts` adds, at the
+same 300 x 680 card size and in the same style, the panels the missions never
+showed close up: the Cycling Unit as a full panel, the Divider and
+Square-Rooter, the three Multiplier panels, the two panels of each Function
+Table and its portable cart, continuation panels (Master Programmer, Constant
+Transmitter, Printer), and the IBM card reader and punch. They are built at
+runtime only (no files). Their lamps use the IDs below; their knobs and
+sockets have no IDs and claim no setting or wiring.
+
 ## These files are generated
 
 The source of truth is `app/panels/art.ts` (pure string builders, no DOM). The
@@ -56,6 +65,7 @@ mission data and the drawings.
 | MP decade counter | `lamp:mp.dec.D.V` (D = 0..19, V = 0..9) | `mp.dec[D] == V` |
 | Function table | `lamp:ft.U.ring.K` (U = 1..3, K = ring + 3 = 0..12), `lamp:ft.U.add`, `.sub`, `.argset`, `lamp:ft.U.arg10.V`, `lamp:ft.U.arg1.V` | `ft[U]` (out-of-range ring lights nothing) |
 | Multiplier | `lamp:mult.stage.K` (K = 0..13), `lamp:mult.prog.P` (P = 1..24), `lamp:mult.r1`, `lamp:mult.r3` | `mult` |
+| Divider and square-rooter | `lamp:div.place.K` (K = 0..11), `lamp:div.prog.K` (K = 0..9), `lamp:div.ff.N` (N = 1..8), `lamp:div.flag.N` (N = 1..30, upstream `divsrstat` order) | `div` |
 | Jack | `jack:<term>` in `.e` grammar: `jack:c.o`, `jack:a1.α`, `jack:a1.A`, `jack:a2.6o`, `jack:a1.5i`, `jack:i.io` | mission target or decoy |
 | Trunk | `trunk:<n>` for data trunks (`trunk:1`), `trunk:<t>-<l>` for program trunks (`trunk:1-3`) | mission target |
 | Switch | `sw:<unit>.<switch>`: `sw:c.j1`, `sw:a1.rp6`, `sw:a2.op6`, `sw:c.s26` | mission target; pointer shows the value |

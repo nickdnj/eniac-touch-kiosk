@@ -14,6 +14,7 @@ import { onTap } from "../ui/tap.ts";
 import { button } from "../ui/overlays.ts";
 import { HONOR, shown } from "../content/honor.ts";
 import { builderPlates, programmerPlates, qrBlock, stuartPlate } from "../ui/plates.ts";
+import { EXPLORE } from "../explore/content.ts";
 
 export const HONOR_PAGES = HONOR.pages.filter(shown);
 
@@ -128,8 +129,14 @@ export function honorScreen(app: App, view: View): Screen {
     const nxt = pages[i + 1];
     next.textContent = nxt ? `Next: ${nxt.tab} ›` : "";
     next.classList.toggle("hidden", !nxt);
+    cables.classList.toggle("hidden", pages[i].id !== "programmers");
     app.metric({ t: "metric", ev: "honor_page_view", n: i + 1 });
   }
+
+  // UX 14.3.7: page 2 opens Explore ENIAC on card 12, the program trays; its Back returns here.
+  const cables = button(`${EXPLORE.fromHonor} ›`, "light outline honor-cables", () =>
+    app.show({ name: "explore", explore: { from: "honor", card: "pt", back: { name: "honor", page: index + 1, back: view.back } } }),
+  );
 
   const el = h(
     "div",
@@ -137,7 +144,7 @@ export function honorScreen(app: App, view: View): Screen {
     h("div", { class: "header" }, h("span", { class: "title" }, HONOR.screenTitle)),
     h("div", { class: "honor-tabs", role: "tablist" }, ...tabs),
     host,
-    h("div", { class: "honor-actions" }, button(HONOR.back, "primary light outline honor-back", back), next),
+    h("div", { class: "honor-actions" }, button(HONOR.back, "primary light outline honor-back", back), cables, next),
   );
 
   return {

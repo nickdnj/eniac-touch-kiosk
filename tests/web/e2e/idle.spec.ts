@@ -22,7 +22,9 @@ test("setup: 'Still there?' after setupS, counts down, then resets to S1 with a 
   const log = await sent(page);
   expect(log.some((m) => m.t === "end_session" && m.reason === "idle")).toBe(true);
   expect(log.find((m) => m.t === "metric" && m.ev === "idle_reset")).toMatchObject({ screen: "mission" });
-  expect((await mockGet(page, "session")).session).toBeNull();
+  // The visitor's core is gone; home runs the live attract loop again (5.10), never the old session.
+  const s = (await mockGet(page, "session")).session;
+  expect(s === null || s.mode === "attract").toBe(true);
 });
 
 test("any touch on the overlay dismisses it and does not leak through", async ({ page }) => {

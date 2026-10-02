@@ -106,7 +106,7 @@ func Decode(b []byte) (any, *Error) {
 			if !evRe.MatchString(m.Ev) {
 				return fail(re, "bad metric name")
 			}
-			for _, s := range []string{m.Mission, m.Step, m.Speed} {
+			for _, s := range []string{m.Mission, m.Step, m.Speed, m.Unit} {
 				if s != "" && !idRe.MatchString(s) {
 					return fail(re, "bad metric field")
 				}

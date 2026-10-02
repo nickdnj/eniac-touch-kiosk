@@ -21,7 +21,10 @@ import { CardLog } from "./run/cards.ts";
 import { Visit } from "./state/visit.ts";
 import { AttractController, AttractStore } from "./attract/store.ts";
 
-export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor";
+export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor" | "explore" | "glossary";
+
+/** Views that keep a running attract session (S1, and Explore with its glossary and honor links). */
+const ATTRACT_KEEPS = new Set<string>(["start", "explore", "glossary", "honor"]);
 export interface View {
   name: ViewName;
   /** Where a new session lands: the briefing, or straight to step 1 (retry). */
@@ -30,6 +33,22 @@ export interface View {
   page?: number;
   /** S11: where Back returns (default: the picker). */
   back?: View;
+  /** S14 Explore ENIAC / S15 Glossary: where it was opened from and what to show (screens/explore.ts). */
+  explore?: ExploreOpen;
+}
+
+/** How Explore ENIAC (S14) or the Glossary (S15) was opened (UX 14.3.7, 14.9). */
+export interface ExploreOpen {
+  /** For the back button and the explore_open metric: picker, briefing, result, or another screen's name. */
+  from: string;
+  /** The view the back button returns to (default: the picker). */
+  back?: View;
+  /** Show this mission's units (state C), by mission id. */
+  mission?: string;
+  /** Open this card (a stop id from explore/room.ts: "acc", "pt", ...). */
+  card?: string;
+  /** Back from the glossary: restore the tour where the visitor left it. */
+  restore?: boolean;
 }
 
 export interface Screen {
@@ -61,7 +80,7 @@ export class App {
   readonly mirror = new Mirror();
   readonly link: Link;
   readonly idle: IdleTimer;
-  config: HelloConfig = { idle: { setupS: 90, runS: 180, countdownS: 15 }, admin: { tapZone: { corner: "top-left", widthPx: 120, heightPx: 96, taps: 5 } } };
+  config: HelloConfig = { idle: { setupS: 90, runS: 180, countdownS: 15, exploreS: 120 }, admin: { tapZone: { corner: "top-left", widthPx: 120, heightPx: 96, taps: 5 } } };
   missions: MissionSummary[] | null = null;
   mission: CompiledMission | null = null;
   view: View = { name: "boot" };
@@ -216,7 +235,8 @@ export class App {
         this.mirror.onState(m.session && m.session.state !== "none" ? m.session : null, m.seq, m.machine, m.run);
         // A new session (or a resync) replaces the cards with the bridge's
         // last 20; within the same session, never go backwards.
-        if (this.mirror.session && (this.mirror.session.id !== prior || (m.cards?.length && m.cards[m.cards.length - 1].n > this.cards.count))) this.cards.fromState(m.cards ?? []);
+        if (this.mirror.session?.mode === "attract") this.cards.reset();
+        else if (this.mirror.session && (this.mirror.session.id !== prior || (m.cards?.length && m.cards[m.cards.length - 1].n > this.cards.count))) this.cards.fromState(m.cards ?? []);
         else if (!this.mirror.session) this.cards.reset();
         this.afterSession();
         this.screen?.onMachine?.(null);
@@ -232,7 +252,9 @@ export class App {
       }
       case "punch":
         // Cards belong to the current session only (no session: nothing drawn).
-        if (this.mirror.session) this.cards.add({ n: m.n, text: m.text, fields: m.fields });
+        // An attract flight's cards are not the visitor's: they live in app.attract only,
+        // never in the mission's card log or the visit store.
+        if (this.mirror.session && this.mirror.session.mode !== "attract") this.cards.add({ n: m.n, text: m.text, fields: m.fields });
         break;
       case "frame": {
         const units = this.mirror.onFrame(m.seq, m.d);
@@ -263,7 +285,7 @@ export class App {
   /** Feeds the visit store from real bridge data (after the screen built its tape). */
   private noteVisit(m: ServerMsg): void {
     const mission = this.mission, s = this.mirror.session;
-    if (!mission || !s || this.view.name === "waking") return;
+    if (!mission || !s || s.mode === "attract" || this.view.name === "waking") return;
     if (m.t === "step_applied") this.visit.stepApplied(s.id, mission.steps.find((x) => x.id === m.step), m.assisted);
     else if (m.t === "run") this.visit.tape(mission.id, this.tape);
     else if (m.t === "punch" || m.t === "state") this.visit.cards(mission.id, this.cards);
@@ -399,8 +421,11 @@ export class App {
     // Home is attract (FR-30): S1 runs it; leaving S1 for the visitor flow is
     // the hand-off (FR-31: the bridge kills the attract core). The error
     // state leaves it running: the bridge resumes it after recovery (FR-51).
+    // Explore ENIAC asks for attract too (its live lamps, explore/live.ts):
+    // it keeps running through the glossary and the honor roll, and stops
+    // when the visitor goes on to the picker or a mission ("menu").
     if (view.name === "start") this.attractCtl.enter();
-    else if (this.view.name === "start" && view.name !== "error" && view.name !== "boot") this.attractCtl.leave("touch");
+    else if (!ATTRACT_KEEPS.has(view.name) && view.name !== "error" && view.name !== "boot") this.attractCtl.leave(this.view.name === "start" ? "touch" : "menu");
     this.screen?.unmount?.();
     clear(this.screenHost);
     // Attract is between visitors: the next one starts at mission 1 (FR-33).

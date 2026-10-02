@@ -19,8 +19,23 @@ func TestDefaultsMatchArchitecture(t *testing.T) {
 	if c.Recovery.Budget != 3 || len(c.Recovery.Backoff) != 3 || c.Recovery.SlowRetry.D() != 10*time.Minute {
 		t.Fatalf("recovery: %+v", c.Recovery)
 	}
-	if c.Idle != (Idle{90, 180, 15}) || c.Metrics.RetentionDays != 400 {
+	if c.Idle != (Idle{90, 180, 15, 120}) || c.Metrics.RetentionDays != 400 {
 		t.Fatalf("idle/metrics: %+v %+v", c.Idle, c.Metrics)
+	}
+	if c.Attract.Mission != "trajectory" || c.Attract.Hold.D() != 8*time.Second || c.Attract.ReadTimeout.D() != 15*time.Second {
+		t.Fatalf("attract: %+v", c.Attract)
+	}
+}
+
+// A config that sets only some idle values keeps the others' defaults
+// (exploreS is new in 0.4 and absent from older files).
+func TestIdlePartialKeepsDefaults(t *testing.T) {
+	c := Default()
+	if err := Parse([]byte("idle: { setupS: 20, runS: 90, countdownS: 5 }\n"), &c); err != nil {
+		t.Fatal(err)
+	}
+	if c.Idle != (Idle{20, 90, 5, 120}) {
+		t.Fatalf("%+v", c.Idle)
 	}
 }
 

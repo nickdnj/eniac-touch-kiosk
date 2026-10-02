@@ -33,11 +33,15 @@ export const CHECKERS = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
 
 const WL = new Set(["start_mission", "apply_step", "skip_setup", "button", "set_speed", "end_session", "attract_start", "attract_stop", "metric", "ping"]);
 // UI metric whitelist (architecture 8.3, protocol.gen.ts Metric.ev); bridge-owned names are NOT_ALLOWED.
-const METRICS = new Set(["wrong_tap", "step_done", "speed", "skip_to_answer", "setup_skipped", "idle_reset", "mission_picked", "picker_next_used", "honor_page_view"]);
+const METRICS = new Set(["wrong_tap", "step_done", "speed", "skip_to_answer", "setup_skipped", "idle_reset", "mission_picked", "picker_next_used", "honor_page_view",
+  "explore_open", "explore_card", "explore_walk_completed", "explore_mission_chip", "glossary_open",
+]);
+/** The attract program (bridge config attract.mission). */
+export const ATTRACT_MISSION = "trajectory";
 
 export function defaultConfig() {
   return {
-    idle: { setupS: 90, runS: 180, countdownS: 15 },
+    idle: { setupS: 90, runS: 180, countdownS: 15, exploreS: 120 },
     admin: { tapZone: { corner: "top-left", widthPx: 120, heightPx: 96, taps: 5 } },
   };
 }
@@ -78,6 +82,10 @@ export class MockBridge {
     this.sieveMs = { slow: 120, full: 25 };
     // Trajectory: ms per card (the real core: 1.43 s on the Mac).
     this.hopMs = 150;
+    // Attract: the session's status, and the landing hold (real bridge: 8 s).
+    this.attract = null;
+    this.attractTotal = 0;
+    this.attractHoldMs = 1500;
     this.missionsAvailable = true;
     this.refuseUntil = 0;
     this.tick = setInterval(() => this.onTick(), 33);
@@ -121,6 +129,7 @@ export class MockBridge {
       machine: s && s.state !== "starting" ? s.machine : null,
       cards: s ? s.cards.slice(-20) : [],
       run: s ? { state: s.run, inits: s.inits } : { state: "idle", inits: 0 },
+      attract: this.attractMsg(),
     };
   }
 
@@ -167,15 +176,27 @@ export class MockBridge {
       case "start_mission":
         if (this.health.core !== "up") return err("BAD_STATE", "core down");
         if (!MISSIONS[m.mission] || !this.missionsAvailable) return err("NOT_ALLOWED", "unknown mission");
+        if (m.mode === "attract") return err("NOT_ALLOWED", "attract runs through attract_start");
+        this.stopAttract(); // the hand-off: a visitor's mission ends attract
         return this.startSession(m.mode || "visitor", MISSIONS[m.mission]);
       case "end_session":
+        this.stopAttract();
         return this.endSession();
-      // Attract (attract.go): the mock has no core, so it acknowledges the
-      // request but never flies (no fake lamps or cards, even in dev).
+      // Attract (attract.go): like the mission runs, the mock flies the one
+      // recorded real flight (FLIGHT) as an ordinary session with mode
+      // "attract", flight after flight, so Explore's live lamps can be
+      // tested in dev. It is still dev-only: nothing here is in the bundle.
       case "attract_start":
-        return this.send(ws, { t: "attract", re: m.id, phase: "starting", mission: "trajectory", flight: 1, landed: 0, total: 0, cards: 0 });
+        if (this.health.core !== "up") return this.send(ws, this.attractMsg({ re: m.id }));
+        if (!this.attract) this.startAttract();
+        return this.send(ws, this.attractMsg({ re: m.id }));
       case "attract_stop":
-        return this.send(ws, { t: "attract", re: m.id, phase: "off", mission: "trajectory", flight: 0, landed: 0, total: 0, cards: 0 });
+        this.stopAttract();
+        return this.send(ws, this.attractMsg({ re: m.id }));
+    }
+    // Like the real bridge: an attract flight runs by itself.
+    if (s && s.mode === "attract") return err("NOT_ALLOWED", "attract runs by itself");
+    switch (m.t) {
       case "apply_step": {
         if (!s || s.state !== "setup") return err("BAD_STATE", "not in setup");
         const idx = s.mission.steps.findIndex((x) => x.id === m.step);
@@ -265,7 +286,71 @@ export class MockBridge {
       s.state = "setup";
       this.sendSession();
       this.broadcast(this.stateMsg());
+      if (mode === "attract") this.autopilot(s);
     }, 350);
+  }
+
+  // ------------------------------------------------------------- attract (as session/attract.go)
+  attractMsg(extra = {}) {
+    const a = this.attract;
+    return {
+      t: "attract",
+      phase: a ? a.phase : "off",
+      mission: ATTRACT_MISSION,
+      ...(a?.session ? { session: a.session } : {}),
+      flight: a ? a.flight : 0,
+      landed: a ? a.landed : 0,
+      total: this.attractTotal,
+      cards: this.session && this.session.mode === "attract" ? this.session.cards.length : 0,
+      ...(a?.phase === "landed" ? { holdMs: this.attractHoldMs } : {}),
+      ...extra,
+    };
+  }
+  setAttract(phase) {
+    if (!this.attract) return;
+    this.attract.phase = phase;
+    this.attract.session = this.session && this.session.mode === "attract" ? this.session.id : undefined;
+    this.broadcast(this.attractMsg());
+  }
+  /** attract_start: ends any visitor session, then flies. */
+  startAttract() {
+    this.endSession();
+    this.attract = { phase: "starting", flight: 0, landed: 0 };
+    this.nextFlight();
+  }
+  nextFlight() {
+    const a = this.attract;
+    if (!a) return;
+    a.flight++;
+    this.setAttract(a.flight === 1 ? "starting" : "recycling");
+    this.startSession("attract", TRAJECTORY);
+  }
+  stopAttract() {
+    if (!this.attract) return;
+    this.attract = null;
+    if (this.session && this.session.mode === "attract") this.endSession();
+    this.broadcast(this.attractMsg());
+  }
+  /** One flight, by itself: all steps, READ (b c, b r), then one INIT; real recorded cards. */
+  autopilot(s) {
+    const ok = () => this.session === s && this.health.core === "up";
+    for (const x of s.mission.steps) {
+      s.stdin.push(stepLine(x));
+      s.applied.push(x.id);
+    }
+    s.state = "armed";
+    this.sendSession();
+    s.stdin.push("b c", "b r");
+    s.state = "running";
+    this.sendSession();
+    this.setAttract("reading");
+    this.runRead(s);
+    this.later(() => {
+      if (!ok()) return;
+      s.stdin.push("b i");
+      this.setAttract("flying");
+      this.runFlight(s);
+    }, 700);
   }
 
   endSession(quiet = false) {
@@ -437,6 +522,15 @@ export class MockBridge {
             s.state = "result";
             this.sendSession();
           }
+          // Attract: hold the landing, then a fresh session (a new core) flies again.
+          if (s.mode === "attract" && this.attract) {
+            this.attract.landed++;
+            this.attractTotal++;
+            this.setAttract("landed");
+            this.later(() => {
+              if (this.session === s && this.attract && this.health.core === "up") this.nextFlight();
+            }, this.attractHoldMs);
+          }
         }
       }, (i + 1) * this.hopMs);
     });
@@ -497,6 +591,7 @@ export class MockBridge {
   // ------------------------------------------------------------- faults (test control)
   fault({ code = "E-CORE-DOWN", recoverAfterMs = 4000, final = false } = {}) {
     this.endSession(true);
+    if (this.attract) this.setAttract("error");
     let attempt = 1;
     this.health = { core: "down", code, detail: "mock", attempt, of: 3, final, kioskClient: true };
     this.broadcast({ t: "health", ...this.health });
@@ -513,6 +608,8 @@ export class MockBridge {
       this.health = { core: "up", kioskClient: true };
       this.broadcast({ t: "health", ...this.health });
       this.broadcast(this.stateMsg());
+      // Like the bridge (FR-51): attract resumes by itself once the core is back.
+      if (this.attract) this.nextFlight();
     }, recoverAfterMs);
   }
 
@@ -530,6 +627,9 @@ export class MockBridge {
   reset() {
     for (const t of this.timers) clearTimeout(t);
     this.timers.clear();
+    this.attract = null;
+    this.attractTotal = 0;
+    this.attractHoldMs = 1500;
     this.endSession(true);
     this.log = [];
     this.health = { core: "up", kioskClient: true };
