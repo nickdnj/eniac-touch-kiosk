@@ -224,13 +224,16 @@ log "admin user: $ADMIN_USER; SSH keys: $nkeys; SSH password login: $ALLOW_PW"
 
 # --- 4. offline apt packages ---------------------------------------------------------
 if [ "$OFFLINE" = 1 ]; then
-  if [ "$REUSE_OFFLINE" = 1 ] && [ -f "$S/offline/Packages" ] && [ -f "$S/offline/.iso" ] && [ "$(cat "$S/offline/.iso")" = "$ISO_NAME" ]; then
+  # Reuse only a bundle built for this ISO by this exact package recipe.
+  OKEY="$ISO_NAME $(shasum -a 256 "$ROOT/scripts/stick/offline-repo.sh" | cut -c1-16)"
+  if [ "$REUSE_OFFLINE" = 1 ] && [ -f "$S/offline/Packages" ] && [ "$(cat "$S/offline/.key" 2>/dev/null)" = "$OKEY" ]; then
     log "reusing $S/offline ($(find "$S/offline" -name '*.deb' | wc -l | tr -d ' ') packages)"
   else
+    [ "$REUSE_OFFLINE" = 1 ] && log "the cached offline repo is for another ISO or package recipe: rebuilding"
     log "building the offline apt repo (amd64 container; a few minutes)"
     docker run --rm --platform linux/amd64 -v "$ISO:/iso:ro" -v "$ROOT:/src:ro" -v "$S:/out" ubuntu:24.04 \
       bash /src/scripts/stick/offline-repo.sh || die "offline repo build failed (--no-offline to skip; first boot then needs the network)"
-    echo "$ISO_NAME" > "$S/offline/.iso"
+    echo "$OKEY" > "$S/offline/.key"
   fi
 fi
 
@@ -238,7 +241,7 @@ fi
 P="$S/payload/eniac"
 rm -rf "$S/payload" && mkdir -p "$P/release"
 cp "$RELEASE" "$RELEASE.sha256" "$P/release/"
-if [ "$OFFLINE" = 1 ]; then cp -R "$S/offline" "$P/offline"; rm -f "$P/offline/.iso"; fi
+if [ "$OFFLINE" = 1 ]; then cp -R "$S/offline" "$P/offline"; rm -f "$P/offline/.key"; fi
 cp "$AI/stick-guard.sh" "$AI/late-commands.sh" "$AI/firstboot.sh" "$AI/eniac-kiosk-firstboot.service" "$P/"
 MODE="confirm"; [ "$UNATTENDED" = 1 ] && MODE="UNATTENDED-WIPE"
 STICK_ID="$REL_VER/$ISO_NAME/$(date -u +%Y%m%dT%H%M%SZ)/$(openssl rand -hex 4)"
