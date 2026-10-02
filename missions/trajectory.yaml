@@ -102,7 +102,7 @@ run:
   initAfter: card-read           # INIT only once the card is in (Acc 1 = 97367)
   freezeAt: landed               # s cy.op 1a on the landing card: nothing more is punched
   speeds:
-    full: { rate: 0 }            # Full only: a card every 1.43 s on the Mac (spike S2); nothing is faster
+    full: { rate: 0, stallMs: 10000 }   # Full only: a card every 1.43 s on the Mac (spike S2); no card for 10 s while busy = stall
   defaultSpeed: full
   cards:
     window: [21, 80]             # hop 26-30, along 51-60, up 71-80

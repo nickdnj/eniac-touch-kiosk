@@ -62,6 +62,9 @@ type Options struct {
 	HealthEvery time.Duration // periodic health broadcast, default 5 s
 	ProbeMission string       // mission whose preset the recovery probe boots, default squares
 	CoreExtraEnv []string     // tests only (fakecore)
+	// StallOverride replaces a mission's non-zero stall window (tests only,
+	// so a stall test does not wait 20 s). Missions without a window stay off.
+	StallOverride time.Duration
 	RecoveryNow   func() time.Time
 	RecoverySleep func(ctx context.Context, d time.Duration) error
 }
@@ -105,6 +108,7 @@ type sess struct {
 	startedAt time.Time
 	speed     string
 	frozen    bool // the clock was stopped at run.freezeAt (no more speed changes)
+	stall     *machine.StallGuard
 }
 
 // New creates the manager, its vlink socket and its recovery loop.
@@ -319,6 +323,7 @@ func (m *Manager) startMission(ctx context.Context, x protocol.StartMission) []a
 	m.cur = s
 	m.mu.Unlock()
 	s.run = machine.NewRunTracker(s.mirror, mi.Watch(), spd.Rate, q)
+	s.stall = machine.NewStallGuard(m.stallWindow(mi, mi.File.Run.DefaultSpeed))
 	s.cps = machine.NewCheckpoints(mi.Checkpoints())
 	s.mirror.OnPunch = func(p machine.Punch) {
 		if err := m.hub.BroadcastPunch(p); err != nil {
@@ -570,6 +575,8 @@ func (m *Manager) setSpeed(x protocol.SetSpeed) []any {
 	s.run.SetRate(spd.Rate)
 	m.mu.Lock()
 	s.speed = x.Speed
+	w, _ := m.stallWindow(s.m, x.Speed)
+	s.stall.SetWindow(w)
 	m.mu.Unlock()
 	return nil
 }
@@ -709,9 +716,22 @@ func (m *Manager) tick(s *sess) {
 		}
 		m.mu.Lock()
 		st := s.state
+		frozen := s.frozen
 		m.mu.Unlock()
 		if st == protocol.StateArmed || st == protocol.StateRunning || st == protocol.StateResult {
 			state := s.mirror.State()
+			// Stall guard: a busy run that stops making progress (no card,
+			// or no accumulator change) is a fault, not a stuck screen. A
+			// run frozen on purpose (freezeAt) is not watched.
+			m.mu.Lock()
+			stalled := !frozen && s.stall.Observe(time.Now(), s.run.State() == machine.RunBusy, &state)
+			window := s.stall.Window()
+			m.mu.Unlock()
+			if stalled {
+				m.log.Warn("run stalled", "id", s.id, "mission", s.m.File.ID, "window", window, "cards", state.Punched)
+				m.fault(s, core.Fault{Code: core.CodeDown, Detail: core.DetailStall})
+				return
+			}
 			for _, id := range s.cps.Evaluate(&state) {
 				if id == s.m.File.Run.FreezeAt {
 					m.freeze(s)
@@ -732,6 +752,15 @@ func (m *Manager) tick(s *sess) {
 			}
 		}
 	}
+}
+
+// stallWindow is the mission's stall window at a speed (StallOverride in tests).
+func (m *Manager) stallWindow(mi *mission.Mission, speed string) (time.Duration, bool) {
+	w, byPunch := mi.StallWindow(speed)
+	if w > 0 && m.o.StallOverride > 0 {
+		w = m.o.StallOverride
+	}
+	return w, byPunch
 }
 
 // freeze stops the clock where it is (`s cy.op 1a`, whitelisted): the

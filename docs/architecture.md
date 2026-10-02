@@ -1,6 +1,6 @@
 # Software Architecture: ENIAC Touch Kiosk
 
-**Version:** 0.4
+**Version:** 0.5
 **Last Updated:** 2026-10-01
 **Author:** Nick DeMarco with AI assistance (software-architecture agent)
 **Status:** Draft for review
@@ -319,6 +319,8 @@ Timed mode: the status goroutine diffs each unit against its last-sent copy ever
 
 **Parser rules:** split on whitespace (except `punch`); validate the field count and ranges; unknown or malformed lines → `Drop{reason}`, never a panic. The mirror's initial values equal `engine.go`'s initial "last sent" values (accumulators `P 0…0`, MP 0, FT `"0"`, `conslast`, `mullast`, `dsqlast`), so the diff stream applied to the defaults reproduces the true state. A test pins those defaults to the upstream source at the locked commit.
 
+**Punch line format** (`printer.go` `doprint()`, checked for M2): 80 columns as sixteen 5-column fields. The sources are the Master Programmer (field 1) and Accumulators 13 to 20 (two fields each, field 6 only the low half of Acc 15); printer switch `pr.N` blanks field N unless it is `P`, and couplings `pr.N-M` join fields into one number. A negative number is written sign-magnitude by `sm2tenc()` with an **11-row overpunch on its first digit**: `-` is 11 over 0 and `J`..`R` are 11 over 1..9 (Trajectory's landing card has `-` in column 71). The UI decodes these back to numbers and draws the Hollerith holes (digit row, plus the 11 row for `-` and `J`..`R`); the core never emits 12-zone characters.
+
 Sampling caveat: lamps reflect **30 ms samples**, not every pulse. At slow `cy.rate` this is faithful. At full speed some transient states are never seen, which is the same as `eniactk`.
 
 ### 5.2 Core stdin commands the bridge may send
@@ -455,6 +457,7 @@ This is verified in the M1 spike against every speed preset on the Pi 5: a known
 | Core process exits unexpectedly | `cmd.Wait` | `E-CORE-DOWN` |
 | vlink disconnects while the core is alive | Socket EOF | `E-CORE-DOWN` |
 | Status silence: no status line for 2 s while `cycle.mode = C` (`cy` normally changes every tick) | Watchdog | `E-CORE-DOWN` (detail `hang-status`) |
+| Run stall (M2): a busy run makes no progress for the mission's `stallMs` at the current speed. Progress is a punched card for card missions, an accumulator change otherwise. Primes 20 s at Full / 60 s at Slow, Trajectory 10 s; off for Squares (it rests between presses) and once a run is frozen at `freezeAt` | Session stall guard (`machine.StallGuard`, 33 ms tick) | `E-CORE-DOWN` (detail `stall`); added after one Primes run on #45 stayed busy with no card and no error |
 | Command-loop hang: no `> ` ack within 1.5 s of any command, including the `d i` probe sent every 5 s when no command is in flight | Stdin writer | `E-CORE-DOWN` (detail `hang-cmd`); this is exactly how the U2 deadlock presents |
 | Core prints a known error after a step or button command | Stdout classifier | `E-CORE-CMD`. The config has diverged from the known-good `.e`, which must never happen. |
 | Kiosk browser disconnected more than 5 s | ws hub | Client side shows `E-LINK`. The bridge reaps the session after 30 s. |
@@ -655,6 +658,7 @@ content:
 - **Caption triggers** (UI-side): `{punchCount: {gte}}`, `{acc: {acc, eq}}`, `{init: rdff}` (an initiating-unit lamp) and `{derived: apex|landed}` (computed by the UI from successive cards), besides `accProg` and `run`.
 - **Buttons:** a button with withheld lines bound to it sends those lines (through `WithheldLine`, in file order); otherwise INIT is `b i` and CLEAR is `b c`. READ needs bound lines and is refused after INIT. `initOnce` missions cannot offer CLEAR.
 - **Idle** (5.6): the reader and printer flip-flops (init bits 6 and 7) must also be clear. A READ or a punch is paced in wall-clock time and can be quiet for longer than the quiet period; without this a Primes run could look idle while a card is being punched.
+- **Stall guard:** `speeds: {full: {rate: 0, stallMs: 20000}}` sets the per-speed window (5.8). A speed change restarts the clock; an idle run or a frozen one is not watched.
 - **Freeze:** `freezeAt` sends `s cy.op 1a` from the tick loop under the operation lock; afterwards `set_speed` is refused (a speed change could restart the clock).
 - **Metrics:** two UI events for the picker (UX 8.4): `mission_picked {m, n}` (n is the card's position) and `picker_next_used {m}`.
 - **Tooling:** `eniac-bridge mission compile FILE` prints the compiled mission exactly as `GET /api/missions/{id}` serves it; the UI's mock fixtures (`tests/web/mock/missions/*.json`) are generated with it.
@@ -1065,3 +1069,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 | 0.2 | 2026-09-30 | software-developer agent (M1 bridge) | 5.9.2: `content:`, `selftest:` and `summary` added to the mission schema; `[FC]` review metadata. 5.9.5 rule 4 defined per terminal, ignoring trunk ends. Greek/ASCII canonicalization note. | 5.3-5.6 (#8): generated TS types live next to the Go types; `hello.config.admin.tapZone` shape; `frame.seq` monotonic across sessions; `health.detail`; `pong`; `metric` gains optional `speed` and `screen` (the 8.3 events `speed{m,speed}` and `idle_reset{screen}` need them). | 5.4/5.6 (#11): `state.session` and `state.machine` are `null` without a session; CLEAR also starts `busy`. | 5.6 (#12): `metric.assisted` (for `step_done{m,step,assisted}`). |
 | 0.3 | 2026-10-01 | software-developer agent (M2 upstream fixes) | Decision #36: 4.4 is now the patch policy plus the list of patches we carry (0001 `mult.go`, 0002 `ft.go`, 0003 `accumulator.go`) and what we chose not to patch. 4.1 lists the patches. 4.2 points the bump to the README procedure. U1 and A1 resolved. Trajdemo findings in `docs/spikes/S2-trajdemo.md`. |
 | 0.4 | 2026-10-01 | software-developer agent (M2 build) | 5.9.6: the M2 mission format (minutes, requires, includes as preset, assets and readCard, withheld lines per button, initOnce, initAfter, freezeAt, run.cards, run.plot, content.read, result.live); punchCount and punchField predicates implemented; M2 caption triggers; idle also needs the reader and printer flip-flops clear; M2 jack grammar and switch families; picker metrics; `mission compile`. 5.9.5 rules extended for M2. |
+| 0.5 | 2026-10-01 | software-developer agent (M2 follow-ups) | 5.8 and 5.9.6: the run stall guard (`stallMs` per speed, `E-CORE-DOWN`/`stall`). |

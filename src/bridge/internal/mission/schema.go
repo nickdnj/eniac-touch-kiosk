@@ -147,6 +147,12 @@ type IdleSpec struct {
 type Speed struct {
 	Rate int    `yaml:"rate" json:"rate"`
 	Op   string `yaml:"op,omitempty" json:"op,omitempty"` // optional s cy.op value (co)
+	// StallMs: a busy run that makes no progress this long at this speed
+	// raises E-CORE-DOWN/stall (S10 and recovery). Progress is a punched
+	// card if the mission has run.cards, else an accumulator change. 0 =
+	// no guard (Squares rests between presses). Chosen from the measured
+	// timings: well above the longest normal gap at that speed.
+	StallMs int `yaml:"stallMs,omitempty" json:"-"`
 }
 
 // Selftest is the headless known-answer check (architecture 5.9.5 rule 8).

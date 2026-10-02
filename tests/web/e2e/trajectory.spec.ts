@@ -121,6 +121,13 @@ test("run: READ first (b c, b r), INIT locked until the card is read, the arc fr
   await expect(page.locator(".run-caption")).toHaveText("Landed! The height dropped below zero.");
   await expect(page.locator(".arc-tag.landed")).toHaveText("Landed");
   await expect(page.locator(".stretch-chip")).toHaveText("Height stretched so you can see it.");
+  // The readouts freeze on the landing card's numbers, not the next flight's setup.
+  await expect(page.locator('.ro-value[data-acc="15"]')).toHaveText("34");
+  await expect(page.locator('.ro-value[data-acc="18"]')).toHaveText("390,417,741");
+  await expect(page.locator('.ro-value[data-acc="20"]')).toHaveText("-2,951,425");
+  await expect(page.locator('.ro-value[data-acc="6"]')).toHaveText("–");
+  await expect(page.locator(".traj-note")).toHaveText("Stopped on the landing card. These are its numbers.");
+  expect((await page.evaluate(() => (window as any).__eniac.mirror.machine.acc["15"].value))).toBe(1); // the lamps stay real
   const stdin = (await mockGet(page, "session")).stdin;
   expect(stdin.filter((l: string) => l === "b i")).toHaveLength(1);
   expect(stdin.at(-1)).toBe("s cy.op 1a");

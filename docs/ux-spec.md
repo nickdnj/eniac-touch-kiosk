@@ -1,6 +1,6 @@
 # UX Design Specification: ENIAC Touch Kiosk
 
-**Version:** 0.4
+**Version:** 0.5
 **Last Updated:** 2026-10-01
 **Author:** Nick DeMarco with AI assistance (ux-design agent)
 **Status:** Draft for review
@@ -1038,7 +1038,7 @@ After the 5th card the rail adds:
 - **Show me what happened** (primary, 96 h): goes to S7 now. The result screen is live (below).
 - **Skip to the answer:** sets Full and goes to S7 immediately. **It cannot make the machine faster than about 0.6 s per card**, so S7 first shows a waiting state ("ENIAC is counting primes: 37 of the first 100") until card 100 (the `hundred` checkpoint), and then the result headline appears. At Full from the start this takes about 1:00 on the Mac. If ENIAC has already punched more than 100 cards, S7 is instant.
 
-If the visitor leaves the run view idle, the standard 3 minute run timeout (S9) applies. The run is never "idle" in the machine sense until card 407, so INIT stays greyed. The mission needs no CLEAR.
+*(v0.5: if a run stays busy with no new card for 20 s at Full or 60 s at Slow, the bridge raises a stall and S10 "ENIAC is resting" and recovery take over, instead of a stuck screen. Trajectory: 10 s without a card.)* If the visitor leaves the run view idle, the standard 3 minute run timeout (S9) applies. The run is never "idle" in the machine sense until card 407, so INIT stays greyed. The mission needs no CLEAR.
 
 **Result (S7) copy**
 
@@ -1350,7 +1350,7 @@ The run view layout (stage 1360 x 904; the rail at the right is as in 7.5):
 - **Landing.** The first card with a negative "up" gets a "Landed" tag, drawn at the line where the path would cross zero (a straight line between the last two dots, labelled as such).
 - **Cards (FR-21).** The big card shows the newest card: cream with a cut corner, columns 21 to 80 on a torn left edge (the program punches the hop number at columns 26 to 30, "along" at 51 to 60 and "up" at 71 to 80), digits printed over their holes. The film strip holds the last 20 cards as small cards with the hop number and a hole pattern; **tap a small card to show it large**; the newest returns after 10 s. Dots on the arc can be tapped too (same effect). *(v0.4 build: the film strip shows the last **16** cards, because 20 cards 64 px wide with the 16 px gap between touch targets do not fit the stage; the dots on the arc are not tappable, because they sit closer together than the touch rules allow. The result screen shows the arc and the count, without the strip.)*
 - **Units at work.** Real lamps: `lamp:mult.stage.*`, `lamp:ft.2.ring.*`, `lamp:mp.s.7.*`. These change in bursts between cards. They are the "ENIAC is thinking" part.
-- **Helper readouts.** Acc 15 (hop), Acc 18 (along), Acc 20 (up), Acc 6 (along speed), Acc 4 (up speed). Labelled with the accumulator number so Walt can find them. Computed from the lamps, never separate data.
+- **Helper readouts.** Acc 15 (hop), Acc 18 (along), Acc 20 (up), Acc 6 (along speed), Acc 4 (up speed). Labelled with the accumulator number so Walt can find them. Computed from the lamps, never separate data. *(v0.5: once the landing card is punched, the program has already begun setting up its next flight when the clock stops, so the readouts freeze on the landing card's own numbers (hop 34, along, up) with "Stopped on the landing card. These are its numbers."; the speeds, which are not on the card, go blank. The lamps keep showing the real frozen state; the arc, the cards and "34 hops" are unchanged.)*
 
 | Moment | Rail prompt (40 px) | Caption sequence (28 px, one at a time, each fires once) | What the lamps and cards show |
 |---|---|---|---|
@@ -1688,3 +1688,4 @@ Lamp states are smoothed (80 ms decay) so no element flashes more than 3 times p
 | 0.2 | 2026-10-01 | ux-design agent | Primes (8.2) and Trajectory (8.3) outlines replaced by complete scripts, mapped to `missions/*.yaml`; picker for three missions (8.4); loader and bridge needs, Fact-Checker list and open questions (8.5); flags F8 (resolved), F9, F10; the picker counts in 7.2 |
 | 0.3 | 2026-10-01 | ux-design agent | Primes reframed around sharing evenly / equal groups (Nick, 2026-10-01): briefing, plan, steps 1 to 4, S5, run captions, result and both canvases; "watcher" kept only as an engineering nickname in 8.2.1 and 8.2.2 |
 | 0.4 | 2026-10-01 | software-developer agent (M2 build), recording Nick's decisions | Trajectory after spike S2 (box at the top of 8.3): READ sends `b c` then `b r`; one INIT; one 34-card flight; frozen on the landing card with `s cy.op 1a`; Full only; S2 timings replace the [A] ones; no units on screen. Primes: the answer is card 100 (547) and S7 stays live to 407 (8.5.1 Q3); Slow stays `rate 100`. Squares Slow is `cy.rate 13` (S4) and "Keep pressing" waits 0.5 s at Slow (8.1.4). Attract caption fixed to the trajectory loop (7.1, 8.5.1 Q6). Zero first card and stopping at landing resolved (8.5.1 Q4, Q8) |
+| 0.5 | 2026-10-01 | software-developer agent (M2 follow-ups) | Trajectory readouts freeze on the landing card (8.3.5); a stalled Primes or Trajectory run goes to S10 (8.2.5) |

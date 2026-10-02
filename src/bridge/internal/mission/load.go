@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 
@@ -519,6 +520,9 @@ func (m *Mission) validateRun() {
 		if s.Rate < 0 {
 			m.fail("run.speeds.%s: rate must be >= 0", name)
 		}
+		if s.StallMs != 0 && s.StallMs < 2000 {
+			m.fail("run.speeds.%s: stallMs must be 0 (off) or at least 2000", name)
+		}
 		if s.Op != "" && s.Op != "co" && s.Op != "1a" && s.Op != "1p" {
 			m.fail("run.speeds.%s: op must be co, 1a or 1p", name)
 		}
@@ -860,6 +864,14 @@ func (m *Mission) Watch() []int {
 func (m *Mission) Speed(name string) (Speed, bool) {
 	s, ok := m.File.Run.Speeds[name]
 	return s, ok
+}
+
+// StallWindow is the stall guard's window at a speed (0 = off) and whether
+// progress means a punched card (missions with run.cards) or an
+// accumulator change.
+func (m *Mission) StallWindow(speed string) (time.Duration, bool) {
+	sp := m.File.Run.Speeds[speed]
+	return time.Duration(sp.StallMs) * time.Millisecond, m.File.Run.Cards != nil
 }
 
 // HasButton reports whether the mission offers a run button.

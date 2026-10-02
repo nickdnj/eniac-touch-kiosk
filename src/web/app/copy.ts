@@ -111,13 +111,15 @@ export const COPY = {
   // Trajectory run view (UX 8.3.5 S6): helper readouts, labelled with the
   // accumulator number so a technician can find them. No units on screen.
   trajRun: {
+    // [accumulator, label, the card field it matches: hop / x / y of the plot]
     readouts: [
-      ["15", "Hop"],
-      ["18", "Along"],
-      ["20", "Up"],
-      ["6", "Along speed"],
-      ["4", "Up speed"],
-    ] as [string, string][],
+      ["15", "Hop", "hop"],
+      ["18", "Along", "x"],
+      ["20", "Up", "y"],
+      ["6", "Along speed", ""],
+      ["4", "Up speed", ""],
+    ] as [string, string, "hop" | "x" | "y" | ""][],
+    landedNote: "Stopped on the landing card. These are its numbers.",
     acc: (n: string) => `Acc ${n}`,
     atWork: "Units at work",
   },

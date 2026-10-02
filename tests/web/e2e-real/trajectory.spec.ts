@@ -84,6 +84,23 @@ test("Skip setup, READ, INIT: 34 real cards, lands on the first negative 'up', f
   await expect(page.locator(".run-caption")).toHaveText("Highest point! From here the shell comes down.", { timeout: 90_000 });
   await expect(page.locator(".run-prompt")).toHaveText("You did it!", { timeout: 90_000 });
   await expect(page.locator(".run-caption")).toHaveText("Landed! The height dropped below zero.");
+  await expect(page.locator('.ro-value[data-acc="15"]')).toHaveText("34");
+  await expect(page.locator('.ro-value[data-acc="18"]')).toHaveText("390,417,741");
+  await expect(page.locator('.ro-value[data-acc="20"]')).toHaveText("-2,951,425");
+  // The landing card as drawn: every column's holes are its Hollerith code
+  // (printer.go sm2tenc: '-' is 11 over 0, J..R 11 over 1..9).
+  const landing = await page.evaluate(() => (window as any).__eniac.cards.cards[33].text as string);
+  expect(landing[70]).toBe("-");
+  const drawn = await page.locator(".card-big .hole").evaluateAll((els) => els.map((e) => `${e.getAttribute("data-col")}:${e.getAttribute("data-row")}`).sort());
+  const want: string[] = [];
+  for (let col = 21; col <= 80; col++) {
+    const ch = landing[col - 1];
+    if (/[0-9]/.test(ch)) want.push(`${col}:${ch}`);
+    else if (ch === "-") want.push(`${col}:11`, `${col}:0`);
+    else if (/[J-R]/.test(ch)) want.push(`${col}:11`, `${col}:${ch.charCodeAt(0) - 73}`);
+    else expect(ch).toBe(" ");
+  }
+  expect(drawn).toEqual(want.sort());
   await expect(view(page)).toHaveAttribute("data-view", "result", { timeout: 10_000 });
   await expect(page.locator(".result-answer h2")).toHaveText("ENIAC flew the shell!");
   await expect(page.locator(".live-line")).toHaveText("34 hops, 34 cards");

@@ -421,6 +421,11 @@ export class MockBridge {
           s.fired.add("landed");
           s.frozen = true;
           s.stdin.push("s cy.op 1a"); // run.freezeAt
+          // Like the real core: the next flight's setup has begun when the
+          // clock stops (Hop back to 1, the next numbers loading).
+          this.setAcc("15", 1);
+          this.setAcc("18", 429410);
+          this.setAcc("20", 177752);
           this.broadcast({ t: "checkpoint", id: "landed" });
           if (s.state === "running") {
             s.state = "result";
