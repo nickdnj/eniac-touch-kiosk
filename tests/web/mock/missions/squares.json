@@ -53,7 +53,7 @@
       "text": {
         "headline": "Put the 1 on the number highway",
         "body": "Numbers travel through cables on a data trunk, like cars on a highway. Tap the OUT jack. Then tap Trunk 1. Now the 1 can travel.",
-        "more": "On the real ENIAC, trunks were long tubes of wires that ran along the machine. Cables plug units into them.",
+        "more": "On the real ENIAC, long trays of wires ran along the panels. Trays joined end to end made a trunk. Cables plug units into them.",
         "done": "The cable is in. The 1 is on Trunk 1.",
         "hints": {
           "wrongFrom": "That is a jack for signals. We want OUT, the number exit.",
@@ -95,7 +95,7 @@
       "text": {
         "headline": "Send the number twice",
         "body": "Our trick adds the number two times. So Accumulator 1 must send it two times. Tap the glowing switch and pick 2.",
-        "more": "Every ENIAC job had a repeat switch. Here, Accumulator 2 also has to listen twice. That is one of the 10 switches we set for you.",
+        "more": "Many ENIAC jobs had a repeat switch, to do the job up to 9 times. Here, Accumulator 2 also has to listen twice. That is one of the 10 switches we set for you.",
         "done": "Accumulator 1 will now send its number 2 times.",
         "hints": {
           "wrongValue": "We need the number to go twice. Pick 2."
@@ -141,7 +141,7 @@
     "briefing": {
       "headline": "What is a square?",
       "body": "Picture tiles on a floor. Lay them out 3 rows of 3, and you have a square of 9 tiles. ENIAC can make a list of squares, and you will wire it up. In 1946, programming meant plugging in cables!",
-      "more": "ENIAC was finished in 1945 and shown to the public on February 15, 1946. It had about 18,000 vacuum tubes. There was no keyboard for programs. People set cables and switches, a bit like an old telephone switchboard.",
+      "more": "ENIAC was working by the end of 1945 and shown to the public on February 15, 1946. It had about 18,000 vacuum tubes. There was no keyboard for programs. People set cables and switches, a bit like an old telephone switchboard.",
       "buttons": ["Let's go"]
     },
     "plan": {
@@ -153,7 +153,7 @@
     },
     "rest": {
       "headline": "The rest is done for you",
-      "body": "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. We will place the last ones now: 8 cables and 10 switches.",
+      "body": "Real ENIAC programmers placed hundreds of cables by hand. Setting up a new problem could take a day or more. We will place the last ones now: 8 cables and 10 switches.",
       "buttons": ["Continue"]
     },
     "run": {

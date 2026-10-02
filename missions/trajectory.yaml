@@ -133,7 +133,7 @@ content:
   briefing:                      # S3, step 0a
     headline: "The path of a shell"
     body: "A shell flies in an arc. ENIAC finds the arc one small hop at a time, and punches a card after each hop. Each card is one dot. You will connect the dots."
-    more: "ENIAC was built to work out firing tables for Army guns. It was shown to the public on February 15, 1946. Brian Stuart's program tries to recreate the demo from that day. Six women programmers set up ENIAC for it."
+    more: "ENIAC was built to work out firing tables for Army guns. It was shown to the public on February 15, 1946. Brian Stuart's program tries to recreate the demo from that day. ENIAC's women programmers set up the shell trajectory for that demo."
     buttons: ["Let's go"]
     review: { factCheck: [more], source: "ux-spec 8.3.5 0a ([FC: all four sentences; Doug to approve any names])" }
   plan:                          # step 0b
@@ -145,7 +145,7 @@ content:
     review: { factCheck: [more], source: "ux-spec 8.3.5 0b" }
   rest:                          # S5
     headline: "The rest is done for you"
-    body: "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. We will place the last ones now: 293 cables and 1,147 switches. Most of the switches make up the drag table."
+    body: "Real ENIAC programmers placed hundreds of cables by hand. Setting up a new problem could take a day or more. We will place the last ones now: 293 cables and 1,147 switches. Most switches make up the drag table."
     buttons: ["Continue"]
     review: { factCheck: [body], source: "ux-spec 8.3.5 S5" }
   read:                          # the READ beat before INIT
@@ -196,7 +196,7 @@ content:
     body: "Each card was one hop. Joined up, the dots show the whole flight: up, over the top, and down. ENIAC worked it out from a card of numbers and the cables you placed."
     takeaway: "Numbers and cables made a flight path."
     takeawaySub: "That is what programming ENIAC meant."
-    more: "The real ENIAC could work out a trajectory like this much faster than a shell takes to fly. By hand, the same work took days. Our simulator is slower, so you can watch every hop."
+    more: "The real ENIAC could work out a shell's path faster than the shell takes to fly. A person with a desk calculator needed many hours. Our simulator is slower, so you can watch every hop."
     live:
       waiting: "The shell is still flying: hop {n}"
       done: "{n} hops, {n} cards"

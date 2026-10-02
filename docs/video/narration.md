@@ -22,7 +22,7 @@ Voice-over scripts for the three walkthrough videos, keyed to the `card(...)` an
 ## Pronunciation notes for whoever sets up the voice
 
 - ENIAC is written as plain "ENIAC" throughout.
-- Lehmer is normally said "LAY-mer". Please confirm with the team before generating audio, and check De Mol and Bullynck as well.
+- **The narration does not speak Lehmer's name.** The earlier note said it is "LAY-mer", but no authoritative source was found (fact-check C10). A web search on 2026-10-02 (Wikipedia's D. H. Lehmer and Emma Lehmer pages, the MacTutor biographies, the IEEE Computer Society "Computer Pioneers" page, the Berkeley obituary of Emma Lehmer) turned up no pronunciation guide, no IPA and no family or colleague statement. The only hits were crowd-sourced sites (howtopronounce.com gives "leh-mer"; a Forvo entry for "D. N. Lehmer" exists but could not be checked), which are not good enough for a museum. So the two lines that named him (the Primes title card and end card) were reworded to leave the name out. If a recording of a colleague or a family member turns up, the name can go back in.
 - Numbers are spelled out. "Twenty-eight oh one" is 2,801.
 
 ---
@@ -41,7 +41,7 @@ Voice-over scripts for the three walkthrough videos, keyed to the `card(...)` an
 | (caption cleared) | 4 s | There. Dial set to one. |
 | Step 2: plug a cable — tap one jack, then the other | 8 s | Step two. Plug in a cable. Tap one jack, then the other, and the number can travel. |
 | Step 3: carry the number to Accumulator 1 | 7 s | Step three. Carry the number to Accumulator One, one of ENIAC's adding machines. |
-| Short on time? Skip ahead — the rest is wired automatically | 14 s | Short on time? Skip ahead, and the rest gets wired for you. On the real ENIAC, programmers placed hundreds of cables by hand, and setting up took days. [FC] |
+| Short on time? Skip ahead — the rest is wired automatically | 14 s | Short on time? Skip ahead, and the rest gets wired for you. On the real ENIAC, programmers placed hundreds of cables by hand. Setting up a new problem could take a day or more. [FC] |
 | Press INIT — ENIAC's GO button. Lamps show the simulator's real accumulators. | about 55 s in all (4 s, then three presses) | Press INIT, ENIAC's go button. Those lamps are the simulator's real accumulators. |
 | (same beat, during press 1) | about 15 s | One times one is one. [pause: let the lamps play] |
 | (same beat, during press 2) | about 15 s | Press again. Two times two is four. [pause: let the lamps play] |
@@ -57,7 +57,7 @@ Voice-over scripts for the three walkthrough videos, keyed to the `card(...)` an
 
 | Beat (exact caption) | About | Narration |
 |---|---|---|
-| title card | 5 s | ENIAC hunts for primes, as D. H. Lehmer ran it in July nineteen forty-six. [FC] |
+| title card | 5 s | ENIAC hunts for primes, in a program based on a real run from July nineteen forty-six. [FC] |
 | Missions in a suggested order. Primes is number 2 | 5 s | Welcome back. Missions come in a suggested order, and primes is number two. |
 | What is a prime? Share cookies evenly, on the same tile floor | 11 s | Remember the tiles from Squares? Same floor, now with cookies. Twelve cookies share evenly: two groups of six, three groups of four. Seven always leaves one over. Numbers like seven are prime. |
 | The trick: group checkers try 3, 5, 7 and more, all at once | 12 s | ENIAC tries groups of three, five, seven and more, all at once. If any size fits, the number is out. If none fit, it is prime. [pause: let the cards and tiles play] |
@@ -74,7 +74,7 @@ Voice-over scripts for the three walkthrough videos, keyed to the `card(...)` an
 | (same beat, a little later) | | [pause: let the lamps play] Every card is a number that no cookie plan can share evenly. |
 | Skip to the answer: the first 100 primes | 6 s | Let us skip ahead to the first one hundred primes. ENIAC taps its foot a little longer. |
 | Card 100 is 547. The result stays live: ENIAC keeps counting to 2,801 | 9 s | Card one hundred is five hundred forty-seven, and ENIAC keeps counting up to twenty-eight oh one. Same machine as Squares, different cables. |
-| end card | 6 s | Warm thanks to Brian L. Stuart, and to the Lehmer reconstruction by De Mol and Bullynck. [FC] |
+| end card | 6 s | Warm thanks to Brian L. Stuart, and to De Mol and Bullynck, who reconstructed that nineteen forty-six run. [FC] |
 
 ---
 

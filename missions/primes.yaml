@@ -125,7 +125,7 @@ content:
   briefing:                      # S3, step 0a
     headline: "What is a prime?"
     body: "Can you share 12 cookies evenly? Yes: 3 groups of 4. Now try 7. There is always one left over. Numbers that won't split into equal groups are prime: 2, 3, 5, 7, 11…"
-    more: "For parents: a prime is a number above 1 that divides evenly only by 1 and itself. In 1946 ENIAC hunted for primes. ENIAC was shown to the public on February 15, 1946, and in July 1946 D. H. Lehmer ran prime searches on it. Brian Stuart's program is based on those runs and on a reconstruction by Liesbeth De Mol and Maarten Bullynck."
+    more: "For parents: a prime is a number above 1 that divides evenly only by 1 and itself. Over a July 1946 holiday weekend, D. H. Lehmer used ENIAC to study primes. Brian Stuart's program follows De Mol and Bullynck's reconstruction."
     buttons: ["Let's go"]
     review: { factCheck: [more], source: "ux-spec 8.2.5 0a ([FC: 1946, Lehmer, the reconstruction])" }
   plan:                          # step 0b
@@ -137,7 +137,7 @@ content:
     review: { factCheck: [more], source: "ux-spec 8.2.5 0b" }
   rest:                          # S5
     headline: "The rest is done for you"
-    body: "Real ENIAC programmers placed hundreds of cables by hand, and setting up took days. We will place the last ones now: 264 cables and 285 switches, including 13 more group checkers."
+    body: "Real ENIAC programmers placed hundreds of cables by hand. Setting up a new problem could take a day or more. We will place the last ones now: 264 cables and 285 switches, including 13 more group checkers."
     buttons: ["Continue"]
     review: { factCheck: [body], source: "ux-spec 8.2.5 S5" }
   run:                           # S6
