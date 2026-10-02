@@ -209,12 +209,13 @@ export function filmStage(app: App, reduceMotion: boolean): RunStage {
   const arcBox = h("div", { class: "arc-box" }, reader, plot.el);
 
   // Helper readouts: the accumulators that hold the flight (UX 8.3.5).
-  const ro: { acc: string; el: HTMLElement }[] = [];
+  const ro: { acc: string; field: "hop" | "x" | "y" | ""; el: HTMLElement; box: HTMLElement }[] = [];
   const readouts = h("div", { class: "traj-readouts" });
-  for (const [acc, label] of T.readouts) {
+  for (const [acc, label, field] of T.readouts) {
     const v = h("span", { class: "ro-value", "data-acc": acc }, "–");
-    readouts.append(h("div", { class: "ro" }, h("div", { class: "ro-label" }, label, h("span", { class: "ro-acc" }, T.acc(acc))), v));
-    ro.push({ acc, el: v });
+    const box = h("div", { class: "ro" }, h("div", { class: "ro-label" }, label, h("span", { class: "ro-acc" }, T.acc(acc))), v);
+    readouts.append(box);
+    ro.push({ acc, field, el: v, box });
   }
   const note = h("div", { class: "traj-note" }, mission.content.run.note ?? "");
 
@@ -272,15 +273,37 @@ export function filmStage(app: App, reduceMotion: boolean): RunStage {
     refreshBig();
   };
 
+  /**
+   * Live from the accumulators while the shell flies. Once the landing card
+   * is punched, the program has already begun setting up its next flight
+   * (Hop back to 1, speeds reloaded) before the bridge freezes the clock, so
+   * the readouts freeze on the landing card's own numbers (hop, along, up)
+   * and the speeds, which are not on the card, go blank. The lamps keep
+   * showing the real frozen state.
+   */
   function refreshReadouts(): void {
     const m = app.mirror.machine;
+    const landed = app.cards.landed;
+    readouts.classList.toggle("frozen", !!landed);
+    note.textContent = landed ? T.landedNote : (mission.content.run.note ?? "");
     for (const r of ro) {
+      if (landed) {
+        const card = app.cards.cards.find((c) => c.n === landed.n);
+        const spec = app.cards.spec;
+        const fields = r.field === "hop" ? spec?.hop : r.field === "x" ? app.cards.plot?.x : r.field === "y" ? app.cards.plot?.y : undefined;
+        const v = card && fields ? cardValue(card, fields) : null;
+        r.el.textContent = v === null ? "–" : fmt(v);
+        r.box.classList.toggle("off", v === null);
+        continue;
+      }
+      r.box.classList.remove("off");
       const v = m?.acc?.[r.acc]?.value;
       r.el.textContent = typeof v === "number" ? fmt(v) : "–";
     }
   }
 
   function refreshCards(): void {
+    refreshReadouts();
     const any = app.cards.count > 0;
     reader.classList.toggle("hidden", any);
     plot.el.classList.toggle("hidden", !any);

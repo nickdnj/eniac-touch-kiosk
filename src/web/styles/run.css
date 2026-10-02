@@ -217,3 +217,5 @@
    gap between the two big buttons never shrinks (touch audit). */
 .run-rail .read-btn.pulse, .run-rail .init-btn.pulse { animation: rail-pulse 1s ease-in-out infinite; }
 @keyframes rail-pulse { 50% { box-shadow: 0 0 0 8px rgba(240, 228, 66, 0.35); } }
+.traj-readouts.frozen .ro { border-color: var(--traj-card); }
+.traj-readouts.frozen .ro.off .ro-value { color: #4a4e57; }
