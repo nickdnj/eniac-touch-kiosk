@@ -101,6 +101,7 @@ say "target disk: $DISK ($(lsblk -dno SIZE,MODEL,SERIAL "$DISK" | tr -s ' '))"
 # --- 2. is there a kiosk on it? ----------------------------------------------
 this_stick="$(sed -n 's/^stick-id=//p' "$STICK_ID_FILE" 2>/dev/null)"
 found=()
+seen_os=()
 uncheckable=()
 mkdir -p "$MNT"
 
@@ -133,8 +134,10 @@ inspect() { # $1 = mounted root
   for f in "$r"/etc/systemd/system/getty@tty1.service.d/*.conf; do
     [ -f "$f" ] && grep -q -- '--autologin' "$f" && hits+=("console autologin (kiosk-style): ${f#"$r"}")
   done
-  [ -f "$r/etc/os-release" ] && say "  OS on it: $(sed -n 's/^PRETTY_NAME=//p' "$r/etc/os-release" | tr -d '"')"
-  [ -d "$r/Windows/System32" ] && say "  OS on it: Windows"
+  if [ -f "$r/etc/os-release" ]; then
+    seen_os+=("$(sed -n 's/^PRETTY_NAME=//p' "$r/etc/os-release" | tr -d '"')"); say "  OS on it: ${seen_os[-1]}"
+  fi
+  if [ -d "$r/Windows/System32" ]; then seen_os+=("Windows"); say "  OS on it: Windows"; fi
   for h in "${hits[@]}"; do found+=("$h"); done
   return 0
 }
@@ -176,4 +179,16 @@ fi
 sed -i "s|__ENIAC_TARGET_DISK__|$DISK|" "$CFG"
 grep -q "path: $DISK\$" "$CFG" || refuse "could not write the target disk into $CFG."
 say "OK: Ubuntu will be installed on $DISK. EVERYTHING ON IT WILL BE ERASED."
+
+# The installer prints a lot before its yes/no question, so this verdict would
+# scroll away: hold a banner on screen long enough to read which disk it is.
+holds="nothing recognisable (blank, or no OS found)"
+[ "${#seen_os[@]}" -gt 0 ] && holds="$(printf '%s; ' "${seen_os[@]}")" && holds="${holds%; }"
+say "================================================================"
+say "  ENIAC KIOSK INSTALLER"
+say "  WILL ERASE: $DISK  $(lsblk -dno SIZE,MODEL "$DISK" | tr -s ' ')"
+say "  It holds:   $holds"
+say "  Wrong disk or wrong machine? Power off NOW (hold the power button)."
+say "================================================================"
+sleep 15
 exit 0

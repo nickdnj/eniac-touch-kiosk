@@ -121,7 +121,11 @@ list.
    ```bash
    diskutil list                                    # find the stick, e.g. disk4
    make install-stick STICK_ARGS="--write-to disk4" # builds, then asks you to type "disk4"
+   # or flash an image you already built, without rebuilding:
+   scripts/make-install-stick.sh --image build/stick/eniac-kiosk-install-<ver>-confirm.iso --write-to disk4
    ```
+   It refuses internal disks, APFS containers, disks that aren't external or
+   USB, and anything smaller than the image. It needs `sudo` for the write.
 
 Useful options (`scripts/make-install-stick.sh --help`): `--release FILE`
 (use an existing tarball), `--hostname` (default `eniac-kiosk`),
@@ -187,10 +191,16 @@ installer: nothing automatic, and the kiosk isn't installed.
 2. Plug in the stick (and the touchscreen and keyboard). Power on, press
    **F12** at the Dell logo, and choose the USB stick under UEFI.
 3. Grub shows its menu. After 30 s (or on Enter) it starts the ENIAC entry.
-   After about a minute the screen shows the guard's lines
-   (`eniac-guard: OK: Ubuntu will be installed on /dev/sda ...`), then
-   `Continue with autoinstall? (yes|no)`. Check the disk it names, type
-   `yes`, and press Enter.
+   About a minute later the guard holds a banner on screen for 15 seconds:
+   ```
+   ENIAC KIOSK INSTALLER
+   WILL ERASE: /dev/sda  119.2G <SSD model>
+   It holds:   <the OS it found, or "nothing recognisable">
+   ```
+   **Read it.** If that's not the OptiPlex's SSD, hold the power button
+   now. The installer then scrolls on, and after a few more minutes
+   (longer with no network, while it gives up on the mirror) it stops at
+   `Continue with autoinstall? (yes|no)`. Type `yes` and press Enter.
 4. Walk away. It installs Ubuntu, reboots, installs the kiosk (progress on
    screen), reboots again, and the exhibit appears. Pull the stick out any
    time after the first reboot.
@@ -451,6 +461,9 @@ The last-resort rollback is reinstalling Ubuntu (Steps 1–3).
 | Symptom | Look at |
 |---|---|
 | Black screen, no browser | The bridge is down: the session waits for it. `journalctl -u eniac-touch-kiosk-bridge -n 50` |
+| Black screen, `journalctl -t eniac-touch-kiosk-chromium` says "No usable sandbox!" | `chromium-sandbox` is missing (Ubuntu blocks Chromium's namespace sandbox): `sudo apt install chromium-sandbox`, or re-run `install.sh` from this release, which installs it |
+| One-stick: `REFUSING TO INSTALL` | The guard's reason is on screen and in `/var/log/eniac-stick-guard.log` (live installer, Ctrl+Alt+F2). See "Safety" above for the overrides |
+| One-stick: login prompt after the install, no exhibit | The first-boot kiosk install failed: `/var/log/eniac-kiosk-firstboot.log`; it retries each boot, or `sudo systemctl start eniac-kiosk-firstboot` |
 | Login prompt on tty1 instead of the exhibit | `systemctl cat getty@tty1` (another autologin drop-in?), `journalctl -t eniac-touch-kiosk-session` |
 | GDM / a desktop appears | `systemctl get-default` must be `multi-user.target` |
 | Installer: "/usr/bin/chromium is the snap" | `sudo snap remove chromium; sudo apt purge chromium-browser`, re-run |
@@ -474,7 +487,39 @@ not-yet-built profile and must not use this dedicated-kiosk installer.
   bridge + core running as `eniac` with the installed config, the Squares
   selftest, a headless Chromium render of the kiosk page at 1920×1080, and
   uninstall `--purge-packages` with a before/after system diff.
-- **Not tested anywhere yet** (no systemd or X in a container): the systemd
-  unit and its sandboxing, tty1 autologin, `startx` + `kiosk-session`, real
-  Chromium kiosk mode, touch, BIOS power-on, and the OptiPlex itself.
-  Install day is the first time those run; Steps 6–10 are the tests.
+  Re-run after the one-stick PR, including the `chromium-sandbox` check.
+- **One-stick install, tested in QEMU on the Mac** (`make test-stick-vm`;
+  x86_64 emulated, UEFI/OVMF, the image attached as a USB stick, a SATA
+  disk, **no internet**: user-mode network with `restrict=on`):
+  - `full`: grub entry → guard picks the SATA disk and skips the USB stick →
+    unattended Ubuntu 24.04.5 install → late-commands (payload staged, UEFI
+    order set) → reboot **from the disk with the stick still in** → first
+    boot installs the kiosk **offline** from the bundle (selftest ok) →
+    reboot → checks over the serial console: bridge active, page 200,
+    selftest ok, first-boot unit disabled, `multi-user.target`, xtradeb
+    Chromium .deb, no PPA source added, SSH key-only, X running on tty1.
+    Chromium running as `eniac-kiosk`, and the ENIAC Start screen on the
+    VM's display (`docs/screenshots/one-stick/`). About 32 minutes emulated,
+    from power-on to the exhibit; real hardware should be faster.
+  - The first run of that test found a real bug: Chromium exited every 3 s
+    with "No usable sandbox!" and the screen stayed black. Ubuntu 24.04's
+    AppArmor blocks Chromium's namespace sandbox, and `chromium-sandbox`
+    (only a Recommends) wasn't installed. `install.sh` now installs it on
+    both paths and refuses to finish without its setuid helper; the run
+    above is after the fix.
+  - `confirm-prompt`: with no `autoinstall` on the cmdline (the default
+    stick), the guard runs and the installer stops at `Continue with
+    autoinstall? (yes|no)`; the disk is still empty afterwards.
+  - `guard-jersey`: a disk laid out like a default Ubuntu install (ESP,
+    /boot, LVM `ubuntu-vg/ubuntu-lv`) carrying the jersey-shore kiosk's
+    files, booted **with** `autoinstall` (worst case): the guard refuses,
+    names the five signatures it found, and the disk is byte-identical
+    afterwards. Also refused: the same files on a whole-disk ext4.
+  - `--write-to` refuses the Mac's internal disk, the APFS container, a
+    partition, a missing disk and a non-terminal run. The actual `dd` to a
+    stick has **not** been run (no stick was attached, and by design).
+- **Not tested anywhere yet:** the OptiPlex itself (its firmware, F12 boot,
+  its SSD, real-speed timings), the touchscreen, Chromium actually painting
+  the kiosk page on a real display, BIOS power-on after AC loss, and the
+  stick on legacy-BIOS boot. The desk test (checklist above, then Steps
+  6–10) is the first time those run.

@@ -13,7 +13,7 @@ guest), logs everything, and walks one scenario by matching console output:
 
 Exit 0 = scenario passed. Prints PASS:/FAIL: lines.
 """
-import argparse, re, select, signal, socket, sys, time
+import argparse, os, re, select, signal, socket, sys, time
 
 ANSI = re.compile(rb"\x1b\[[0-9;?]*[A-Za-z]|\x1b[()][A-Z0-9]|\r")
 
@@ -98,16 +98,33 @@ def monitor(path, cmd):
 
 
 def screenshot(a):
-    """PNG of the VGA screen (what the touchscreen would show)."""
+    """PNG of the VGA screen (what the touchscreen would show). QEMU writes
+    PPM (always supported); we convert with zlib, no imaging library needed."""
     if not (a.monitor and a.screenshot):
         return
-    reply = monitor(a.monitor, f"screendump -f png {a.screenshot}") or ""
-    if "rror" in reply or "nvalid" in reply:
-        ppm = a.screenshot.rsplit(".", 1)[0] + ".ppm"
-        monitor(a.monitor, f"screendump {ppm}")
-        print(f"screenshot (ppm; png unsupported: {reply.strip()[:120]}): {ppm}")
+    import struct, zlib
+    ppm = a.screenshot.rsplit(".", 1)[0] + ".ppm"
+    monitor(a.monitor, f"screendump {ppm}")
+    for _ in range(10):
+        try:
+            d = open(ppm, "rb").read()
+            magic, dims, maxval, px = d.split(b"\n", 3)
+            w, h = map(int, dims.split())
+            if len(px) >= w * h * 3:
+                break
+        except (OSError, ValueError):
+            pass
+        time.sleep(1)
     else:
-        print(f"screenshot: {a.screenshot}")
+        print(f"note: no screenshot ({ppm} not written)")
+        return
+    raw = b"".join(b"\x00" + px[y * w * 3:(y + 1) * w * 3] for y in range(h))
+    chunk = lambda t, b: struct.pack(">I", len(b)) + t + b + struct.pack(">I", zlib.crc32(t + b) & 0xFFFFFFFF)
+    with open(a.screenshot, "wb") as f:
+        f.write(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+                + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b""))
+    os.remove(ppm)
+    print(f"screenshot ({w}x{h}): {a.screenshot}")
 
 
 def full(c, a):
@@ -213,6 +230,12 @@ def confirm_prompt(c, a):
     if i != 0:
         return step(False, "guard did not accept the blank disk")
     step(True, f"guard ran first and picked {m.group(1).decode()}")
+    if a.screenshot:  # the guard holds its "WILL ERASE" banner for 15 s
+        time.sleep(5)
+        shot = a.screenshot
+        a.screenshot = shot.replace(".png", "-banner.png")
+        screenshot(a)
+        a.screenshot = shot
     i, _ = c.expect([r"Continue with autoinstall\?", r"block-meta|run_curtin|partitioning"], 30 * 60, "the yes/no question")
     ok = step(i == 0, "installer stopped at 'Continue with autoinstall? (yes|no)' before touching the disk")
     if ok:
