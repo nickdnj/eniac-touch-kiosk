@@ -170,7 +170,12 @@ export const HONOR = {
     { heading: "The builders", names: ["J. Presper Eckert", "John W. Mauchly"] },
     { heading: "The project team", names: ["Herman Goldstine", "Adele Goldstine"] }, // fact-check B18
     { heading: "Built at and for", names: ["Moore School of Electrical Engineering", "U.S. Army Ballistic Research Laboratory"] },
-  ] as { heading: string; names: string[]; hold?: boolean }[],
+    {
+      heading: "The machine",
+      names: ["About 18,000 vacuum tubes", "About 150 kilowatts", "About 30 tons"],
+      fc: "docs/tubes.md 2.2 (optional attract plate, Q26). docs/fact-check.md E1 (about 18,000 tubes: R46 Part I 1.5.1, WD46), E6 (about 150 kW: the 1946 Moore School figure, WD46, R46-1 1.5.2) and the disagreement table (weight: 'about 30 tons', Kempf, Penn).",
+    },
+  ] as { heading: string; names: string[]; hold?: boolean; fc?: string }[],
 
   /** Finale beat F4's line (UX 14.5.2), in fact-check B13 wording; F3 uses stuart.finaleLine. */
   finaleThanks: "Six women were its first programmers. Engineers and an Army team built it. Thank you to all of them.",

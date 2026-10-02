@@ -8,14 +8,14 @@
 // No units (feet, seconds) anywhere until they are fact-checked.
 
 import type { App } from "../app.ts";
-import type { PunchCard } from "../protocol.ts";
+import type { PlotCopy, PunchCard } from "../protocol.ts";
 import { ftRingStrip, mpStrip, multiplierStrip } from "../panels/art.ts";
 import { h, s, svgFromString } from "../ui/dom.ts";
 import { onTap } from "../ui/tap.ts";
 import { play } from "../ui/anim.ts";
 import { LampRenderer } from "../lamps/render.ts";
 import { cardSvg } from "./cardart.ts";
-import { cardValue, fieldText, fillCard, fmt, type Dot } from "./cards.ts";
+import { cardValue, fieldText, fillCard, fmt, type CardLog, type Dot } from "./cards.ts";
 import type { RunStage } from "./stackstage.ts";
 import { COPY } from "../copy.ts";
 
@@ -50,7 +50,17 @@ export function plotScale(dots: Dot[], w: number, ht: number, prev: Scale | null
   return { xMax, yMax, stretch };
 }
 
-/** The arc on graph paper. Used by the run view and the result screen. */
+/**
+ * Where an ArcPlot reads its cards and labels. Default: the visitor's
+ * mission (app.cards, mission.content.run.plot); live attract passes the
+ * attract flight's log (app.attract), which is never the visitor's.
+ */
+export interface ArcSource {
+  log: () => CardLog;
+  copy: PlotCopy;
+}
+
+/** The arc on graph paper. Used by the run view, the result screen and live attract (S1). */
 export class ArcPlot {
   readonly el: HTMLElement;
   private svg: SVGSVGElement;
@@ -59,18 +69,20 @@ export class ArcPlot {
   private note!: HTMLElement;
   private scale: Scale | null = null;
   private shown = -1;
-  private app: App;
+  private shownLog: CardLog | null = null;
+  private src: ArcSource;
   private w: number;
   private ht: number;
-  private readonly pad = { l: 70, r: 30, t: 24, b: 54 };
+  private readonly pad: { l: number; r: number; t: number; b: number };
   onDot?: (n: number) => void;
 
-  constructor(app: App, w: number, height: number) {
-    this.app = app;
+  constructor(app: App, w: number, height: number, src?: ArcSource, pad = { l: 70, r: 30, t: 24, b: 54 }) {
+    this.src = src ?? { log: () => app.cards, copy: app.mission!.content.run.plot! };
+    this.pad = pad;
     this.w = w;
     this.ht = height;
     const hgt = height;
-    const P = app.mission!.content.run.plot!;
+    const P = this.src.copy;
     let g = "";
     for (let x = this.pad.l; x <= w - this.pad.r; x += 40) g += `<path d="M${x} ${this.pad.t}V${hgt - this.pad.b}" class="gp-line"/>`;
     for (let y = hgt - this.pad.b; y >= this.pad.t; y -= 40) g += `<path d="M${this.pad.l} ${y}H${w - this.pad.r}" class="gp-line"/>`;
@@ -99,11 +111,17 @@ export class ArcPlot {
 
   /** Redraws when a new card arrived (or with force). */
   update(force = false): void {
-    const log = this.app.cards;
+    const log = this.src.log();
+    if (log !== this.shownLog) {
+      // A new log (another session, or the next attract flight): its own scale.
+      this.shownLog = log;
+      this.scale = null;
+      force = true;
+    }
     if (!force && log.count === this.shown) return;
     this.shown = log.count;
     const dots = log.dots;
-    const P = this.app.mission!.content.run.plot!;
+    const P = this.src.copy;
     this.layer.replaceChildren();
     if (!dots.length) return;
     const pw = this.w - this.pad.l - this.pad.r, ph = this.ht - this.pad.t - this.pad.b;

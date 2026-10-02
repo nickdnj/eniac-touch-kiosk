@@ -3,15 +3,19 @@
 import { test, expect } from "@playwright/test";
 import { fresh, sent, tap, tapSlow, view } from "./helpers.ts";
 
-test("S1 shows the title, the pill and the credit, and no machine", async ({ page }) => {
+test("S1 shows the title, the pill and the credit, and the room only from the attract session (UX 14.2)", async ({ page }) => {
   await fresh(page);
   await expect(view(page)).toHaveAttribute("data-view", "start");
   await expect(page.locator(".start-title")).toHaveText("ENIAC");
   await expect(page.locator(".start-sub")).toHaveText("The room-sized computer of 1946. Now you program it.");
-  const pill = (await page.locator(".start-pill").boundingBox())!;
-  expect([Math.round(pill.width), Math.round(pill.height)]).toEqual([720, 120]);
+  // Layout size (the 1 Hz pulse scales the drawn pill by up to 2 %).
+  expect(await page.locator(".start-pill").evaluate((e: HTMLElement) => [e.offsetWidth, e.offsetHeight])).toEqual([720, 120]);
+  await expect(page.locator(".start-pill")).toHaveText("Touch to program ENIAC");
   await expect(page.locator("#footer")).toBeVisible();
-  await expect(page.locator(".lamp")).toHaveCount(0);
+  // The only machine drawn is the room panorama, and its lamps are lit only by the attract core.
+  await expect(page.locator(".lamp").first()).toBeAttached();
+  expect(await page.locator(".lamp:not(.att-room .lamp)").count()).toBe(0);
+  await expect.poll(() => page.evaluate(() => (window as any).__eniac.attract.phase)).toMatch(/reading|flying|landed/);
 });
 
 test("touchstart alone sends nothing; the action fires on release", async ({ page }) => {

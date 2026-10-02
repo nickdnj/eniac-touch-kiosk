@@ -1,8 +1,7 @@
-// Interim S1 start, S2 mission picker (UX 8.4: three missions, suggested
-// order, START HERE / UP NEXT / Done) and S0 waking screens (issue #22;
-// UX 7.1, 3.1). Live attract is still to come. No machine is drawn on any
-// of these: there is nothing to show until a session exists (no demo
-// fallback).
+// S2 mission picker (UX 8.4: three missions, suggested order, START HERE /
+// UP NEXT / Done) and S0 waking screens (issue #22; UX 3.1). S1 is the live
+// attract screen (screens/attract.ts, UX 14.2), re-exported here as
+// `startScreen`. No machine is drawn on S2 or S0 (no demo fallback).
 
 import type { App, Screen } from "../app.ts";
 import type { MissionSummary } from "../protocol.ts";
@@ -19,23 +18,8 @@ import { FINALE } from "../content/finale.ts";
 /** Taps landing on S2 this soon after S1 are the same visitor's double tap (FR-31). */
 export const PICKER_ARM_MS = 600;
 
-export function startScreen(app: App): Screen {
-  const el = h(
-    "div",
-    { class: "screen start", role: "button", "aria-label": COPY.start.pill },
-    h("div", { class: "start-title" }, COPY.start.title),
-    h("div", { class: "start-sub" }, COPY.start.subtitle),
-    h("div", { class: "start-pill" }, COPY.start.pill),
-  );
-  // The whole screen is the target; the first touch only leaves S1.
-  onTap(el, () => app.show({ name: "picker" }));
-  return {
-    el,
-    idle: "none",
-    mount: () => app.root.querySelector("#admin-zone")?.classList.add("hide-mark"),
-    unmount: () => app.root.querySelector("#admin-zone")?.classList.remove("hide-mark"),
-  };
-}
+/** S1 is the live attract screen (UX 14.2): screens/attract.ts. */
+export { attractScreen as startScreen } from "./attract.ts";
 
 export function pickerScreen(app: App): Screen {
   const armedAt = app.now() + PICKER_ARM_MS;
