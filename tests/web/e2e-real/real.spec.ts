@@ -184,8 +184,17 @@ test("idle: Still there? after setupS, then reset to S1 and the session ends (M1
   test.setTimeout(90_000);
   await startSquares(page);
   await toStep1(page);
+  const visitor = await sessionId(page);
   await expect(page.locator(".still")).toBeVisible({ timeout: 30_000 });
   await expect(view(page)).toHaveAttribute("data-view", "start", { timeout: 15_000 });
   expect((await sent(page)).some((m) => m.t === "end_session" && m.reason === "idle")).toBe(true);
-  await expect.poll(async () => (await healthz()).session ?? null).toBeNull();
+  // The visitor's session is gone; S1 is home, so the only session left is the attract flight (UX 14.2).
+  await expect
+    .poll(async () => {
+      const h = (await healthz()).session ?? null;
+      const s = await page.evaluate(() => (window as any).__eniac.mirror.session);
+      if (!h) return "none";
+      return s && s.id !== visitor && s.mode === "attract" && h.mission === "trajectory" ? "attract" : `still ${JSON.stringify(h)}`;
+    }, { timeout: 15_000 })
+    .toMatch(/^(none|attract)$/);
 });
