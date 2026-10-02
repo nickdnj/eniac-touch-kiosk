@@ -429,3 +429,21 @@ func TestTrajectoryValid(t *testing.T) {
 		t.Fatalf("step text %q", txt)
 	}
 }
+
+// Stall windows (follow-up to #45): per speed, punch-driven for card
+// missions, off for Squares, at least 2 s when on.
+func TestStallWindows(t *testing.T) {
+	dir, up := paths(t)
+	for _, c := range []struct {
+		id, speed string
+		ms        int
+		punch     bool
+	}{{"primes", "full", 20000, true}, {"primes", "slow", 60000, true}, {"trajectory", "full", 10000, true}, {"squares", "slow", 0, false}, {"squares", "full", 0, false}} {
+		m := Load(filepath.Join(dir, c.id+".yaml"), up)
+		w, punch := m.StallWindow(c.speed)
+		if w.Milliseconds() != int64(c.ms) || punch != c.punch {
+			t.Errorf("%s %s: %s punch=%v", c.id, c.speed, w, punch)
+		}
+	}
+	expectUnavailable(t, primesVariant(t, `full: { rate: 0, stallMs: 20000 }`, `full: { rate: 0, stallMs: 500 }`), "stallMs must be 0 (off) or at least 2000")
+}

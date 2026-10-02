@@ -95,8 +95,11 @@ run:
   idle: { quietMs: auto }        # the sieve is busy until 2801; the UI never waits for idle
   initOnce: true                 # one INIT starts the whole search; a second would disturb it
   speeds:
-    slow: { rate: 100 }          # about 1.85 s per odd number tested (spike S4: keep 100)
-    full: { rate: 0 }            # punch-bound: a card every 0.6 s
+    # stallMs: no card for this long while busy = E-CORE-DOWN/stall. Slow: the
+    # longest gap between primes below 2801 is 34 (1327 to 1361), 17 odd
+    # numbers at about 1.85 s = about 32 s. Full: at most about 4 s.
+    slow: { rate: 100, stallMs: 60000 }   # about 1.85 s per odd number tested (spike S4: keep 100)
+    full: { rate: 0, stallMs: 20000 }     # punch-bound: a card every 0.6 s
   defaultSpeed: slow
   cards:
     window: [51, 80]             # sieve.e punches columns 61-70 (printer fields 13 and 14)

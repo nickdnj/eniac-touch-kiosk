@@ -30,6 +30,9 @@ const (
 	DetailVlink      = "vlink"
 	DetailHangStatus = "hang-status"
 	DetailHangCmd    = "hang-cmd"
+	// DetailStall: the session's stall guard saw a busy run make no
+	// progress for its mission's window (the core may still answer).
+	DetailStall = "stall"
 )
 
 // Fault describes why a core session is no longer usable.

@@ -27,7 +27,7 @@ func TestTrajectoryLandsAndFreezes(t *testing.T) {
 	cl.send(`{"t":"button","b":"init"}`)
 	cl.seen(120*time.Second, "landed", is("checkpoint", "id", "landed"))
 	cl.seen(5*time.Second, "result", is("session", "state", "result"))
-	time.Sleep(6 * time.Second) // more than 4 hops' time
+	time.Sleep(12 * time.Second) // longer than the 10 s stall window: frozen on purpose is not a stall
 	var cards []map[string]any
 	cl.mu.Lock()
 	for _, m := range cl.history {

@@ -6,11 +6,15 @@
 //
 //	FAKECORE_MODE      normal | exit-after | hang-stdin | silent-status |
 //	                   garbage | error-on-command | slow-start | load-error |
-//	                   vlink-drop | stale-token | flood | huge-punch
+//	                   vlink-drop | stale-token | flood | huge-punch |
+//	                   busy-stall
 //	FAKECORE_AFTER     milliseconds (exit-after, silent-status, slow-start,
 //	                   vlink-drop) or commands (hang-stdin, default 2)
 //	FAKECORE_MATCH     command prefix that triggers error-on-command
-//	FAKECORE_N         cards for huge-punch (default 6000)
+//	FAKECORE_N         cards for huge-punch (default 6000); for busy-stall,
+//	                   the cards punched after "b i" (default 3), FAKECORE_AFTER
+//	                   ms apart (default 200), after which the run stays busy
+//	                   (a program flip-flop stays set) and nothing more comes
 //	FAKECORE_STDIN_LOG append every stdin line here (allow-list checks)
 //
 // It is never shipped: `make release` fails if it appears in a release.
@@ -175,6 +179,15 @@ func main() {
 			continue // never ack again
 		}
 		switch {
+		case mode == "busy-stall" && line == "b i":
+			go func() {
+				status("af 0 11 1") // acc 1 program 12 stays set: the run never goes idle
+				gap := envInt("FAKECORE_AFTER", 200)
+				for i := 1; i <= envInt("FAKECORE_N", 3); i++ {
+					time.Sleep(time.Duration(gap) * time.Millisecond)
+					status("punch " + fmt.Sprintf("%80s", fmt.Sprintf("%010d          ", 2*i+1)))
+				}
+			}()
 		case line == "d i":
 			fmt.Println("000000000000000")
 		case strings.HasPrefix(line, "d a"):
