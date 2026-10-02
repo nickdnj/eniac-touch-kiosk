@@ -65,6 +65,8 @@ cbin="$(readlink -f /usr/bin/chromium)"
 policy="$(apt-cache policy chromium)"; sed -n '1,8p' <<<"$policy"
 grep -q 'Installed: .*xtradeb' <<<"$policy" && pass "chromium candidate comes from the xtradeb PPA" || bad "chromium not from xtradeb"
 if dpkg -l chromium-browser 2>/dev/null | grep -q '^ii'; then bad "snap shim chromium-browser installed"; else pass "no chromium-browser shim"; fi
+sbx="$(dpkg -L chromium-sandbox 2>/dev/null | grep -m1 '/chrome-sandbox$')"
+[ -n "$sbx" ] && [ -u "$sbx" ] && pass "chromium-sandbox setuid helper present ($sbx)" || bad "chromium-sandbox helper missing (Chromium can't start on Ubuntu 24.04)"
 v="$(runuser -u eniac-kiosk -- /usr/bin/chromium --version 2>/dev/null)" && pass "chromium runs: $v" || bad "chromium --version failed"
 echo "-- manifest"; grep -v '^package ' /opt/eniac-touch-kiosk/INSTALL-MANIFEST; echo "package lines: $(grep -c '^package ' /opt/eniac-touch-kiosk/INSTALL-MANIFEST)"
 

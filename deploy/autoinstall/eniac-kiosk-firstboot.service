@@ -1,0 +1,22 @@
+# Installed by the ENIAC kiosk install stick (deploy/autoinstall). Runs the
+# kiosk installer once, on the first boot after the autoinstall, from the
+# payload staged in /var/lib/eniac-firstboot, then reboots into the exhibit.
+# On failure it stays enabled (retried next boot) and tty1 gets a login prompt.
+[Unit]
+Description=ENIAC touch kiosk: first-boot install from the USB stick payload
+ConditionPathExists=/var/lib/eniac-firstboot/release
+ConditionPathExists=!/var/lib/eniac-firstboot/done
+Wants=network-online.target
+After=network-online.target systemd-user-sessions.service
+# Output goes to the console, so hold the tty1 login prompt until it's done.
+Before=getty@tty1.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/eniac-kiosk-firstboot
+StandardOutput=journal+console
+StandardError=journal+console
+TimeoutStartSec=45min
+
+[Install]
+WantedBy=multi-user.target

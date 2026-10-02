@@ -19,7 +19,8 @@ ARCH ?= arm64
 KIOSK_ARCHES := arm64 amd64
 
 .PHONY: help upstream upstream-unpatched bridge bridge-linux bridge-dev web release release-all dev e2e e2e-mock test test-go vet tsc test-web \
-        test-upstream test-realcore fuzz protogen missions-check selftest goldens test-install-container
+        test-upstream test-realcore fuzz protogen missions-check selftest goldens test-install-container \
+        install-stick test-stick test-stick-vm
 
 help:
 	@grep -E '^## ' Makefile | sed 's/^## //'
@@ -112,6 +113,19 @@ test-upstream:
 test-install-container:
 	$(MAKE) --no-print-directory release ARCH=amd64
 	tests/deploy/test-install-container.sh
+
+## install-stick       one-stick Ubuntu 24.04 + kiosk installer image for the OptiPlex -> build/stick/*.iso
+##                     (STICK_ARGS="--write-to disk4" to flash; see docs/deploy-x86.md "One-stick install")
+install-stick:
+	scripts/make-install-stick.sh $(STICK_ARGS)
+
+## test-stick          autoinstall config vs subiquity's 24.04 schema, bash -n + shellcheck of the stick scripts
+test-stick:
+	tests/deploy/validate-autoinstall.sh
+
+## test-stick-vm       QEMU x86_64 UEFI rehearsal of a stick image (ISO=...): install -> first boot -> kiosk (1-2 h emulated)
+test-stick-vm:
+	tests/deploy/test-stick-qemu.sh $(ISO)
 
 ## test-realcore       long real-core tests: 50-INIT idle soak per speed, 100 cold starts, 30 start/stop
 test-realcore: $(HOSTCORE)

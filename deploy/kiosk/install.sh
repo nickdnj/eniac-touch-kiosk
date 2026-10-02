@@ -3,7 +3,7 @@
 #
 #   tar xzf eniac-touch-kiosk-<ver>-linux-<arch>.tar.gz
 #   cd eniac-touch-kiosk-<ver>-linux-<arch>
-#   sudo ./install.sh [--no-packages] [--no-start] [--force]
+#   sudo ./install.sh [--no-packages] [--no-start] [--force] [--offline-repo=DIR]
 #
 # Primary target: Ubuntu 24.04 amd64 (Dell OptiPlex mini PC). Also: Debian /
 # Raspberry Pi OS arm64 (Pi 5). Run it from the unpacked release directory,
@@ -24,6 +24,12 @@
 #   - tty1 autologin -> startx -> kiosk-session -> Chromium --kiosk
 #   - default target multi-user.target (the old value is recorded/restored)
 #   - /usr/local/bin/eniac-touch-kiosk, /usr/local/sbin/eniac-touch-kiosk-uninstall
+#
+# --offline-repo=DIR: take every package from a local apt repository (a
+# directory with Packages + Release, built by scripts/make-install-stick.sh)
+# instead of the network: no apt-get update against Ubuntu, no PPA. Used by the
+# one-stick install so the floor box needs no network. Nothing about the
+# local repo is left in /etc/apt afterwards.
 #
 # No secrets are taken or stored. BIOS settings ("Restore on AC Power Loss ->
 # Power On") cannot be set from here; the closing message says so.
@@ -53,13 +59,14 @@ die()  { echo "install: ERROR: $*" >&2; exit 1; }
 log()  { echo "install: $*"; }
 warn() { echo "install: WARNING: $*" >&2; }
 
-DO_PACKAGES=1 DO_START=1 FORCE=0
+DO_PACKAGES=1 DO_START=1 FORCE=0 OFFLINE_REPO=""
 for a in "$@"; do
   case "$a" in
+    --offline-repo=*) OFFLINE_REPO="${a#--offline-repo=}" ;;   # local apt repo, no network
     --no-packages) DO_PACKAGES=0 ;;   # offline re-install: packages already present
     --no-start)    DO_START=0 ;;      # write everything, enable/start nothing
     --force)       FORCE=1 ;;         # skip the OS-version and tty1 drop-in checks
-    -h|--help)     sed -n '2,30p' "$0"; exit 0 ;;
+    -h|--help)     sed -n '2,36p' "$0"; exit 0 ;;
     *) die "unknown argument: $a (try --help)" ;;
   esac
 done
@@ -89,6 +96,14 @@ case "${ID:-}:${VERSION_ID:-}" in
   ubuntu:*) [ "$FORCE" = 1 ] || die "Ubuntu ${VERSION_ID:-?} is untested; Ubuntu 24.04 is the target (--force to try anyway)"; CHROMIUM_SOURCE=ppa ;;
   *) [ "$FORCE" = 1 ] || die "unsupported OS '${PRETTY_NAME:-unknown}' (Ubuntu 24.04 or Debian/Pi OS; --force to try anyway)" ;;
 esac
+
+if [ -n "$OFFLINE_REPO" ]; then
+  OFFLINE_REPO="$(readlink -f "$OFFLINE_REPO")"
+  [ "$DO_PACKAGES" = 1 ] || die "--offline-repo and --no-packages contradict each other"
+  [ -f "$OFFLINE_REPO/Packages" ] && [ -f "$OFFLINE_REPO/Release" ] \
+    || die "--offline-repo: $OFFLINE_REPO has no Packages + Release (not a repo from make-install-stick.sh)"
+  CHROMIUM_SOURCE=offline
+fi
 
 [ -d /run/systemd/system ] && SYSTEMD=1 || SYSTEMD=0
 [ "$SYSTEMD" = 1 ] || warn "systemd is not running (container/chroot?): units are written but not enabled or started"
@@ -146,10 +161,28 @@ apt_files() { find /etc/apt/sources.list.d /etc/apt/trusted.gpg.d /etc/apt/keyri
 if [ "$DO_PACKAGES" = 1 ]; then
   export DEBIAN_FRONTEND=noninteractive
   before="$(installed_pkgs)"
+  APT=(apt-get)
+  if [ "$CHROMIUM_SOURCE" = offline ]; then
+    # Only the local repo is visible to apt for this run: the source list
+    # lives in /run, not /etc/apt, and other lists are not cleaned up.
+    odir=/run/eniac-touch-kiosk-offline
+    olist=$odir/sources.list
+    rm -rf -- "$odir" && mkdir -p "$odir/none"
+    echo "deb [trusted=yes] file:$OFFLINE_REPO ./" > "$olist"
+    APT=(apt-get -o "Dir::Etc::SourceList=$olist" -o "Dir::Etc::SourceParts=$odir/none" -o APT::Get::List-Cleanup=0)
+    log "apt: offline, every package from $OFFLINE_REPO"
+  fi
   log "apt: installing X11 (no desktop) and kiosk tools"
-  apt-get update -q
-  apt-get install -y -q --no-install-recommends \
+  "${APT[@]}" update -q
+  "${APT[@]}" install -y -q --no-install-recommends \
     xserver-xorg xinit x11-xserver-utils xinput openbox unclutter
+  if [ "$CHROMIUM_SOURCE" = ppa ] || [ "$CHROMIUM_SOURCE" = offline ]; then
+    # Written in both cases: the pin also keeps Ubuntu's snap-shim
+    # chromium-browser out if this box is later updated online.
+    write_pin=1
+  else
+    write_pin=0
+  fi
   if [ "$CHROMIUM_SOURCE" = ppa ]; then
     # Ubuntu's own chromium-browser is a shim that installs the snap, and the
     # snap cannot run the way a kiosk needs (confined profile dir, snapd
@@ -163,6 +196,9 @@ if [ "$DO_PACKAGES" = 1 ]; then
     fi
     comm -13 <(echo "$apt_before") <(apt_files) | while read -r f; do [ -n "$f" ] && echo "$f"; done > "$PREFIX/.apt-new"
     while read -r f; do record apt-file "$f"; done < "$PREFIX/.apt-new"; rm -f "$PREFIX/.apt-new"
+    apt-get update -q
+  fi
+  if [ "$write_pin" = 1 ]; then
     cat > "$APT_PIN" <<'EOF'
 # Written by eniac-touch-kiosk install.sh; removed by its uninstaller.
 # The xtradeb PPA may supply Chromium only; everything else keeps coming from
@@ -180,12 +216,29 @@ Pin: release o=Ubuntu
 Pin-Priority: -1
 EOF
     record file "$APT_PIN"
-    apt-get update -q
   fi
-  log "apt: installing Chromium ($CHROMIUM_SOURCE)"
-  apt-get install -y -q --no-install-recommends chromium
+  CHROMIUM_PKGS=(chromium)
+  if [ "$CHROMIUM_SOURCE" = ppa ] || [ "$CHROMIUM_SOURCE" = offline ]; then
+    # Ubuntu 23.10+ blocks unprivileged user namespaces (AppArmor), so
+    # Chromium's namespace sandbox can't start: it exits at once with "No
+    # usable sandbox!" and the kiosk stays black. The setuid sandbox helper
+    # (only a Recommends, which --no-install-recommends skips) fixes that.
+    CHROMIUM_PKGS+=(chromium-sandbox)
+  fi
+  log "apt: installing Chromium ($CHROMIUM_SOURCE): ${CHROMIUM_PKGS[*]}"
+  "${APT[@]}" install -y -q --no-install-recommends "${CHROMIUM_PKGS[@]}"
+  [ "$CHROMIUM_SOURCE" = offline ] && rm -rf -- "$odir"
   comm -13 <(echo "$before") <(installed_pkgs) > "$PREFIX/.pkgs-new" || true
   while read -r p; do [ -n "$p" ] && record package "$p"; done < "$PREFIX/.pkgs-new"; rm -f "$PREFIX/.pkgs-new"
+fi
+
+# On Ubuntu the setuid sandbox helper must be there, or Chromium won't start.
+if [ "$DO_PACKAGES" = 1 ] && { [ "$CHROMIUM_SOURCE" = ppa ] || [ "$CHROMIUM_SOURCE" = offline ]; }; then
+  sbx="$(dpkg -L chromium-sandbox 2>/dev/null | grep -m1 '/chrome-sandbox$' || true)"
+  if [ -z "$sbx" ] || [ ! -u "$sbx" ]; then
+    die "chromium-sandbox's setuid helper is missing (${sbx:-not installed}); Chromium would exit with 'No usable sandbox!'"
+  fi
+  log "chromium sandbox: $sbx (setuid)"
 fi
 
 # Whatever the source, the browser must be a real .deb, never the snap.
