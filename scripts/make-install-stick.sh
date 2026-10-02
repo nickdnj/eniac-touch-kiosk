@@ -139,8 +139,11 @@ verify_sums_sig() {
   if ! GNUPGHOME="$gh" gpg --batch --list-keys "$UBUNTU_CD_KEY" >/dev/null 2>&1; then
     # Plain HTTPS fetch + import (gpg's dirmngr is often unusable). Trust comes
     # from the pinned fingerprint checked in VALIDSIG below, not from the fetch.
-    if ! curl -fsSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x$UBUNTU_CD_KEY" -o "$gh/ubuntu-cd.asc" \
-       || ! GNUPGHOME="$gh" gpg --batch --quiet --import "$gh/ubuntu-cd.asc" >/dev/null 2>&1; then
+    # (gpg may exit non-zero over an unusable gpg-agent even when the import
+    # worked, so check the keyring rather than the exit code.)
+    curl -fsSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x$UBUNTU_CD_KEY" -o "$gh/ubuntu-cd.asc" \
+      && GNUPGHOME="$gh" gpg --batch --quiet --import "$gh/ubuntu-cd.asc" >/dev/null 2>&1 || true
+    if ! GNUPGHOME="$gh" gpg --batch --list-keys "$UBUNTU_CD_KEY" >/dev/null 2>&1; then
       warn "could not fetch Ubuntu's signing key: SHA256SUMS checked over HTTPS only"; return 0
     fi
   fi
