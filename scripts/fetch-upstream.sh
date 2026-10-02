@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Fetch, verify and patch the pinned upstream simulator into build/upstream,
-# then build the core for the host (darwin-arm64) and the Pi (linux-arm64).
+# then build the core for the host (darwin-arm64) and both kiosk targets:
+# linux-arm64 (Pi 5) and linux-amd64 (x86 mini PC, e.g. Dell OptiPlex).
 #
-#   scripts/fetch-upstream.sh            fetch + verify + patch + build both cores
+#   scripts/fetch-upstream.sh            fetch + verify + patch + build all cores
 #   scripts/fetch-upstream.sh --no-build fetch + verify + patch only
 #   scripts/fetch-upstream.sh --unpatched
 #       also export an UNPATCHED tree to build/upstream-unpatched and build
@@ -130,6 +131,7 @@ build_core() { # <srcroot> <goos> <goarch> <out>
 }
 build_core "$BUILD/upstream" darwin arm64 "$BUILD/darwin-arm64/eniac-core"
 build_core "$BUILD/upstream" linux arm64 "$BUILD/linux-arm64/eniac-core"
+build_core "$BUILD/upstream" linux amd64 "$BUILD/linux-amd64/eniac-core"
 if [ "$DO_UNPATCHED" = 1 ]; then
   HOSTOS="$(GOTOOLCHAIN="$TOOLCHAIN" go env GOHOSTOS)"; HOSTARCH="$(GOTOOLCHAIN="$TOOLCHAIN" go env GOHOSTARCH)"
   build_core "$BUILD/upstream-unpatched" "$HOSTOS" "$HOSTARCH" "$BUILD/unpatched/eniac-core"

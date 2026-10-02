@@ -1,0 +1,20 @@
+# Chromium kiosk flags (architecture 3.5). One flag per line; '#' comments.
+# Passed on the command line only: nothing is written to /etc/chromium*.
+# --kiosk/--app, --user-data-dir and the URL are added by kiosk-session.
+--no-first-run
+--no-default-browser-check
+--noerrdialogs
+--disable-infobars
+--disable-session-crashed-bubble
+--disable-translate
+--disable-features=Translate,TranslateUI,MediaRouter,ChromeWhatsNewUI
+--disable-component-update
+--disable-background-networking
+--check-for-update-interval=31536000
+--overscroll-history-navigation=0
+--disable-pinch
+--touch-events=enabled
+--password-store=basic
+--autoplay-policy=no-user-gesture-required
+--hide-scrollbars
+--disk-cache-size=33554432

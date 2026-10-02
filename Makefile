@@ -14,9 +14,12 @@ LDFLAGS := -X eniac-kiosk/bridge/internal/buildinfo.Version=$(VERSION) \
            -X eniac-kiosk/bridge/internal/buildinfo.UpstreamCommit=$(UPSTREAM_COMMIT) \
            -X eniac-kiosk/bridge/internal/buildinfo.Patches=$(PATCH_NAMES)
 WEB_TESTS = $(shell find tests/web -name '*.test.ts' 2>/dev/null)
+# Kiosk target CPU for `make release`: arm64 (Pi 5) or amd64 (x86 mini PC).
+ARCH ?= arm64
+KIOSK_ARCHES := arm64 amd64
 
-.PHONY: help upstream upstream-unpatched bridge bridge-dev web dev e2e e2e-mock test test-go vet tsc test-web \
-        test-upstream test-realcore fuzz protogen missions-check selftest goldens
+.PHONY: help upstream upstream-unpatched bridge bridge-linux bridge-dev web release release-all dev e2e e2e-mock test test-go vet tsc test-web \
+        test-upstream test-realcore fuzz protogen missions-check selftest goldens test-install-container
 
 help:
 	@grep -E '^## ' Makefile | sed 's/^## //'
@@ -32,10 +35,28 @@ upstream-unpatched:
 $(HOSTCORE):
 	scripts/fetch-upstream.sh
 
-## bridge              build build/<host>/eniac-bridge and build/linux-arm64/eniac-bridge
+## bridge              build build/<host>/eniac-bridge and build/linux-{arm64,amd64}/eniac-bridge
 bridge:
 	cd $(BRIDGE) && CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o ../../build/$(HOSTOS)-$(HOSTARCH)/eniac-bridge ./cmd/eniac-bridge
-	cd $(BRIDGE) && CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -trimpath -ldflags "$(LDFLAGS)" -o ../../build/linux-arm64/eniac-bridge ./cmd/eniac-bridge
+	@for a in $(KIOSK_ARCHES); do $(MAKE) --no-print-directory bridge-linux ARCH=$$a || exit 1; done
+
+# bridge-linux ARCH=<a>: one static linux bridge, build/linux-<a>/eniac-bridge
+bridge-linux:
+	@case "$(ARCH)" in arm64|amd64) ;; *) echo "ARCH must be arm64 or amd64, not '$(ARCH)'" >&2; exit 2 ;; esac
+	cd $(BRIDGE) && CGO_ENABLED=0 GOOS=linux GOARCH=$(ARCH) go build -trimpath -ldflags "$(LDFLAGS)" -o ../../build/linux-$(ARCH)/eniac-bridge ./cmd/eniac-bridge
+
+## release             make release ARCH=amd64|arm64 -> dist/eniac-touch-kiosk-<ver>-linux-<arch>.tar.gz
+# Always re-runs fetch-upstream (offline once cached) so the shipped core and
+# .provenance.json match upstream.lock + patches/ exactly.
+release: web
+	@case "$(ARCH)" in arm64|amd64) ;; *) echo "ARCH must be arm64 or amd64, not '$(ARCH)'" >&2; exit 2 ;; esac
+	scripts/fetch-upstream.sh
+	$(MAKE) --no-print-directory bridge-linux ARCH=$(ARCH)
+	VERSION=$(VERSION) scripts/build-release.sh $(ARCH)
+
+## release-all         both release tarballs (arm64 and amd64)
+release-all:
+	@for a in $(KIOSK_ARCHES); do $(MAKE) --no-print-directory release ARCH=$$a || exit 1; done
 
 bridge-dev:
 	cd $(BRIDGE) && go build -tags devserver -ldflags "$(LDFLAGS)" -o ../../build/dev/eniac-bridge ./cmd/eniac-bridge
@@ -86,6 +107,11 @@ missions-check:
 ## test-upstream       negative + offline tests of the fetch script (slow: rebuilds the core)
 test-upstream:
 	tests/upstream/test-fetch.sh
+
+## test-install-container  install/upgrade/remove rehearsal in a throwaway ubuntu:24.04 amd64 container (docker + network, ~15 min)
+test-install-container:
+	$(MAKE) --no-print-directory release ARCH=amd64
+	tests/deploy/test-install-container.sh
 
 ## test-realcore       long real-core tests: 50-INIT idle soak per speed, 100 cold starts, 30 start/stop
 test-realcore: $(HOSTCORE)

@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# The kiosk user's X session. Started by startx from ~/.xinitrc, which the
+# installer writes as a one-line `exec` of this file, so an updated release
+# changes the session without touching the user's home.
+#
+# Supervision chain (same as the proven OptiPlex kiosk recipe):
+#   BIOS power-on -> agetty autologin (tty1) -> ~/.bash_profile -> startx
+#     -> ~/.xinitrc -> this loop -> Chromium
+#   Chromium dies -> this loop restarts it in 3 s.
+#   X dies        -> startx returns, the login shell exits, agetty respawns it.
+#   Bridge dies   -> systemd restarts it (Restart=always); the page shows S10
+#                    and reconnects on its own.
+set -u
+
+HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+FLAGS_FILE="$HERE/../chromium/flags"
+ENV_FILE=/etc/eniac-touch-kiosk/session.env
+
+# Optional site overrides (root-owned, written by the installer as a
+# commented template): KIOSK_URL, KIOSK_TOUCH_DEVICE, KIOSK_OUTPUT.
+KIOSK_URL="http://127.0.0.1:8740/"
+KIOSK_TOUCH_DEVICE=""
+KIOSK_OUTPUT=""
+# shellcheck disable=SC1090
+[ -r "$ENV_FILE" ] && . "$ENV_FILE"
+
+log() { logger -t eniac-touch-kiosk-session -- "$*" 2>/dev/null || echo "$*" >&2; }
+
+# --- display: no blanking, no DPMS, no cursor ------------------------------
+# The X server is also started with -s 0 -dpms -nocursor (see .bash_profile).
+xset s off; xset s noblank; xset -dpms
+command -v unclutter >/dev/null && unclutter -idle 0.1 -root &
+# A minimal window manager so Chromium's kiosk window is sized and focused
+# predictably (the reference recipe runs openbox; there is no desktop).
+command -v openbox >/dev/null && openbox &
+
+# --- touch: landscape panel, no rotation ------------------------------------
+# With one monitor libinput maps the digitizer to the whole screen already.
+# If a second output is connected (or touch lands in the wrong place), set
+# KIOSK_TOUCH_DEVICE (from `xinput list`) and KIOSK_OUTPUT (from `xrandr`).
+if [ -n "$KIOSK_TOUCH_DEVICE" ] && [ -n "$KIOSK_OUTPUT" ]; then
+  if xinput map-to-output "$KIOSK_TOUCH_DEVICE" "$KIOSK_OUTPUT"; then
+    log "touch '$KIOSK_TOUCH_DEVICE' mapped to $KIOSK_OUTPUT"
+  else
+    log "WARNING: xinput map-to-output '$KIOSK_TOUCH_DEVICE' $KIOSK_OUTPUT failed"
+  fi
+fi
+
+# --- browser -----------------------------------------------------------------
+# Never the snap: snap Chromium can't use a profile outside ~/snap and is
+# refreshed (killed) by snapd on its own schedule. The installer installs a
+# .deb (xtradeb PPA on Ubuntu, the distro package on Debian / Pi OS).
+BROWSER=""
+for b in /usr/bin/chromium /usr/lib/chromium/chromium /usr/bin/chromium-browser; do
+  if [ -x "$b" ] && [[ "$(readlink -f "$b")" != /snap/* ]] && ! grep -q '/snap/' "$b" 2>/dev/null; then BROWSER="$b"; break; fi
+done
+
+mapfile -t FLAGS < <(sed -e 's/#.*//' -e 's/[[:space:]]*$//' -e '/^$/d' "$FLAGS_FILE" 2>/dev/null)
+
+# Host and port of the bridge, for the readiness probe.
+hostport="${KIOSK_URL#*://}"; hostport="${hostport%%/*}"
+BHOST="${hostport%:*}"; BPORT="${hostport##*:}"
+
+bridge_up() { (exec 3<>"/dev/tcp/$BHOST/$BPORT") 2>/dev/null; }
+
+PROFILE_ROOT="${XDG_RUNTIME_DIR:-/tmp/eniac-touch-kiosk-$(id -u)}"
+PROFILE="$PROFILE_ROOT/eniac-chromium"
+
+while true; do
+  if [ -z "$BROWSER" ]; then
+    log "ERROR: no non-snap Chromium found (looked in /usr/bin/chromium, /usr/lib/chromium). Re-run the installer."
+    sleep 30; continue
+  fi
+  # Chromium on a "can't connect" page never retries, so wait for the bridge.
+  # A black screen here means the bridge is down: journalctl -u eniac-touch-kiosk-bridge
+  waited=0
+  until bridge_up; do
+    [ $((waited % 30)) -eq 0 ] && log "waiting for the bridge at $BHOST:$BPORT (${waited}s)"
+    sleep 1; waited=$((waited + 1))
+  done
+  # Fresh profile on every start (tmpfs under /run/user): no crash bubble,
+  # no restore-session prompt, no profile growth (NFR-05).
+  rm -rf -- "$PROFILE"; mkdir -p "$PROFILE_ROOT"; mkdir -m 0700 "$PROFILE"
+  log "starting $BROWSER at $KIOSK_URL"
+  "$BROWSER" "${FLAGS[@]}" --user-data-dir="$PROFILE" --kiosk --app="$KIOSK_URL" 2>&1 \
+    | logger -t eniac-touch-kiosk-chromium 2>/dev/null
+  log "chromium exited (status ${PIPESTATUS[0]}); restarting in 3 s"
+  sleep 3
+done

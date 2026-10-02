@@ -16,7 +16,7 @@ Software project, team: Software Project Team. Provisioned by AgentArchitect (20
 ### First run
 
 ```sh
-make upstream      # fetch + verify + patch the pinned simulator, build build/{darwin,linux}-arm64/eniac-core
+make upstream      # fetch + verify + patch the pinned simulator, build build/darwin-arm64 + linux-{arm64,amd64} cores
 make test          # go test, go vet, tsc, node --test, mission check
 make dev           # bridge in --dev mode on http://localhost:8740 against the real darwin core
 ```
@@ -42,6 +42,15 @@ In `make dev` the bridge serves `src/web` through esbuild's Go API and rebuilds 
 | `make protogen` | Regenerate `src/web/app/protocol.gen.ts` from the Go protocol types. |
 | `make selftest` | Headless Squares: preset, 7 steps, INIT ×3, expect 3 and 9. |
 | `make upstream-unpatched` | Also build an unpatched core (only for re-recording the `m` double-space golden). |
+
+## Installing on a kiosk
+
+```sh
+make release ARCH=amd64   # Dell OptiPlex / any x86-64 Ubuntu 24.04 box (primary)
+make release ARCH=arm64   # Raspberry Pi 5
+```
+
+Copy `dist/eniac-touch-kiosk-<ver>-linux-<arch>.tar.gz` to the box, unpack, `sudo ./install.sh`. Removal: `sudo eniac-touch-kiosk-uninstall`. The full install-day procedure (USB stick, BIOS, touch check, power-cut test, rollback) is `docs/deploy-x86.md`. `tests/deploy/test-install-container.sh` rehearses install + removal in a throwaway Ubuntu 24.04 container.
 
 ## Upstream: pin, patches and taking Stuart's updates
 
