@@ -231,7 +231,7 @@ test("from the S7 result: See where they stand, and back", async ({ page }) => {
   await expect(page.locator(".result-tape .row")).toHaveCount(12);
 });
 
-test("Glossary: two pages of eight, the Transceiver shown, Show me opens the card, Close returns to the tour", async ({ page }) => {
+test("Glossary: three pages of eight, the Transceiver shown, Show me opens the card, Close returns to the tour", async ({ page }) => {
   await toExplore(page);
   await tapSlow(page, page.locator(".ex-arrow.r"));
   await tapSlow(page, chip(page, "a3"));
@@ -245,9 +245,13 @@ test("Glossary: two pages of eight, the Transceiver shown, Show me opens the car
     expect(await t.evaluate((el) => el.scrollHeight <= el.clientHeight)).toBe(true);
   }
   await tapSlow(page, page.locator(".gl-page"));
-  await expect(page.locator(".gl-page")).toHaveText("‹ First words");
+  await expect(page.locator(".gl-page")).toHaveText("More words ›");
   await expect(page.locator(".gl-tile b")).toHaveText(["Constant", "Function table", "Punched card", "Jack and cable", "Receive and send jacks", "Operation and repeat switches", "Neon lamp", "Transceiver"]);
   await expect(page.locator('.gl-tile[data-term="Transceiver"] span')).toContainText("does its job up to 9 times");
+  // Page 3: the words of S16 Keeping ENIAC alive (tests/web/e2e/tubes.spec.ts).
+  await tapSlow(page, page.locator(".gl-page"));
+  await expect(page.locator(".gl-page")).toHaveText("‹ First words");
+  await expect(page.locator(".gl-tile b")).toHaveText(["Vacuum tube", "Plug-in unit", "Kilowatt"]);
   // Close: back where the visitor left the tour (position and card).
   await tapSlow(page, page.locator(".gl-close"));
   await expect(view(page)).toHaveAttribute("data-view", "explore");

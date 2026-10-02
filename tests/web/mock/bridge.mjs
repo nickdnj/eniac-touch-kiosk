@@ -35,6 +35,7 @@ const WL = new Set(["start_mission", "apply_step", "skip_setup", "button", "set_
 // UI metric whitelist (architecture 8.3, protocol.gen.ts Metric.ev); bridge-owned names are NOT_ALLOWED.
 const METRICS = new Set(["wrong_tap", "step_done", "speed", "skip_to_answer", "setup_skipped", "idle_reset", "mission_picked", "picker_next_used", "honor_page_view",
   "explore_open", "explore_card", "explore_walk_completed", "explore_mission_chip", "glossary_open",
+  "tubes_open", "tubes_card", "tubes_myth_open", "tubes_try_start", "tubes_try_step", "tubes_try_done", "tubes_try_skip",
 ]);
 /** The attract program (bridge config attract.mission). */
 export const ATTRACT_MISSION = "trajectory";

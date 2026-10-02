@@ -1,6 +1,6 @@
-// S15 Glossary (UX 14.4, 15; PRD FR-96): sixteen words in two pages of
-// eight (2 columns x 4 rows), each with a "Show me" link to its card in
-// Explore ENIAC. Static: it works with the core down (UX 14.3.8). The
+// S15 Glossary (UX 14.4, 15; PRD FR-96, FR-101): nineteen words in three
+// pages of eight (2 columns x 4 rows), each with a "Show me" link to its
+// card in Explore ENIAC or in S16 Keeping ENIAC alive. Static: it works with the core down (UX 14.3.8). The
 // words are data in explore/content.ts.
 
 import type { App, Screen, View } from "../app.ts";
@@ -12,7 +12,8 @@ export function glossaryScreen(app: App, view: View): Screen {
   const open = view.explore ?? { from: "explore" };
   const back: View = open.back ?? { name: "explore", explore: { from: "glossary", restore: true } };
   const pages = Math.ceil(GLOSSARY.length / GLOSSARY_COPY.perPage);
-  let page = 0;
+  // A page asked for by the opener (back from S16's "Show me": the page the visitor was on).
+  let page = view.page ? Math.min(Math.max(view.page, 1), pages) - 1 : 0;
 
   const tiles = h("div", { class: "gl-tiles" });
   const pageBtn = button("", "light outline gl-page", () => {
@@ -53,7 +54,12 @@ export function glossaryScreen(app: App, view: View): Screen {
                 const restore = back.name === "explore" && !!back.explore?.restore;
                 app.show({ name: "explore", explore: restore ? { from: "glossary", restore: true, card: t.show! } : { from: "glossary", card: t.show!, back } });
               })
-            : null,
+            : t.tubes
+              ? button(`${GLOSSARY_COPY.showMe} ›`, "link gl-show", () =>
+                  // S16's card (docs/tubes.md 2.6); Back there returns to this page of the glossary.
+                  app.openTubes({ from: "glossary", card: t.tubes, back: { name: "glossary", page: page + 1, explore: open } }),
+                )
+              : null,
         ),
       ),
     );

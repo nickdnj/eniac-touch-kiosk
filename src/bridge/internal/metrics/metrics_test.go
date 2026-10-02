@@ -131,6 +131,46 @@ func TestExploreEvents(t *testing.T) {
 	}
 }
 
+// FR-101 (TUBE-23): the S16 counters, with only their own fields and no free text.
+func TestTubesEvents(t *testing.T) {
+	w, dir := open(t)
+	n := func(v int64) *int64 { return &v }
+	yes := true
+	ok := []protocol.Metric{
+		{Ev: "tubes_open", Screen: "explore"},
+		{Ev: "tubes_card", N: n(2)},
+		{Ev: "tubes_myth_open"},
+		{Ev: "tubes_try_start", N: n(0)},
+		{Ev: "tubes_try_step", N: n(3)},
+		{Ev: "tubes_try_done", N: n(1), Assisted: &yes},
+		{Ev: "tubes_try_skip", N: n(4)},
+	}
+	for _, m := range ok {
+		if err := w.UI(m, ""); err != nil {
+			t.Errorf("%+v: %v", m, err)
+		}
+	}
+	bad := []protocol.Metric{
+		{Ev: "tubes_card", Unit: "acc"},          // field not allowed
+		{Ev: "tubes_myth_open", N: n(1)},         // no fields
+		{Ev: "tubes_open", Screen: "explore 2!"}, // free text
+		{Ev: "tubes_try_step", Mission: "x"},     // field not allowed
+	}
+	for _, m := range bad {
+		if err := w.UI(m, ""); !errors.Is(err, ErrNotAllowed) {
+			t.Errorf("%+v accepted (%v)", m, err)
+		}
+	}
+	w.SessionEnd()
+	recs, _ := Read(dir)
+	if len(recs) != len(ok) {
+		t.Fatalf("%d records: %v", len(recs), recs)
+	}
+	if recs[5]["assisted"] != true || recs[5]["n"] != float64(1) || recs[0]["screen"] != "explore" {
+		t.Fatalf("%v", recs)
+	}
+}
+
 func TestTruncatedLastLineSkipped(t *testing.T) {
 	w, dir := open(t)
 	w.Bridge("session_start", "s1", nil)

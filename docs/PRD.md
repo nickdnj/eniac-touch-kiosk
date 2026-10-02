@@ -1,6 +1,6 @@
 # Product Requirements Document: ENIAC Touch Kiosk
 
-**Version:** 0.5
+**Version:** 0.6
 **Last Updated:** 2026-10-02
 **Author:** Nick DeMarco with AI assistance (product-requirements agent)
 **Status:** Draft
@@ -237,6 +237,9 @@ Priorities: **P0** = MVP, **P1** = before the floor, **P2** = nice to have.
 | FR-96 | **Glossary** (S15): at least 14 terms, each at most 25 words, in two pages, with "Show me" links to the unit card. A term whose wording is unverified (the transceiver) is held and not shown (FR-46). A table in the UX spec maps the words the missions use to the words the real machine used (UX 15.1). | P1 |
 | FR-97 | **Reduced motion.** The attract drift, the Explore pans and the finale animations are replaced by cross-fades when the box setting or the browser's `prefers-reduced-motion` asks for it (UX 14.7). | P1 |
 | FR-98 | **Counters** for the new screens (FR-60): `attract_flight_started`, `attract_flight_landed`, `attract_touch`, `explore_open`, `explore_card{unit}`, `explore_walk_completed`, `explore_mission_chip{m}`, `glossary_open`, `honor_page_view{1..4}`, `finale_reached`, `finale_beat{n}`, `finale_skipped_at`. | P2 |
+| FR-99 | **Keeping ENIAC alive** (S16, UX 14.11): five cards of at most 40 words each (the tubes; power and heat; why tubes burned out; the hunt; a week with ENIAC) and a one-card myth check, each with one drawn figure whose numbers come from the sourced table in `docs/tubes.md`. Reached from a button in the S14 header, from the glossary and from the finale (F2). Content is data with an internal `[FC]` note per claim (FR-46). | P1 |
+| FR-100 | **Find the dead tube** is a **re-enactment**, never live state: a plate reading "RE-ENACTMENT" and "These panels are drawn, not the live ENIAC. The fault is made up." stays on screen in every state; it reads no core state; it follows the 1946 order (unit, circuit, tube); it uses the wrong-tap ladder, "Do it for me" and "Skip to the answer" of UX 5.2 and 5.3; three authored faults, no randomness. | P1 |
+| FR-101 | Glossary adds **Vacuum tube**, **Plug-in unit** and **Kilowatt** and rewords **Neon lamp** (FR-96). Counters (FR-60): `tubes_open{screen}`, `tubes_card{n}`, `tubes_try_start{n}`, `tubes_try_step{n: 2..5}`, `tubes_try_done{n, assisted}` (n is the fault, assisted is "Do it for me"), `tubes_try_skip{n}`, `tubes_myth_open`. | P2 |
 
 ## 5. Touch and UX Requirements
 
@@ -415,3 +418,4 @@ M3-lite is a **supervised preview** on the museum's own screen. It is **not** th
 | 0.3 | 2026-10-01 | software-developer agent, recording Nick's M2 decisions | FR-19 rewritten: Trajectory is READ (`b c` then `b r`), one INIT, one 34-card flight drawn from the real cards, frozen on the landing card with `s cy.op 1a`, Full only; the six-part run kept as Plan B (S2, R4 happened). FR-18: the Primes answer is card 100 (547), the result screen stays live to 407. FR-17: Squares Slow is `cy.rate 13` (S4), each addition visible for about 1 s. |
 | 0.4 | 2026-10-02 | product-requirements, with Nick's request for the 24" museum install | **Live attract** specified (FR-30, FR-34 to FR-36: `trajdemo.e` at Full, one flight per core, 60 s loop, hand-off, failure states, "attract-lite" for M3-lite); inactivity table amended (FR-32, Explore 120 s); **Stuart credit prominence** (FR-43) and **honor roll** (FR-41, FR-44) naming the six programmers, Eckert, Mauchly, the Goldstines, the Moore School and the Army BRL; **finale** (FR-45); **content review gate** (FR-46); **Explore ENIAC** and **glossary** (new 4.9, FR-90 to FR-98); UX-03 amended for an optional swipe, UX-01 and UX-11 for the 24" panel, UX-12 and UX-13 added; NFR-04b; D3 and D4, constraints, scope and metrics updated; risks R7 to R9; **M3-lite** milestone and its minimum (10.1); Q2, Q6 and Q10 updated, Q15 to Q23 added. |
 | 0.5 | 2026-10-02 | software-developer agent, recording Nick's direction for the honor roll | **FR-46 relaxed**: review status is an internal note on each content block, not a render gate; all four honor-roll pages render with the wording of `docs/fact-check.md`, and corrections are welcome (only a `hold: true` block stays off the screen). |
+| 0.6 | 2026-10-02 | software-developer agent, building Nick's tube story (`docs/tubes.md`) | **FR-99 to FR-101** added to 4.9: S16 "Keeping ENIAC alive" (five cards and a myth check), "Find the dead tube" as a labelled re-enactment that never reads the core, three new glossary words, and its counters. |

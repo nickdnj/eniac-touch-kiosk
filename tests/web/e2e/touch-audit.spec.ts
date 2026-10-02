@@ -287,3 +287,39 @@ test("audit M2 Trajectory: briefing, plan, printer switch picker, MP window, S6 
   await expect(view(page)).toHaveAttribute("data-view", "result", { timeout: 20_000 });
   await audit(page, info, "M2-traj-S7");
 });
+
+// TUBE-17 (docs/tubes.md 2.9): S16 Keeping ENIAC alive, its cards, the myth
+// card and every state of the re-enactment, from S14's header button.
+test("audit: S16 Keeping ENIAC alive: cards, myth, re-enactment steps 1 to 5 and fixed", async ({ page }, info) => {
+  await fresh(page);
+  await tap(page, page.locator(".screen.start"));
+  await expect(view(page)).toHaveAttribute("data-view", "picker");
+  await page.waitForTimeout(650);
+  await tapSlow(page, page.locator(".pk-explore"));
+  await expect(view(page)).toHaveAttribute("data-view", "explore");
+  await tapSlow(page, page.locator(".ex-tubes-btn"));
+  await expect(view(page)).toHaveAttribute("data-view", "tubes");
+  for (let i = 1; i <= 5; i++) {
+    await audit(page, info, `S16-card${i}`);
+    if (i === 2) {
+      await tapSlow(page, page.locator(".tb-myth-link"));
+      await audit(page, info, "S16-myth");
+      await tapSlow(page, page.locator(".tb-myth-back"));
+    }
+    if (i < 5) await tapSlow(page, page.locator(".tb-next"));
+  }
+  await tapSlow(page, page.locator(".tb-prev"));
+  await tapSlow(page, page.locator(".tb-cta"));
+  await audit(page, info, "S16-try1");
+  await tapSlow(page, page.locator(".tb-run"));
+  await audit(page, info, "S16-try2");
+  await tapSlow(page, page.locator('.tb-target[data-i="2"]'));
+  await audit(page, info, "S16-try3");
+  await tapSlow(page, page.locator('.tb-target[data-i="3"]'));
+  await page.waitForTimeout(500);
+  await audit(page, info, "S16-try4");
+  await tapSlow(page, page.locator('.tb-target[data-i="2"]'));
+  await audit(page, info, "S16-try5");
+  await tapSlow(page, page.locator(".tb-plug"));
+  await audit(page, info, "S16-fixed");
+});

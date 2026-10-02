@@ -1,6 +1,6 @@
 # Keeping ENIAC alive: the tubes, the power and the maintenance
 
-**Date:** 2026-10-02. **Status:** research and design proposal, ready to fold into `docs/ux-spec.md` (as 14.11), `docs/PRD.md` (FR-99 to FR-101) and `docs/test-plan.md`. No app code. **Mockup:** `docs/mockups/tubes.html` (open in Chrome; it is clickable) and the PNGs beside it. **Facts:** the new rows are also appended to `docs/fact-check.md` as group E, with the same IDs used here (E1 to E30).
+**Date:** 2026-10-02. **Status:** built. Folded into `docs/ux-spec.md` 14.11 (the build spec) and `docs/PRD.md` FR-99 to FR-101; the app is `src/web/app/screens/tubes.ts` and `src/web/app/tubes/`, tested by `tests/web/tubes.test.ts` and `tests/web/e2e/tubes.spec.ts` (TUBE-nn); screenshots in `docs/screenshots/m3/tubes-*.png`. **Mockup:** `docs/mockups/tubes.html` (open in Chrome; it is clickable) and the PNGs beside it. **Facts:** the new rows are also appended to `docs/fact-check.md` as group E, with the same IDs used here (E1 to E30).
 
 **Nick's ask:** "something about the tubes: the 18,000 tubes, how much power they consumed, how often they burnt out, and what the maintenance cycle was like."
 
