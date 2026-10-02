@@ -3,7 +3,7 @@ listen: 127.0.0.1:8762
 health: { listen: "127.0.0.1:8763" }
 core: { gomaxprocs: 2, nice: 5, readyTimeout: 5s, ackTimeout: 1.5s, silenceTimeout: 2s, probeEvery: 5s }
 recovery: { budget: 3, window: 5m, backoff: [2s, 5s, 10s], slowRetry: 10m }
-idle: { setupS: 300, runS: 300, countdownS: 15 }
+idle: { setupS: 300, runS: 300, countdownS: 15, exploreS: 300 }
 admin: { sessionTimeoutS: 120, allowPowerActions: false, allowUpdates: false }
 metrics: { retentionDays: 400 }
 assets: { upstreamPhotos: false }
