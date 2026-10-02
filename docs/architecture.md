@@ -360,6 +360,7 @@ This is the complete list. Nothing else is ever written.
 | `health` | Change, and every 5 s | `core`: `starting`\|`up`\|`down`; `code` (5.8); `detail` (for example `hang-cmd`); `attempt`, `of`; `final` (retry budget exhausted); `kioskClient` (bool) | M1 |
 | `error` | A rejected client action | `re`, `code` (`BUSY`, `BAD_STATE`, `UNKNOWN_STEP`, `NOT_ALLOWED`, `BAD_MESSAGE`), `message` | M1 |
 | `pong` | Reply to `ping` | `re` | M1 |
+| `attract` | Attract phase change; reply to `attract_start`/`attract_stop`; also `state.attract` | `phase` (`off`/`starting`/`reading`/`flying`/`landed`/`recycling`/`error`), `mission`, `session`, `flight`, `landed`, `total`, `cards`, `holdMs` (landed), `landing` {`card`, `hop`, `along`, `up`, `text`, `flightMs`} (landed, recycling), `code`/`detail` (error), `re`. See 5.10 | M3-lite |
 
 **MachineState (JSON).** Everything is 1-based, and the keys are the `.e` unit numbers. Bit and digit vectors are strings, which keeps merge-patches small and exact. Arrays are never used, because merge-patch replaces arrays wholesale.
 
@@ -427,6 +428,8 @@ stateDiagram-v2
 | `end_session` | `reason`: `idle`\|`menu`\|`restart`\|`done` | any | Tears down the core. Records metrics. | M1 |
 | `metric` | `ev` (whitelisted name), `mission`, `step`, `speed`, `screen`, `assisted`, `n` (each optional, whitelisted per event; for `setup_skipped` the `step` is recorded as `atStep`) | any | Appends to JSONL. Never influences the core. Bridge event names (`mission_complete`, `error_*`, `core_restart`, `session_*`) are `NOT_ALLOWED` from the UI. | M1 (write only) |
 | `ping` | none | any | Replies `pong`. Updates `kioskClient` last-seen. | M1 |
+| `attract_start` | none | any | Idempotent. Ends any other live session, then runs the attract loop (5.10) until stopped; it survives core faults and resumes after recovery. Replies `attract` | M3-lite |
+| `attract_stop` | `reason`: `touch`\|`menu` | any | The hand-off: stops the loop, kills the attract core, ends its session; replies `attract {phase:"off", re}` once the process is gone. `start_mission` and `end_session` do the same first. `start_mission` with `mode:"attract"` is `NOT_ALLOWED` | M3-lite |
 | `admin_*` | Over HTTP, not ws; section 8.4 | | | M3 |
 
 **"Keep pressing for me" and "Skip to the answer"** (UX 8.1.4) are **UI-side loops** over `button {b:"init"}`: wait for `run: idle`, check the `settled` values, press again. "Skip to the answer" first sends `set_speed {speed:"full"}`. The mission's `checkpoints` tell the UI when to stop (Squares: `a1 == 12`). The bridge's `BUSY` guard means a UI bug can't stack INITs.
@@ -663,6 +666,21 @@ content:
 - **Metrics:** two UI events for the picker (UX 8.4): `mission_picked {m, n}` (n is the card's position) and `picker_next_used {m}`.
 - **Tooling:** `eniac-bridge mission compile FILE` prints the compiled mission exactly as `GET /api/missions/{id}` serves it; the UI's mock fixtures (`tests/web/mock/missions/*.json`) are generated with it.
 - **Jack grammar:** the initiating unit's jacks are case-insensitive in the first letter, like `initplug` (`i.Pi` = `i.pi`, canonical lower case); master programmer jacks are `p.<X>i|di|cdi|<1-6>o` with X in A..K without I, and `p.<1-20>di`; function tables `f<U>.<1-11>i|o, arg, A, B, C, NC`; multiplier `m.<1-24>i|o` and its data terminals; adapters `ad.<kind>.<n>.<param>`.
+
+### 5.10 Attract session (live attract, PRD FR-30, FR-34 to FR-36, FR-51)
+
+`session/attract.go`. The attract loop flies the configured mission's program (`attract.mission`, default `trajectory`: `trajdemo.e` with `drag.e`) with the same machinery as a visitor mission, one flight per core:
+
+1. `starting` (first flight, or after an error) or `recycling` (after a landing): end the previous flight's session (its core is killed), open a fresh session with `mode: "attract"` (preset as argv, `cy.rate 0`), apply every step (as `skip_setup`).
+2. `reading`: READ through the normal button path (`b c`, then `b r`); wait for `run.initAfter` (`card-read`) and an idle run (`attract.readTimeout`, 15 s, else a stall fault).
+3. `flying`: INIT (`b i`). The tick loop freezes the clock on `run.freezeAt` (`landed`: `s cy.op 1a`), as in the mission. The mission stall guard (10 s while busy) applies, plus an attract guard: no new card for `attract.stall` (20 s, FR-36) or no landing in `attract.flightMax` (5 min) is `E-CORE-DOWN`/`stall`.
+4. `landed`: the landing values are decoded from the landing card (first card with plot y < 0; `run.cards.hop`, `run.plot`, overpunch sign); the finished plot is held for `attract.hold` (8 s); then `recycling` and step 1.
+
+Faults go through 5.8 unchanged (session `failed`, health down, backoff, probe); the loop shows `error`, waits for `health up` and a clean slate, then starts again with `starting` (FR-51). One core at a time: the loop holds `opMu` while it ends one session and opens the next, and `attract_stop`/`start_mission`/`end_session` cancel the loop and wait for it before they take `opMu` (the loop never waits on anything they hold). Attract sessions are not visitor sessions in the metrics: `attract_flight_started{n}`, `attract_flight_landed{n,durS}` and `attract_touch` (FR-98) instead of `session_*`/`mission_*`. The loop stops when the kiosk page has been gone for `OrphanAfter`; the page asks again (`attract_start`) when it reconnects at home.
+
+**Hand-off guarantees** (tested on the fake core, `attract_test.go`): after `session {state:"none"}` of the attract session no `punch`, `frame`, `run` or `checkpoint` of it reaches a client (punches and frames are published only while the session is current, under the manager lock, and `endSession` drops queued ones); no process of it is left when the `attract_stop` reply arrives; a hand-off is never a fault. Measured on the Mac with the real core: 101 to 103 ms from `attract_stop` to the reply, in any phase, mostly the core exiting after `q` (`docs/spikes/S5-attract-soak.md`). `Core.Close` also waits (at most 500 ms) for the core's whole process group, so the vlink relay is gone before the next core starts.
+
+**Client** (`src/web/app/attract/store.ts`): `AttractStore` keeps the flight's status, its cards (`CardLog` with the mission's `run.cards`/`run.plot`: dots, apex, landing), the UX 14.2.1 caption and a `liveness(now)` (`live`/`waiting` 3 s/`lost` 5 s while frames are due; `held` while landed or recycling; `waking`). `AttractController` sends `attract_start` when S1 shows (and after a reconnect) and `attract_stop {reason:"touch"}` when the visitor leaves S1 for the picker. Lamps come from `App.mirror` (the attract session's `state`/`frame`), as for missions.
 
 ---
 
@@ -1080,3 +1098,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 | 0.3 | 2026-10-01 | software-developer agent (M2 upstream fixes) | Decision #36: 4.4 is now the patch policy plus the list of patches we carry (0001 `mult.go`, 0002 `ft.go`, 0003 `accumulator.go`) and what we chose not to patch. 4.1 lists the patches. 4.2 points the bump to the README procedure. U1 and A1 resolved. Trajdemo findings in `docs/spikes/S2-trajdemo.md`. |
 | 0.4 | 2026-10-01 | software-developer agent (M2 build) | 5.9.6: the M2 mission format (minutes, requires, includes as preset, assets and readCard, withheld lines per button, initOnce, initAfter, freezeAt, run.cards, run.plot, content.read, result.live); punchCount and punchField predicates implemented; M2 caption triggers; idle also needs the reader and printer flip-flops clear; M2 jack grammar and switch families; picker metrics; `mission compile`. 5.9.5 rules extended for M2. |
 | 0.5 | 2026-10-01 | software-developer agent (M2 follow-ups) | 5.8 and 5.9.6: the run stall guard (`stallMs` per speed, `E-CORE-DOWN`/`stall`). |
+| 0.6 | 2026-10-02 | software-developer agent (attract engine) | 5.10: the live attract loop (one `trajdemo.e` flight per core), `attract` message and `state.attract`, `attract_start`/`attract_stop`, config `attract:`, attract metrics; 5.4 and 5.6 rows. Soak: `docs/spikes/S5-attract-soak.md`. |
