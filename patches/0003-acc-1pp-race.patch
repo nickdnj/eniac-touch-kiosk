@@ -1,22 +1,28 @@
-From: ENIAC Touch Kiosk <kiosk@localhost>
-Subject: [PATCH] accumulator: serialize the 1PP correction with receives
+From e390f848a6f42742a0d26a32a2bd8c793deaefd0 Mon Sep 17 00:00:00 2001
+From: Nick DeMarco <nickd@demarconet.com>
+Date: Fri, 2 Oct 2026 08:13:16 -0400
+Subject: [PATCH 3/3] accumulator: serialize the 1PP correction with receives
 
-The cycling unit's pulses are fanned out to every unit concurrently
-(fanout() in eniac.go). At 1PP time an accumulator whose receive program
-has the correct switch set (cc C) increments its own units digit in
-doonepp() (accunit goroutine), while a subtracting transmitter's 1' pulse
-for the same accumulator arrives through accunit2() -> accrecv(), which
-increments the same digit in another goroutine. Both are unsynchronized
+fanout() sends each cycling-unit pulse to all units concurrently. At
+1PP time an accumulator whose receive program has the correct switch
+set (cc C) increments its units digit in doonepp() (the accunit
+goroutine), while a subtracting accumulator's 1' pulse for the same
+unit arrives through accunit2() -> accrecv(), which increments the
+same digit in another goroutine. Both are unsynchronized
 read-modify-writes of u.val[0], so now and then one increment is lost.
-trajdemo.e then punches cards whose last field is a few units off from
-some card on (anywhere from card 2 to card 18 in our runs, about 1 run in
-3 on a Mac); the race detector reports accrecv vs doonepp. A per-unit
-mutex around both updates makes the output identical run to run (12 of
-12 runs, including 8 at once). Spike #31; reported upstream (see #34).
-Drop this patch once upstream fixes it.
 
+trajdemo.e then punches cards whose last field is a few units low from
+some card on (anywhere from card 2 to card 18, about 1 run in 3 on a
+loaded machine). go build -race reports accrecv (accumulator.go:388)
+against doonepp (accumulator.go:561). A per-accumulator mutex around
+both updates makes the output identical run to run (12 of 12 runs,
+including 8 at once).
 ---
+ src/accumulator.go | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
 diff --git a/src/accumulator.go b/src/accumulator.go
+index cc9917b..33bcb97 100644
 --- a/src/accumulator.go
 +++ b/src/accumulator.go
 @@ -3,6 +3,7 @@ package main
@@ -58,3 +64,6 @@ diff --git a/src/accumulator.go b/src/accumulator.go
  		}
  	}
  	if curprog&(stAS|stS) != 0 && u.S != nil {
+-- 
+2.52.0
+

@@ -122,6 +122,8 @@ A sieve canary (test plan 3.2, `sieve-canary`) becomes a required pass as soon a
 
 Updated 2026-10-01 to cover patches 0001, 0002 and 0003, the three local patches we now carry under decision #36. Nothing has been sent. Nick sends it, and #34 also owns the permission question. Attach the three files in `patches/`.
 
+Updated 2026-10-02: the three files in `patches/` are now `git format-patch` output authored by Nick, with messages that make no reference to this repo's issues. They apply cleanly to both our pin `c4b94f2` and upstream `7c043c5`, so Stuart can `git am` them. The email is a Gmail draft in Nick's account; Nick sends it.
+
 > **Subject: Three small fixes for the simulator (mult status format, function-table repeat default, an accumulator race), plus two questions**
 >
 > Hi Brian, thank you for the simulator. We are building a museum touch kiosk around it (credited on screen). We found three small problems at `c4b94f2`, which are still present at `7c043c5`, and are carrying a local patch for each until you have looked at them. The three patches are attached; each is a few lines.

@@ -1,20 +1,28 @@
-From: ENIAC Touch Kiosk <kiosk@localhost>
-Subject: [PATCH] ft: default the repeat switches to 1 at startup
+From b1c6df80898150568c89468dd918607454205e32 Mon Sep 17 00:00:00 2001
+From: Nick DeMarco <nickd@demarconet.com>
+Date: Fri, 2 Oct 2026 08:13:16 -0400
+Subject: [PATCH 2/3] ft: default the repeat switches to 1 at startup
 
-f611c7f ("Rework function table code...") changed the repeat switch from
-"rptsw = val - 1, compared with ring - 4" to "rptsw = val, compared with
-the stage number (ring 1..9)". ftreset() now sets rptsw to 1, but nothing
-sets it at startup, so a program whose rp switch is never set keeps
-rptsw == 0. No stage matches 0, the ring counter climbs without bound
-and the program never ends (sieve.e, lehmer.e). Before f611c7f the zero
-value meant "repeat once", so those programs ran. Spike #32, decision #36;
-reported upstream (see #34). Drop this patch once upstream fixes it.
+f611c7f ("Rework function table code...") changed the repeat switch
+from "rptsw = val - 1, compared with ring - 4" to "rptsw = val,
+compared with the stage number (ring 1..9)". ftreset() now sets rptsw
+to 1, but nothing sets it at startup, so a program that never sets
+fN.rpM keeps rptsw == 0. No stage matches 0, the ring counter climbs
+without bound and the program never ends (sieve.e, lehmer.e). Before
+f611c7f the zero value meant "repeat once", so those programs ran.
 
+Set the startup default to 1, as ftreset() does. sieve.e then punches
+the 407 primes from 3 to 2801, and its first 100 cards are identical
+to f611c7f~1.
 ---
+ src/ft.go | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
 diff --git a/src/ft.go b/src/ft.go
+index 223bfcc..bf954ec 100644
 --- a/src/ft.go
 +++ b/src/ft.go
-@@ -489,6 +489,12 @@
+@@ -489,6 +489,12 @@ func ftunit(unit int, cyctrunk chan pulse) {
  
  	f := &ftable[unit]
  	f.ring = -3
@@ -27,3 +35,6 @@ diff --git a/src/ft.go b/src/ft.go
  	f.update = make(chan int)
  	go ftunit2(f)
  	f.resp = make(chan int)
+-- 
+2.52.0
+
