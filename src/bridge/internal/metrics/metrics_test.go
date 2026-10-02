@@ -23,6 +23,8 @@ func open(t *testing.T) (*Writer, string) {
 
 func b(v bool) *bool { return &v }
 
+func n(v int64) *int64 { return &v }
+
 func TestUIWhitelist(t *testing.T) {
 	w, dir := open(t)
 	ok := []protocol.Metric{
@@ -32,6 +34,7 @@ func TestUIWhitelist(t *testing.T) {
 		{Ev: "skip_to_answer", Mission: "squares"},
 		{Ev: "setup_skipped", Mission: "squares", Step: "a1-twice"},
 		{Ev: "idle_reset", Screen: "S4"},
+		{Ev: "honor_page_view", N: n(2)},
 	}
 	for _, m := range ok {
 		if err := w.UI(m, "abc123"); err != nil {
@@ -39,13 +42,14 @@ func TestUIWhitelist(t *testing.T) {
 		}
 	}
 	bad := []protocol.Metric{
-		{Ev: "mission_complete", Mission: "squares"},          // bridge event from the UI
-		{Ev: "error_enter"},                                   // bridge event
-		{Ev: "session_end"},                                   // bridge event
-		{Ev: "made_up"},                                       // unknown
-		{Ev: "wrong_tap", Screen: "S4"},                       // field not allowed for this event
-		{Ev: "idle_reset", Mission: "squares"},                // field not allowed
+		{Ev: "mission_complete", Mission: "squares"},         // bridge event from the UI
+		{Ev: "error_enter"},                                  // bridge event
+		{Ev: "session_end"},                                  // bridge event
+		{Ev: "made_up"},                                      // unknown
+		{Ev: "wrong_tap", Screen: "S4"},                      // field not allowed for this event
+		{Ev: "idle_reset", Mission: "squares"},               // field not allowed
 		{Ev: "wrong_tap", Mission: "squares", Step: "a b c"}, // free text
+		{Ev: "honor_page_view", Mission: "squares"},          // field not allowed
 	}
 	for _, m := range bad {
 		if err := w.UI(m, "abc123"); !errors.Is(err, ErrNotAllowed) {
@@ -63,7 +67,7 @@ func TestUIWhitelist(t *testing.T) {
 	for _, r := range recs {
 		for k := range r {
 			switch k {
-			case "ts", "ev", "sid", "m", "step", "atStep", "assisted", "speed", "screen":
+			case "ts", "ev", "sid", "m", "step", "atStep", "assisted", "speed", "screen", "n":
 			default:
 				t.Errorf("unexpected key %q", k)
 			}
@@ -76,7 +80,7 @@ func TestBridgeEvents(t *testing.T) {
 	w.Bridge("session_start", "s1", nil)
 	w.Bridge("mission_complete", "s1", map[string]any{"m": "squares", "durS": 130})
 	w.Bridge("session_end", "s1", map[string]any{"durS": 150, "reason": "done"})
-	w.Bridge("wrong_tap", "s1", nil)                                     // a UI event is not a bridge event
+	w.Bridge("wrong_tap", "s1", nil)                                                    // a UI event is not a bridge event
 	w.Bridge("error_enter", "", map[string]any{"code": "E-CORE-DOWN", "ip": "1.2.3.4"}) // extra field dropped
 	w.SessionEnd()
 	recs, _ := Read(dir)

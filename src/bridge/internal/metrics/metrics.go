@@ -37,6 +37,8 @@ var uiFields = map[string][]string{
 	// UX 8.4: does the suggested order work? n is the card's position (1..3).
 	"mission_picked":   {"m", "n"},
 	"picker_next_used": {"m"},
+	// UX 14.6.4: which honor-roll page (1..4) was opened.
+	"honor_page_view": {"n"},
 }
 
 // bridgeFields: bridge-only events and their fields.

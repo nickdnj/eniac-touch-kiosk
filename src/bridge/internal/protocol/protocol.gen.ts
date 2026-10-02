@@ -280,7 +280,7 @@ export interface EndSession {
 export interface Metric {
   t: 'metric';
   id?: number /* int64 */;
-  ev: 'wrong_tap' | 'step_done' | 'speed' | 'skip_to_answer' | 'setup_skipped' | 'idle_reset' | 'mission_picked' | 'picker_next_used';
+  ev: 'wrong_tap' | 'step_done' | 'speed' | 'skip_to_answer' | 'setup_skipped' | 'idle_reset' | 'mission_picked' | 'picker_next_used' | 'honor_page_view';
   mission?: string;
   step?: string;
   speed?: string;

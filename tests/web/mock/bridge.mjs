@@ -33,7 +33,7 @@ export const CHECKERS = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
 
 const WL = new Set(["start_mission", "apply_step", "skip_setup", "button", "set_speed", "end_session", "metric", "ping"]);
 // UI metric whitelist (architecture 8.3, protocol.gen.ts Metric.ev); bridge-owned names are NOT_ALLOWED.
-const METRICS = new Set(["wrong_tap", "step_done", "speed", "skip_to_answer", "setup_skipped", "idle_reset", "mission_picked", "picker_next_used"]);
+const METRICS = new Set(["wrong_tap", "step_done", "speed", "skip_to_answer", "setup_skipped", "idle_reset", "mission_picked", "picker_next_used", "honor_page_view"]);
 
 export function defaultConfig() {
   return {

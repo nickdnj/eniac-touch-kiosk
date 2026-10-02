@@ -18,12 +18,17 @@ import { installTapDispatcher, type TapPoint } from "./ui/tap.ts";
 import { h, clear } from "./ui/dom.ts";
 import { COPY } from "./copy.ts";
 import { CardLog } from "./run/cards.ts";
+import { Visit } from "./state/visit.ts";
 
-export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error";
+export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor";
 export interface View {
   name: ViewName;
   /** Where a new session lands: the briefing, or straight to step 1 (retry). */
   entry?: "briefing" | "step1";
+  /** S11: the page to open (1 to 4). */
+  page?: number;
+  /** S11: where Back returns (default: the picker). */
+  back?: View;
 }
 
 export interface Screen {
@@ -34,6 +39,8 @@ export interface Screen {
   onMessage?(m: ServerMsg): void;
   /** Machine changed: touched lamp units, or null for "redraw everything". */
   onMachine?(units: string[] | null): void;
+  /** Static screen that keeps working while the core is down (UX 14.7: S11). */
+  coreOptional?: boolean;
 }
 export type ScreenFactory = (app: App, view: View) => Screen;
 
@@ -65,12 +72,16 @@ export class App {
   answerAt: Record<string, number> | null = null;
   /** Punched cards of the current session (missions with run.cards). */
   cards: CardLog = new CardLog(null);
+  /** This visit's missions and their real results (state/visit.ts); reset when S1 shows. */
+  readonly visit = new Visit(() => this.now());
   /**
    * Missions whose result screen (S7) this visitor reached: the picker's
-   * "Done" badges and "UP NEXT" chip (UX 8.4). In memory only; cleared by
-   * the idle reset, never stored.
+   * "Done" badges and "UP NEXT" chip (UX 8.4). In memory only; cleared
+   * with the visit, never stored.
    */
-  readonly done = new Set<string>();
+  get done(): Set<string> {
+    return this.visit.done;
+  }
   errorCode: string | null = null;
   /** A mission the bridge listed failed to load (E-MISSION until the next hello). */
   missionBroken = false;
@@ -237,6 +248,16 @@ export class App {
     }
     this.evaluate();
     this.screen?.onMessage?.(m);
+    this.noteVisit(m);
+  }
+
+  /** Feeds the visit store from real bridge data (after the screen built its tape). */
+  private noteVisit(m: ServerMsg): void {
+    const mission = this.mission, s = this.mirror.session;
+    if (!mission || !s || this.view.name === "waking") return;
+    if (m.t === "step_applied") this.visit.stepApplied(s.id, mission.steps.find((x) => x.id === m.step), m.assisted);
+    else if (m.t === "run") this.visit.tape(mission.id, this.tape);
+    else if (m.t === "punch" || m.t === "state") this.visit.cards(mission.id, this.cards);
   }
 
   private async loadMissions(): Promise<void> {
@@ -267,7 +288,7 @@ export class App {
   private evaluate(): void {
     let code: string | null = null;
     if (this.linkDown) code = "E-LINK";
-    else if (this.helloSeen && this.mirror.health.core === "down") code = this.mirror.health.code ?? "E-CORE-DOWN";
+    else if (this.helloSeen && this.mirror.health.core === "down" && !(this.screen?.coreOptional && !this.errorCode)) code = this.mirror.health.code ?? "E-CORE-DOWN";
     else if (this.missionBroken || (this.missions && !this.missions.some((x) => x.available))) code = "E-MISSION";
 
     if (code && !this.errorCode) {
@@ -314,6 +335,7 @@ export class App {
   /** Start (or restart) a mission with a fresh core (ADR-002). */
   async startMission(id: string, entry: "briefing" | "step1"): Promise<void> {
     this.resetVisitor();
+    this.visit.begin();
     this.cards = new CardLog(null);
     this.expectingSession = true;
     this.priorSessionId = this.mirror.session?.id ?? null;
@@ -348,7 +370,6 @@ export class App {
   }
 
   private idleExpired(): void {
-    this.done.clear(); // the next visitor starts at mission 1 again
     this.metric({ t: "metric", ev: "idle_reset", screen: this.view.name });
     this.endSession("idle");
     this.overlayHooks.onIdleDismiss?.();
@@ -367,6 +388,8 @@ export class App {
     }
     this.screen?.unmount?.();
     clear(this.screenHost);
+    // Attract is between visitors: the next one starts at mission 1 (FR-33).
+    if (view.name === "start") this.visit.reset();
     this.view = view;
     const f = this.screens[view.name];
     this.screen = f ? f(this, view) : null;
@@ -377,6 +400,8 @@ export class App {
     } else this.idle.setMode("none");
     this.idle.touch();
     this.root.dataset.view = view.name;
+    // Leaving a core-optional screen while the core is down: S10 now.
+    if (!this.screen?.coreOptional && this.helloSeen && this.mirror.health.core === "down" && !this.errorCode) this.evaluate();
   }
 
   private devAutostart(): void {
