@@ -8,7 +8,7 @@ set -euo pipefail
 T=/target
 P=/cdrom/eniac
 FB=$T/var/lib/eniac-firstboot
-say() { echo "eniac-late: $*"; for c in /dev/console /dev/tty1; do [ -w "$c" ] && echo "eniac-late: $*" > "$c" 2>/dev/null; done; return 0; }
+say() { echo "eniac-late: $*" >&2; }   # subiquity shows command output on its consoles
 
 say "staging the kiosk payload from the stick"
 install -d -m 0755 "$FB" "$T/var/lib/eniac-stick"

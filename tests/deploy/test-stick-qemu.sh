@@ -90,7 +90,7 @@ case "$SCEN" in
       echo "building a jersey-shore-looking disk (default Ubuntu layout: ESP, /boot, LVM ubuntu-vg/ubuntu-lv; kiosk files in root)"
       docker run --rm --privileged -v "$W:/w" -v "$ROOT/tests/deploy:/t:ro" ubuntu:24.04 bash /t/make-jersey-fixture.sh
       cp -c "$W/disk.raw" "$W/disk.before.raw" 2>/dev/null || cp "$W/disk.raw" "$W/disk.before.raw"
-      DRIVER=(--scenario guard-refuse)
+      DRIVER=(--scenario guard-refuse --screenshot "$W/refusal-screen.png")
     else
       DRIVER=(--scenario confirm-prompt --screenshot "$W/prompt-screen.png")
     fi

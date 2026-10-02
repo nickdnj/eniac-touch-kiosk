@@ -248,13 +248,15 @@ def guard_refuse(c, a):
     i, _ = c.expect([r"REFUSING TO INSTALL", r"eniac-guard: OK: Ubuntu will be installed"], 60 * 60, "the guard's verdict")
     if i != 0:
         return step(False, "guard accepted a disk it should have refused")
-    c.expect([r"Power off, remove the USB stick"], 60, "end of refusal")
+    c.expect([r"Power off and remove the USB stick"], 60, "end of refusal")
     found = re.findall(rb"eniac-guard: (FOUND: [^\n]*)", c.buf)
     for f in found:
         print("  " + f.decode(errors="replace"))
-    step(bool(found), "refusal names what it found")
+    ok = step(bool(found), "refusal names what it found")
     i, _ = c.expect([r"Continue with autoinstall\?", r"block-meta|run_curtin|partitioning"], 120, "anything after the refusal", quiet=True)
-    return step(i is None or i == 0, "installer did not proceed past the refusal")
+    ok &= step(i is None, "installer did not proceed past the refusal")
+    screenshot(a)  # what the monitor shows after the refusal
+    return ok
 
 
 def main():

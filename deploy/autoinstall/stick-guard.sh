@@ -22,19 +22,19 @@ CFG=/autoinstall.yaml
 STICK_ID_FILE=/cdrom/eniac/STICK-INFO
 MIN_BYTES=$((16 * 1000 * 1000 * 1000))
 
-# Everything goes to the log, stderr (subiquity's log) and the console(s).
+# Everything goes to the log and to stderr; subiquity shows command output on
+# its consoles (tty1, and serial if any). Also writing to /dev/tty1 doubled it.
 say() {
   local line="eniac-guard: $*"
   echo "$line" >> "$LOG"
   echo "$line" >&2
-  for c in /dev/console /dev/tty1; do [ -w "$c" ] && echo "$line" > "$c" 2>/dev/null; done
   return 0
 }
 refuse() {
   say "################################################################"
   say "REFUSING TO INSTALL. NOTHING HAS BEEN WRITTEN TO ANY DISK."
   say "$*"
-  say "Power off, remove the USB stick. Details: $LOG (in the installer: Ctrl+Alt+F2)."
+  say "Power off and remove the USB stick."
   say "################################################################"
   cleanup_mounts
   exit 1

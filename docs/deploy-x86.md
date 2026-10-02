@@ -462,7 +462,7 @@ The last-resort rollback is reinstalling Ubuntu (Steps 1–3).
 |---|---|
 | Black screen, no browser | The bridge is down: the session waits for it. `journalctl -u eniac-touch-kiosk-bridge -n 50` |
 | Black screen, `journalctl -t eniac-touch-kiosk-chromium` says "No usable sandbox!" | `chromium-sandbox` is missing (Ubuntu blocks Chromium's namespace sandbox): `sudo apt install chromium-sandbox`, or re-run `install.sh` from this release, which installs it |
-| One-stick: `REFUSING TO INSTALL` | The guard's reason is on screen and in `/var/log/eniac-stick-guard.log` (live installer, Ctrl+Alt+F2). See "Safety" above for the overrides |
+| One-stick: `REFUSING TO INSTALL` | The guard's reason (each `FOUND:` line) is on screen just above the refusal. See "Safety" above for the overrides |
 | One-stick: login prompt after the install, no exhibit | The first-boot kiosk install failed: `/var/log/eniac-kiosk-firstboot.log`; it retries each boot, or `sudo systemctl start eniac-kiosk-firstboot` |
 | Login prompt on tty1 instead of the exhibit | `systemctl cat getty@tty1` (another autologin drop-in?), `journalctl -t eniac-touch-kiosk-session` |
 | GDM / a desktop appears | `systemctl get-default` must be `multi-user.target` |
