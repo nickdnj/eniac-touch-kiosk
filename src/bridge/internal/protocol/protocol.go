@@ -307,7 +307,7 @@ type AttractStop struct {
 type Metric struct {
 	T       string `json:"t" tstype:"'metric'"`
 	ID      *int64 `json:"id,omitempty"`
-	Ev      string `json:"ev" tstype:"'wrong_tap' | 'step_done' | 'speed' | 'skip_to_answer' | 'setup_skipped' | 'idle_reset' | 'mission_picked' | 'picker_next_used' | 'honor_page_view' | 'explore_open' | 'explore_card' | 'explore_walk_completed' | 'explore_mission_chip' | 'glossary_open'"`
+	Ev      string `json:"ev" tstype:"'wrong_tap' | 'step_done' | 'speed' | 'skip_to_answer' | 'setup_skipped' | 'idle_reset' | 'mission_picked' | 'picker_next_used' | 'honor_page_view' | 'explore_open' | 'explore_card' | 'explore_walk_completed' | 'explore_mission_chip' | 'glossary_open' | 'tubes_open' | 'tubes_card' | 'tubes_myth_open' | 'tubes_try_start' | 'tubes_try_step' | 'tubes_try_done' | 'tubes_try_skip'"`
 	Mission string `json:"mission,omitempty"`
 	Step    string `json:"step,omitempty"`
 	Speed   string `json:"speed,omitempty"`

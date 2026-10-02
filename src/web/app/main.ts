@@ -15,10 +15,12 @@ import { honorScreen } from "./screens/honor.ts";
 import { injectDefs } from "./panels/load.ts";
 import { exploreScreen } from "./screens/explore.ts";
 import { glossaryScreen } from "./screens/glossary.ts";
+import { tubesScreen } from "./screens/tubes.ts";
 
 const screens: Record<string, ScreenFactory> = {
   explore: exploreScreen,
   glossary: glossaryScreen,
+  tubes: tubesScreen,
   boot: bootScreen,
   start: startScreen,
   picker: pickerScreen,

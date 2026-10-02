@@ -1,6 +1,6 @@
 # UX Design Specification: ENIAC Touch Kiosk
 
-**Version:** 0.7
+**Version:** 0.8
 **Last Updated:** 2026-10-02
 **Author:** Nick DeMarco with AI assistance (ux-design agent)
 **Status:** Draft for review
@@ -2162,6 +2162,7 @@ The tabs are four large buttons (each 440 x 96); the open page is filled. No swi
 | **S11 Honor** | 90 s | works | S10 | cross-fade |
 | **S14 Explore** | 120 s | works, lamps dark, pill | S10 | cross-fade pans |
 | **S15 Glossary** | 90 s | works | S10 | cross-fade |
+| **S16 Keeping ENIAC alive** | 120 s | works (static, no pill: nothing on it is live) | S10 | cross-fade; no shake, no slide |
 
 "Reduced motion" is the box setting of 9.5 **or** the browser's `prefers-reduced-motion`.
 
@@ -2188,6 +2189,12 @@ The tabs are four large buttons (each 440 x 96); the open page is filled. No swi
 | 17 | "In 1946, setting up a job like this took people days" | F1 | Already in the mission "rest done for you" copy [FC] |
 | 18 | Stuart's simulator "follows the real machine pulse by pulse"; his IEEE paper | S11 page 1 | The upstream README says "pulse-level simulator" [V] |
 | 19 | The transceiver | Glossary (held) | Not in the missions or sim docs beyond one comment [V]; do not show until confirmed |
+| 20 | Tubes, parts and joints: about 18,000 tubes; a radio about 10, the biggest radar set 400, a B-29 under 800; about 70,000 resistors, 10,000 capacitors, 500,000 soldered joints; the glowing lamps are neon and the tubes sat inside | S16 card 1, glossary | `docs/fact-check.md` E1, E3, E4, E20, E23 |
+| 21 | Power and heat: about 150 kW (80 heaters, 45 d-c, 20 fans, 5 card machines); 1,500 bright bulbs; one hour is 5 to 6 days of a home today; a panel thermostat stopped the machine above 115 °F | S16 card 2, glossary | E6 to E9 |
+| 22 | Why tubes burned out: switching on and off is hard on them; heaters left on overnight (1946 to 1948); tubes run gently; Eckert's "one tube every two days" (his memory) | S16 card 3 | E11, E13, E15, E17 |
+| 23 | The hunt: unit, then circuit, then tube; neon lamps as the visual check; plug-in units; Eckert's "within 15 minutes" (his claim) | S16 card 4, the re-enactment, glossary | E11, E21, E22, E24 |
+| 24 | Time at work: 5 to 25 percent (1946 to 1948, Army estimates); 55 percent (1948 to 1952); about 7 hours in 10 (1954); tubes not the only trouble | S16 card 5 | E12, E25 |
+| 25 | The lights of Philadelphia did not dim: Eckert called it "total fiction" | S16 myth card | E28, E6 |
 
 ### 14.9 Entry points: the picker (S2) and the briefing
 
@@ -2215,6 +2222,53 @@ The picker keeps its three cards (8.4). The row under them changes (y 848 to 944
 | Q21 | The Transceiver wording | Held | Stuart / Doug |
 | Q22 | The Printer's panel span and the whole layout against the 1946 floor plan | 36 to 39 [I] | Doug / Stuart |
 | Q23 | Finale trigger: all three missions done, or Finish on any mission? | All three done (14.5.1) | Nick |
+| Q24 | When the core is down, should S16 keep working with no pill? | Yes: nothing on it is live and the plate says so (14.11) | Nick |
+| Q25 | A header button on S14, or also a "Where are the tubes?" tag on every panel of the room? | Header button only (14.11) | Nick |
+| Q26 | Ship the optional attract plate "about 18,000 vacuum tubes, about 150 kilowatts, about 30 tons"? | Not built; P2 if there is room in the rotation | Nick |
+| Q27 | The Haigh and Priestley December 1947 figures on a card once someone has read the book? | Not on a card; docent note only (`docs/tubes.md` 1.3) | Nick |
+
+### 14.11 S16 Keeping ENIAC alive
+
+**Goal:** tell how ENIAC's 18,000 tubes were kept working, in five cards and one hands-on re-enactment, so a visitor leaves knowing how many tubes there were, how much power they took, why they burned out and how a crew found a dead one. The research, the sources and every claim are in `docs/tubes.md` (sections 1 and 2) and `docs/fact-check.md` group E; the mockup is `docs/mockups/tubes.html`. This section is the build spec; where it and `docs/tubes.md` differ, this section wins.
+
+**Where it lives.** A sibling of S14, not a thirteenth stop (the stops are units in the room; the tubes are inside all of them). Same header, footer, rail card and tokens as S14: the stage x24-1384, y112-1016 (one drawn figure per card) and the rail x1408-1896, y112-1016.
+
+| Entry | How |
+|---|---|
+| S14 header | **Keeping ENIAC alive** (430 x 64), left of Glossary, in every S14 state. Back, X and Finish return to S14 where the visitor was (position, card, mission). |
+| S15 glossary, page 3 | **Vacuum tube**, **Plug-in unit**, **Kilowatt**: "Show me" opens S16 cards 1, 4 and 2; Back returns to glossary page 3. |
+| S16 card 2 | A link "Did the lights of Philadelphia dim? >" opens the myth card; "< Back" returns to card 2. |
+| S8 finale, F2 | A chip **How they kept it alive >** (64 px) opens S16 through `app.openTubes({ from: "finale", back })`; Finish and X return to the view passed (F5). Built with the finale. |
+| S16 header | **< Explore** (or < Glossary, < Back, by origin) and **Glossary**; the glossary's Close returns to the same S16 card. |
+
+**The five cards and the myth card** (rail: "n OF 5 · TAGLINE", a 112 px banner, title, body of at most 40 words, Previous / Next 96 px; Finish on card 5 returns to the origin). The copy is data in `src/web/app/tubes/content.ts`, with the E-rows of each claim as an internal note (FR-46).
+
+| # | Title | Tagline | Body | Stage figure |
+|---|---|---|---|---|
+| 1 | The tubes | About 18,000 | ENIAC had about 18,000 vacuum tubes. A tube is a sealed bulb that switches a signal on and off, with nothing moving. A radio had about ten. The glowing lamps you see are neon, not tubes. The tubes sat inside. | Exactly 18,000 dots, one per tube (200 x 90); bright boxes of 10 (a radio), 400 (the biggest radar set) and 760 (a B-29, "under 800"); captions on where the tubes were and the 70,000 resistors, 10,000 capacitors and 500,000 soldered joints |
+| 2 | Power and heat | A big appetite | ENIAC used about 150 kilowatts, as much as 1,500 bright light bulbs. More than half of it just made the tubes hot. Fans blew the heat out. A panel that got too hot switched the whole machine off. | The 150 kW bar split 80 / 45 / 20 / 5 and one home's 1.2 kW on the same scale; "In one hour ... 5 to 6 days"; the 115 °F thermostat |
+| 3 | Why tubes burned out | Hard on tubes | Tubes wear out like light bulbs, and switching on and off is hard on them. So early on, the crew left the heaters on overnight, and ran the tubes gently. Eckert remembered losing about one tube every two days. | One week in 1946 to 1948: an 8-hour shift Monday to Friday, heaters on all week, the rest dark |
+| 4 | The hunt | Which tube? | When an answer came out wrong, the crew hunted: which unit, which circuit, which tube? Lamps showed what was happening inside. Tubes sat in plug-in units that swapped fast. Eckert said they found a bad tube within 15 minutes. | Three rungs: which unit, which circuit, which tube. The rail adds **Find the dead tube >** (96 px) |
+| 5 | A week with ENIAC | Time at work | In its first two years, ENIAC did real work only 5 to 25 percent of the time, by Army estimates. Testing, setting up and repairs took the rest. By 1954 it worked about 7 hours in every 10. | Three bars: 5 to 25, 55, 70 percent; "Tubes were not the only trouble." |
+| M | Did the lights of Philadelphia dim? | Myth check | No. A story says ENIAC dimmed Philadelphia's lights when it switched on. Eckert, who built it, called that story "total fiction." ENIAC took its power from the city grid, through its own regulators. | A MYTH stamp and Eckert's quotation, attributed |
+
+Never on screen (`docs/tubes.md` 1.4): "116 hours", "never turned off", "one-quarter power", "5,000,000 joints", "every few minutes", "most failed at warm-up", "selected tubes", a tube-type count, a failure percentage, or a claim that failures fell over the years.
+
+**Find the dead tube (a re-enactment, never live state).** Five steps in the 1946 maintenance manual's order: run the test; tap the accumulator whose lamps are out of line; tap the digit place with the wrong lamp; touch tubes until one is COLD; plug in a fresh unit. Then the fixed state. Four drawn accumulators **ACC 1 to ACC 4** (never "Accumulator n"), ten places each, lamps 0 to 9 down the left; the test should leave every one at 5555555555.
+
+| Rule | Spec |
+|---|---|
+| Plate | On every state, including the win: a dashed **RE-ENACTMENT** badge and "These panels are drawn, not the live ENIAC. The fault is made up. The steps follow the 1946 maintenance manual." (20 words, 24 px, full stage width, double rule below). |
+| Not live | The exercise reads no core, session, link or lamp-store state and imports none of those modules; its lamps are `data-source="script"`; no live unit ids; a dashed frame around the practice area. It is reached only by a tap (card 4's button). |
+| Faults | Three, authored, in order, never random: ACC 3 / place 4 / lamp 9 / tube 3; ACC 1 / place 8 / lamp 1 / tube 6; ACC 4 / place 2 / lamp 8 / tube 1. "Try another fault" moves on (0, 1, 2, 0). Each new S16 (after S1) starts at the first. |
+| Targets | Panels 306 x 700 (326 pitch); columns 100 x 552 (116 pitch); tubes 112 x 300 (128 pitch); a tap within 16 px of a target counts (the nearest wins); a tap elsewhere is a neutral ripple. |
+| Ladder (UX 5.2) | Wrong #1: a red X badge on the target for 600 ms and a 300 ms shake; the line "Not quite. ..." Wrong #2: the right target's ring (12 px yellow) and "Look for the glowing ring." plus a hint (the panel hint says "lower" or "higher" by the fault's lamp). Wrong #3: **Do it for me** turns filled and "Want us to do this one?". A warm tube is not an error ("Warm. That one works. Try another.") but counts toward the ladder. The counter resets on each step. |
+| Help | **Do it for me** (96 px, steps 2 to 4) plays the step; **Skip to the answer** (64 px, steps 2 to 5) goes to the fixed state with no confirm; **< Back to the story** (64 px) returns to card 4 and discards the exercise. |
+| Fixed | All four panels at 5555555555, a green ring on the repaired place; "Fixed!" and "Every lamp lines up again. A real crew would also test the dead tube and write it in the log. Eckert said a hunt took up to 15 minutes." No score, timer or percentage. **Try another fault** and **Back to the story >** (96 px). |
+| Colour | Warm and COLD carry their words and different tints; the ring comes with a thicker outline; the wrong lamp is a position and is named in the line after step 2. |
+| Motion | Lamp change 80 ms; the unit slides in over 400 ms; other changes cross-fade 200 ms. Reduced motion: 200 ms cross-fades only, no shake, no slide. |
+
+**Idle, failure, metrics.** Idle 120 s (the S14 value), then S9 and S1; S1 resets the exercise and the fault. Core down with the bridge up: S16 works unchanged with no pill (Q24). Websocket or bridge down more than 5 s: S10. Counters (FR-101): `tubes_open{screen}`, `tubes_card{n}`, `tubes_myth_open`, `tubes_try_start{n: fault}`, `tubes_try_step{n: 2..5}`, `tubes_try_done{n: fault, assisted}`, `tubes_try_skip{n: step}`.
 
 ---
 
@@ -2240,6 +2294,11 @@ Sixteen terms for S15 (14.4), and a map from the words the **missions** use to t
 | 14 | Operation and repeat switches | Each program has two switches: what to do (take in on alpha, send on A) and how many times to do it. [FC] | 22 | 4 |
 | 15 | Neon lamp | A small glowing bulb. Each accumulator shows its number with lamps: one lit lamp for each digit. [FC] | 17 | 4 |
 | 16 | Transceiver | HOLD: do not show until confirmed. Draft: a part that sends numbers onto a tray, or receives them from it. [FC] | 20 | - |
+| 17 | Vacuum tube | A sealed bulb that switches a signal on and off with nothing moving. ENIAC had about 18,000. Like light bulbs, they wore out. [FC E1, E13, E20] | 23 | S16 card 1 |
+| 18 | Plug-in unit | A part made to pull out and push back in. A bad one could be swapped fast. Many of ENIAC's tubes sat in plug-in units. [FC E24] | 25 | S16 card 4 |
+| 19 | Kilowatt | A thousand watts. ENIAC used about 150 kilowatts, as much as 1,500 bright light bulbs. [FC E6, E7] | 15 | S16 card 2 |
+
+With 19 terms the glossary is three pages of eight (14.11). **Neon lamp** (15) now reads, as built: "A small glowing bulb. Each place in an accumulator has ten lamps, 0 to 9. The lit one shows the digit. The tubes are inside." (25 words; fact-check A8 and E23). The shipped wording of every term is in `src/web/app/explore/content.ts`.
 
 ### 15.1 Mission words and real words
 
@@ -2273,3 +2332,4 @@ Sixteen terms for S15 (14.4), and a map from the words the **missions** use to t
 | 0.5 | 2026-10-01 | software-developer agent (M2 follow-ups) | Trajectory readouts freeze on the landing card (8.3.5); a stalled Primes or Trajectory run goes to S10 (8.2.5) |
 | 0.6 | 2026-10-02 | ux-design agent, for Nick's 24-inch museum install | New section 14: live attract (trajdemo, Full speed, one flight per core, 60 s loop; 14.2); **Explore ENIAC** panorama of the 40-panel U with pan arrows, minimap strip, 12 unit cards (at most 40 words, [FC]-tagged), mission cross-links both ways, optional swipe (14.3; mockup in `docs/mockups/explore-eniac.html`); glossary S15 and section 15 (with the mission-word to real-word map); finale S8 rebuilt as five beats from this visit's real results (14.5); honor roll S11 in four pages crediting Stuart prominently and the original programmers, Eckert, Mauchly, the Goldstines, the Moore School and the Army BRL (14.6); idle, core-down and reduced-motion for every screen (14.7); [FC] list (14.8); picker row (14.9); Q15 to Q23. Flags F11 to F16. Gestures (9.2) and the 24-inch panel (9.4) updated; 7.1, 7.2, 7.7 and 7.10 point to section 14; the revision history is now section 16. |
 | 0.7 | 2026-10-02 | software-developer agent, recording Nick's direction for the honor roll | FR-46 relaxed (PRD 0.5): review status is an internal note, not a render gate; all four S11 pages render (14.1 rule 2, 14.6.2, 14.6.4); only `hold: true` blocks stay off screen. S11 page 3's tab reads "The project team" and the attract slide for the Goldstines "THE PROJECT TEAM" (fact-check B18); honor copy follows `docs/fact-check.md`. |
+| 0.8 | 2026-10-02 | software-developer agent, building Nick's tube story (`docs/tubes.md`) | New **14.11 S16 Keeping ENIAC alive**: five cards and a myth card with drawn figures, and "Find the dead tube", a five-step re-enactment with the RE-ENACTMENT plate on every state, three authored faults, the 5.2 ladder, Do it for me and Skip; entries from S14's header, the glossary and (with the finale) F2. 14.7 row for S16; 14.8 rows 20 to 25 (fact-check group E); Q24 to Q27; section 15 rows 17 to 19 and the Neon lamp rewording (three glossary pages). |

@@ -36,6 +36,8 @@ export interface GlossaryTerm extends Review {
   meaning: string;
   /** The card "Show me" opens, or null when the word has no place in the room. */
   show: Stop | null;
+  /** Or: the S16 "Keeping ENIAC alive" card (1 to 5) "Show me" opens (docs/tubes.md 2.6). */
+  tubes?: number;
 }
 
 export const EXPLORE = {
@@ -221,7 +223,7 @@ export const CARDS: Record<Stop, UnitCard> = {
 export const PROGRAMMERS_LINK = "Meet the first programmers";
 
 /**
- * The glossary (UX 15): sixteen terms, two pages of eight, with the
+ * The glossary (UX 15): nineteen terms, three pages of eight, with the
  * corrections of docs/fact-check.md (A8, A11, A12, A19, A29, A30). The
  * Transceiver, held in the spec (Q21), is shown with the fact-checked
  * meaning: an accumulator's program control (DMB10 2.2; Stuart's handbook
@@ -242,7 +244,7 @@ export const GLOSSARY: GlossaryTerm[] = [
   { term: "Jack and cable", meaning: "A jack is a socket. A plug on a cable goes into it. Plugging cables in is how ENIAC was programmed.", show: "pt", review: "pending" },
   { term: "Receive and send jacks", meaning: "An accumulator takes numbers in on alpha to epsilon. It sends its number out on A, or on S, which sends it as a subtraction.", show: "acc", review: "pending", fc: ["fact-check A9: correct"] },
   { term: "Operation and repeat switches", meaning: "Most programs have two switches: what to do (take in on alpha, send on A) and how many times to do it, up to 9.", show: "acc", review: "pending", fc: ["fact-check A11 replacement text"] },
-  { term: "Neon lamp", meaning: "A small glowing bulb. Each place in an accumulator has ten lamps, 0 to 9. The lit one shows that digit.", show: "acc", review: "pending", fc: ["fact-check A8 replacement text"] },
+  { term: "Neon lamp", meaning: "A small glowing bulb. Each place in an accumulator has ten lamps, 0 to 9. The lit one shows the digit. The tubes are inside.", show: "acc", review: "pending", fc: ["fact-check A8 replacement text", "E23 (docs/tubes.md 2.6: the tubes are inside)"] },
   {
     term: "Transceiver",
     meaning: 'An accumulator program control. It hears a "go!", does its job up to 9 times, then sends "done". Each accumulator had 8, plus 4 receivers.',
@@ -251,6 +253,10 @@ export const GLOSSARY: GlossaryTerm[] = [
     fc: ["fact-check A30 replacement text (Q21 answered: it can be shown)"],
     source: "docs/fact-check.md A30; DMB10 2.2; Stuart, ENIAC Handbook ch. 1 section 16",
   },
+  // docs/tubes.md 2.6: the words of S16 "Keeping ENIAC alive"; "Show me" opens its card.
+  { term: "Vacuum tube", meaning: "A sealed bulb that switches a signal on and off with nothing moving. ENIAC had about 18,000. Like light bulbs, they wore out.", show: null, tubes: 1, review: "pending", fc: ["E1", "E13", "E20"] },
+  { term: "Plug-in unit", meaning: "A part made to pull out and push back in. A bad one could be swapped fast. Many of ENIAC's tubes sat in plug-in units.", show: null, tubes: 4, review: "pending", fc: ["E24"] },
+  { term: "Kilowatt", meaning: "A thousand watts. ENIAC used about 150 kilowatts, as much as 1,500 bright light bulbs.", show: null, tubes: 2, review: "pending", fc: ["E6", "E7"] },
 ];
 
 export const GLOSSARY_COPY = {

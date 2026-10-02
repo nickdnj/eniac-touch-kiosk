@@ -26,12 +26,14 @@ test("twelve cards, one per stop; bodies at most 40 words; taglines two to four 
   for (const t of Object.values(MISSION_TAILS)) assert.ok(words(t) <= 12);
 });
 
-test("glossary: sixteen terms in two pages of eight, meanings at most 25 words, every Show me a real card", () => {
-  assert.equal(GLOSSARY.length, 16);
-  assert.equal(Math.ceil(GLOSSARY.length / GLOSSARY_COPY.perPage), 2);
+test("glossary: nineteen terms in three pages of eight, meanings at most 25 words, every Show me a real card", () => {
+  // 16 machine words, plus Vacuum tube, Plug-in unit and Kilowatt for S16 (docs/tubes.md 2.6).
+  assert.equal(GLOSSARY.length, 19);
+  assert.equal(Math.ceil(GLOSSARY.length / GLOSSARY_COPY.perPage), 3);
   for (const g of GLOSSARY) {
     assert.ok(words(g.meaning) <= 25, `${g.term}: ${words(g.meaning)} words`);
     if (g.show) assert.ok((STOPS as readonly string[]).includes(g.show), `${g.term} -> ${g.show}`);
+    if (g.tubes !== undefined) assert.ok(!g.show && g.tubes >= 1 && g.tubes <= 5, `${g.term} -> S16 card ${g.tubes}`);
   }
   // The Transceiver is shown, with the fact-checked meaning (docs/fact-check.md A30).
   const tr = GLOSSARY.find((g) => g.term === "Transceiver")!;

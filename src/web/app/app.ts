@@ -21,10 +21,10 @@ import { CardLog } from "./run/cards.ts";
 import { Visit } from "./state/visit.ts";
 import { AttractController, AttractStore } from "./attract/store.ts";
 
-export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor" | "explore" | "glossary";
+export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor" | "explore" | "glossary" | "tubes";
 
 /** Views that keep a running attract session (S1, and Explore with its glossary and honor links). */
-const ATTRACT_KEEPS = new Set<string>(["start", "explore", "glossary", "honor"]);
+const ATTRACT_KEEPS = new Set<string>(["start", "explore", "glossary", "honor", "tubes"]);
 export interface View {
   name: ViewName;
   /** Where a new session lands: the briefing, or straight to step 1 (retry). */
@@ -35,6 +35,20 @@ export interface View {
   back?: View;
   /** S14 Explore ENIAC / S15 Glossary: where it was opened from and what to show (screens/explore.ts). */
   explore?: ExploreOpen;
+  /** S16 Keeping ENIAC alive: where it was opened from and what to show (screens/tubes.ts). */
+  tubes?: TubesOpen;
+}
+
+/** How S16 "Keeping ENIAC alive" was opened (docs/tubes.md 2.2; UX 14.11). */
+export interface TubesOpen {
+  /** For the back button and the tubes_open metric: explore, glossary, finale, ... */
+  from: string;
+  /** Where Back, X and Finish return (default: Explore ENIAC, restored where the visitor was). */
+  back?: View;
+  /** Open this card (1 to 5; default 1). */
+  card?: number;
+  /** Back from S16's own glossary trip: not a new visit (no tubes_open again). */
+  restore?: boolean;
 }
 
 /** How Explore ENIAC (S14) or the Glossary (S15) was opened (UX 14.3.7, 14.9). */
@@ -442,6 +456,11 @@ export class App {
     this.root.dataset.view = view.name;
     // Leaving a core-optional screen while the core is down: S10 now.
     if (!this.screen?.coreOptional && this.helloSeen && this.mirror.health.core === "down" && !this.errorCode) this.evaluate();
+  }
+
+  /** Open S16 "Keeping ENIAC alive" (docs/tubes.md 2.2): from Explore, the glossary or the finale (F2's chip). */
+  openTubes(open: TubesOpen = { from: "other" }): void {
+    this.show({ name: "tubes", tubes: open });
   }
 
   private devAutostart(): void {

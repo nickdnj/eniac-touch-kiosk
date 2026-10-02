@@ -19,6 +19,7 @@ import { planSvg, KIND_COLOUR } from "../explore/plan.ts";
 import { ensureAttract, liveState } from "../explore/live.ts";
 import { HONOR_PAGES, openHonor } from "./honor.ts";
 import { CARDS, EXPLORE, MISSION_TAILS, PROGRAMMERS_LINK } from "../explore/content.ts";
+import { TUBES } from "../tubes/content.ts";
 import {
   MINIMAP,
   PANELS,
@@ -96,6 +97,11 @@ export function exploreScreen(app: App, view: View): Screen {
     button(`‹ ${backLabel}`, "light outline ex-back", () => goBack()),
     h("span", { class: "title" }, EXPLORE.title),
     h("span", { class: "spacer" }),
+    // S16 "Keeping ENIAC alive" (docs/tubes.md 2.2): Back returns here, where the visitor was.
+    button(TUBES.exploreButton, "light outline ex-tubes-btn", () => {
+      saveState();
+      app.openTubes({ from: "explore", back: { name: "explore", explore: { from: "tubes", restore: true } } });
+    }),
     button(EXPLORE.glossary, "light outline ex-gloss-btn", () => openGlossary()),
   );
 

@@ -46,6 +46,17 @@ var uiFields = map[string][]string{
 	"explore_walk_completed": {},
 	"explore_mission_chip":   {"m"},
 	"glossary_open":          {},
+	// S16 Keeping ENIAC alive (PRD FR-101): screen is where it was opened
+	// from; n is the card (1..5), the re-enactment step (2..5) or, for
+	// try_start and try_done, the authored fault (0..2); assisted is
+	// "Do it for me" used on the way.
+	"tubes_open":      {"screen"},
+	"tubes_card":      {"n"},
+	"tubes_myth_open": {},
+	"tubes_try_start": {"n"},
+	"tubes_try_step":  {"n"},
+	"tubes_try_done":  {"n", "assisted"},
+	"tubes_try_skip":  {"n"},
 }
 
 // bridgeFields: bridge-only events and their fields.
