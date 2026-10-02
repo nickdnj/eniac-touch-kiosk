@@ -27,29 +27,47 @@ export function fieldText(card: PunchCard, fields: number[]): string {
 
 /**
  * The number punched in those fields: "0000000163" -> 163, "-002951425" ->
- * -2951425. Null if the text is not a plain signed integer (blank, garbage):
- * a card that cannot be read is never guessed.
+ * -2951425, "J2345" -> -12345. A negative field carries an 11-row
+ * overpunch on its first digit (printer.go sm2tenc): '-' is 11 over 0 and
+ * J..R are 11 over 1..9. Null if the text is not a plain number in that
+ * code (blank, garbage): a card that cannot be read is never guessed.
  */
 export function numberIn(text: string): number | null {
-  const t = text.trim();
-  if (!/^-?\d+$/.test(t)) return null;
+  let t = text.trim();
+  let neg = false;
+  const z = OVERPUNCH_11.indexOf(t[0] ?? "");
+  if (z >= 0 && t.length > 1) {
+    neg = true;
+    t = String(z) + t.slice(1);
+  }
+  if (!/^\d+$/.test(t)) return null;
   const n = Number(t);
-  return Number.isSafeInteger(n) ? n : null;
+  if (!Number.isSafeInteger(n)) return null;
+  return neg ? -n : n;
 }
 
 export const cardValue = (card: PunchCard, fields: number[]): number | null => numberIn(fieldText(card, fields));
 
 /**
- * Hole row for one card column (IBM card code, the rows printed on the
- * card: 12, 11, 0..9). Digits punch their own row; a minus sign punches the
- * 11 row (the sign of a negative number, column 71 on Trajectory's "up").
- * Blank columns have no hole.
+ * 11-zone overpunch characters, indexed by the digit punched under the 11:
+ * '-' is 11 + 0, J..R are 11 + 1..9. Upstream printer.go sm2tenc() writes a
+ * negative field this way ("sc := string('9' - s[0] - 1 + 'J')", with 'I'
+ * turned into "-"); those, the digits 0-9 and blanks are the only
+ * characters doprint() ever puts on a card, so there is no 12 zone here.
  */
-export function holeRow(ch: string): string | null {
-  if (ch >= "0" && ch <= "9") return ch;
-  if (ch === "-") return "11";
-  if (ch === "&" || ch === "+") return "12";
-  return null;
+export const OVERPUNCH_11 = "-JKLMNOPQR";
+
+/**
+ * The holes punched for one card column (Hollerith code), as card rows
+ * (12, 11, 0..9): a digit punches its own row; '-' and J..R punch the 11
+ * row plus their digit; a blank punches nothing. A character the core
+ * cannot emit punches nothing (never guessed).
+ */
+export function holeRows(ch: string): string[] {
+  if (ch >= "0" && ch <= "9") return [ch];
+  const z = OVERPUNCH_11.indexOf(ch);
+  if (z >= 0 && ch !== "") return ["11", String(z)];
+  return [];
 }
 
 /** Rows top to bottom as printed on a card. */
