@@ -174,6 +174,38 @@ Source keys for this group are at the end of the Sources list. "Where" says whic
 | E29 | "Someone ran around with a box of tubes, changing one every few minutes" | docent | **Myth** (Eckert: "Another myth") | (do not use) | [Eckert89] |
 | E30 | December 1947: about 2 hours of production in a week; 17% setting up and testing; 49% checking, diagnosing and fixing hardware; a technician resoldered every joint | docent | **Nuance**: from the authors' own slides, not the book, which I could not read | Check the book before putting any of it on screen | [HPR-slides] |
 
+### F. Trajectory history and Mission 3's numbers (added 2026-10-03; the research is in `docs/trajectory-history.md`)
+
+The source keys for this group are at the end of the Sources list. "Where" gives the section of `docs/trajectory-history.md`, or the presentation idea (P1 to P5 in its section 6) that uses the claim. "docent" means the claim is for staff notes, not for a screen.
+
+| # | Claim (as written) | Where | Verdict | Corrected wording (<= 40 words) | Sources |
+|---|---|---|---|---|---|
+| F1 | A firing table is a book. The crew looks up the range and reads the elevation, then applies corrections for weather and ammunition | §1.1, P1 | **Correct** (primary) | "Soldiers never saw ENIAC. They saw a book like this. Find how far away the target is. Read how high to aim." | [TM6-215] ¶1–5 |
+| F2 | Table A columns: range every 100 yd, elevation in mils, fork, time of flight, probable errors, slope of fall, drift, wind, angle of site, weight, muzzle velocity, air temperature (standard 59 °F) and air density (standard 100%) effects | §1.2 | **Correct** (primary, 1941) | (docent) | [TM6-215] ¶5a |
+| F3 | A full firing table needed hundreds to thousands of trajectories | §1.3, P3 | **Correct**, but sources differ: 2,000–4,000 (Goldstine); about 150 reduction plus about 3,000 normal and effects trajectories (BRL 1954); about 156 per table on one analyzer in 1945 | "A firing table needed hundreds or thousands of shell paths." | [BRL889] §V.B; [Goldstine72] p. 138; [BIWP] via [Verif] §1 |
+| F4 | One trajectory took about 750 multiplications | §1.4 | **Correct** (participant memoir) | (docent) | [Goldstine72] p. 138 via [Verif] |
+| F5 | "Six tables a day" were demanded in 1944 | §1.5 | **Wrong**: it was six *requests* a day. In one 1944 week, 15 tables were finished and 74 were in progress | "About six new table requests arrived each day." | BRL memo 16 Aug 1944 in [Goldstine72] p. 166; [Verif] §1 |
+| F6 | ENIAC was not ready in time to help in the war | §1.5 | **Correct** | "ENIAC was finished too late to help in the war." | [BIWP] p. 39 |
+| F7 | Normal trajectories: dvx/dt = −E·vx, dvy/dt = −E·vy − g. E depends on air density, speed, a drag function and the ballistic coefficient C = m/(i·d²) | §2.1 | **Correct** (primary) | (docent) | [BRL889] eqs. 1–6 |
+| F8 | BRL used Heun's method (Euler with one correction) | §2.3, §5.4 | **Correct** | "Peek ahead, then split the difference." | [BRL889] §II; [PX-1-81] |
+| F9 | The Jan 1944 ENIAC plan (PX-1-81, drawn by Burks) used Δt/2 = 0.01 s, metric units, density falling exponentially (h = 95.736 × 10⁻⁶ per m), drag looked up by speed squared, and linear interpolation | §2.4, P4 | **Correct** (read off the redrawn sheet). "Exponential" is our reading of ΔF = −hFẏΔt | "In January 1944, before ENIAC was finished, Arthur Burks drew this plan to work out a shell's path." | [PX-1-81] |
+| F10 | Drag was tabulated against v² "to avoid the necessity for extracting square roots" | §2.4 | **Correct** (primary) | (docent) | [R46-I] §7.5.3 |
+| F11 | The 1946 manual's Master Programmer examples are anti-aircraft and ground-gunfire trajectory set-ups. Problem 2 stops when the shell goes below ground | §3.2 | **Correct** (primary) | (docent) | [R46-I] §10.6.1–10.6.2 |
+| F12 | Curry and Wyatt (BRL 615, 1946) studied how ENIAC could turn trajectories (position by time and angle) into table form (angle and time by position) | §3.4 | **Correct** (primary) | (docent) | [CW46] §1.2 |
+| F13 | ENIAC computed trajectories in production from August 1946 | §3.6 | **Correct** (historians, from the logs) | (docent) | [HPR-err] |
+| F14 | Ballistic tables took about 25% of ENIAC's time (1952), or about 20% at peak output in the 1950s | §3.6 | **Correct** (two measures, close) | "Firing tables were about a quarter of ENIAC's work. Most of its time went to other problems." | [Fritz52] §I.A; [HPR-err] |
+| F15 | "ENIAC never computed firing tables" / "it was no longer used for trajectory tables" | §3.6 | **Wrong** | (do not use) | [HPR-err]; [Fritz52] |
+| F16 | Making a firing table was a bigger job than computing its trajectories | §3.6, P3 | **Correct** (primary) | (docent) | [Fritz52] §I.A; [BRL889] §III, §V.B |
+| F17 | In 1954 production, a reduction trajectory took about 15 min on ENIAC (2 min on ORDVAC). Normal trajectories ran about 30 an hour | §3.6 | **Correct** (primary). It does not contradict the 1961 "30 s" capability figure, which leaves out punching and checking | (docent) | [BRL889] §V.B |
+| F18 | The Mission 3 shell leaves the gun at 1,550 ft/s at 22.5° | §5.2, P2 | **Correct** for the program: Stuart states it, and the card decodes to 1,432.0 and 593.2 ft/s | "The shell leaves the gun faster than sound, at 1,550 feet each second." | [Stuart21]; `demo.card` fields F and G |
+| F19 | Each punched card is one second of flight (50 steps of 0.02 s). The numbers are in feet | §5.2, P2 | **Correct** (lifts the "no feet or seconds" hold in `missions/trajectory.yaml:8`) | "Each card ENIAC punches is one second of the shell's flight." | [Stuart21]; stepper H stage 1 = 50 in `trajdemo.e` |
+| F20 | `trajdemo.e` uses "simple rectangular integration with a delta-t of 0.01s" (the file's own comment) | §5.1 | **Wrong** (a stale comment): the code and the paper use Heun's method, with Δt = 0.02 s (0.01 is Δt/2) | "The program uses Heun's method: peek ahead, then split the difference." | [Stuart21]; `trajdemo.e` (two drag look-ups per step) |
+| F21 | Mission 3 keeps air density the same all the way up | §5.4 | **Correct** (a stated simplification). Real trajectories thinned the air with height | (docent) | [Stuart21]; [PX-1-81]; [BRL889] |
+| F22 | The program's landing distance (about 12,900 yd) is what a real 105-mm howitzer would reach | §5.3 | **Unverifiable / likely wrong**: it exceeds the gun's listed maximum range (about 12,300 yd) at only 22.5°. The drag table is a reconstruction | Do not show a distance as real | Our run; [Wiki-M101] (tertiary) |
+| F23 | Nobody has found a record of the real Feb 1946 trajectory set-up | §3.3, §5.4 | **Correct** (Stuart's own statement) | "Brian Stuart's program is his best guess at the 1946 demo." | [Stuart21] |
+| F24 | The 105-mm table for this shell is FT 105-H-3 (1941, changes to Mar 1944). No free scan was found | §4 | **Correct** (catalog records) | (docent) | IWM and AWM catalog entries |
+| F25 | Soldiers in the field never saw ENIAC; they used printed tables | P1 | **Nuance**: gunners worked from tables and the tables came from BRL, but this is our wording, not a quote | Keep, or write "Soldiers used books of tables like this." | [TM6-215]; [BRL889] §III.A |
+
 ---
 
 ## Sources
@@ -221,3 +253,13 @@ Added for group E (read 2026-10-02; see `docs/tubes.md` 1.5 for how each was rea
 - **[CHM-blog]** Computer History Museum, "The Neverending Quest for 'Firsts'": https://computerhistory.org/blog/the-neverending-quest-for-firsts/ · **[Almanac96]** D. Winegrad and A. Akera, "ENIAC's 50th Anniversary", *Almanac* (Penn) 42(18), 1996: https://almanac.upenn.edu/archive/v42/n18/eniac.html
 - **[EIA]** U.S. Energy Information Administration, "How much electricity does an American home use?": https://www.eia.gov/tools/faqs/faq.php?id=97
 
+Added for group F (read 2026-10-03; see `docs/trajectory-history.md` §8 for how each was read)
+
+- **[TM6-215]** War Department, *TM 6-215 Abbreviated Firing Tables*, 15 Dec 1941: https://archive.org/details/1941TM6-215
+- **[PX-1-81]** A. W. Burks ("RAB"), "Setup of Exterior Ballistic Equations," Jan 1944, redrawn by M. Priestley: https://eniacinaction.com/docs/PX-1-81.pdf
+- **[BRL889]** S. Gorn and M. L. Juncosa, *On the Computational Procedures for Firing and Bombing Tables*, BRL Report 889, Jan 1954: https://archive.org/details/DTIC_AD0027123
+- **[CW46]** H. B. Curry and W. A. Wyatt, *A Study of Inverse Interpolation of the Eniac*, BRL Report 615, 19 Aug 1946, DTIC AD0640621: https://apps.dtic.mil/sti/pdfs/AD0640621.pdf
+- **[R46-I]** A. K. Goldstine, *Report on the ENIAC, Part I: Technical Description*, 1 Jun 1946: https://archive.org/details/ReportonENIACEl00MoorB (§7.5.3, §10.6)
+- **[BIWP]** *Ballisticians in War and Peace*, Vol. 1, 1914–1956, DTIC ADA300523: https://archive.org/details/DTIC_ADA300523
+- **[Goldstine72]** H. H. Goldstine, *The Computer from Pascal to von Neumann*, Princeton UP, 1972 (also listed above)
+- **[Wiki-M101]** Wikipedia, "M101 howitzer" (tertiary; used only to flag F22)
