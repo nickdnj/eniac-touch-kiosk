@@ -1,0 +1,34 @@
+{
+  "provisionedFrom": "/Users/nickd/Workspaces/AgentArchitect",
+  "kind": "project",
+  "team": "content-studio",
+  "teams": [
+    "content-studio"
+  ],
+  "projectType": "youtube",
+  "projectName": "ENIAC Kiosk YouTube",
+  "agents": [
+    "podcast-audio-engineer",
+    "podcast-publisher",
+    "podcast-script-writer",
+    "podcast-show-notes",
+    "podcast-voice-producer",
+    "short-form-video",
+    "social-distributor",
+    "video-assembler",
+    "video-asset-generator",
+    "video-publisher",
+    "video-script-writer",
+    "wiki-ingest"
+  ],
+  "skills": [
+    "content-studio"
+  ],
+  "mcp": [
+    "openai-image",
+    "video-editor"
+  ],
+  "provisionedAt": "2026-10-03",
+  "aaCommit": "0969395ce937edc59bf5aafb8f4d7275ba1162ef",
+  "syncedAt": "2026-10-03"
+}
