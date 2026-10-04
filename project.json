@@ -1,0 +1,138 @@
+{
+  "title": "Program ENIAC: Our New Touch-Screen Exhibit",
+  "branch": "video",
+  "brief": {
+    "source": "BRIEF.md (pre-filled 2026-10-03), confirmed with Nick 2026-10-03",
+    "arc": [
+      "attract screen",
+      "Explore ENIAC",
+      "tubes + Find the dead tube",
+      "first programmers honor roll",
+      "Squares mission in full",
+      "Primes + Trajectory teaser: come to the museum to see them live",
+      "finale",
+      "close (single Brian L. Stuart thank-you, near end)"
+    ],
+    "audience": "VCF docent team first, then the public on YouTube; curious non-experts",
+    "tone": "warm, curious, fun, first-person docent voice (Nick)",
+    "target_length": "6-8 min",
+    "visual_style": "real 1920x1080 kiosk screen recordings + branded title open, chapter cards/lower thirds, clean transitions, ducked background music, end screen",
+    "period_photos": "yes: 2-4 public-domain US Army ENIAC photos, sourced and credited, gentle Ken Burns; no AI images of ENIAC",
+    "voice": {
+      "name": "Nick 2",
+      "voice_id": "6SxuwKUiBpZjFTc06v9Y",
+      "model": "eleven_multilingual_v2",
+      "stability": 0.5,
+      "similarity": 0.75,
+      "style": 0.4,
+      "speed": 1.12,
+      "never_speak": [
+        "Lehmer"
+      ]
+    },
+    "channel": "Nick's personal channel first, hopefully moved to the VCF channel later",
+    "publish": "draft only: upload-ready package. No upload without Nick's explicit go; if uploading, unlisted, after youtube-whoami.py",
+    "purpose": "Introduce the museum's new ENIAC exhibit (the touch kiosk) at VCF; say so in the docent intro, echo it in the close"
+  },
+  "editorial_rules": [
+    "Thank Brian L. Stuart exactly once, near the end; spell it Stuart; keep the kiosk UI footer",
+    "Trim redundancy: each idea once",
+    "Include the full Squares mission",
+    "Tease Primes/Trajectory only (a few seconds each) + cool come-to-the-museum invite",
+    "Facts per research/fact-check.md and research/tubes.md",
+    "Don't link the private kiosk repo; link Stuart's simulator page and github.com/blstuart/eniac-simulator",
+    "Intro states the video's purpose: introducing our new ENIAC exhibit (added by Nick 2026-10-03)"
+  ],
+  "sources": {
+    "video": "assets/video/source/",
+    "narration_script": "research/narration.md",
+    "narration_manifest": "research/source-narration/manifest.json",
+    "per_line_wavs": "assets/audio/source-lines/ (285 files, copied 2026-10-03)"
+  },
+  "phases": {
+    "creative_brief": {
+      "status": "approved",
+      "date": "2026-10-03"
+    },
+    "storyboard": {
+      "status": "approved",
+      "runtime": "7:55",
+      "scenes": 21,
+      "chapters": 8
+    },
+    "storyboard_review": {
+      "status": "approved",
+      "date": "2026-10-03",
+      "notes": "Nick: 'all approved. open the mp4 when done.' N04 primary; music = YouTube Audio Library swing (option 1). Gate 2 folded into the final-MP4 review per Nick's go-to-done instruction; review MP3 still produced."
+    },
+    "audio": {
+      "status": "complete",
+      "notes": "6 new lines + N04_ALT + N-ALT1 in assets/audio/narration; review MP3 output/narration-review.mp3; music = Kevin MacLeod CC BY stand-in, swap for YouTube Audio Library before publish"
+    },
+    "audio_review": {
+      "status": "folded_into_final_review"
+    },
+    "visuals": {
+      "status": "complete",
+      "notes": "3 PD US Army photos in assets/images/photos (use P2 clean crop)"
+    },
+    "assembly": {
+      "status": "v1_complete",
+      "file": "output/eniac-kiosk-v1.mp4",
+      "duration": "7:54.2",
+      "loudness": "-14.1 LUFS, TP -1.7",
+      "chapters": [
+        "0:00 Meet the kiosk",
+        "0:49 Explore ENIAC",
+        "1:56 Keeping ENIAC alive",
+        "3:21 The first programmers",
+        "3:40 Mission 1: Squares",
+        "6:10 Only at the museum",
+        "6:36 The finale",
+        "7:17 Come see it"
+      ],
+      "with_intro": {
+        "file": "output/eniac-kiosk-v1-with-intro.mp4",
+        "duration": "8:02.4",
+        "intro": "VCF Power-On intro from ~/Workspaces/vcf-intro-redesign (prototype for Jeff Brace's review; VCF owns the brand), title card held to 8.1 s; build in output/build/intro/",
+        "chapters": [
+          "0:00 Meet the kiosk",
+          "0:57 Explore ENIAC",
+          "2:04 Keeping ENIAC alive",
+          "3:29 The first programmers",
+          "3:47 Mission 1: Squares",
+          "6:18 Only at the museum",
+          "6:44 The finale",
+          "7:25 Come see it"
+        ]
+      },
+      "v2": {
+        "file": "output/eniac-kiosk-v2.mp4",
+        "duration": "7:58",
+        "notes": "VCF intro prepended, S01 title open removed, overlay overlaps fixed"
+      }
+    },
+    "publish": {
+      "status": "uploaded_private",
+      "date": "2026-10-04",
+      "channel": "Nick DeMarco (@nickdnj) UCkTzb0IcgeDYWT0ahsZ16OQ",
+      "video_id": "RCvTUH0kJxI",
+      "url": "https://www.youtube.com/watch?v=RCvTUH0kJxI",
+      "thumbnail": "output/upload/thumbnail-alt.jpg",
+      "open_items": [
+        "music is Kevin MacLeod CC BY stand-in (credited)",
+        "VCF intro is a prototype pending Jeff Brace's review; VCF owns the brand",
+        "re-voice N04/N06 with 'coming soon' if made public before kiosk install"
+      ]
+    }
+  },
+  "gate1_decisions": {
+    "date": "2026-10-03",
+    "kiosk_installed": "not yet; will be by InfoAge/VCF channel release, so keep come-see-it wording",
+    "trajectory": "say it is Brian Stuart's recreation",
+    "kiosk_ui_stuart_elements": "fine as is",
+    "title": "Program ENIAC: Our New Touch-Screen Exhibit",
+    "music": "1940s-period royalty-free bed",
+    "runtime": "keep it tight; Squares untouched"
+  }
+}

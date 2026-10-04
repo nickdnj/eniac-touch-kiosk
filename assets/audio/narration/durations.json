@@ -1,0 +1,66 @@
+{
+  "N01": {
+    "duration_s": 12.446,
+    "storyboard_estimate_s": 11,
+    "scene_slot_s": 11.5,
+    "delta_vs_estimate_s": 1.45,
+    "delta_vs_slot_s": 0.95,
+    "lufs": -20.0
+  },
+  "N02": {
+    "duration_s": 8.498,
+    "storyboard_estimate_s": 8.4,
+    "scene_slot_s": 8.5,
+    "delta_vs_estimate_s": 0.1,
+    "delta_vs_slot_s": -0.0,
+    "lufs": -20.0
+  },
+  "N03": {
+    "duration_s": 6.269,
+    "storyboard_estimate_s": 7.2,
+    "scene_slot_s": 8.5,
+    "delta_vs_estimate_s": -0.93,
+    "delta_vs_slot_s": -2.23,
+    "lufs": -20.0
+  },
+  "N04": {
+    "duration_s": 9.474,
+    "storyboard_estimate_s": 8.4,
+    "scene_slot_s": 9.0,
+    "delta_vs_estimate_s": 1.07,
+    "delta_vs_slot_s": 0.47,
+    "lufs": -19.9
+  },
+  "N04_ALT": {
+    "duration_s": 11.006,
+    "storyboard_estimate_s": 8.4,
+    "scene_slot_s": 9.0,
+    "delta_vs_estimate_s": 2.61,
+    "delta_vs_slot_s": 2.01,
+    "lufs": -20.0
+  },
+  "N05": {
+    "duration_s": 12.353,
+    "storyboard_estimate_s": 11.2,
+    "scene_slot_s": 12.0,
+    "delta_vs_estimate_s": 1.15,
+    "delta_vs_slot_s": 0.35,
+    "lufs": -20.0
+  },
+  "N06": {
+    "duration_s": 16.068,
+    "storyboard_estimate_s": 12.2,
+    "scene_slot_s": 12.8,
+    "delta_vs_estimate_s": 3.87,
+    "delta_vs_slot_s": 3.27,
+    "lufs": -20.0
+  },
+  "N-ALT1": {
+    "duration_s": 1.858,
+    "storyboard_estimate_s": 2.1,
+    "scene_slot_s": 2.4,
+    "delta_vs_estimate_s": -0.24,
+    "delta_vs_slot_s": -0.54,
+    "lufs": -20.0
+  }
+}
