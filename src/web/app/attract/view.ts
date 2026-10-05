@@ -8,15 +8,23 @@ import { PITCH, ROOM, centreOn, maxX, visibleRange, type RoomUnit } from "../exp
 import { LIVE_LOST_MS, type Liveness } from "./store.ts";
 import { COPY } from "../copy.ts";
 
-/** UX 14.2.1: the attract panorama is drawn at a panel pitch of 150 px (Explore: 184). */
-export const ATTRACT_PITCH = 150;
+/**
+ * The attract panorama is drawn at a panel pitch of 166 px (Explore: 184). It
+ * was 150 (UX 14.2.1) until S1 lost its footer (2026-10-05): the 48 px went to
+ * the room, which is now 492 px tall.
+ */
+export const ATTRACT_PITCH = 166;
 export const ATTRACT_SCALE = ATTRACT_PITCH / PITCH;
-/** The room's window on screen: x48 to 1872 (1,824 px), y300, about 12 of the 40 panels. */
+/** The room's window on screen: x48 to 1872 (1,824 px), y300 to 792, about 11 of the 40 panels. */
 export const ROOM_SCREEN = { x: 48, y: 300, w: 1824 } as const;
 /** The same window in room px (pitch 184), as the panorama takes it. */
 export const ATTRACT_VIEW_W = Math.round(ROOM_SCREEN.w / ATTRACT_SCALE);
-/** UX 14.2.2 Camera: "about 80 px a second" on screen. */
-export const DRIFT_PX_PER_S = 80;
+/**
+ * UX 14.2.2 Camera: the whole U in about one flight (49 s on the Mac). That
+ * was "about 80 px a second" at pitch 150; at 166 the room is longer on
+ * screen, so 96.
+ */
+export const DRIFT_PX_PER_S = 96;
 /** Reduced motion (UX 14.2.4): a cut to the next framing every 10 s, with a 250 ms cross-fade. */
 export const CUT_EVERY_MS = 10_000;
 export const CUT_FADE_MS = 250;
@@ -40,10 +48,10 @@ export const DRIFT_MAX_PX_PER_S = 120;
 
 /**
  * How long a drift from x to `to` takes. UX 14.2.2: one drift per flight,
- * "about 80 px a second" (a 49 s flight on the Mac). The flight's length
+ * about 96 px a second (a 49 s flight on the Mac). The flight's length
  * depends on the box, so once a flight has landed its real duration
  * (`landing.flightMs`, measured by the bridge) paces the next drift, within
- * 40 to 120 px a second; before that, 80 px a second.
+ * 40 to 120 px a second; before that, 96 px a second.
  */
 export function driftMs(x: number, to: number, lastFlightMs: number | null = null): number {
   const px = Math.abs(to - x) * ATTRACT_SCALE;

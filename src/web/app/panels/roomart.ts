@@ -189,22 +189,33 @@ function card(x: number, y: number, w: number, h: number): string {
 }
 
 /**
- * A portable function table (150 x 210): an upright rack on casters, its
- * face a grid of switches (Report on the ENIAC 7.3.1: 26 rows x 28 columns
- * on each of 2 faces; drawn fewer, so they read at this size), the second
- * face showing as the side.
+ * A portable function table (204 x 392): an upright switch rack on a wheeled
+ * base, about as tall as the wall panels and taller than the people who set
+ * it (U.S. Army photo of the Moore School room, 1946: three of them stand out
+ * on the floor). The face shows every switch of one face, as the Report on
+ * the ENIAC 7.3.1 counts them: 26 rows x 28 columns, in two blocks of 14 with
+ * a light label strip beside each. The second face shows as the side.
  */
 export function portableTableSvg(): string {
-  let b = `<path d="M118 14L136 6V178L118 186Z" fill="#1d1f24" stroke="#4a4e57" stroke-width="1.5"/>`;
-  b += `<rect x="8" y="14" width="110" height="172" rx="3" fill="#26292e" stroke="#5b606a" stroke-width="2"/>`;
-  b += `<rect x="14" y="20" width="98" height="14" rx="2" fill="#1b1d21"/>`;
-  b += text(63, 31, "PORTABLE TABLE", { size: 8.5, fill: C.plateInk, ls: 0.5 });
-  for (let half = 0; half < 2; half++)
-    for (let r = 0; r < 13; r++) for (let c = 0; c < 5; c++) b += `<circle cx="${20 + half * 50 + c * 9}" cy="${44 + r * 10.4}" r="3" fill="#0b0c0e" stroke="#9aa0a8" stroke-width="1"/>`;
-  b += `<path d="M63 40V178" stroke="#4a4e57" stroke-width="1.5"/>`;
-  b += `<path d="M24 186V194M102 186V194M128 182V190" stroke="#5b606a" stroke-width="4"/>`;
-  b += `<circle cx="24" cy="200" r="8" fill="#0b0c0e" stroke="#9aa0a8" stroke-width="3"/><circle cx="102" cy="200" r="8" fill="#0b0c0e" stroke="#9aa0a8" stroke-width="3"/><circle cx="128" cy="196" r="6" fill="#0b0c0e" stroke="#9aa0a8" stroke-width="2.5"/>`;
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="cart-art" viewBox="0 0 150 210" width="150" height="210" aria-hidden="true">${b}</svg>`;
+  const ROWS = 26;
+  const COLS = 14;
+  const cy = (r: number) => 54 + r * 11.2;
+  let b = `<path d="M186 12L204 4V342L186 352Z" fill="#17191d" stroke="#4a4e57" stroke-width="1.5"/>`;
+  b += `<rect x="2" y="12" width="184" height="340" rx="3" fill="#1f2226" stroke="#5b606a" stroke-width="2"/>`;
+  b += `<rect x="10" y="18" width="168" height="20" rx="2" fill="#15171a"/>`;
+  b += text(94, 32, "PORTABLE FUNCTION TABLE", { size: 9.5, fill: C.plateInk, ls: 0.6 });
+  for (const [x0, strip] of [[13, 84], [99, 170]]) {
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) b += `<circle cx="${x0 + c * 5}" cy="${cy(r)}" r="1.8" fill="#0b0c0e" stroke="#9aa0a8" stroke-width="0.8"/>`;
+    b += `<rect x="${strip}" y="46" width="8" height="298" rx="1" fill="#d9d3bf"/>`;
+    let ticks = "";
+    for (let r = 0; r < ROWS; r++) ticks += `M${strip + 1.5} ${cy(r)}h5`;
+    b += `<path d="${ticks}" stroke="#6b6658" stroke-width="0.8"/>`;
+  }
+  // The wheeled base: a beam under the rack, a caster at each end and one behind.
+  b += `<rect x="0" y="352" width="190" height="10" rx="2" fill="#2a2d33" stroke="#5b606a" stroke-width="1.5"/>`;
+  b += `<path d="M22 362V370M166 362V370M197 348V358" stroke="#5b606a" stroke-width="5"/>`;
+  b += `<circle cx="22" cy="379" r="11" fill="#0b0c0e" stroke="#9aa0a8" stroke-width="3"/><circle cx="166" cy="379" r="11" fill="#0b0c0e" stroke="#9aa0a8" stroke-width="3"/><circle cx="197" cy="366" r="8" fill="#0b0c0e" stroke="#9aa0a8" stroke-width="2.5"/>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" class="cart-art" viewBox="0 0 206 392" width="206" height="392" aria-hidden="true">${b}</svg>`;
 }
 
 /** The IBM card reader (at the foot of the Constant Transmitter) or card punch (at the foot of the Printer), 190 x 124. */

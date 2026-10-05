@@ -165,11 +165,15 @@ export class App {
       COPY.home,
     );
     onTap(this.homeBtn, () => (this.screen?.home ? this.screen.home() : void this.goHome()));
+    // The docents' touch point: it looks like a plain wordmark (no button
+    // styling, hidden from assistive tech), and a tap asks to start over.
+    const adminZone = h("div", { id: "admin-zone", "aria-hidden": "true" }, COPY.wordmark);
+    onTap(adminZone, () => void this.startOver());
     root.append(
       this.screenHost,
       this.homeBtn,
       this.overlay,
-      h("div", { id: "admin-zone", "aria-hidden": "true" }, COPY.wordmark),
+      adminZone,
       h("div", { id: "footer" }, COPY.credit),
     );
     this.idle = new IdleTimer(
@@ -512,6 +516,29 @@ export class App {
     if (visitor && s.applied.length > 0 && s.state !== "result" && !(await confirm(this, COPY.confirm.textMenu, COPY.confirm.yesMenu))) return;
     if (visitor) this.endSession("menu");
     this.show({ name: "picker" });
+  }
+
+  private askingStartOver = false;
+
+  /**
+   * The docents' way back to S1 (the ENIAC wordmark, top left): for a visitor
+   * who walked off mid-mission, without waiting for the idle timer. Always
+   * asks first, since a stray tap would throw away a visitor's work. Then as
+   * the idle reset: the session ends, the visit is wiped, attract starts.
+   * Nothing on S1 itself or while an error screen is up.
+   */
+  async startOver(): Promise<void> {
+    const v = this.view.name;
+    if (v === "start" || v === "boot" || v === "error" || this.errorCode || this.askingStartOver) return;
+    this.askingStartOver = true;
+    const yes = await confirm(this, COPY.confirm.textStart, COPY.confirm.yes);
+    this.askingStartOver = false;
+    if (!yes || this.view.name === "start" || this.errorCode) return;
+    const s = this.mirror.session;
+    if (!s || s.mode !== "attract") this.endSession("menu");
+    this.overlayHooks.onIdleDismiss?.();
+    for (const el of [...this.overlay.querySelectorAll(".scrim")]) el.remove();
+    this.show({ name: "start" });
   }
 
   /** Open S16 "Keeping ENIAC alive" (docs/tubes.md 2.2): from Explore, the glossary or the finale (F2's chip). */

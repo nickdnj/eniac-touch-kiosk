@@ -52,30 +52,38 @@ test("S1 is the live flight: room lamps from the attract core, LIVE chip, dots f
   await expect(page.locator(".att-caption")).toContainText(/Live: ENIAC is working out a shell's path\. Hop \d+/);
   await expect(page.locator(".att-plot-hop")).toHaveText(/Hop \d+/);
   await expect(page.locator(".att-plot-empty")).toBeHidden();
-  // The plates: Stuart (56 px name, never rotates) and the honor rotator; the pill; the footer.
-  await expect(page.locator(".att-stuart .plate-name")).toHaveText("Brian L. Stuart");
-  expect(await page.locator(".att-stuart .plate-name").evaluate((e) => getComputedStyle(e).fontSize)).toBe("56px");
-  await expect(page.locator(".att-stuart .plate-kicker")).toHaveText("The simulator behind this screen", { ignoreCase: true });
-  await expect(page.locator(".att-stuart .plate-sub")).toHaveText("Drexel University");
+  // The plates: the credit plate (Eckert and Mauchly, then Stuart, bottom left), the honor rotator; the pill; no footer.
+  // The credit plate is the same component as the honor plate on the right.
+  const credit = page.locator(".att-stuart .honor-rotator.credit-slides");
+  const cs = credit.locator(".rot-slide");
+  await expect(cs).toHaveCount(2);
+  await expect(credit.locator(".rot-slide.on .plate-kicker")).toHaveText("ENIAC was designed by", { ignoreCase: true });
+  await expect(cs.nth(0).locator(".rot-names span")).toHaveText(["J. Presper Eckert", "John W. Mauchly"]);
+  await expect(cs.nth(1).locator(".plate-kicker")).toHaveText("The simulator behind this screen", { ignoreCase: true });
+  await expect(cs.nth(1).locator(".rot-names span")).toHaveText(["Brian L. Stuart"]);
+  await expect(cs.nth(1).locator(".rot-sub")).toHaveText("Drexel University");
+  // One slide shows at a time (the other is transparent), like the honor plate.
+  expect(await cs.nth(1).evaluate((e) => getComputedStyle(e).opacity)).toBe("0");
+  expect(await cs.nth(0).locator(".rot-names").evaluate((e) => getComputedStyle(e).fontSize)).toBe("40px");
   await expect(page.locator(".att-honor .rot-slide.on .plate-kicker")).toHaveText(/ENIAC.s first programmers/i);
-  // Eckert and Mauchly: a fixed plate beside the title, names as big as Stuart's.
-  await expect(page.locator(".att-designers .plate-kicker")).toHaveText("ENIAC was designed by", { ignoreCase: true });
-  await expect(page.locator(".att-designers .plate-name")).toHaveText(["J. Presper Eckert", "John W. Mauchly"]);
-  expect(await page.locator(".att-designers .plate-name").first().evaluate((e) => getComputedStyle(e).fontSize)).toBe("56px");
-  // Clear of the title, the subtitle and the shell's path card.
-  const clear = await page.evaluate(() => {
-    const d = document.querySelector(".att-designers .plate")!.getBoundingClientRect();
-    const apart = (r: DOMRect) => d.right <= r.left || r.right <= d.left || d.bottom <= r.top || r.bottom <= d.top;
-    const textBox = (sel: string) => { const rg = document.createRange(); rg.selectNodeContents(document.querySelector(sel)!); return rg.getBoundingClientRect(); };
-    return { title: apart(textBox(".start-title")), sub: apart(textBox(".start-sub")), plot: apart(document.querySelector(".att-plot")!.getBoundingClientRect()) };
+  // Nothing at the top beside the title any more.
+  await expect(page.locator(".att-designers")).toHaveCount(0);
+  // Both credit slides fit inside the plate's engraved rule.
+  const creditFits = await page.evaluate(() => {
+    const plate = document.querySelector(".att-stuart .honor-rotator")!.getBoundingClientRect();
+    return [...document.querySelectorAll<HTMLElement>(".att-stuart .rot-slide")].map((s) => {
+      const kids = [...s.querySelectorAll(".plate-kicker, .rot-names span, .rot-sub")].map((k) => { const rg = document.createRange(); rg.selectNodeContents(k); return rg.getBoundingClientRect(); });
+      return Math.max(...kids.map((r) => r.bottom)) <= plate.bottom - 12 && Math.max(...kids.map((r) => r.right)) <= plate.right - 12 && Math.min(...kids.map((r) => r.top)) >= plate.top + 12;
+    });
   });
-  expect(clear).toEqual({ title: true, sub: true, plot: true });
+  expect(creditFits).toEqual([true, true]);
   // Layout size (the 1 Hz pulse scales the drawn pill by up to 2 %).
   expect(await page.locator(".att-pill").evaluate((e: HTMLElement) => [e.offsetWidth, e.offsetHeight])).toEqual([720, 120]);
-  await expect(page.locator("#footer")).toHaveText("ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by Brian L. Stuart, Drexel University");
+  // No footer on S1: the plates carry the credit.
+  await expect(page.locator("#footer")).toBeHidden();
   // Nothing on S1 overflows its box (the plates were sized for two-line kickers).
   const overflow = await page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>(".att-stuart .plate, .att-designers .plate, .att-honor .plate, .att-caption")]
+    [...document.querySelectorAll<HTMLElement>(".att-stuart .plate, .att-honor .plate, .att-caption")]
       .filter((e) => e.scrollHeight > e.clientHeight + 1 || e.scrollWidth > e.clientWidth + 1)
       .map((e) => e.className),
   );
@@ -242,4 +250,24 @@ test("S1 tap target: the whole screen; a stray tap on a plate goes to the picker
   await fresh(page);
   await tap(page, page.locator(".att-stuart"));
   await expect(view(page)).toHaveAttribute("data-view", "picker");
+});
+
+test("the credit plate turns from Eckert and Mauchly to Stuart, 4 s out of step with the honor plate", async ({ page }) => {
+  test.setTimeout(40_000);
+  await fresh(page);
+  const on = page.locator(".att-stuart .rot-slide.on .rot-names span").first();
+  await expect(on).toHaveText("J. Presper Eckert");
+  // The honor plate turns at 8 s; the credit plate holds until 12 s.
+  await expect(page.locator(".att-honor .rot-slide.on .plate-kicker")).not.toHaveText(/first programmers/i, { timeout: 10_000 });
+  await expect(on).toHaveText("J. Presper Eckert");
+  await expect(on).toHaveText("Brian L. Stuart", { timeout: 6_000 });
+  await expect(page.locator(".att-stuart .rot-slide[aria-hidden='false']")).toHaveCount(1);
+});
+
+test("the credit footer is back as soon as S1 is left", async ({ page }) => {
+  await fresh(page);
+  await expect(page.locator("#footer")).toBeHidden();
+  await tap(page, page.locator(".screen.start"));
+  await expect(view(page)).toHaveAttribute("data-view", "picker");
+  await expect(page.locator("#footer")).toHaveText("ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by Brian L. Stuart, Drexel University");
 });

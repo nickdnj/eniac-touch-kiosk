@@ -34,6 +34,8 @@ export const COPY = {
   confirm: {
     text: "Start this mission again? Your cables will come out.",
     textMenu: "Go back to the missions? Your cables will come out.",
+    /** The wordmark (the docents' touch point): back to S1 from anywhere. */
+    textStart: "Go back to the welcome screen? This visit will end.",
     yes: "Yes, start over",
     yesMenu: "Yes, go back",
     no: "Keep going",
@@ -79,6 +81,10 @@ export const COPY = {
     stop: "Stop pressing",
     showMe: "Show me what happened",
     helper: "helper readout",
+    /** S6 header: swap the mission's own view for the whole room, and back (run/roomview.ts). */
+    seeRoom: "See the whole room",
+    seeMission: "Back to the mission view",
+    roomNote: "These are your mission's lamps, live, on the whole machine.",
     tape: "Notebook tape",
   },
   result: {

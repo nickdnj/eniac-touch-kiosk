@@ -8,7 +8,7 @@
 // show a lamp that the core did not report (FR-94, "no demo fallback").
 //
 // Geometry lives in explore/room.ts (pure, tested). Everything here is in
-// room px at pitch 184; a smaller panorama (attract: pitch 150) sets
+// room px at pitch 184; a smaller panorama (attract: pitch 166) sets
 // `scale` and the whole strip is scaled as one.
 //
 // Usage:
@@ -46,7 +46,7 @@ export interface PanoramaOptions {
   lamps: LampSource;
   /** Viewport width in room px (Explore 1360). */
   viewW?: number;
-  /** Drawn size / room size (1 = pitch 184; attract's pitch 150 is 150 / 184). */
+  /** Drawn size / room size (1 = pitch 184; attract's pitch 166 is 166 / 184). */
   scale?: number;
   /** Draw the cream label chips under the panels (Explore). */
   chips?: boolean;

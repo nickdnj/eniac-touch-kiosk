@@ -59,7 +59,12 @@ img, svg { -webkit-user-drag: none; user-select: none; }
   pointer-events: none;
 }
 
-/* Hidden admin zone (UX 7): inert wordmark, 120x96, no handler in M1. */
+/* No footer on S1: its plates carry the credit. */
+#app.no-footer #footer { display: none; }
+
+/* The admin corner (UX 7), 120x96: the ENIAC wordmark. It is also the
+   docents' touch point (App.startOver): a tap asks to go back to S1. It is
+   meant to look like a label, so no button styling. */
 #admin-zone {
   position: absolute;
   left: 0;

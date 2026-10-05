@@ -1,11 +1,13 @@
 // #13 smoke (M1-17, M1-18): page loads, pings, footer on screen, gestures inert.
 
 import { test, expect } from "@playwright/test";
-import { fresh, sent, view } from "./helpers.ts";
+import { fresh, sent, tap, view } from "./helpers.ts";
 
-test("loads, pings the bridge and shows the credit footer at 24 px", async ({ page }) => {
+test("loads, pings the bridge and shows the credit footer at 24 px (past S1, whose plates carry it)", async ({ page }) => {
   await fresh(page);
   await expect(view(page)).toHaveAttribute("data-view", "start");
+  await tap(page, page.locator(".screen.start"));
+  await expect(view(page)).toHaveAttribute("data-view", "picker");
   const footer = page.locator("#footer");
   await expect(footer).toHaveText("ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by Brian L. Stuart, Drexel University");
   expect(await footer.evaluate((e) => getComputedStyle(e).fontSize)).toBe("24px");

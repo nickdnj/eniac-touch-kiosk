@@ -17,6 +17,7 @@ import { button, confirm } from "../ui/overlays.ts";
 import { RAIL, STAGE } from "../stage/layout.ts";
 import { stackStage, type RunStage } from "../run/stackstage.ts";
 import { filmStage } from "../run/filmstage.ts";
+import { roomView } from "../run/roomview.ts";
 import { COPY } from "../copy.ts";
 
 const REDUCE_MOTION = false; // UX 9.5: staff setting; wired to config in M3
@@ -86,8 +87,10 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     { class: "header" },
     h("span", { class: "title" }, COPY.header.mission(mission.order, mission.title)),
     h("span", { class: "spacer" }),
+    button(COPY.run.seeRoom, "light outline hdr-room", () => toggleRoom()),
     button(COPY.header.startOver, "light outline hdr-startover", () => startOver()),
   );
+  const roomBtn = header.querySelector(".hdr-room") as HTMLElement;
 
   const stage = h("div", { class: "stage run-stage" });
   stage.style.left = `${STAGE.x}px`;
@@ -173,6 +176,18 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   rail.style.left = `${RAIL.x}px`;
   rail.style.top = `${RAIL.y}px`;
   el.append(header, stage, rail);
+
+  // The whole room, in the stage's place, on the visitor's own lamps
+  // (run/roomview.ts). The stage keeps running underneath, so switching
+  // back shows the mission view up to date.
+  const room = roomView(app, mission.units, reduceMotion);
+  el.append(...room.els);
+  function toggleRoom(): void {
+    const on = !room.shown;
+    room.show(on);
+    el.classList.toggle("room-view", on);
+    roomBtn.textContent = on ? COPY.run.seeMission : COPY.run.seeRoom;
+  }
 
   const renderer = cardStage ? null : new LampRenderer(stage, () => app.mirror.machine);
 
@@ -392,6 +407,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     unmount: () => {
       renderer?.dispose();
       cardStage?.dispose();
+      room.dispose();
       if (autoTimer) clearTimeout(autoTimer);
       if (pendingTimer) clearTimeout(pendingTimer);
       for (const fn of runListeners) fn({ t: "session", id: "", mission: "", mode: "visitor", state: "none", applied: [], remaining: 0 });
@@ -400,6 +416,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
     onMachine: (units) => {
       renderer?.invalidate(units);
       cardStage?.onMachine(units);
+      room.onMachine(units);
       if (units === null || units.some((u) => u.startsWith("acc."))) refreshReadouts();
       const c = captions.onMachine(app.mirror.machine);
       if (c) {

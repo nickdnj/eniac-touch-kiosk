@@ -6,7 +6,8 @@
 // path plotted dot by dot from the real punched cards (the Trajectory
 // mission's ArcPlot), the live caption, the landing hold with the landing
 // card's numbers, "Starting another flight." with the last real frame dimmed
-// between flights, the Stuart plate and the rotating honor plate.
+// between flights, the credit plate (Eckert and Mauchly, then Stuart) and the
+// rotating honor plate.
 //
 // Honest by construction (FR-36, no demo fallback): the lamps are the
 // mirror's machine of the attract session only (or, between flights, the
@@ -24,7 +25,7 @@ import { ArcPlot } from "../run/filmstage.ts";
 import { h } from "../ui/dom.ts";
 import { onTap } from "../ui/tap.ts";
 import { play } from "../ui/anim.ts";
-import { designersPlate, honorRotator, stuartPlate } from "../ui/plates.ts";
+import { creditRotator, honorRotator } from "../ui/plates.ts";
 import { COPY } from "../copy.ts";
 import {
   ATTRACT_SCALE,
@@ -72,7 +73,7 @@ export function attractScreen(app: App): Screen {
   const machine = (): MachineState | null => (st.dimmed ? held : liveMachine());
   const pano = new Panorama({ lamps: { kind: "live", machine }, viewW: ATTRACT_VIEW_W, scale: ATTRACT_SCALE });
 
-  // UX 14.2.3: only the panels on screen update (about 12 of 40). Units off
+  // UX 14.2.3: only the panels on screen update (about 11 of 40). Units off
   // screen are marked stale and drawn when the camera brings them in.
   const strip = pano.el.querySelector<HTMLElement>(".pano-strip")!;
   /** Where the camera is now, mid-drift included (the CSS transition's current value). */
@@ -137,6 +138,8 @@ export function attractScreen(app: App): Screen {
   let plot: ArcPlot | null = null;
 
   const rotator = honorRotator({ reduceMotion: reduce });
+  // Eckert and Mauchly, then Stuart: changing 4 s after the honor plate does.
+  const credits = creditRotator({ reduceMotion: reduce, offsetMs: 4000 });
   const pill = h("div", { class: `start-pill att-pill${reduce ? " still" : ""}` }, COPY.start.pill);
 
   const el = h(
@@ -144,12 +147,11 @@ export function attractScreen(app: App): Screen {
     { class: "screen start attract", role: "button", "aria-label": COPY.start.pill, "data-scene": "waking" },
     h("div", { class: "start-title" }, COPY.start.title),
     h("div", { class: "start-sub" }, COPY.start.subtitle),
-    h("div", { class: "att-designers" }, designersPlate()),
     plotCard,
     room,
     captionRow,
     landing,
-    h("div", { class: "att-stuart" }, stuartPlate("attract")),
+    h("div", { class: "att-stuart" }, credits.el),
     pill,
     h("div", { class: "att-honor" }, rotator.el),
   );
@@ -250,12 +252,14 @@ export function attractScreen(app: App): Screen {
     idle: "none", // attract has no timeout (FR-32)
     mount: () => {
       app.root.querySelector("#admin-zone")?.classList.add("hide-mark");
+      app.root.classList.add("no-footer"); // the plates carry the credit on S1
       pano.mount();
       // Start where this flight's drift starts (or the first framing).
       void pano.setX(reduce ? FRAMINGS[0] : driftEnds(st.flight).from, { ms: 0 });
       render();
       tick();
       rotator.start();
+      credits.start();
       ticker = setInterval(tick, TICK_MS);
       ticking = true;
       if (reduce) cutter = setInterval(cutNext, CUT_EVERY_MS);
@@ -263,10 +267,12 @@ export function attractScreen(app: App): Screen {
     unmount: () => {
       disposed = true;
       app.root.querySelector("#admin-zone")?.classList.remove("hide-mark");
+      app.root.classList.remove("no-footer");
       if (ticker) clearInterval(ticker);
       if (cutter) clearInterval(cutter);
       if (lampTimer) clearTimeout(lampTimer);
       rotator.stop();
+      credits.stop();
       pano.dispose();
     },
     onMessage: (m: ServerMsg) => {

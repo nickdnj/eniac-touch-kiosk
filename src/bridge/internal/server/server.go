@@ -6,9 +6,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
+	"regexp"
 	"time"
 
 	"eniac-kiosk/bridge/internal/config"
@@ -70,11 +74,54 @@ func buildMux(ctx context.Context, o Options, addr string) (*http.ServeMux, *srv
 		json.NewEncoder(w).Encode(doc)
 	})
 	if o.Dev && DevSupported {
-		mux.Handle("/", DevWebHandler(o.Config.Paths.WebSrc))
+		mux.Handle("/", revalidate(stamped(o.Config.Paths.WebSrc, DevWebHandler(o.Config.Paths.WebSrc))))
 	} else {
-		mux.Handle("/", http.FileServer(http.Dir(o.Config.Paths.Web)))
+		mux.Handle("/", revalidate(stamped(o.Config.Paths.Web, http.FileServer(http.Dir(o.Config.Paths.Web)))))
 	}
 	return mux, s
+}
+
+// revalidate makes the browser check every web file with the bridge before
+// using its cached copy (a cheap 304 on localhost). Without it Chromium
+// caches the stylesheets by heuristic and, after an update, can draw the new
+// app.js with the old CSS. A handler's own Cache-Control (app.js: no-store) wins.
+func revalidate(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache")
+		h.ServeHTTP(w, r)
+	})
+}
+
+var assetRef = regexp.MustCompile(`(href|src)="(/[^"?]+\.(?:css|js))"`)
+
+// stamped serves the page itself with each stylesheet and script link
+// carrying its file's modification time (/styles/app.css?v=1759...). A
+// changed file is then a new URL, so a copy the browser cached earlier
+// (before revalidate, or by an older release) can never be drawn with a newer
+// app.js. Files that are not on disk (the dev server's bundled app.js) are
+// left as they are.
+func stamped(webDir string, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			h.ServeHTTP(w, r)
+			return
+		}
+		page, err := os.ReadFile(filepath.Join(webDir, "index.html"))
+		if err != nil {
+			h.ServeHTTP(w, r)
+			return
+		}
+		page = assetRef.ReplaceAllFunc(page, func(m []byte) []byte {
+			sub := assetRef.FindSubmatch(m)
+			st, err := os.Stat(filepath.Join(webDir, filepath.FromSlash(string(sub[2]))))
+			if err != nil {
+				return m
+			}
+			return []byte(fmt.Sprintf(`%s="%s?v=%d"`, sub[1], sub[2], st.ModTime().Unix()))
+		})
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Write(page)
+	})
 }
 
 // Run serves until ctx is cancelled.
