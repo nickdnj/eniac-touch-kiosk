@@ -2,8 +2,10 @@
 // JSON). Wording from docs/ux-spec.md.
 
 export const COPY = {
-  credit: "ENIAC simulator by Brian L. Stuart, Drexel University",
+  credit: "ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by Brian L. Stuart, Drexel University",
   wordmark: "ENIAC",
+  /** The Home button beside the wordmark: back to the mission picker from any screen. */
+  home: "Home",
   waitingMachine: "Waiting for the machine...",
   wakingUp: "Waking ENIAC up...",
   start: {
@@ -32,6 +34,8 @@ export const COPY = {
   confirm: {
     text: "Start this mission again? Your cables will come out.",
     textMenu: "Go back to the missions? Your cables will come out.",
+    /** The wordmark (the docents' touch point): back to S1 from anywhere. */
+    textStart: "Go back to the welcome screen? This visit will end.",
     yes: "Yes, start over",
     yesMenu: "Yes, go back",
     no: "Keep going",
@@ -77,6 +81,10 @@ export const COPY = {
     stop: "Stop pressing",
     showMe: "Show me what happened",
     helper: "helper readout",
+    /** S6 header: swap the mission's own view for the whole room, and back (run/roomview.ts). */
+    seeRoom: "See the whole room",
+    seeMission: "Back to the mission view",
+    roomNote: "These are your mission's lamps, live, on the whole machine.",
     tape: "Notebook tape",
   },
   result: {
@@ -102,7 +110,7 @@ export const COPY = {
     joined: "Each dot is a card. Join the dots: that is the path.",
     air: "air slows it",
     gravity: "gravity pulls",
-    punched: "hop! a card is punched",
+    punched: "one second done: a card is punched",
     stillFlying: "still flying? yes: hop again",
     card: (n: number) => `card ${n}`,
     reader: "Card reader",

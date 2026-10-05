@@ -25,12 +25,12 @@ import {
 import { LIVE_LOST_MS } from "../../src/web/app/attract/store.ts";
 import { PITCH, ROOM, STRIP_W, visibleRange } from "../../src/web/app/explore/room.ts";
 
-test("the attract panorama is the room at a 150 px pitch, about 12 panels across the 1,824 px window", () => {
-  assert.equal(Math.round(PITCH * ATTRACT_SCALE), 150);
+test("the attract panorama is the room at a 166 px pitch, about 11 panels across the 1,824 px window", () => {
+  assert.equal(Math.round(PITCH * ATTRACT_SCALE), 166);
   assert.ok(Math.abs(ATTRACT_VIEW_W * ATTRACT_SCALE - ROOM_SCREEN.w) < 1);
   const [a, b] = visibleRange(0, ATTRACT_VIEW_W);
   assert.equal(a, 0);
-  assert.ok(b - a + 1 >= 12 && b - a + 1 <= 13, `${b - a + 1} panels`);
+  assert.ok(b - a + 1 >= 11 && b - a + 1 <= 12, `${b - a + 1} panels`);
   assert.equal(DRIFT_END, STRIP_W - ATTRACT_VIEW_W);
 });
 
@@ -41,9 +41,9 @@ test("the drift alternates: odd flights left to right, even flights back, each s
   for (let f = 1; f < 6; f++) assert.equal(driftEnds(f + 1).from, driftEnds(f).to);
 });
 
-test("the drift moves about 80 screen px a second: the whole U in about one flight (49 s on the Mac)", () => {
+test("the drift moves about 96 screen px a second: the whole U in about one flight (49 s on the Mac)", () => {
   const ms = driftMs(0, DRIFT_END);
-  assert.equal(DRIFT_PX_PER_S, 80);
+  assert.equal(DRIFT_PX_PER_S, 96);
   assert.ok(ms > 45_000 && ms < 60_000, `${ms} ms`);
   assert.equal(driftMs(DRIFT_END, 0), ms);
   assert.equal(driftMs(100, 100), 0);

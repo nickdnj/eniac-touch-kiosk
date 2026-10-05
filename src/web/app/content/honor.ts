@@ -83,12 +83,12 @@ export const HONOR = {
     name: "Brian L. Stuart",
     where: "Drexel University",
     lead: [
-      "Every lamp, cable and switch on this screen is run by a simulator that Brian L. Stuart wrote. It follows the real 1946 machine pulse by pulse.",
+      "Every lamp, cable and switch on this screen is run by a simulator that Brian L. Stuart wrote. It simulates ENIAC at the level of individual pulses.",
       "Without his work, this exhibit would be an empty screen. Thank you, Brian.",
     ],
     paper: {
       text: "His paper, “Simulating the ENIAC,” appeared in the Proceedings of the IEEE in April 2018.",
-      fc: "fact-check D2: Proceedings of the IEEE 106(4), April 2018, pp. 761-772, doi 10.1109/JPROC.2018.2813678 (IEEE Xplore 8326772, linked from the upstream README). D1: 'pulse by pulse' is correct. D4: test the QR codes on an iPhone and an Android phone (the Drexel server sent an incomplete TLS chain on 2026-10-02).",
+      fc: "fact-check D2: Proceedings of the IEEE 106(4), April 2018, pp. 761-772, doi 10.1109/JPROC.2018.2813678 (IEEE Xplore 8326772, linked from the upstream README). D1: Stuart's own words, 'at the level of individual pulses' (pre-share N1). D4: test the QR codes on an iPhone and an Android phone (the Drexel server sent an incomplete TLS chain on 2026-10-02).",
     },
     alsoLine: "He has spent years bringing ENIAC back to life, so that anyone can program it again.",
     qr: { label: "Scan to visit his simulator page", url: STUART_URL, print: "cs.drexel.edu/~bls96/eniac/simulator.html" } as Link,
@@ -151,7 +151,7 @@ export const HONOR = {
     sources: [
       { what: "Squares", from: "An example program by Brian L. Stuart, written for his simulator.", fc: "sq.e ships with the upstream simulator." },
       { what: "Primes", from: "Based on D. H. Lehmer’s run over the July 4 weekend of 1946, with Emma Lehmer. It used a sieve to find primes. Our program follows Liesbeth De Mol and Maarten Bullynck’s reconstruction.", fc: "fact-check C1, C8, C9: 'based on' his run; his goal was exponents of 2 modulo primes, and the sieve found the primes. Bullynck & De Mol, Archive for Mathematical Logic 49 (2010); De Mol & Bullynck, CiE 2008 (LNCS 5028). Emma Lehmer: DMB08 abstract." },
-      { what: "Shell’s path", from: "Brian Stuart’s recreation of the shell path ENIAC worked out at its unveiling, February 15, 1946.", fc: "fact-check B6, B7: the upstream program is Stuart's working reconstruction of the Feb 15 one." },
+      { what: "Shell’s path", from: "Brian Stuart’s reconstruction of the shell trajectory from ENIAC’s unveiling, February 15, 1946.", fc: "fact-check B6, B7: the upstream program is Stuart's working reconstruction of the Feb 15 one." },
     ] as Source[],
     museumTitle: "The museum",
     museum: "Vintage Computer Federation, at the InfoAge Science and History Museums, Wall, New Jersey.",
@@ -165,9 +165,19 @@ export const HONOR = {
 
   // ---------------------------------------------------------------- attract plate (UX 14.2.1)
   /** Rotating honor plate slides for attract (8 s each, 400 ms cross-fade). */
+  /**
+   * S1's designers plate, beside the ENIAC title: as prominent as the Stuart
+   * plate (the machine, and the simulator of it). "Designed", not
+   * "invented": the 1973 Honeywell v. Sperry Rand ruling voided the patent.
+   */
+  designers: {
+    plateKicker: "ENIAC was designed by",
+    names: ["J. Presper Eckert", "John W. Mauchly"],
+    fc: "[WD46] War Department release, 16 Feb 1946 (americanhistory.si.edu/comphist/pr1.pdf): 'the ENIAC ... is the invention of Dr. J. W. Mauchly and Mr. J. Presper Eckert, Jr., both of the Moore School'; Eckert 'joined with Dr. Mauchly in elaborating the plans for the ENIAC and took charge of the technical and engineering work'. B14, B15.",
+  },
+  /** The rotating S1 plate. Eckert and Mauchly have their own fixed plate (designers), so no "builders" slide. */
   attractSlides: [
     { heading: "ENIAC’s first programmers", names: ["Kay McNulty", "Jean Jennings", "Betty Snyder", "Marlyn Wescoff", "Fran Bilas", "Ruth Lichterman"] },
-    { heading: "The builders", names: ["J. Presper Eckert", "John W. Mauchly"] },
     { heading: "The project team", names: ["Herman Goldstine", "Adele Goldstine"] }, // fact-check B18
     { heading: "Built at and for", names: ["Moore School of Electrical Engineering", "U.S. Army Ballistic Research Laboratory"] },
     {

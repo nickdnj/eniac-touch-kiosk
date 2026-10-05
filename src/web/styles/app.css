@@ -59,7 +59,12 @@ img, svg { -webkit-user-drag: none; user-select: none; }
   pointer-events: none;
 }
 
-/* Hidden admin zone (UX 7): inert wordmark, 120x96, no handler in M1. */
+/* No footer on S1: its plates carry the credit. */
+#app.no-footer #footer { display: none; }
+
+/* The admin corner (UX 7), 120x96: the ENIAC wordmark. It is also the
+   docents' touch point (App.startOver): a tap asks to go back to S1. It is
+   meant to look like a label, so no button styling. */
 #admin-zone {
   position: absolute;
   left: 0;
@@ -76,6 +81,23 @@ img, svg { -webkit-user-drag: none; user-select: none; }
   color: var(--jack-block);
 }
 #admin-zone.hide-mark { color: transparent; }
+
+/* Home (beside the wordmark, 16 px clear of the admin corner): every visitor
+   screen but S1 and the picker. Headers and the finale's dots make room. */
+#home-btn {
+  position: absolute;
+  left: 136px;
+  top: 16px;
+  height: 64px;
+  min-height: 64px;
+  font-size: 26px;
+  gap: 12px;
+  padding: 0 24px 0 20px;
+  z-index: 30;
+}
+#home-btn.hidden { display: none; }
+#app.has-home .header { padding-left: 336px; }
+#app.has-home .fin-dots { left: 336px; }
 
 #overlay { position: absolute; inset: 0; z-index: 40; pointer-events: none; }
 #overlay > * { pointer-events: auto; }

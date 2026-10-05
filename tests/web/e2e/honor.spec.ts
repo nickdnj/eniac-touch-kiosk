@@ -75,7 +75,7 @@ test("picker button opens S11 on Brian L. Stuart's page: plate, credit, three of
   await expect(page.locator(".page-stuart .qr-block.main .qr-print")).toHaveText("cs.drexel.edu/~bls96/eniac/simulator.html");
   await expect(page.locator(".honor img")).toHaveCount(0); // no photographs
   await fitsOneScreen(page);
-  await expect(page.locator("#footer")).toHaveText("ENIAC simulator by Brian L. Stuart, Drexel University");
+  await expect(page.locator("#footer")).toHaveText("ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by Brian L. Stuart, Drexel University");
 });
 
 test("all four pages render (no review gate) and each fits one screen; tabs are 96 px", async ({ page }) => {

@@ -219,3 +219,11 @@
 @keyframes rail-pulse { 50% { box-shadow: 0 0 0 8px rgba(240, 228, 66, 0.35); } }
 .traj-readouts.frozen .ro { border-color: var(--traj-card); }
 .traj-readouts.frozen .ro.off .ro-value { color: #4a4e57; }
+
+/* S6 room view (run/roomview.ts): the Explore column in the stage's place.
+   The stage stays laid out (its lamps and cards keep running) but unseen. */
+.header .hdr-room { width: 380px; }
+.run .room-off { display: none; }
+.run.room-view .run-stage { visibility: hidden; pointer-events: none; }
+.run-room-note { position: absolute; left: 24px; top: 952px; width: 1360px; height: 64px; display: flex; align-items: center; gap: 14px; font-size: 26px; font-weight: 700; color: var(--card); }
+.run-room-dot { width: 18px; height: 18px; border-radius: 50%; background: var(--lamp-on); box-shadow: 0 0 10px var(--lamp-on); flex: none; }

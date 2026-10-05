@@ -3,10 +3,13 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log/slog"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"testing"
@@ -52,7 +55,9 @@ type env struct {
 	down *bool
 }
 
-func start(t *testing.T, dev bool) *env {
+func start(t *testing.T, dev bool) *env { return startWith(t, dev, nil) }
+
+func startWith(t *testing.T, dev bool, tweak func(*config.Config)) *env {
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatal(err)
@@ -61,6 +66,9 @@ func start(t *testing.T, dev bool) *env {
 	e := &env{addr: ln.Addr().String(), hub: NewHub(log), h: &fakeHandler{m: machine.NewMirror(nil)}, down: new(bool)}
 	cfg := config.Default()
 	cfg.Listen = e.addr
+	if tweak != nil {
+		tweak(&cfg)
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
 	go Run(ctx, Options{Config: cfg, Dev: dev, Log: log, Hub: e.hub, Handler: e.h, Listener: ln,
@@ -228,5 +236,41 @@ func TestHealthz(t *testing.T) {
 	resp.Body.Close()
 	if resp.StatusCode != 503 {
 		t.Fatalf("down -> %d", resp.StatusCode)
+	}
+}
+
+// Web files revalidate: a stale cached stylesheet must not meet a new app.js.
+func TestWebFilesRevalidate(t *testing.T) {
+	web := t.TempDir()
+	os.MkdirAll(filepath.Join(web, "styles"), 0o755)
+	os.WriteFile(filepath.Join(web, "styles", "start.css"), []byte("body{}"), 0o644)
+	e := startWith(t, false, func(c *config.Config) { c.Paths.Web = web })
+	resp, err := http.Get("http://" + e.addr + "/styles/start.css")
+	if err != nil {
+		t.Fatal(err)
+	}
+	resp.Body.Close()
+	if resp.StatusCode != 200 {
+		t.Fatalf("status %d", resp.StatusCode)
+	}
+	if got := resp.Header.Get("Cache-Control"); got != "no-cache" {
+		t.Fatalf("Cache-Control %q, want no-cache", got)
+	}
+
+	// The page links each file on disk by its modification time; others stay as written.
+	os.WriteFile(filepath.Join(web, "index.html"), []byte(`<link rel="stylesheet" href="/styles/start.css"><script src="/app.js"></script>`), 0o644)
+	st, _ := os.Stat(filepath.Join(web, "styles", "start.css"))
+	resp, err = http.Get("http://" + e.addr + "/")
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	want := fmt.Sprintf(`<link rel="stylesheet" href="/styles/start.css?v=%d"><script src="/app.js"></script>`, st.ModTime().Unix())
+	if string(body) != want {
+		t.Fatalf("page %q, want %q", body, want)
+	}
+	if got := resp.Header.Get("Cache-Control"); got != "no-cache" {
+		t.Fatalf("page Cache-Control %q, want no-cache", got)
 	}
 }

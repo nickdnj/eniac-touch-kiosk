@@ -1,5 +1,5 @@
 // Engraved-plate components (UX 14.1, 14.2.1, 14.6): the Stuart plate, the
-// honor plates, the rotating attract honor plate and the offline QR block.
+// honor plates, the rotating attract credit and honor plates and the offline QR block.
 // Shared by S11 (screens/honor.ts), and meant for S1 attract and the S8
 // finale beats F3 and F4. Text comes from content/honor.ts. Styles:
 // styles/honor.css (.plate and friends). No photographs (UX 14.6.3).
@@ -86,40 +86,86 @@ export interface Rotator {
   stop(): void;
 }
 
+interface Slide {
+  heading: string;
+  names: string[];
+  sub?: string;
+}
+
+/** One rotator slide: the caps kicker, the names, an optional smaller line. */
+function slide(sl: Slide): HTMLElement {
+  return h(
+    "div",
+    { class: "rot-slide" },
+    h("div", { class: "plate-kicker" }, sl.heading),
+    h("div", { class: `rot-names n${sl.names.length}` }, ...sl.names.map((n) => h("span", {}, n))),
+    sl.sub ? h("div", { class: "rot-sub" }, sl.sub) : null,
+  );
+}
+
+function rotatorPlate(slides: Slide[], cls: string, opts: { intervalMs?: number; offsetMs?: number; reduceMotion?: boolean }): Rotator {
+  const els = slides.map(slide);
+  const el = h("div", { class: `plate honor-rotator ${cls}${opts.reduceMotion ? " cut" : ""}`, role: "note" }, ...rivets(), ...els);
+  if (!els.length) el.classList.add("hidden");
+  return rotate(el, els, opts.intervalMs ?? 8000, opts.offsetMs ?? 0);
+}
+
 /**
  * The rotating honor plate for attract (UX 14.2.1): the first programmers,
- * the builders, the institutions; 8 s each with a 400 ms cross-fade (a cut
- * with reduced motion). Draws nothing if every slide is held.
+ * the project team, the institutions, the machine; 8 s each with a 400 ms
+ * cross-fade (a cut with reduced motion). Draws nothing if every slide is held.
  */
 export function honorRotator(opts: { intervalMs?: number; reduceMotion?: boolean } = {}): Rotator {
-  const slides = HONOR.attractSlides.filter((x) => !x.hold);
-  const els = slides.map((sl, i) =>
-    h(
-      "div",
-      { class: `rot-slide${i === 0 ? " on" : ""}`, "aria-hidden": i === 0 ? "false" : "true" },
-      h("div", { class: "plate-kicker" }, sl.heading),
-      h("div", { class: `rot-names n${sl.names.length}` }, ...sl.names.map((n) => h("span", {}, n))),
-    ),
+  return rotatorPlate(HONOR.attractSlides.filter((x) => !x.hold), "honor-slides", opts);
+}
+
+/**
+ * The S1 credit plate, bottom left, the twin of the honor plate on the
+ * right: Eckert and Mauchly, then Brian L. Stuart, in turn. Offset half a
+ * turn from the honor plate so the two never change together.
+ */
+export function creditRotator(opts: { intervalMs?: number; offsetMs?: number; reduceMotion?: boolean } = {}): Rotator {
+  const d = HONOR.designers;
+  const st = HONOR.stuart;
+  return rotatorPlate(
+    [
+      { heading: d.plateKicker, names: d.names },
+      { heading: st.plateKicker, names: [st.name], sub: st.where },
+    ],
+    "credit-slides",
+    opts,
   );
-  const el = h("div", { class: `plate honor-rotator${opts.reduceMotion ? " cut" : ""}`, role: "note" }, ...rivets(), ...els);
-  if (!els.length) el.classList.add("hidden");
+}
+
+/** Shows `els` in turn inside `el`, one every `ms`, the first change `ms + offsetMs` after start. */
+function rotate(el: HTMLElement, els: HTMLElement[], ms: number, offsetMs: number): Rotator {
+  els.forEach((e, k) => {
+    e.classList.toggle("on", k === 0);
+    e.setAttribute("aria-hidden", k === 0 ? "false" : "true");
+  });
   let i = 0;
   let t: ReturnType<typeof setInterval> | null = null;
+  let wait: ReturnType<typeof setTimeout> | null = null;
+  const next = () => {
+    els[i].classList.remove("on");
+    els[i].setAttribute("aria-hidden", "true");
+    i = (i + 1) % els.length;
+    els[i].classList.add("on");
+    els[i].setAttribute("aria-hidden", "false");
+  };
   return {
     el,
     start() {
-      if (t || els.length < 2) return;
-      t = setInterval(() => {
-        els[i].classList.remove("on");
-        els[i].setAttribute("aria-hidden", "true");
-        i = (i + 1) % els.length;
-        els[i].classList.add("on");
-        els[i].setAttribute("aria-hidden", "false");
-      }, opts.intervalMs ?? 8000);
+      if (t || wait || els.length < 2) return;
+      wait = setTimeout(() => {
+        wait = null;
+        t = setInterval(next, ms);
+      }, offsetMs);
     },
     stop() {
+      if (wait) clearTimeout(wait);
       if (t) clearInterval(t);
-      t = null;
+      wait = t = null;
     },
   };
 }
