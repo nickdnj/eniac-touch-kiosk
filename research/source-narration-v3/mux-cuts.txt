@@ -1,0 +1,4 @@
+Hand cuts passed to narration-mux.py (seconds of the raw recording; logged cuts are in each *-timeline.json "cuts"):
+trajectory: --cut 113-141 --cut 160.5-208.5   (silent flight before apex, silent descent)
+primes:     --cut 140-160                      (silent full-speed punching)
+others:     none (only the spec-logged cuts)

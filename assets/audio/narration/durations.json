@@ -16,36 +16,32 @@
     "lufs": -20.0
   },
   "N03": {
-    "duration_s": 6.269,
+    "duration_s": 7.291,
     "storyboard_estimate_s": 7.2,
     "scene_slot_s": 8.5,
-    "delta_vs_estimate_s": -0.93,
-    "delta_vs_slot_s": -2.23,
-    "lufs": -20.0
+    "delta_vs_estimate_s": 0.09,
+    "delta_vs_slot_s": -1.21,
+    "lufs": -20.1,
+    "v2_duration_s": 6.269
   },
   "N04": {
-    "duration_s": 9.474,
-    "storyboard_estimate_s": 8.4,
+    "duration_s": 10.124,
+    "storyboard_estimate_s": 9.5,
     "scene_slot_s": 9.0,
-    "delta_vs_estimate_s": 1.07,
-    "delta_vs_slot_s": 0.47,
-    "lufs": -19.9
-  },
-  "N04_ALT": {
-    "duration_s": 11.006,
-    "storyboard_estimate_s": 8.4,
-    "scene_slot_s": 9.0,
-    "delta_vs_estimate_s": 2.61,
-    "delta_vs_slot_s": 2.01,
-    "lufs": -20.0
+    "delta_vs_estimate_s": 0.62,
+    "delta_vs_slot_s": 1.12,
+    "lufs": -20.0,
+    "v2_duration_s": 9.474,
+    "note": "tightened 2026-10-05; 12.96 s long version kept at v2/N04-v3long.wav"
   },
   "N05": {
-    "duration_s": 12.353,
-    "storyboard_estimate_s": 11.2,
+    "duration_s": 12.585,
+    "storyboard_estimate_s": 12.0,
     "scene_slot_s": 12.0,
-    "delta_vs_estimate_s": 1.15,
-    "delta_vs_slot_s": 0.35,
-    "lufs": -20.0
+    "delta_vs_estimate_s": 0.59,
+    "delta_vs_slot_s": 0.59,
+    "lufs": -20.0,
+    "v2_duration_s": 12.353
   },
   "N06": {
     "duration_s": 16.068,

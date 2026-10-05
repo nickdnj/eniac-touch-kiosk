@@ -1,78 +1,1198 @@
 {
  "project": "Program ENIAC: Our New Touch-Screen Exhibit",
- "version": "2.0",
- "date": "2026-10-03",
- "status": "Gate 1 decisions applied (v2)",
+ "version": "4.0",
+ "date": "2026-10-05",
+ "status": "v4 = v3 with clean screens (no caption box), re-cut against assets/video/source-v4 (CLEAN=1); structure, chapters, rules and overlay positions as v3",
  "format": {
   "resolution": "1920x1080",
   "fps": 25,
-  "audio": "48 kHz",
-  "note": "sources are 25 fps; keep 25 fps end to end"
+  "audio": "48 kHz"
  },
- "ffmpeg": {
-  "binary": "/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg",
-  "why": "/opt/homebrew/bin/ffmpeg has no drawtext/ass filters; ffmpeg-full has both"
+ "intro": {
+  "file": "output/build/intro/vcf_intro_eniac_8s.mp4",
+  "dur": 8.12,
+  "note": "VCF Power-On intro prepended; carries the title card. No S01 title open."
  },
- "voice": {
-  "name": "Nick 2",
-  "voice_id": "6SxuwKUiBpZjFTc06v9Y",
-  "model": "eleven_multilingual_v2",
-  "stability": 0.5,
-  "similarity": 0.75,
-  "style": 0.4,
-  "speed": 1.12,
-  "never_speak": [
-   "Lehmer"
+ "program_total_s": 472.88,
+ "total_with_intro_s": 481.0,
+ "total_with_intro": "8:01.00",
+ "v2_total_with_intro_s": 478.28,
+ "v3_total_with_intro_s": 477.08,
+ "units": [
+  {
+   "unit": "A",
+   "program_in": 0.0,
+   "dur": 13.4,
+   "crossfade_out": 0.5
+  },
+  {
+   "unit": "B",
+   "program_in": 12.88,
+   "dur": 99.2,
+   "crossfade_out": 0.4
+  },
+  {
+   "unit": "C",
+   "program_in": 111.68,
+   "dur": 1.8,
+   "crossfade_out": 0.4
+  },
+  {
+   "unit": "D",
+   "program_in": 113.08,
+   "dur": 23.96,
+   "crossfade_out": 0.4
+  },
+  {
+   "unit": "E",
+   "program_in": 136.64,
+   "dur": 59.92,
+   "crossfade_out": 0.4
+  },
+  {
+   "unit": "F",
+   "program_in": 196.16,
+   "dur": 1.8,
+   "crossfade_out": 0.4
+  },
+  {
+   "unit": "G",
+   "program_in": 197.56,
+   "dur": 18.04,
+   "crossfade_out": 0.4
+  },
+  {
+   "unit": "H",
+   "program_in": 215.2,
+   "dur": 3.28,
+   "crossfade_out": 0.4
+  },
+  {
+   "unit": "IJ",
+   "program_in": 218.08,
+   "dur": 158.36,
+   "crossfade_out": 0.4
+  },
+  {
+   "unit": "K",
+   "program_in": 376.04,
+   "dur": 7.8,
+   "crossfade_out": 0.4
+  },
+  {
+   "unit": "L",
+   "program_in": 383.44,
+   "dur": 11.0,
+   "crossfade_out": 0.4
+  },
+  {
+   "unit": "M",
+   "program_in": 394.04,
+   "dur": 6.48,
+   "crossfade_out": 0.4
+  },
+  {
+   "unit": "NO",
+   "program_in": 400.12,
+   "dur": 36.4,
+   "crossfade_out": 0.5
+  },
+  {
+   "unit": "P",
+   "program_in": 436.0,
+   "dur": 17.4,
+   "crossfade_out": 0.5
+  },
+  {
+   "unit": "Q",
+   "program_in": 452.88,
+   "dur": 20.0,
+   "crossfade_out": 0.0
+  }
+ ],
+ "scenes": [
+  {
+   "id": "S02",
+   "unit": "A",
+   "chapter": 1,
+   "chapter_title": "Meet the kiosk",
+   "title": "Docent intro (opening photo)",
+   "video": {
+    "type": "photo",
+    "photo": "P1",
+    "motion": "slow pan/zoom 1.00->1.10"
+   },
+   "audio": "NEW N01",
+   "program_in": 0.0,
+   "program_out": 13.4,
+   "dur": 13.4,
+   "program_in_with_intro": 8.12,
+   "overlays": [
+    {
+     "type": "credit",
+     "text": "U.S. Army Photo",
+     "pos": "bottom-right",
+     "tin": 0.6,
+     "tout": "end-0.4"
+    },
+    {
+     "type": "lower-third",
+     "text": "Nick DeMarco",
+     "sub": "Docent and Exhibit Developer, Vintage Computer Federation",
+     "pos": "x60 y60",
+     "tin": 0.6,
+     "tout": 5.6
+    },
+    {
+     "type": "chapter-lower-third",
+     "text": "CHAPTER 1 · Meet the kiosk",
+     "pos": "x60 y104 (on the opening photo)",
+     "tin": 8.6,
+     "tout": 12.2
+    }
+   ],
+   "crossfade_out": 0.5
+  },
+  {
+   "id": "S03",
+   "unit": "B",
+   "chapter": 1,
+   "chapter_title": "Meet the kiosk",
+   "title": "The live attract screen",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
+    "in": 11.48,
+    "out": 34.05
+   },
+   "audio": "REUSED baked tour-01, tour-02",
+   "note": "Attract (v3 UI, v4 clean): taller room, rotating plates, no footer, no caption box. No clear header space -- no overlays, as in v2/v3.",
+   "program_in": 12.88,
+   "program_out": 35.44,
+   "dur": 22.56,
+   "program_in_with_intro": 21.0,
+   "overlays": [],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S04",
+   "unit": "B",
+   "chapter": 1,
+   "chapter_title": "Meet the kiosk",
+   "title": "One touch, and the missions appear",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
+    "in": 34.05,
+    "out": 42.88
+   },
+   "audio": "REUSED baked tour-03, tour-04",
+   "program_in": 35.44,
+   "program_out": 44.28,
+   "dur": 8.84,
+   "program_in_with_intro": 43.56,
+   "overlays": [],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S05",
+   "unit": "B",
+   "chapter": 2,
+   "chapter_title": "Explore ENIAC",
+   "title": "Walk the room",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
+    "in": 42.88,
+    "out": 110.7
+   },
+   "audio": "REUSED baked tour-05..tour-10",
+   "program_in": 44.28,
+   "program_out": 112.08,
+   "dur": 67.8,
+   "program_in_with_intro": 52.4,
+   "overlays": [
+    {
+     "type": "header-tag",
+     "label": "CHAPTER 2",
+     "text": "Explore ENIAC",
+     "pos": "Explore header gap, right edge x1165, y17 (box x807-1165)",
+     "tin": 32.9,
+     "tout": 36.4
+    }
+   ],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S06",
+   "unit": "C",
+   "chapter": 3,
+   "chapter_title": "Keeping ENIAC alive",
+   "title": "Chapter card",
+   "video": {
+    "type": "card"
+   },
+   "audio": "music",
+   "program_in": 111.68,
+   "program_out": 113.48,
+   "dur": 1.8,
+   "program_in_with_intro": 119.8,
+   "overlays": [
+    {
+     "type": "chapter-card",
+     "text": "CHAPTER 3 · Keeping ENIAC alive"
+    }
+   ],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S07",
+   "unit": "D",
+   "chapter": 3,
+   "chapter_title": "Keeping ENIAC alive",
+   "title": "18,000 tubes and 150 kilowatts",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
+    "in": 117.55,
+    "out": 141.52,
+    "dur": 23.97
+   },
+   "audio": "REUSED baked tour-12, tour-13",
+   "program_in": 113.08,
+   "program_out": 137.04,
+   "dur": 23.96,
+   "program_in_with_intro": 121.2,
+   "overlays": [],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S08",
+   "unit": "E",
+   "chapter": 3,
+   "chapter_title": "Keeping ENIAC alive",
+   "title": "Why tubes burned out, and find the dead tube",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
+    "in": 151.1,
+    "out": 211.0,
+    "dur": 59.9
+   },
+   "cutaway": {
+    "photo": "P2",
+    "offset_in": 0.6,
+    "offset_out": 7.6,
+    "source_equiv": "tour 151.70-158.70 (over tour-15, 151.35-158.55)"
+   },
+   "audio": "REUSED baked tour-15..tour-24",
+   "program_in": 136.64,
+   "program_out": 196.56,
+   "dur": 59.92,
+   "program_in_with_intro": 144.76,
+   "overlays": [
+    {
+     "type": "credit",
+     "text": "U.S. Army Photo",
+     "pos": "bottom-right (on the P2 cutaway)",
+     "tin": 0.8,
+     "tout": 7.2
+    }
+   ],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S09",
+   "unit": "F",
+   "chapter": 4,
+   "chapter_title": "The first programmers",
+   "title": "Chapter card",
+   "video": {
+    "type": "card"
+   },
+   "audio": "music",
+   "program_in": 196.16,
+   "program_out": 197.96,
+   "dur": 1.8,
+   "program_in_with_intro": 204.28,
+   "overlays": [
+    {
+     "type": "chapter-card",
+     "text": "CHAPTER 4 · The first programmers"
+    }
+   ],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S10",
+   "unit": "G",
+   "chapter": 4,
+   "chapter_title": "The first programmers",
+   "title": "The honor roll: six first programmers",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
+    "in": 229.2,
+    "out": 247.25,
+    "dur": 18.05
+   },
+   "cutaway": {
+    "photo": "P3",
+    "offset_in": 9.9,
+    "offset_out": 18.04,
+    "source_equiv": "tour 239.10-247.25 (after the six names; word gap 238.96-239.24)"
+   },
+   "audio": "REUSED baked tour-26",
+   "program_in": 197.56,
+   "program_out": 215.6,
+   "dur": 18.04,
+   "program_in_with_intro": 205.68,
+   "overlays": [
+    {
+     "type": "credit",
+     "text": "Betty Jean Jennings and Frances Bilas, 1946 · U.S. Army Photo",
+     "pos": "bottom-left (on the P3 cutaway)",
+     "tin": 10.1,
+     "tout": "end-0.4"
+    }
+   ],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S11",
+   "unit": "H",
+   "chapter": 5,
+   "chapter_title": "Mission 1: Squares",
+   "title": "Chapter card + bridge",
+   "video": {
+    "type": "card"
+   },
+   "audio": "REUSED WAV tour-27.wav 0.00-2.21 (\"Now it's my turn to program ENIAC.\")",
+   "program_in": 215.2,
+   "program_out": 218.48,
+   "dur": 3.28,
+   "program_in_with_intro": 223.32,
+   "overlays": [
+    {
+     "type": "chapter-card",
+     "text": "CHAPTER 5 · Mission 1: Squares"
+    }
+   ],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S12",
+   "unit": "I",
+   "chapter": 5,
+   "chapter_title": "Mission 1: Squares",
+   "title": "The Squares mission (near-full)",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v4/eniac-touch-walkthrough-squares.mp4",
+    "in": 15.68,
+    "out": 164.52,
+    "dur": 148.84
+   },
+   "audio": "REUSED baked squares-02..squares-17",
+   "program_in": 218.08,
+   "program_out": 366.92,
+   "dur": 148.84,
+   "program_in_with_intro": 226.2,
+   "overlays": [],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S13",
+   "unit": "J",
+   "chapter": 6,
+   "chapter_title": "Only at the museum",
+   "title": "Teaser: Primes",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v4/eniac-touch-walkthrough-primes.mp4",
+    "in": 102.4,
+    "out": 111.92,
+    "dur": 9.52,
+    "mute_source": true
+   },
+   "audio": "NEW N02",
+   "program_in": 366.92,
+   "program_out": 376.44,
+   "dur": 9.52,
+   "program_in_with_intro": 375.04,
+   "overlays": [
+    {
+     "type": "header-tag",
+     "label": "CHAPTER 6",
+     "text": "Only at the museum",
+     "pos": "Primes header gap, right edge x1175, y17 (box x753-1175)",
+     "tin": 0.3,
+     "tout": 3.5
+    },
+    {
+     "type": "header-tag",
+     "label": "MISSION 2",
+     "text": "Primes  ·  live at the museum",
+     "pos": "Primes header gap, right edge x1175, y17 (box x657-1175)",
+     "tin": 3.6,
+     "tout": "end"
+    }
+   ],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S14",
+   "unit": "K",
+   "chapter": 6,
+   "chapter_title": "Only at the museum",
+   "title": "Teaser: Trajectory",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v4/eniac-touch-walkthrough-trajectory.mp4",
+    "in": 133.1,
+    "out": 140.9,
+    "dur": 7.8,
+    "mute_source": true
+   },
+   "audio": "NEW N03",
+   "program_in": 376.04,
+   "program_out": 383.84,
+   "dur": 7.8,
+   "program_in_with_intro": 384.16,
+   "overlays": [
+    {
+     "type": "column-tag",
+     "label": "MISSION 3",
+     "lines": [
+      "Brian Stuart's reconstruction",
+      "of ENIAC's 1946 shell flight"
+     ],
+     "pos": "trajectory right column, box x1434-1880 y455-595 (free x1420-1890 y425-680 in every frame)",
+     "size": 25,
+     "tin": 0.3,
+     "tout": "end",
+     "note": "Card K text v3: reads \"MISSION 3 · Brian Stuart's reconstruction of ENIAC's 1946 shell flight\". The 887 px one-line version does not fit the 500 px header gap, so it moved to the clear right column."
+    }
+   ],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S15",
+   "unit": "L",
+   "chapter": 6,
+   "chapter_title": "Only at the museum",
+   "title": "Museum invite card",
+   "video": {
+    "type": "graphic",
+    "bg": "split: primes freeze at 111.90 | trajectory freeze at 140.80 (landed), centre crops 960x1080, blur 5, 70% luma, amber divider"
+   },
+   "audio": "NEW N04",
+   "program_in": 383.44,
+   "program_out": 394.44,
+   "dur": 11.0,
+   "program_in_with_intro": 391.56,
+   "overlays": [
+    {
+     "type": "headline",
+     "text": "Live, card by card. Only at the museum."
+    },
+    {
+     "type": "sub",
+     "text": "Vintage Computer Federation  ·  InfoAge, Wall, NJ"
+    }
+   ],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S16",
+   "unit": "M",
+   "chapter": 7,
+   "chapter_title": "The finale",
+   "title": "Chapter card + finale setup",
+   "video": {
+    "type": "card"
+   },
+   "audio": "REUSED WAV finale-00.wav",
+   "program_in": 394.04,
+   "program_out": 400.52,
+   "dur": 6.48,
+   "program_in_with_intro": 402.16,
+   "overlays": [
+    {
+     "type": "chapter-card",
+     "text": "CHAPTER 7 · The finale"
+    }
+   ],
+   "crossfade_out": 0.4
+  },
+  {
+   "id": "S17",
+   "unit": "N",
+   "chapter": 7,
+   "chapter_title": "The finale",
+   "title": "You programmed ENIAC",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v4/finale.mp4",
+    "in": 6.85,
+    "out": 29.45,
+    "dur": 22.6
+   },
+   "audio": "REUSED baked finale-01..finale-03",
+   "program_in": 400.12,
+   "program_out": 422.72,
+   "dur": 22.6,
+   "program_in_with_intro": 408.24,
+   "overlays": [],
+   "crossfade_out": 0.5
+  },
+  {
+   "id": "S18",
+   "unit": "O",
+   "chapter": 7,
+   "chapter_title": "The finale",
+   "title": "The single thank-you: Brian L. Stuart",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v4/finale.mp4",
+    "in": 31.4,
+    "out": 37.36,
+    "dur": 5.96,
+    "mute_source": true,
+    "hold": "freeze last frame to 13.8 s"
+   },
+   "audio": "NEW N05",
+   "program_in": 422.72,
+   "program_out": 436.52,
+   "dur": 13.8,
+   "program_in_with_intro": 430.84,
+   "overlays": [],
+   "crossfade_out": 0.5
+  },
+  {
+   "id": "S20",
+   "unit": "P",
+   "chapter": 8,
+   "chapter_title": "Come see it",
+   "title": "Close and call to action",
+   "video": {
+    "type": "graphic",
+    "bg": "freeze of the v4 live attract room (tour at 30.00), blur 22, 45% luma"
+   },
+   "audio": "NEW N06",
+   "program_in": 436.0,
+   "program_out": 453.4,
+   "dur": 17.4,
+   "program_in_with_intro": 444.12,
+   "overlays": [
+    {
+     "type": "headline",
+     "text": "Come program ENIAC in person"
+    },
+    {
+     "type": "sub",
+     "text": "Vintage Computer Federation"
+    },
+    {
+     "type": "sub",
+     "text": "InfoAge Science and History Museums  ·  Wall, New Jersey"
+    },
+    {
+     "type": "url",
+     "text": "vcfed.org",
+     "tin": 13.1
+    }
+   ],
+   "crossfade_out": 0.5
+  },
+  {
+   "id": "S21",
+   "unit": "Q",
+   "chapter": 8,
+   "chapter_title": "Come see it",
+   "title": "End screen (YouTube end-screen safe)",
+   "video": {
+    "type": "graphic"
+   },
+   "audio": "music",
+   "program_in": 452.88,
+   "program_out": 472.88,
+   "dur": 20.0,
+   "program_in_with_intro": 461.0,
+   "overlays": [
+    {
+     "type": "title",
+     "text": "Thanks for watching"
+    },
+    {
+     "type": "sub",
+     "text": "Vintage Computer Federation · InfoAge Science and History Museums · Wall, NJ · vcfed.org"
+    },
+    {
+     "type": "credit",
+     "text": "Exhibit by Nick DeMarco, Docent and Exhibit Developer, Vintage Computer Federation"
+    },
+    {
+     "type": "placeholders",
+     "text": "YouTube end-screen: video x150 y300 760x428; video x1010 y300 760x428; subscribe circle c(960,870) d220"
+    }
+   ],
+   "crossfade_out": 0.0
+  }
+ ],
+ "cuts": {
+  "B": [
+   "assets/video/source-v4/eniac-touch-tour.mp4",
+   11.48,
+   110.7
+  ],
+  "D": [
+   "assets/video/source-v4/eniac-touch-tour.mp4",
+   117.55,
+   141.52
+  ],
+  "E": [
+   "assets/video/source-v4/eniac-touch-tour.mp4",
+   151.1,
+   211.0
+  ],
+  "G": [
+   "assets/video/source-v4/eniac-touch-tour.mp4",
+   229.2,
+   247.25
+  ],
+  "I": [
+   "assets/video/source-v4/eniac-touch-walkthrough-squares.mp4",
+   15.68,
+   164.52
+  ],
+  "J": [
+   "assets/video/source-v4/eniac-touch-walkthrough-primes.mp4",
+   102.4,
+   111.92
+  ],
+  "K": [
+   "assets/video/source-v4/eniac-touch-walkthrough-trajectory.mp4",
+   133.1,
+   140.9
+  ],
+  "N": [
+   "assets/video/source-v4/finale.mp4",
+   6.85,
+   29.45
+  ],
+  "O": [
+   "assets/video/source-v4/finale.mp4",
+   31.4,
+   37.36
   ]
  },
- "loudness": {
-  "source_narration_lufs": -19.7,
-  "new_lines_target_lufs": -20.0,
-  "master_target_lufs": -14.0,
-  "true_peak_dbtp": -1.0
+ "edge_check": [
+  {
+   "unit": "B",
+   "edge": "in",
+   "t": 11.48,
+   "silence": [
+    10.38,
+    11.54
+   ],
+   "visual": "attract screen, title card gone (11.3 already clean); tour-01 from 11.54"
+  },
+  {
+   "unit": "B",
+   "edge": "out",
+   "t": 110.7,
+   "silence": [
+    108.91,
+    111.51
+   ],
+   "visual": "Explore still clean at 110.8; glossary fades in from 110.96 (dropped tour-11 at 111.50)"
+  },
+  {
+   "unit": "D",
+   "edge": "in",
+   "t": 117.55,
+   "silence": [
+    115.54,
+    117.85
+   ],
+   "visual": "tubes screen fully in (fading at 117.3); tour-12 from 117.82"
+  },
+  {
+   "unit": "D",
+   "edge": "out",
+   "t": 141.52,
+   "silence": [
+    141.34,
+    142.22
+   ],
+   "visual": "\"Where the power went\" through 141.56; MYTH card (\"A story people still tell\") from 141.60"
+  },
+  {
+   "unit": "E",
+   "edge": "in",
+   "t": 151.1,
+   "silence": [
+    149.97,
+    151.42
+   ],
+   "visual": "\"Heaters on, the rest off\" screen up by 150.80 (power screen 150.4-150.6, MYTH before); no caption box in v4"
+  },
+  {
+   "unit": "E",
+   "edge": "out",
+   "t": 211.0,
+   "silence": [
+    210.66,
+    213.89
+   ],
+   "visual": "\"Fixed!\" screen clean at 211.1; scene change 211.16; Stuart honor-roll screen from about 212"
+  },
+  {
+   "unit": "G",
+   "edge": "in",
+   "t": 229.2,
+   "silence": [
+    228.64,
+    229.71
+   ],
+   "visual": "Stuart honor-roll screen (\"...Thank you, Brian.\") full at 228.9, cross-fading out from 229.00; programmers screen clean by 229.16; tour-26 from 229.60. No caption box in v4"
+  },
+  {
+   "unit": "G",
+   "edge": "out",
+   "t": 247.25,
+   "silence": [
+    247.03,
+    249.96
+   ],
+   "visual": "programmers screen at 247.2; picker fades in from 247.32"
+  },
+  {
+   "unit": "I",
+   "edge": "in",
+   "t": 15.68,
+   "silence": [
+    14.82,
+    15.73
+   ],
+   "visual": "blank transition frame between attract and picker (scdet 15.68); squares-02 onset 15.73 (50 ms)"
+  },
+  {
+   "unit": "I",
+   "edge": "out",
+   "t": 164.52,
+   "silence": [
+    164.26,
+    164.79
+   ],
+   "visual": "table screen at 164.52; \"Thank you / Simulator: Brian L. Stuart\" end card at 164.6"
+  },
+  {
+   "unit": "J",
+   "edge": "in",
+   "t": 102.4,
+   "silence": null,
+   "visual": "muted; full-speed card pile-up (cards 5 -> 8); primes hand cut (raw 140-160) is later"
+  },
+  {
+   "unit": "J",
+   "edge": "out",
+   "t": 111.92,
+   "silence": null,
+   "visual": "muted; continuous"
+  },
+  {
+   "unit": "K",
+   "edge": "in",
+   "t": 133.1,
+   "silence": null,
+   "visual": "muted; hand-cut jump at 133.00 (hop 20 at 132.96 -> hop 32 at 133.04; raw cut 167-216.3); window is after it"
+  },
+  {
+   "unit": "K",
+   "edge": "out",
+   "t": 140.9,
+   "silence": null,
+   "visual": "muted; \"Landed\" from 139.0, held; summary screen at 141.76. Earlier jump 113.72 (raw 113.7-147.7) is outside"
+  },
+  {
+   "unit": "N",
+   "edge": "in",
+   "t": 6.85,
+   "silence": [
+    5.62,
+    7.0
+   ],
+   "visual": "\"ENIAC flew the shell!\" screen, title ghost gone; finale-01 from 6.91"
+  },
+  {
+   "unit": "N",
+   "edge": "out",
+   "t": 29.45,
+   "silence": [
+    27.84,
+    31.03
+   ],
+   "visual": "\"Here is every unit you used\"; f3 Stuart screen from 31.12"
+  },
+  {
+   "unit": "O",
+   "edge": "in",
+   "t": 31.4,
+   "silence": null,
+   "visual": "muted; f3 \"Brian L. Stuart wrote this simulator\" fully in (fading at 31.2)"
+  },
+  {
+   "unit": "O",
+   "edge": "out",
+   "t": 37.36,
+   "silence": null,
+   "visual": "muted; last clean f3 frame, freeze it; blank/f4 from 37.44"
+  }
+ ],
+ "voice_events": [
+  {
+   "unit": "A",
+   "offset": 0.3,
+   "kind": "new",
+   "path": "assets/audio/narration/N01.wav",
+   "ss": null,
+   "t": null,
+   "label": "N01",
+   "program_t": 0.3
+  },
+  {
+   "unit": "B",
+   "offset": 0.0,
+   "kind": "baked",
+   "path": "assets/video/source-v4/eniac-touch-tour.mp4",
+   "ss": 11.48,
+   "t": 99.2,
+   "label": "tour-01..10",
+   "program_t": 12.88
+  },
+  {
+   "unit": "D",
+   "offset": 0.0,
+   "kind": "baked",
+   "path": "assets/video/source-v4/eniac-touch-tour.mp4",
+   "ss": 117.55,
+   "t": 23.96,
+   "label": "tour-12, 13",
+   "program_t": 113.08
+  },
+  {
+   "unit": "E",
+   "offset": 0.0,
+   "kind": "baked",
+   "path": "assets/video/source-v4/eniac-touch-tour.mp4",
+   "ss": 151.1,
+   "t": 59.92,
+   "label": "tour-15..24",
+   "program_t": 136.64
+  },
+  {
+   "unit": "G",
+   "offset": 0.0,
+   "kind": "baked",
+   "path": "assets/video/source-v4/eniac-touch-tour.mp4",
+   "ss": 229.2,
+   "t": 18.04,
+   "label": "tour-26",
+   "program_t": 197.56
+  },
+  {
+   "unit": "H",
+   "offset": 0.5,
+   "kind": "wav",
+   "path": "assets/audio/source-lines-v3/tour-27.wav",
+   "ss": 0.0,
+   "t": 2.21,
+   "label": "tour-27 bridge (word gap 2.06-2.37)",
+   "program_t": 215.7
+  },
+  {
+   "unit": "I",
+   "offset": 0.0,
+   "kind": "baked",
+   "path": "assets/video/source-v4/eniac-touch-walkthrough-squares.mp4",
+   "ss": 15.68,
+   "t": 148.84,
+   "label": "squares-02..17",
+   "program_t": 218.08
+  },
+  {
+   "unit": "J",
+   "offset": 0.4,
+   "kind": "new",
+   "path": "assets/audio/narration/N02.wav",
+   "ss": null,
+   "t": null,
+   "label": "N02",
+   "program_t": 367.32
+  },
+  {
+   "unit": "K",
+   "offset": 0.15,
+   "kind": "new",
+   "path": "assets/audio/narration/N03.wav",
+   "ss": null,
+   "t": null,
+   "label": "N03",
+   "program_t": 376.19
+  },
+  {
+   "unit": "L",
+   "offset": 0.3,
+   "kind": "new",
+   "path": "assets/audio/narration/N04.wav",
+   "ss": null,
+   "t": null,
+   "label": "N04",
+   "program_t": 383.74
+  },
+  {
+   "unit": "M",
+   "offset": 0.2,
+   "kind": "wav",
+   "path": "assets/audio/source-lines-v3/finale-00.wav",
+   "ss": null,
+   "t": null,
+   "label": "finale-00",
+   "program_t": 394.24
+  },
+  {
+   "unit": "N",
+   "offset": 0.0,
+   "kind": "baked",
+   "path": "assets/video/source-v4/finale.mp4",
+   "ss": 6.85,
+   "t": 22.6,
+   "label": "finale-01..03",
+   "program_t": 400.12
+  },
+  {
+   "unit": "O",
+   "offset": 0.4,
+   "kind": "new",
+   "path": "assets/audio/narration/N05.wav",
+   "ss": null,
+   "t": null,
+   "label": "N05 (the single Stuart thank-you)",
+   "program_t": 423.12
+  },
+  {
+   "unit": "P",
+   "offset": 0.5,
+   "kind": "new",
+   "path": "assets/audio/narration/N06.wav",
+   "ss": null,
+   "t": null,
+   "label": "N06",
+   "program_t": 436.5
+  }
+ ],
+ "new_line_fit": {
+  "A": {
+   "line": "N01",
+   "line_dur": 12.446,
+   "start": 0.3,
+   "ends_at": 12.75,
+   "unit_dur": 13.4,
+   "fits": true
+  },
+  "J": {
+   "line": "N02",
+   "line_dur": 8.498,
+   "start": 0.4,
+   "ends_at": 8.9,
+   "unit_dur": 9.52,
+   "fits": true
+  },
+  "K": {
+   "line": "N03",
+   "line_dur": 7.291,
+   "start": 0.15,
+   "ends_at": 7.44,
+   "unit_dur": 7.8,
+   "fits": true
+  },
+  "L": {
+   "line": "N04",
+   "line_dur": 10.124,
+   "start": 0.3,
+   "ends_at": 10.42,
+   "unit_dur": 11.0,
+   "fits": true
+  },
+  "O": {
+   "line": "N05",
+   "line_dur": 12.585,
+   "start": 0.4,
+   "ends_at": 12.99,
+   "unit_dur": 13.8,
+   "fits": true
+  },
+  "P": {
+   "line": "N06",
+   "line_dur": 16.068,
+   "start": 0.5,
+   "ends_at": 16.57,
+   "unit_dur": 17.4,
+   "fits": true
+  }
  },
- "total_runtime_s": 469.37,
- "total_runtime": "7:49.37",
- "chapters": [
+ "youtube_chapters": [
   {
    "n": 1,
    "title": "Meet the kiosk",
-   "dur_s": 47.32
+   "t": 0.0,
+   "stamp": "0:00"
   },
   {
    "n": 2,
    "title": "Explore ENIAC",
-   "dur_s": 67.6
+   "t": 53.9,
+   "stamp": "0:53"
   },
   {
    "n": 3,
    "title": "Keeping ENIAC alive",
-   "dur_s": 85.98
+   "t": 119.8,
+   "stamp": "1:59"
   },
   {
    "n": 4,
    "title": "The first programmers",
-   "dur_s": 19.1
+   "t": 204.28,
+   "stamp": "3:24"
   },
   {
    "n": 5,
    "title": "Mission 1: Squares",
-   "dur_s": 149.92
+   "t": 223.32,
+   "stamp": "3:43"
   },
   {
    "n": 6,
    "title": "Only at the museum",
-   "dur_s": 26.0
+   "t": 375.04,
+   "stamp": "6:15"
   },
   {
    "n": 7,
    "title": "The finale",
-   "dur_s": 40.65
+   "t": 402.16,
+   "stamp": "6:42"
   },
   {
    "n": 8,
    "title": "Come see it",
-   "dur_s": 32.8
+   "t": 444.12,
+   "stamp": "7:24"
+  }
+ ],
+ "stuart_audit": {
+  "single_thanks": "S18 / N05 (12.59 s) over the kiosk f3 screen; finale-04 muted. No Stuart lower third (v2 decision).",
+  "attribution_not_thanks": [
+   "N04: \"Brian Stuart's reconstruction of ENIAC's 1946 shell flight\"",
+   "S14 Card K tag (same wording)"
+  ],
+  "spoken_found": [
+   [
+    "tour-00",
+    "0.06-10.46",
+    "cut: unit B starts 11.48"
+   ],
+   [
+    "tour-25",
+    "213.87-228.77",
+    "cut: E ends 211.00, G starts 229.20"
+   ],
+   [
+    "tour-39",
+    "341.72-347.29",
+    "not used (tour finale replaced by finale.mp4)"
+   ],
+   [
+    "tour-42",
+    "361.63-367.90",
+    "not used"
+   ],
+   [
+    "squares-00",
+    "0.39-10.42",
+    "cut: I starts 15.68"
+   ],
+   [
+    "squares-18",
+    "164.71-169.53",
+    "cut: I ends 164.52"
+   ],
+   [
+    "attract-06",
+    "v3 63.82-68.14",
+    "not used (attract.mp4 not re-recorded, unused)"
+   ],
+   [
+    "explore-10",
+    "v3 80.75-84.37",
+    "not used (explore.mp4 not re-recorded, unused)"
+   ],
+   [
+    "tubes-13",
+    "v3 103.28-107.56",
+    "not used (tubes.mp4 not re-recorded, unused)"
+   ],
+   [
+    "finale-04",
+    "30.97-37.15",
+    "MUTED under N05 (O uses 31.40-37.36 video only)"
+   ],
+   [
+    "finale-07",
+    "48.29-52.79",
+    "cut: N/O footage ends 37.36"
+   ],
+   [
+    "primes-17",
+    "173.40-179.25",
+    "not used (J is 102.40-111.92, muted)"
+   ],
+   [
+    "trajectory-00",
+    "0.36-8.95",
+    "not used (K is 133.10-140.90, muted)"
+   ],
+   [
+    "trajectory-14",
+    "149.95-154.96",
+    "not used"
+   ]
+  ],
+  "on_screen": [
+   "v4 has NO burned-in caption box (CLEAN=1), so the v3 \"The honor roll: Brian L. Stuart\" caption carry-over is gone",
+   "Title cards naming Stuart (tour, squares, primes, trajectory, finale): tour and squares cut (B in 11.48, I in 15.68); others unused",
+   "\"Thank you / Simulator: Brian L. Stuart\" end cards: squares (from 164.6) cut by I out 164.52; finale end card unused (footage ends 37.36); primes/trajectory unused",
+   "Tour honor-roll Stuart screen incl. \"Thank you, Brian.\" (about 212-229.1, cross-fading out 229.00-229.16): cut by E out 211.00 and G in 229.20"
+  ],
+  "kept_ui": [
+   "v3 footer \"ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by Brian L. Stuart, Drexel University\" (all kiosk screens except attract)",
+   "attract-screen rotating plates: \"The simulator behind this screen: Brian L. Stuart\" / \"ENIAC was designed by J. Presper Eckert, John W. Mauchly\" / project team / built at and for / the machine / first programmers (S03-S04)",
+   "honor-roll tab label \"Brian L. Stuart\" (S10)",
+   "f3 screen \"Brian L. Stuart wrote this simulator\" under N05 (S18) -- the single thank-you visual"
+  ],
+  "new_in_v4": "narration identical to v3 (same WAVs); no new spoken thank-yous; caption box removed"
+ },
+ "removed_scenes": [
+  {
+   "id": "S01",
+   "why": "v2: the VCF intro carries the title"
+  },
+  {
+   "id": "S19",
+   "why": "Gate 1: runtime"
   }
  ],
  "photos": [
@@ -108,855 +1228,16 @@
    "license": "Public domain (work of a U.S. Army employee, official duties)"
   }
  ],
- "new_lines": [
-  {
-   "id": "N01",
-   "scene": "S02",
-   "text": "Hi, I'm Nick, a docent at the Vintage Computer Federation museum, and I want to introduce you to our new ENIAC exhibit: the room-sized computer of 1946, on a touch screen you can program yourself.",
-   "est_dur_s": 10.9
-  },
-  {
-   "id": "N02",
-   "scene": "S13",
-   "text": "And that card punch? You'll meet it at the museum. In Mission Two, ENIAC hunts for prime numbers, and punches a card for every one it finds.",
-   "est_dur_s": 8.4
-  },
-  {
-   "id": "N03",
-   "scene": "S14",
-   "text": "Then, in Mission Three, you wire ENIAC to fly a cannon shell, one punched card per hop, all the way to the landing.",
-   "est_dur_s": 7.2
-  },
-  {
-   "id": "N04",
-   "scene": "S15",
-   "text": "The primes hunt, and Brian Stuart's recreation of the 1946 shell demo? They run live, card by card, only at the museum. Come wire them up yourself.",
-   "est_dur_s": 8.4
-  },
-  {
-   "id": "N05",
-   "scene": "S18",
-   "text": "And the person who made all of this possible: Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it follows the real ENIAC pulse by pulse. Brian, thank you.",
-   "est_dur_s": 11.2
-  },
-  {
-   "id": "N04_ALT",
-   "scene": "S15",
-   "text": "Primes, hunted live. A cannon shell, flown on Brian Stuart's recreation of the 1946 demo. Card by card, only at the museum. Come wire them up yourself.",
-   "est_dur_s": 8.4
-  },
-  {
-   "id": "N06",
-   "scene": "S20",
-   "text": "So that's our new ENIAC exhibit. Come see it in person, and program ENIAC yourself, at the Vintage Computer Federation, inside the InfoAge Science and History Museums in Wall, New Jersey. Plan your visit at vcfed.org. Thanks for watching!",
-   "est_dur_s": 12.2
-  }
- ],
- "scenes": [
-  {
-   "id": "S01",
-   "chapter": 1,
-   "chapter_title": "Meet the kiosk",
-   "title": "Branded title open",
-   "dur": 4.0,
-   "video": {
-    "type": "graphic+photo",
-    "photo": "P1",
-    "motion": "ken-burns-zoom (slow push-in, 100%->106%)"
-   },
-   "audio": {
-    "kind": "music-only"
-   },
-   "overlays": [
-    {
-     "type": "title",
-     "text": "Program ENIAC",
-     "sub": "Our New Touch-Screen Exhibit",
-     "in": 0.4,
-     "out": 3.6,
-     "anim": "fade+rise 0.5s"
-    },
-    {
-     "type": "credit",
-     "text": "U.S. Army Photo",
-     "pos": "bottom-right small",
-     "in": 0.6,
-     "out": "scene end of S02"
-    }
-   ],
-   "transition_out": "photo continues into S02 (no cut)",
-   "music": "M1 full level, then duck at 3.6s",
-   "program_in": 0.0,
-   "program_out": 4.0
-  },
-  {
-   "id": "S02",
-   "chapter": 1,
-   "chapter_title": "Meet the kiosk",
-   "title": "Docent intro: why this video exists",
-   "dur": 11.5,
-   "video": {
-    "type": "photo",
-    "photo": "P1",
-    "motion": "ken-burns-pan continuing from S01 (pan left to right across the panels)"
-   },
-   "audio": {
-    "kind": "new",
-    "line": "N01",
-    "est_dur": 10.9
-   },
-   "overlays": [
-    {
-     "type": "lower-third",
-     "text": "Nick DeMarco",
-     "sub": "Docent and Exhibit Developer, Vintage Computer Federation",
-     "in": 0.5,
-     "out": 5.5,
-     "pos": "upper-left safe area"
-    }
-   ],
-   "transition_out": "dissolve 0.5s (video only) into kiosk footage",
-   "music": "M1 ducked",
-   "program_in": 4.0,
-   "program_out": 15.5
-  },
-  {
-   "id": "S03",
-   "chapter": 1,
-   "chapter_title": "Meet the kiosk",
-   "title": "The live attract screen",
-   "video": {
-    "type": "source",
-    "file": "assets/video/source/eniac-touch-tour.mp4",
-    "in": 11.48,
-    "out": 34.95,
-    "dur": 23.47,
-    "motion": "none (screen recording)"
-   },
-   "audio": {
-    "kind": "baked",
-    "lines": [
-     "tour-01",
-     "tour-02"
-    ]
-   },
-   "overlays": [
-    {
-     "type": "chapter-lower-third",
-     "text": "1  Meet the kiosk",
-     "in": 0.3,
-     "out": 3.8,
-     "pos": "upper-left"
-    }
-   ],
-   "transition_out": "straight cut (continuous source)",
-   "music": "M1 ducked",
-   "dur": 23.47,
-   "program_in": 15.5,
-   "program_out": 38.97
-  },
-  {
-   "id": "S04",
-   "chapter": 1,
-   "chapter_title": "Meet the kiosk",
-   "title": "One touch, and the missions appear",
-   "video": {
-    "type": "source",
-    "file": "assets/video/source/eniac-touch-tour.mp4",
-    "in": 34.95,
-    "out": 43.3,
-    "dur": 8.35,
-    "motion": "none"
-   },
-   "audio": {
-    "kind": "baked",
-    "lines": [
-     "tour-03",
-     "tour-04"
-    ]
-   },
-   "overlays": [],
-   "transition_out": "straight cut (continuous source)",
-   "music": "M1 ducked",
-   "dur": 8.35,
-   "program_in": 38.97,
-   "program_out": 47.32
-  },
-  {
-   "id": "S05",
-   "chapter": 2,
-   "chapter_title": "Explore ENIAC",
-   "title": "Walk the room",
-   "video": {
-    "type": "source",
-    "file": "assets/video/source/eniac-touch-tour.mp4",
-    "in": 43.3,
-    "out": 110.9,
-    "dur": 67.6,
-    "motion": "none"
-   },
-   "audio": {
-    "kind": "baked",
-    "lines": [
-     "tour-05",
-     "tour-06",
-     "tour-07",
-     "tour-08",
-     "tour-09",
-     "tour-10"
-    ]
-   },
-   "overlays": [
-    {
-     "type": "chapter-lower-third",
-     "text": "2  Explore ENIAC",
-     "in": 1.5,
-     "out": 5.0,
-     "pos": "upper-left"
-    }
-   ],
-   "transition_out": "dip to chapter card (video fade 0.3s)",
-   "music": "M1 ducked; small lift in the 59.75-63.47 pan gap",
-   "dur": 67.6,
-   "program_in": 47.32,
-   "program_out": 114.92
-  },
-  {
-   "id": "S06",
-   "chapter": 3,
-   "chapter_title": "Keeping ENIAC alive",
-   "title": "Chapter card",
-   "dur": 1.5,
-   "video": {
-    "type": "graphic"
-   },
-   "audio": {
-    "kind": "music-only"
-   },
-   "overlays": [
-    {
-     "type": "chapter-card",
-     "text": "3  Keeping ENIAC alive",
-     "in": 0,
-     "out": 1.5
-    }
-   ],
-   "transition_out": "fade 0.3s",
-   "music": "M2 swell",
-   "program_in": 114.92,
-   "program_out": 116.42
-  },
-  {
-   "id": "S07",
-   "chapter": 3,
-   "chapter_title": "Keeping ENIAC alive",
-   "title": "18,000 tubes and 150 kilowatts",
-   "video": {
-    "type": "source",
-    "file": "assets/video/source/eniac-touch-tour.mp4",
-    "in": 118.12,
-    "out": 142.6,
-    "dur": 24.48,
-    "motion": "none"
-   },
-   "audio": {
-    "kind": "baked",
-    "lines": [
-     "tour-12",
-     "tour-13"
-    ]
-   },
-   "overlays": [],
-   "transition_out": "dissolve 0.4s (video only; audio hard cut in silence). Removes tour-14 myth beat 142.60-151.50",
-   "music": "M2 ducked",
-   "dur": 24.48,
-   "program_in": 116.42,
-   "program_out": 140.9
-  },
-  {
-   "id": "S08",
-   "chapter": 3,
-   "chapter_title": "Keeping ENIAC alive",
-   "title": "Why tubes burned out, and find the dead tube",
-   "video": {
-    "type": "source",
-    "file": "assets/video/source/eniac-touch-tour.mp4",
-    "in": 151.5,
-    "out": 211.5,
-    "dur": 60.0,
-    "motion": "none"
-   },
-   "audio": {
-    "kind": "baked",
-    "lines": [
-     "tour-15",
-     "tour-16",
-     "tour-17",
-     "tour-18",
-     "tour-19",
-     "tour-20",
-     "tour-21",
-     "tour-22",
-     "tour-23",
-     "tour-24"
-    ]
-   },
-   "cutaway": {
-    "photo": "P2",
-    "program_offset_in": 0.6,
-    "program_offset_out": 7.6,
-    "source_equiv": "tour 152.10-159.10 (over tour-15: tubes wear out, heaters left on overnight)",
-    "motion": "ken-burns-zoom slow",
-    "fade": "0.4s in/out",
-    "note": "source audio continues underneath (tour-15)"
-   },
-   "overlays": [
-    {
-     "type": "credit",
-     "text": "U.S. Army Photo",
-     "pos": "bottom-right small",
-     "during": "cutaway only"
-    }
-   ],
-   "transition_out": "dip to chapter card. Removes tour-25 Stuart honor roll 211.50-227.30",
-   "music": "M2 ducked; lift slightly under the tube-touching taps",
-   "dur": 60.0,
-   "program_in": 140.9,
-   "program_out": 200.9
-  },
-  {
-   "id": "S09",
-   "chapter": 4,
-   "chapter_title": "The first programmers",
-   "title": "Chapter card",
-   "dur": 1.5,
-   "video": {
-    "type": "graphic"
-   },
-   "audio": {
-    "kind": "music-only"
-   },
-   "overlays": [
-    {
-     "type": "chapter-card",
-     "text": "4  The first programmers",
-     "in": 0,
-     "out": 1.5
-    }
-   ],
-   "transition_out": "fade 0.3s",
-   "music": "M3 swell (gentler)",
-   "program_in": 200.9,
-   "program_out": 202.4
-  },
-  {
-   "id": "S10",
-   "chapter": 4,
-   "chapter_title": "The first programmers",
-   "title": "The honor roll: six first programmers",
-   "video": {
-    "type": "source",
-    "file": "assets/video/source/eniac-touch-tour.mp4",
-    "in": 227.3,
-    "out": 244.9,
-    "dur": 17.6,
-    "motion": "none"
-   },
-   "audio": {
-    "kind": "baked",
-    "lines": [
-     "tour-26"
-    ]
-   },
-   "cutaway": {
-    "photo": "P3",
-    "program_offset_in": 9.9,
-    "program_offset_out": 17.6,
-    "source_equiv": "tour 237.20-244.90 (after the six names; over 'There was no programming language...worked out every cable by hand')",
-    "motion": "ken-burns-zoom slow push toward the two programmers",
-    "fade": "0.4s in"
-   },
-   "overlays": [
-    {
-     "type": "credit",
-     "text": "Betty Jean Jennings and Frances Bilas, 1946  ·  U.S. Army Photo",
-     "pos": "bottom-left small, above kiosk footer",
-     "during": "cutaway only"
-    }
-   ],
-   "transition_out": "dip to chapter card",
-   "music": "M3 ducked",
-   "dur": 17.6,
-   "program_in": 202.4,
-   "program_out": 220.0
-  },
-  {
-   "id": "S11",
-   "chapter": 5,
-   "chapter_title": "Mission 1: Squares",
-   "title": "Chapter card + bridge",
-   "dur": 2.4,
-   "video": {
-    "type": "graphic"
-   },
-   "audio": {
-    "kind": "wav",
-    "file": "assets/audio/source-lines/tour-27.wav",
-    "in": 0.0,
-    "out": 2.21,
-    "text": "Now it's my turn to program ENIAC.",
-    "fallback_new": "N-ALT1"
-   },
-   "overlays": [
-    {
-     "type": "chapter-card",
-     "text": "5  Mission 1: Squares",
-     "in": 0,
-     "out": 2.4
-    }
-   ],
-   "transition_out": "fade 0.3s",
-   "music": "M4 swell then duck under bridge line",
-   "program_in": 220.0,
-   "program_out": 222.4
-  },
-  {
-   "id": "S12",
-   "chapter": 5,
-   "chapter_title": "Mission 1: Squares",
-   "title": "The Squares mission (near-full)",
-   "video": {
-    "type": "source",
-    "file": "assets/video/source/eniac-touch-walkthrough-squares.mp4",
-    "in": 15.68,
-    "out": 163.2,
-    "dur": 147.52,
-    "motion": "none"
-   },
-   "audio": {
-    "kind": "baked",
-    "lines": [
-     "squares-02",
-     "squares-03",
-     "squares-04",
-     "squares-05",
-     "squares-06",
-     "squares-07",
-     "squares-08",
-     "squares-09",
-     "squares-10",
-     "squares-11",
-     "squares-12",
-     "squares-13",
-     "squares-14",
-     "squares-15",
-     "squares-16",
-     "squares-17"
-    ]
-   },
-   "overlays": [],
-   "transition_out": "straight cut to teaser footage",
-   "music": "M4 ducked; lift to -20 dB in the three lamp-play pauses (source 93.2-106.8, 108.2-124.2, 126.0-141.6)",
-   "dur": 147.52,
-   "program_in": 222.4,
-   "program_out": 369.92
-  },
-  {
-   "id": "S13",
-   "chapter": 6,
-   "chapter_title": "Only at the museum",
-   "title": "Teaser: Primes",
-   "video": {
-    "type": "source",
-    "file": "assets/video/source/eniac-touch-walkthrough-primes.mp4",
-    "in": 104.0,
-    "out": 112.5,
-    "dur": 8.5,
-    "motion": "none",
-    "mute_source": true
-   },
-   "audio": {
-    "kind": "new",
-    "line": "N02",
-    "est_dur": 8.4
-   },
-   "overlays": [
-    {
-     "type": "chapter-lower-third",
-     "text": "6  Only at the museum",
-     "in": 0.3,
-     "out": 3.5,
-     "pos": "upper-left"
-    },
-    {
-     "type": "tag",
-     "text": "Mission 2: Primes  ·  live at the museum",
-     "pos": "upper-right",
-     "in": 0.5,
-     "out": "end"
-    }
-   ],
-   "transition_out": "dissolve 0.4s",
-   "music": "M5 energetic lift, ducked under N02",
-   "dur": 8.5,
-   "program_in": 369.92,
-   "program_out": 378.42
-  },
-  {
-   "id": "S14",
-   "chapter": 6,
-   "chapter_title": "Only at the museum",
-   "title": "Teaser: Trajectory",
-   "video": {
-    "type": "source",
-    "file": "assets/video/source/eniac-touch-walkthrough-trajectory.mp4",
-    "in": 130.5,
-    "out": 139.0,
-    "dur": 8.5,
-    "motion": "none",
-    "mute_source": true
-   },
-   "audio": {
-    "kind": "new",
-    "line": "N03",
-    "est_dur": 7.2
-   },
-   "overlays": [
-    {
-     "type": "tag",
-     "text": "Mission 3: Trajectory  ·  Brian Stuart's recreation of the 1946 demo",
-     "pos": "upper-right",
-     "in": 0.3,
-     "out": "end"
-    }
-   ],
-   "transition_out": "dissolve 0.4s",
-   "music": "M5 ducked",
-   "dur": 8.5,
-   "program_in": 378.42,
-   "program_out": 386.92
-  },
-  {
-   "id": "S15",
-   "chapter": 6,
-   "chapter_title": "Only at the museum",
-   "title": "Museum invite card",
-   "dur": 9.0,
-   "video": {
-    "type": "graphic",
-    "bg": "split screen: freeze of primes card pile (primes 111.9) left, freeze of landed arc (trajectory 138.9) right, darkened 40%"
-   },
-   "audio": {
-    "kind": "new",
-    "line": "N04",
-    "est_dur": 8.4
-   },
-   "overlays": [
-    {
-     "type": "headline",
-     "text": "Live, card by card. Only at the museum.",
-     "anim": "punch-in 0.3s",
-     "in": 0.4,
-     "out": "end"
-    },
-    {
-     "type": "sub",
-     "text": "Vintage Computer Federation  ·  InfoAge, Wall, NJ",
-     "in": 1.2,
-     "out": "end"
-    }
-   ],
-   "transition_out": "dip to chapter card",
-   "music": "M5 hit on headline, then duck",
-   "program_in": 386.92,
-   "program_out": 395.92
-  },
-  {
-   "id": "S16",
-   "chapter": 7,
-   "chapter_title": "The finale",
-   "title": "Chapter card + finale setup",
-   "dur": 6.0,
-   "video": {
-    "type": "graphic"
-   },
-   "audio": {
-    "kind": "wav",
-    "file": "assets/audio/source-lines/finale-00.wav",
-    "in": 0.0,
-    "out": 5.8,
-    "text": "Finish all three missions, and the kiosk ends with a finale. Here's one, from a real visit."
-   },
-   "overlays": [
-    {
-     "type": "chapter-card",
-     "text": "7  The finale",
-     "in": 0,
-     "out": 6.0
-    }
-   ],
-   "transition_out": "fade 0.3s",
-   "music": "M6 warm",
-   "program_in": 395.92,
-   "program_out": 401.92
-  },
-  {
-   "id": "S17",
-   "chapter": 7,
-   "chapter_title": "The finale",
-   "title": "You programmed ENIAC",
-   "video": {
-    "type": "source",
-    "file": "assets/video/source/finale.mp4",
-    "in": 6.95,
-    "out": 29.6,
-    "dur": 22.65,
-    "motion": "none"
-   },
-   "audio": {
-    "kind": "baked",
-    "lines": [
-     "finale-01",
-     "finale-02",
-     "finale-03"
-    ]
-   },
-   "overlays": [],
-   "transition_out": "straight cut",
-   "music": "M6 ducked",
-   "dur": 22.65,
-   "program_in": 401.92,
-   "program_out": 424.57
-  },
-  {
-   "id": "S18",
-   "chapter": 7,
-   "chapter_title": "The finale",
-   "title": "The single thank-you: Brian L. Stuart",
-   "dur": 12.0,
-   "video": {
-    "type": "source",
-    "file": "assets/video/source/finale.mp4",
-    "in": 31.4,
-    "out": 37.4,
-    "dur": 6.0,
-    "motion": "none",
-    "mute_source": true,
-    "hold": "freeze last frame (tpad stop_mode=clone) to fill scene length"
-   },
-   "audio": {
-    "kind": "new",
-    "line": "N05",
-    "est_dur": 11.2
-   },
-   "overlays": [
-    {
-     "type": "lower-third",
-     "text": "Brian L. Stuart",
-     "sub": "Drexel University  ·  author of the ENIAC simulator",
-     "in": 1.0,
-     "out": 7.0,
-     "pos": "upper-left safe area"
-    }
-   ],
-   "transition_out": "dissolve 0.5s into S20. Footage ends at 37.40: removes the f4 screen, finale-06 'thanks for visiting' (S19, dropped at Gate 1) and the end card. finale-04 baked thanks is muted",
-   "music": "M6 ducked",
-   "program_in": 424.57,
-   "program_out": 436.57
-  },
-  {
-   "id": "S20",
-   "chapter": 8,
-   "chapter_title": "Come see it",
-   "title": "Close and call to action",
-   "dur": 12.8,
-   "video": {
-    "type": "graphic",
-    "bg": "freeze of the live attract room (eniac-touch-tour.mp4 at 30.00), gaussian blur 12, darkened 50%"
-   },
-   "audio": {
-    "kind": "new",
-    "line": "N06",
-    "est_dur": 12.2
-   },
-   "overlays": [
-    {
-     "type": "headline",
-     "text": "Come program ENIAC in person",
-     "in": 0.5,
-     "out": "end"
-    },
-    {
-     "type": "sub",
-     "text": "Vintage Computer Federation\nInfoAge Science and History Museums  ·  Wall, New Jersey",
-     "in": 2.0,
-     "out": "end"
-    },
-    {
-     "type": "url",
-     "text": "vcfed.org",
-     "in": "on the word 'vcfed.org'",
-     "out": "end"
-    }
-   ],
-   "transition_out": "fade 0.5s to end screen",
-   "music": "M7 rises to full as narration ends",
-   "program_in": 436.57,
-   "program_out": 449.37
-  },
-  {
-   "id": "S21",
-   "chapter": 8,
-   "chapter_title": "Come see it",
-   "title": "End screen (YouTube end-screen safe)",
-   "dur": 20.0,
-   "video": {
-    "type": "graphic"
-   },
-   "audio": {
-    "kind": "music-only"
-   },
-   "overlays": [
-    {
-     "type": "title",
-     "text": "Thanks for watching",
-     "pos": "top band y 60-180"
-    },
-    {
-     "type": "sub",
-     "text": "Vintage Computer Federation  ·  InfoAge Science and History Museums  ·  Wall, NJ  ·  vcfed.org",
-     "pos": "top band y 190-240"
-    },
-    {
-     "type": "placeholder",
-     "text": "YouTube element: video 1",
-     "rect": "x 150 y 300 w 760 h 428"
-    },
-    {
-     "type": "placeholder",
-     "text": "YouTube element: video 2",
-     "rect": "x 1010 y 300 w 760 h 428"
-    },
-    {
-     "type": "placeholder",
-     "text": "YouTube element: subscribe",
-     "rect": "circle center x 960 y 870 d 220"
-    },
-    {
-     "type": "credit",
-     "text": "Exhibit by Nick DeMarco, Docent and Exhibit Developer, Vintage Computer Federation",
-     "pos": "bottom y 1010-1050"
-    }
-   ],
-   "transition_out": "music fade out last 3s; hard end",
-   "music": "M7 full, fade out 17-20s",
-   "program_in": 449.37,
-   "program_out": 469.37
-  }
- ],
- "music_direction": "1940s-period bed: light big-band / swing-era feel, brushes and muted brass, no vocals, ducked under narration. Candidates in storyboard.md.",
- "music_cues": [
-  {
-   "id": "M1",
-   "scenes": "S01-S05",
-   "in": 0.0,
-   "out": 114.92,
-   "level": "0 dB to 3.6s, then -20 dB ducked; -14 dB in gaps >2s",
-   "mood": "bright swing intro, settling to a light shuffle"
-  },
-  {
-   "id": "M2",
-   "scenes": "S06-S08",
-   "in": 114.92,
-   "out": 200.9,
-   "level": "card -6 dB, then -20 dB ducked",
-   "mood": "same bed, a little brighter"
-  },
-  {
-   "id": "M3",
-   "scenes": "S09-S10",
-   "in": 200.9,
-   "out": 220.0,
-   "level": "card -8 dB, then -22 dB ducked",
-   "mood": "gentler, ballad-tempo passage"
-  },
-  {
-   "id": "M4",
-   "scenes": "S11-S12",
-   "in": 220.0,
-   "out": 369.92,
-   "level": "card -6 dB, -20 dB ducked; lift to -14 dB in the lamp-play pauses",
-   "lifts": [
-    [
-     299.9,
-     313.5
-    ],
-    [
-     314.9,
-     330.9
-    ],
-    [
-     332.7,
-     348.3
-    ]
-   ],
-   "mood": "playful, ticking swing"
-  },
-  {
-   "id": "M5",
-   "scenes": "S13-S15",
-   "in": 369.92,
-   "out": 395.92,
-   "level": "-18 dB under VO; brass hit -4 dB on the S15 headline",
-   "mood": "up-tempo 'come see it' lift"
-  },
-  {
-   "id": "M6",
-   "scenes": "S16-S18",
-   "in": 395.92,
-   "out": 436.57,
-   "level": "-20 dB; -24 dB under N05",
-   "mood": "warm, resolving"
-  },
-  {
-   "id": "M7",
-   "scenes": "S20-S21",
-   "in": 436.57,
-   "out": 469.37,
-   "level": "-20 dB under N06, up to full after narration, fade out last 3 s",
-   "mood": "closing big-band button"
-  }
- ],
- "ducking": "sidechaincompress threshold~-30dB ratio 8 attack 20ms release 400ms against the narration bus; master -14 LUFS / -1 dBTP",
- "stuart_rule": {
-  "single_thanks_scene": "S18 (N05)",
-  "attribution_not_thanks": "N04 and the S14 tag name Brian Stuart's recreation of the 1946 shell demo as source attribution, not thanks",
-  "kept_ui": [
-   "kiosk footer",
-   "attract 'simulator behind this screen' panel (S03-S04)",
-   "honor-roll tab label (S10)"
-  ],
-  "critical_cut_points": [
-   "tour in 11.48 (title card)",
-   "tour 211.50-227.30 removed (honor roll + caption; in point must be >=227.30)",
-   "squares 15.68-163.20 (title/end cards)",
-   "finale 31.40-37.40 MUTED; finale footage ends 37.40"
+ "voice": {
+  "name": "Nick 2",
+  "voice_id": "6SxuwKUiBpZjFTc06v9Y",
+  "model": "eleven_multilingual_v2",
+  "stability": 0.5,
+  "similarity": 0.75,
+  "style": 0.4,
+  "speed": 1.12,
+  "never_speak": [
+   "Lehmer"
   ]
- },
- "text_overlay_safe_zone": "Bottom band y>=1000 holds burned-in kiosk captions and the footer; lower thirds upper-left x60-760 y50-170, tags upper-right",
- "gate1_decisions": {
-  "installed": "Not yet; will be before release on the InfoAge/VCF channel. Keep in-person wording; swap to 'coming soon' if public anywhere earlier.",
-  "trajectory_wording": "Attribute to Brian Stuart's recreation (N04 rewritten; alternate N04_ALT)",
-  "stuart_ui": "Keep as is",
-  "title": "Program ENIAC: Our New Touch-Screen Exhibit (approved)",
-  "music": "1940s-period royalty-free bed",
-  "runtime": "Tight: S19 dropped, cards and title open tightened, Squares untouched"
- },
- "removed_scenes": [
-  {
-   "id": "S19",
-   "title": "Thanks for visiting (finale-06)",
-   "why": "Gate 1: runtime"
-  }
- ]
+ }
 }

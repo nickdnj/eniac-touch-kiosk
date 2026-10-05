@@ -1,6 +1,6 @@
 # New narration lines for ElevenLabs (Nick 2)
 
-v2, Gate 1 decisions applied, 2026-10-03. Six lines, plus an alternate N04 (voice both; Nick picks at Gate 2) and one optional fallback. Every other spoken word in the video is reused source narration (see `edit-decision-list.md`).
+v3, 2026-10-05: N03, N04, N05 reworded per the pre-share fact check (R1, R4, N1); N04_ALT dropped. Originally v2, Gate 1 decisions applied, 2026-10-03. Six lines plus one optional fallback. Every other spoken word in the video is reused source narration (see `edit-decision-list.md`).
 
 **Voice settings (locked):**
 - voice "Nick 2", `6SxuwKUiBpZjFTc06v9Y`;
@@ -45,47 +45,51 @@ TTS: same as display.
 
 Estimate: about 8.4 s; the clip is 8.5 s. It answers the last Squares line, "next time, ENIAC meets a card punch, and learns patience" (squares-17). Energetic and conspiratorial.
 
-### N03, scene S14: teaser, Trajectory
+### N03, scene S14: teaser, Trajectory (v3, fact-check R1)
 
 Display:
-> Then, in Mission Three, you wire ENIAC to fly a cannon shell, one punched card per hop, all the way to the landing.
+> Then, in Mission Three, you wire ENIAC to fly a cannon shell, with a punched card for every second of flight, all the way to the landing.
 
 TTS: same as display.
 
-Estimate: about 7.2 s. It deliberately avoids repeating "built to work out firing tables" (already said in tour-02). **Unchanged at Gate 1:** the Stuart attribution lives in N04, so it isn't said twice in 15 seconds.
+Estimate: about 7.2 s. It deliberately avoids repeating "built to work out firing tables" (already said in tour-02). The Stuart attribution lives in N04, so it isn't said twice in 15 seconds.
 
-### N04, scene S15: the museum invite (primary)
+> **Superseded (v2):** "Then, in Mission Three, you wire ENIAC to fly a cannon shell, one punched card per hop, all the way to the landing." Replaced because one card is one second of flight, not one hop (fact check R1). Old WAV: `assets/audio/narration/v2/N03.wav`.
 
-Display:
-> The primes hunt, and Brian Stuart's recreation of the 1946 shell demo? They run live, card by card, only at the museum. Come wire them up yourself.
-
-TTS:
-> The primes hunt, and Brian Stuart's recreation of the nineteen forty-six shell demo? They run live, card by card, only at the museum. Come wire them up yourself.
-
-Estimate: about 8.4 s. The punchiest line in the video. Slight lift on "Brian Stuart's recreation", and a pause after the question mark.
-
-### N04_ALT, scene S15: the museum invite (alternate; voice it too)
+### N04, scene S15: the museum invite (v3, fact-check R4)
 
 Display:
-> Primes, hunted live. A cannon shell, flown on Brian Stuart's recreation of the 1946 demo. Card by card, only at the museum. Come wire them up yourself.
+> The primes hunt, and Brian Stuart's reconstruction of ENIAC's 1946 shell flight? Live, card by card, only at the museum. Come wire them up yourself.
+
+(Tightened 2026-10-05: the longer "…of the shell flight from ENIAC's 1946 unveiling? They run live…" voiced at 12.96 s, too slow for the invite. "Reconstruction" keeps the R4 hedge.)
 
 TTS:
-> Primes, hunted live. A cannon shell, flown on Brian Stuart's recreation of the nineteen forty-six demo. Card by card, only at the museum. Come wire them up yourself.
+> The primes hunt, and Brian Stuart's reconstruction of ENIAC's nineteen forty-six shell flight? Live, card by card, only at the museum. Come wire them up yourself.
 
-Estimate: about 8.4 s. Staccato, trailer-style delivery.
+Estimate: about 9.5 s. Slight lift on "Brian Stuart's reconstruction", and a pause after the question mark.
 
-> **Stuart rule (Gate 1).** N04 and N04_ALT name Brian Stuart only as the author of the recreation, which is the same attribution as the approved source line trajectory-00. They contain no thanks language. **The single thank-you remains N05.** It is spelled Stuart.
+> **Superseded (v2):** "The primes hunt, and Brian Stuart's recreation of the 1946 shell demo? They run live, card by card, only at the museum. Come wire them up yourself." Replaced because "reconstruction", hedged, is the supportable claim, not "recreation of the 1946 demo" (fact check R4). Old WAV: `assets/audio/narration/v2/N04.wav`.
+
+### N04_ALT: DROPPED in v3
+
+Superseded. It carried the same "recreation of the 1946 demo" claim as v2 N04 (fact check R4) and is no longer voiced. Old text and WAV are kept in `assets/audio/narration/v2/N04_ALT.*`.
+
+> Superseded text (v2): "Primes, hunted live. A cannon shell, flown on Brian Stuart's recreation of the 1946 demo. Card by card, only at the museum. Come wire them up yourself."
+
+> **Stuart rule (Gate 1).** N04 names Brian Stuart only as the author of the reconstruction. It contains no thanks language. **The single thank-you remains N05.** It is spelled Stuart.
 
 > **Release-timing swap.** Use this only if the video goes public anywhere before the kiosk is installed. N04 ends "…They're coming soon to the museum, live, card by card." N06 opens "So that's our new ENIAC exhibit, coming soon to the Vintage Computer Federation…". Keep the in-person wording for the InfoAge/VCF channel release.
 
-### N05, scene S18: the single Brian L. Stuart thank-you (the only one in the video)
+### N05, scene S18: the single Brian L. Stuart thank-you (v3, fact-check N1; the only one in the video)
 
 Display:
-> And the person who made all of this possible: Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it follows the real ENIAC pulse by pulse. Brian, thank you.
+> And the person who made all of this possible: Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it simulates ENIAC at the level of individual pulses. Brian, thank you.
 
 TTS: same as display.
 
-Estimate: about 11.2 s. Sincere, unhurried. It plays over the kiosk's own "Brian L. Stuart wrote this simulator" screen. The wording reuses the kiosk's approved copy ("follows the real 1946 machine pulse by pulse") and makes no claims about his views.
+Estimate: about 12 s. Sincere, unhurried. It plays over the kiosk's own "Brian L. Stuart wrote this simulator" screen. The wording follows Stuart's own words and makes no claims about his views.
+
+> **Superseded (v2):** "...and it follows the real ENIAC pulse by pulse." Replaced with Stuart's own phrasing (fact check N1). Old WAV: `assets/audio/narration/v2/N05.wav`.
 
 ### N06, scene S20: close and call to action (echoes N01, not word for word)
 

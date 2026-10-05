@@ -41,7 +41,8 @@
     "Tease Primes/Trajectory only (a few seconds each) + cool come-to-the-museum invite",
     "Facts per research/fact-check.md and research/tubes.md",
     "Don't link the private kiosk repo; link Stuart's simulator page and github.com/blstuart/eniac-simulator",
-    "Intro states the video's purpose: introducing our new ENIAC exhibit (added by Nick 2026-10-03)"
+    "Intro states the video's purpose: introducing our new ENIAC exhibit (added by Nick 2026-10-03)",
+    "No burned-in caption boxes: record kiosk sources with CLEAN=1; voiceover carries it (Nick 2026-10-05)"
   ],
   "sources": {
     "video": "assets/video/source/",
@@ -110,19 +111,41 @@
         "file": "output/eniac-kiosk-v2.mp4",
         "duration": "7:58",
         "notes": "VCF intro prepended, S01 title open removed, overlay overlaps fixed"
+      },
+      "v3": {
+        "file": "output/eniac-kiosk-v3.mp4",
+        "date": "2026-10-05",
+        "duration": "7:57.08",
+        "loudness": "-14.1 LUFS, TP -1.5",
+        "notes": "Re-recorded against kiosk 30e67b6 (attract plates, Home button, switch racks); 13 source narration lines fact-fixed (R1-R4, N1, N2) and N03/N04/N05 re-voiced; sources in assets/video/source-v3; kiosk worktree .claude/worktrees/video-v3 (uncommitted)",
+        "metadata": "output/upload/metadata-v3.json"
+      },
+      "v4": {
+        "file": "output/eniac-kiosk-v4.mp4",
+        "date": "2026-10-05",
+        "duration": "8:01.00",
+        "loudness": "-14.1 LUFS, TP -1.5",
+        "notes": "v3 re-recorded with CLEAN=1 (no burned-in caption box, per Nick); sources assets/video/source-v4; Nick: keep screens clean, voiceover only",
+        "metadata": "output/upload/metadata-v4.json"
       }
     },
     "publish": {
-      "status": "uploaded_private",
-      "date": "2026-10-04",
+      "status": "uploaded_unlisted",
+      "date": "2026-10-05",
       "channel": "Nick DeMarco (@nickdnj) UCkTzb0IcgeDYWT0ahsZ16OQ",
-      "video_id": "RCvTUH0kJxI",
-      "url": "https://www.youtube.com/watch?v=RCvTUH0kJxI",
+      "video_id": "mAW7AuKXLBE",
+      "url": "https://www.youtube.com/watch?v=mAW7AuKXLBE",
+      "version": "v4",
       "thumbnail": "output/upload/thumbnail-alt.jpg",
+      "previous": {
+        "v2": "RCvTUH0kJxI (private, superseded)"
+      },
+      "email": "Draft reply to Doug (vcfed + gmail) on the 'rabbit hole' thread, demarconet Drafts r3381491975363444173, not sent",
       "open_items": [
         "music is Kevin MacLeod CC BY stand-in (credited)",
         "VCF intro is a prototype pending Jeff Brace's review; VCF owns the brand",
-        "re-voice N04/N06 with 'coming soon' if made public before kiosk install"
+        "re-voice N04/N06 with 'coming soon' if made public before kiosk install",
+        "kiosk worktree video-v3 has uncommitted narration/caption/CLEAN changes to bring into the kiosk branch"
       ]
     }
   },

@@ -7,14 +7,15 @@ KEY=os.environ["ELEVENLABS_API_KEY"]
 L={
 "N01":"Hi, I'm Nick, a docent at the Vintage Computer Federation museum, and I want to introduce you to our new ENIAC exhibit: the room-sized computer of nineteen forty-six, on a touch screen you can program yourself.",
 "N02":"And that card punch? You'll meet it at the museum. In Mission Two, ENIAC hunts for prime numbers, and punches a card for every one it finds.",
-"N03":"Then, in Mission Three, you wire ENIAC to fly a cannon shell, one punched card per hop, all the way to the landing.",
-"N04":"The primes hunt, and Brian Stuart's recreation of the nineteen forty-six shell demo? They run live, card by card, only at the museum. Come wire them up yourself.",
-"N04_ALT":"Primes, hunted live. A cannon shell, flown on Brian Stuart's recreation of the nineteen forty-six demo. Card by card, only at the museum. Come wire them up yourself.",
-"N05":"And the person who made all of this possible: Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it follows the real ENIAC pulse by pulse. Brian, thank you.",
+"N03":"Then, in Mission Three, you wire ENIAC to fly a cannon shell, with a punched card for every second of flight, all the way to the landing.",
+"N04":"The primes hunt, and Brian Stuart's reconstruction of ENIAC's nineteen forty-six shell flight? Live, card by card, only at the museum. Come wire them up yourself.",
+"N05":"And the person who made all of this possible: Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it simulates ENIAC at the level of individual pulses. Brian, thank you.",
 "N06":"So that's our new ENIAC exhibit. Come see it in person, and program ENIAC yourself, at the Vintage Computer Federation, inside the Info Age Science and History Museums in Wall, New Jersey. Plan your visit at V C F E D dot org. Thanks for watching!",
 "N-ALT1":"Now it's my turn to program ENIAC.",
 }
+ONLY=sys.argv[1:]
 for k,t in L.items():
+    if ONLY and k not in ONLY: continue
     assert "lehmer" not in t.lower()
     body=json.dumps({"text":t,"model_id":"eleven_multilingual_v2","voice_settings":{"stability":0.5,"similarity_boost":0.75,"style":0.4,"speed":1.12,"use_speaker_boost":True}}).encode()
     req=urllib.request.Request("https://api.elevenlabs.io/v1/text-to-speech/6SxuwKUiBpZjFTc06v9Y?output_format=mp3_44100_128",body,{"xi-api-key":KEY,"Content-Type":"application/json","Accept":"audio/mpeg"})
