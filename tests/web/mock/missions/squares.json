@@ -202,7 +202,7 @@
       "body": "Each new square is the old square, plus the number twice, plus 1. Like 9 + 3 + 3 + 1 = 16. ENIAC did it by adding, and you wired it.",
       "takeaway": "The cables were the program.",
       "takeawaySub": "To make ENIAC do something new, people plugged in different cables.",
-      "more": "One addition took ENIAC 1/5,000 of a second. We slowed things down so you could see the steps. Brian Stuart's simulator follows the real machine pulse by pulse.",
+      "more": "One addition took ENIAC 1/5,000 of a second. We slowed things down so you could see the steps. Brian Stuart's program simulates ENIAC at the level of individual pulses.",
       "buttons": ["Next: Primes", "Try again", "Menu"]
     }
   },

@@ -94,7 +94,7 @@ export function exploreScreen(app: App, view: View): Screen {
   const header = h(
     "div",
     { class: "header" },
-    button(`‹ ${backLabel}`, "light outline ex-back", () => goBack()),
+    open.from === "picker" ? null : button(`‹ ${backLabel}`, "light outline ex-back", () => goBack()),
     h("span", { class: "title" }, EXPLORE.title),
     h("span", { class: "spacer" }),
     // S16 "Keeping ENIAC alive" (docs/tubes.md 2.2): Back returns here, where the visitor was.

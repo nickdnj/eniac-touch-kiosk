@@ -125,15 +125,15 @@ test("Start over: Keep going changes nothing; Yes starts a fresh core at step 1 
   expect(after.applied).toEqual([]);
 });
 
-test("Missions: no confirm before any step; confirm after one", async ({ page }) => {
+test("Home: no confirm before any step; confirm after one", async ({ page }) => {
   await devMission(page);
-  await tapSlow(page, page.locator(".hdr-missions"));
+  await tapSlow(page, page.locator("#home-btn"));
   await expect(view(page)).toHaveAttribute("data-view", "picker");
   expect((await sent(page)).some((m) => m.t === "end_session" && m.reason === "menu")).toBe(true);
   await devMission(page);
   await toStep1(page);
   await doStepByTouch(page, SQUARES_STEPS[0]);
-  await tapSlow(page, page.locator(".hdr-missions"));
+  await tapSlow(page, page.locator("#home-btn"));
   await expect(page.locator(".dialog.confirm")).toBeVisible();
   await tapSlow(page, page.getByText("Yes, go back"));
   await expect(view(page)).toHaveAttribute("data-view", "picker");

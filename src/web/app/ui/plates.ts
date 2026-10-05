@@ -32,6 +32,21 @@ export function stuartPlate(size: PlateSize = "attract"): HTMLElement {
   );
 }
 
+/**
+ * The designers plate (S1, beside the ENIAC title): "ENIAC WAS DESIGNED BY /
+ * J. Presper Eckert / John W. Mauchly", names at the Stuart plate's 56 px.
+ */
+export function designersPlate(): HTMLElement {
+  const d = HONOR.designers;
+  return h(
+    "div",
+    { class: "plate designers-plate", role: "note", "aria-label": `${d.plateKicker} ${d.names.join(" and ")}` },
+    ...rivets(),
+    h("div", { class: "plate-kicker" }, d.plateKicker),
+    ...d.names.map((n) => h("div", { class: "plate-name" }, n)),
+  );
+}
+
 /** One person (or institution) plate: name, the later name, one line. */
 export function personPlate(p: PersonPlate, opts: { laterPrefix?: string; cls?: string } = {}): HTMLElement {
   return h(

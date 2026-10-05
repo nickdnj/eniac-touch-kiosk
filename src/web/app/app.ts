@@ -14,14 +14,21 @@ import { fetchMission, fetchMissions } from "./net/api.ts";
 import { Mirror } from "./state/machine.ts";
 import { IdleTimer, type IdleMode } from "./idle.ts";
 import { installGuards } from "./ui/guards.ts";
-import { installTapDispatcher, type TapPoint } from "./ui/tap.ts";
-import { h, clear } from "./ui/dom.ts";
+import { installTapDispatcher, onTap, type TapPoint } from "./ui/tap.ts";
+import { h, clear, svgFromString } from "./ui/dom.ts";
+import { confirm } from "./ui/overlays.ts";
 import { COPY } from "./copy.ts";
 import { CardLog } from "./run/cards.ts";
 import { Visit } from "./state/visit.ts";
 import { AttractController, AttractStore } from "./attract/store.ts";
 
 export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor" | "explore" | "glossary" | "tubes" | "finale";
+
+/**
+ * Views that show the Home button (beside the wordmark, top left): every
+ * visitor screen except S1 and the picker itself. Home goes to the picker.
+ */
+export const HOME_VIEWS = new Set<ViewName>(["mission", "run", "result", "explore", "glossary", "tubes", "honor", "finale"]);
 
 /** Views that keep a running attract session (S1, Explore with its glossary, honor and tubes links, and the finale's F2 room). */
 const ATTRACT_KEEPS = new Set<string>(["start", "explore", "glossary", "honor", "tubes", "finale"]);
@@ -77,6 +84,8 @@ export interface Screen {
   onMachine?(units: string[] | null): void;
   /** Static screen that keeps working while the core is down (UX 14.7: S11). */
   coreOptional?: boolean;
+  /** The Home button on this screen (e.g. confirm before the cables come out); default: App.goHome. */
+  home?(): void;
 }
 export type ScreenFactory = (app: App, view: View) => Screen;
 
@@ -131,6 +140,7 @@ export class App {
   private offset = { x: 0, y: 0 };
   private screen: Screen | null = null;
   private screenHost: HTMLElement;
+  private homeBtn: HTMLElement;
   readonly overlay: HTMLElement;
   private helloSeen = false;
   private linkDown = false;
@@ -146,8 +156,18 @@ export class App {
     this.screens = screens;
     this.screenHost = h("div", { id: "screen" });
     this.overlay = h("div", { id: "overlay" });
+    this.homeBtn = h(
+      "div",
+      { id: "home-btn", class: "btn light outline hidden", role: "button" },
+      svgFromString(
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"><path d="M4 15L16 4l12 11M8 12v15h6v-8h4v8h6V12" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg>`,
+      ) as unknown as HTMLElement,
+      COPY.home,
+    );
+    onTap(this.homeBtn, () => (this.screen?.home ? this.screen.home() : void this.goHome()));
     root.append(
       this.screenHost,
+      this.homeBtn,
       this.overlay,
       h("div", { id: "admin-zone", "aria-hidden": "true" }, COPY.wordmark),
       h("div", { id: "footer" }, COPY.credit),
@@ -472,8 +492,26 @@ export class App {
     } else this.idle.setMode("none");
     this.idle.touch();
     this.root.dataset.view = view.name;
+    const home = HOME_VIEWS.has(view.name);
+    this.homeBtn.classList.toggle("hidden", !home);
+    this.root.classList.toggle("has-home", home);
     // Leaving a core-optional screen while the core is down: S10 now.
     if (!this.screen?.coreOptional && this.helloSeen && this.mirror.health.core === "down" && !this.errorCode) this.evaluate();
+  }
+
+  /**
+   * Home: the mission picker. A live visitor session ends first, as the
+   * result screen's Menu does (Explore, the glossary, S16 and the honor roll
+   * can be open on top of one); the visit itself (done ticks) carries on.
+   * Cables placed in an unfinished mission come out, so that asks first.
+   * Mission and run screens override this with their own Missions confirm.
+   */
+  async goHome(): Promise<void> {
+    const s = this.mirror.session;
+    const visitor = !!s && s.mode !== "attract";
+    if (visitor && s.applied.length > 0 && s.state !== "result" && !(await confirm(this, COPY.confirm.textMenu, COPY.confirm.yesMenu))) return;
+    if (visitor) this.endSession("menu");
+    this.show({ name: "picker" });
   }
 
   /** Open S16 "Keeping ENIAC alive" (docs/tubes.md 2.2): from Explore, the glossary or the finale (F2's chip). */

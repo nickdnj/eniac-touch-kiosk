@@ -31,7 +31,7 @@
 .pano-unit.dim > .panels { filter: brightness(.36) saturate(.6); }
 .pano-unit.pressed > .panels { filter: brightness(.85); }
 
-.pano-cart { position: absolute; left: 70px; bottom: -2px; width: 220px; height: 132px; z-index: 2; }
+.pano-cart { position: absolute; left: 96px; bottom: -2px; width: 150px; height: 210px; z-index: 2; }
 .pano-cart .cart-art { display: block; }
 .pano-cart.sel .ring { display: block; border: 6px solid var(--card); box-shadow: 0 0 0 2px #000; }
 .pano-cart.hl .ring { display: block; border: 4px solid var(--guide); }

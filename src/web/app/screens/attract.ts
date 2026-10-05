@@ -24,7 +24,7 @@ import { ArcPlot } from "../run/filmstage.ts";
 import { h } from "../ui/dom.ts";
 import { onTap } from "../ui/tap.ts";
 import { play } from "../ui/anim.ts";
-import { honorRotator, stuartPlate } from "../ui/plates.ts";
+import { designersPlate, honorRotator, stuartPlate } from "../ui/plates.ts";
 import { COPY } from "../copy.ts";
 import {
   ATTRACT_SCALE,
@@ -144,6 +144,7 @@ export function attractScreen(app: App): Screen {
     { class: "screen start attract", role: "button", "aria-label": COPY.start.pill, "data-scene": "waking" },
     h("div", { class: "start-title" }, COPY.start.title),
     h("div", { class: "start-sub" }, COPY.start.subtitle),
+    h("div", { class: "att-designers" }, designersPlate()),
     plotCard,
     room,
     captionRow,

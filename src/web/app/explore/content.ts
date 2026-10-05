@@ -64,10 +64,10 @@ export const EXPLORE = {
   intro: {
     eyebrow: "THE WHOLE MACHINE",
     title: "ENIAC filled a room.",
-    body: "Forty panels stood in a U shape. Laid in a line, they would stretch about 80 feet. Each panel had one job, and cables joined them. Tap any panel to meet it, or press Walk the room.",
+    body: "Forty panels stood in a U shape, about 80 feet long along the front. Each panel had one job, and cables joined them. Tap any panel to meet it, or press Walk the room.",
     walk: "Walk the room",
     review: "pending",
-    fc: ["40 panels in a U (fact-check A1: correct)", "about 80 feet laid in a line (A1: the front of the U was 80 ft; not 'end to end')"],
+    fc: ["40 panels in a U (fact-check A1: correct)", "about 80 feet along the front of the U (A1: the front of the U was 80 ft; not 'end to end')"],
     source: "UX 14.3.6 state A, with docs/fact-check.md A1",
   } as Review & { eyebrow: string; title: string; body: string; walk: string },
   planCaption: "The room from above. Bold outlines show what is on screen.",
@@ -105,7 +105,7 @@ export const EXPLORE = {
 export const MISSION_TAILS: Record<string, string> = {
   squares: "You plug cables between them.",
   primes: "The group checkers are accumulators too.",
-  trajectory: "Every hop uses the multiplier and the air-drag table.",
+  trajectory: "Every tiny time step uses the multiplier and the air-drag table.",
 };
 
 /** The twelve cards (UX 14.3.6), in Walk-the-room order. */
@@ -149,7 +149,7 @@ export const CARDS: Record<Stop, UnitCard> = {
     title: "High-Speed Multiplier",
     tag: "Times tables, fast",
     plate: ["HIGH-SPEED", "MULTIPLIER"],
-    body: "It knows the times table. It multiplies two 10-digit numbers in about 3 thousandths of a second. Adding again and again would be far slower. The shell mission uses it on every hop.",
+    body: "It knows the times table. It multiplies two 10-digit numbers in about 3 thousandths of a second. Adding again and again would be far slower. The shell mission uses it on every tiny time step.",
     review: "pending",
     fc: ["it knows the times table", "about 3 thousandths of a second for two 10-digit numbers"],
     source: "UX 14.3.6 card 5",
@@ -176,9 +176,9 @@ export const CARDS: Record<Stop, UnitCard> = {
     title: "Portable Function Table",
     tag: "Switches on wheels",
     plate: ["PORTABLE", "FUNCTION TABLE"],
-    body: "The switches sit on a wheeled cart called a portable table. People set them by hand, one number at a time. The shell mission's air-drag table takes 711 switches.",
+    body: "A big box on wheels, out on the floor, with 1,456 switches, set by hand, on its two faces. Any of the three boxes could plug into any Function Table. The shell mission's air-drag table takes 711 switches.",
     review: "pending",
-    fc: ["the portable table, a cart", "set by hand", "711 switches (705 in drag.e plus 6 in the Trajectory program)"],
+    fc: ["a box on wheels with switches on 2 faces, 26 rows x 28 columns each = 1,456 ([R46-I] §7.3.1, p. VII-13); out on the floor; any box with any Function Table ([R46-I] §7.1, p. VII-2: 'extends into the center of the floor... can be moved around and, any of the tables (A, B, C on PX-1-302) can be used with any one of the function tables')", "set by hand", "711 switches (705 in drag.e plus 6 in the Trajectory program)"],
     source: "UX 14.3.6 card 8",
   },
   ct: {

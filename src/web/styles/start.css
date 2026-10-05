@@ -124,6 +124,12 @@
 /* The 24 px caps kicker ("THE SIMULATOR BEHIND THIS SCREEN") needs two lines
    at 512 px, so on S1 both plates are 192 px tall (y816-1008, above the footer). */
 .att-stuart { position: absolute; left: 48px; top: 816px; }
+/* Eckert and Mauchly, beside the ENIAC title (x600-1208, above the subtitle
+   at y216 and left of the shell's path card at x1232): names at 56 px, like Stuart's. */
+.att-designers { position: absolute; left: 600px; top: 20px; }
+.designers-plate { display: flex; flex-direction: column; justify-content: center; width: 608px; height: 188px; padding: 16px 44px; }
+.designers-plate .plate-kicker { margin-bottom: 2px; }
+.designers-plate .plate-name { font-size: 56px; line-height: 62px; white-space: nowrap; }
 .att-honor { position: absolute; left: 1360px; top: 816px; }
 .attract .stuart-plate.size-attract { height: 192px; padding: 20px 40px; justify-content: center; }
 .attract .stuart-plate.size-attract .plate-kicker { margin-bottom: 2px; }

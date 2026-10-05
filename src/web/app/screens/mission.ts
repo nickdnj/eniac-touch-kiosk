@@ -86,7 +86,6 @@ export function missionScreen(app: App, view: View): Screen {
   const header = h(
     "div",
     { class: "header" },
-    button(`‹ ${COPY.header.missions}`, "light outline hdr-missions", () => backToMissions()),
     h("span", { class: "title" }, COPY.header.mission(mission.order, mission.title)),
     h("span", { class: "spacer" }),
     h("span", { class: "hdr-progress" }, stepLabel, dots),
@@ -614,6 +613,7 @@ export function missionScreen(app: App, view: View): Screen {
   return {
     el,
     idle: "setup",
+    home: () => void backToMissions(),
     mount: () => {
       if (app.mirror.session && ["armed", "running", "result"].includes(app.mirror.session.state)) setupComplete = true;
       render();

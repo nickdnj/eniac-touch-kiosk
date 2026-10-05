@@ -58,12 +58,24 @@ test("S1 is the live flight: room lamps from the attract core, LIVE chip, dots f
   await expect(page.locator(".att-stuart .plate-kicker")).toHaveText("The simulator behind this screen", { ignoreCase: true });
   await expect(page.locator(".att-stuart .plate-sub")).toHaveText("Drexel University");
   await expect(page.locator(".att-honor .rot-slide.on .plate-kicker")).toHaveText(/ENIAC.s first programmers/i);
+  // Eckert and Mauchly: a fixed plate beside the title, names as big as Stuart's.
+  await expect(page.locator(".att-designers .plate-kicker")).toHaveText("ENIAC was designed by", { ignoreCase: true });
+  await expect(page.locator(".att-designers .plate-name")).toHaveText(["J. Presper Eckert", "John W. Mauchly"]);
+  expect(await page.locator(".att-designers .plate-name").first().evaluate((e) => getComputedStyle(e).fontSize)).toBe("56px");
+  // Clear of the title, the subtitle and the shell's path card.
+  const clear = await page.evaluate(() => {
+    const d = document.querySelector(".att-designers .plate")!.getBoundingClientRect();
+    const apart = (r: DOMRect) => d.right <= r.left || r.right <= d.left || d.bottom <= r.top || r.bottom <= d.top;
+    const textBox = (sel: string) => { const rg = document.createRange(); rg.selectNodeContents(document.querySelector(sel)!); return rg.getBoundingClientRect(); };
+    return { title: apart(textBox(".start-title")), sub: apart(textBox(".start-sub")), plot: apart(document.querySelector(".att-plot")!.getBoundingClientRect()) };
+  });
+  expect(clear).toEqual({ title: true, sub: true, plot: true });
   // Layout size (the 1 Hz pulse scales the drawn pill by up to 2 %).
   expect(await page.locator(".att-pill").evaluate((e: HTMLElement) => [e.offsetWidth, e.offsetHeight])).toEqual([720, 120]);
-  await expect(page.locator("#footer")).toHaveText("ENIAC simulator by Brian L. Stuart, Drexel University");
+  await expect(page.locator("#footer")).toHaveText("ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by Brian L. Stuart, Drexel University");
   // Nothing on S1 overflows its box (the plates were sized for two-line kickers).
   const overflow = await page.evaluate(() =>
-    [...document.querySelectorAll<HTMLElement>(".att-stuart .plate, .att-honor .plate, .att-caption")]
+    [...document.querySelectorAll<HTMLElement>(".att-stuart .plate, .att-designers .plate, .att-honor .plate, .att-caption")]
       .filter((e) => e.scrollHeight > e.clientHeight + 1 || e.scrollWidth > e.clientWidth + 1)
       .map((e) => e.className),
   );
@@ -78,7 +90,7 @@ test("S1 is the live flight: room lamps from the attract core, LIVE chip, dots f
       return { heading: s.querySelector(".plate-kicker")!.textContent, fits: bottom <= plate.bottom - 12 && right <= plate.right - 12 };
     });
   });
-  expect(slides.length).toBe(5);
+  expect(slides.length).toBe(4);
   expect(slides.filter((s) => !s.fits)).toEqual([]);
   expect(slides.map((s) => s.heading)).toContain("The machine");
   // The arc, its axis labels and the hop tag sit inside the shell's path card.

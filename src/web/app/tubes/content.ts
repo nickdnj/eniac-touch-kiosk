@@ -221,7 +221,7 @@ export const TRY = {
   steps: [
     {
       h: "Run the test",
-      p: "A 1940s technician began with a test problem. Every accumulator should end up showing 5555555555. Press Run the test, then compare the lamps.",
+      p: "A 1940s technician began with a test problem with a known answer. Every accumulator should show the same lamps. Press Run the test, then compare them.",
     },
     { h: "Which panel is wrong?", p: "Look for the accumulator whose lamps are out of line with the others. Tap it." },
     { h: "Which digit place?", p: "Each digit place has its own plug-in unit. Tap the column with the wrong lamp." },
@@ -244,7 +244,7 @@ export const TRY = {
   /** Stage captions per state. */
   cap: {
     cleared: ["Four accumulators, all cleared to zero.", "Press Run the test."],
-    tested: ["Test finished.", "Every accumulator should show 5555555555. Compare the lamps."],
+    tested: ["Test finished.", "Every accumulator should show the same lamps. Compare them."],
     place: (acc: number) => [`ACC ${acc}.`, "Ten digit places, left to right. Each place has its own plug-in unit, at the bottom."],
     unit: (place: number) => [`Place ${place} plug-in unit, pulled out.`, "Drawn simplified: a real one held many more parts."],
     read: ["How to read it:", "touch a tube to feel its case.", "Warm", "means it works.", "COLD", "means the tube has died."],

@@ -85,7 +85,7 @@ test("TUBE-21: the header button is on S14 in every state; Back returns to the s
   await expect(page.locator(".ex-rail h2")).toHaveText("Accumulator 3");
   await expect(page.locator(".ex-readout")).toHaveText("You are looking at: Accumulator 1 to Accumulator 7");
   await expect(page.locator('.ex-mchips .mchip[data-mission="primes"]')).toHaveClass(/on/);
-  await expect(page.locator(".ex-back")).toHaveText("‹ Missions");
+  await expect(page.locator(".ex-back")).toHaveCount(0); // opened from the picker: Home is the way back
   expect((await metrics(page, "tubes_open")).map((m) => m.screen)).toEqual(["explore"]);
   // The attract loop kept running through S16 (the room's lamps stay live).
   expect((await sent(page)).filter((m) => m.t === "attract_stop").map((m) => m.reason)).toEqual(["touch"]);

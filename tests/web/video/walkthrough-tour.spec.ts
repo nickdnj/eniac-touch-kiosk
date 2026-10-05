@@ -128,7 +128,7 @@ test("ENIAC touch kiosk: the whole tour", async ({ page }) => {
   await cap(page, null);
   await tapSlow(page, page.locator(".tb-back"));
   await expect(view(page)).toHaveAttribute("data-view", "explore");
-  await tapSlow(page, page.locator(".ex-back"));
+  await tapSlow(page, page.locator("#home-btn"));
   await expect(view(page)).toHaveAttribute("data-view", "picker");
   await capAt(page);
 

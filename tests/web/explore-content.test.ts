@@ -49,13 +49,21 @@ test("nothing on screen carries an [FC] mark or review placeholder; review notes
   for (const c of Object.values(CARDS)) assert.ok(c.review === "approved" || c.review === "pending");
 });
 
-test("fact-check wording (docs/fact-check.md): trays not tubes, digit trunk, 80 feet laid in a line", () => {
+test("fact-check wording (docs/fact-check.md): trays not tubes, digit trunk, 80 feet along the front of the U", () => {
   const text = allText().join(" ");
   assert.doesNotMatch(text, /tubes of wires/);
   assert.doesNotMatch(text, /end to end, about 80|80 feet end to end/);
-  assert.match(EXPLORE.intro.body, /Laid in a line, they would stretch about 80 feet/);
+  assert.match(EXPLORE.intro.body, /U shape, about 80 feet long along the front/);
+  assert.doesNotMatch(text, /[Ll]aid in a line/); // pre-share fact-check R2
   assert.match(CARDS.dt.body, /digit trunk/);
   assert.match(GLOSSARY.find((g) => g.show === "dt")!.meaning, /digit trunk/);
   assert.match(GLOSSARY.find((g) => g.term === "Neon lamp")!.meaning, /ten lamps, 0 to 9/);
   assert.match(GLOSSARY.find((g) => g.term === "Constant")!.meaning, /read from a punched card/);
+});
+
+test("card 8 says only what the 1946 Report says about the portable tables (fact-check A17)", () => {
+  assert.match(CARDS.pft.body, /out on the floor/);
+  assert.match(CARDS.pft.body, /Any of the three boxes could plug into any Function Table/);
+  assert.match(CARDS.pft.body, /1,456 switches/); // 26 x 28 on each of 2 faces (§7.3.1)
+  assert.doesNotMatch(CARDS.pft.body, /\bcart/); // a switch rack, not a cart
 });

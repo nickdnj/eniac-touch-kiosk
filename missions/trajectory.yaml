@@ -5,7 +5,8 @@
 #   - one READ tap sends `b c` then `b r` (prevents the all-zero first card);
 #   - INIT once; the bridge freezes the machine on the landing card with
 #     `s cy.op 1a`; Full speed only;
-#   - no feet or seconds on screen until Stuart or the Fact-Checker confirms.
+#   - no feet on screen. Seconds are confirmed (Stuart 2021: 50 steps of 0.02 s
+#     per card), so a hop is one second of flight (fact-check 2026-10-04 R1).
 # [FC] tags from the UX spec are kept in `review.factCheck` (never shown).
 schema: 1
 id: trajectory
@@ -40,7 +41,7 @@ steps:
     choices: ["P", "0"]
     text:
       headline: "Punch the hop number"
-      body: "Each card will say which hop it is: 1, 2, 3 and so on. The printer has a switch for each part of the card. Tap the glowing switch 6 and choose P, for punch."
+      body: "Each card will say which hop, or second of flight, it is: 1, 2, 3 and so on. The printer has a switch for each part of the card. Tap the glowing switch 6 and choose P, for punch."
       more: "The punch worked in 16 groups of 5 columns. A switch for each group chose what got punched. On our card, you will see the hop number, how far along the shell is, and how high."
       done: "Now each card will carry its hop number."
       hints:
@@ -53,7 +54,7 @@ steps:
     expect: { from: 2-5, to: i.Pi }
     text:
       headline: "Wire up the card punch"
-      body: "On each hop, ENIAC punches a card. The signal to punch rides on program trunk 2-5. Tap trunk 2-5. Then tap the Pi jack on the Initiating Unit, the punch input."
+      body: "At the end of each hop, ENIAC punches a card. The signal to punch rides on program trunk 2-5. Tap trunk 2-5. Then tap the Pi jack on the Initiating Unit, the punch input."
       more: "When a card is punched, the Initiating Unit sends a done signal, and ENIAC carries on. The punch took a little over half a second per card."
       done: "Now each hop will punch a card."
       hints:
@@ -66,7 +67,7 @@ steps:
     expect: { from: a19.5o, to: 1-4 }
     text:
       headline: "Is the shell still flying?"
-      body: "After each hop, ENIAC checks the shell's height. If the shell is still in the air, Accumulator 19 sends a signal. Tap its 5-out jack. Then tap program trunk 1-4."
+      body: "At the end of each hop, ENIAC checks the shell's height. If the shell is still in the air, Accumulator 19 sends a signal. Tap its 5-out jack. Then tap program trunk 1-4."
       more: "Accumulator 20 holds the shell's height. The program checks its sign. While the height is above zero, the signal says keep going. When it drops below zero, the shell has landed."
       done: "Accumulator 19 will say: keep going."
       hints:
@@ -132,13 +133,13 @@ selftest:                        # rule 8: READ (b c, b r), INIT, the first hop 
 content:
   briefing:                      # S3, step 0a
     headline: "The path of a shell"
-    body: "A shell flies in an arc. ENIAC finds the arc one small hop at a time, and punches a card after each hop. Each card is one dot. You will connect the dots."
+    body: "A shell flies in an arc. ENIAC works out the flight in tiny time steps and punches a card for every second of flight. We call each second a hop. Each card is one dot. You will connect the dots."
     more: "ENIAC was built to work out firing tables for Army guns. It was shown to the public on February 15, 1946. Brian Stuart's program tries to recreate the demo from that day. ENIAC's women programmers set up the shell trajectory for that demo."
     buttons: ["Let's go"]
     review: { factCheck: [more], source: "ux-spec 8.3.5 0a ([FC: all four sentences; Doug to approve any names])" }
   plan:                          # step 0b
     headline: "Hop by hop"
-    body: "ENIAC finds a shell's path one hop at a time. Each hop: the air slows the shell, the shell moves, ENIAC punches a card, and checks the shell is still flying. Then it hops again."
+    body: "Each hop is one second of flight, worked out in 50 tiny steps. Every step, the air slows the shell and gravity pulls it down. After 50 steps, ENIAC punches a card and checks the shell is still flying."
     math: "card 1, card 2, card 3 ... one dot each"
     more: "The air slows a fast shell a lot. ENIAC looks up how much in a table of numbers. Brian Stuart's note in the program says he tried to work that table out himself, so the table is his best attempt."
     buttons: ["Next step", "Skip setup"]
@@ -165,7 +166,7 @@ content:
         captions:
           - { text: "ENIAC starts the first hop.", trigger: { run: busy } }
           - { text: "Card 1 is out. Its big numbers say how far along and how high up the shell is.", trigger: { punchCount: { gte: 1 } } }
-          - { text: "Each hop, the air slows the shell, and gravity pulls it down.", trigger: { punchCount: { gte: 3 } } }
+          - { text: "Every tiny step, the air slows the shell, and gravity pulls it down.", trigger: { punchCount: { gte: 3 } } }
           - { text: "Highest point! From here the shell comes down.", trigger: { derived: apex } }
           - { text: "Landed! The height dropped below zero.", trigger: { derived: landed } }
     extras:
@@ -176,7 +177,7 @@ content:
       skipToAnswer: "Skip to the answer"
       stopAt: landed
     done: { headline: "You did it!" }
-    note: "ENIAC does a lot of arithmetic for every hop."
+    note: "ENIAC does 50 tiny steps of arithmetic for every hop."
     cards:
       title: "Punched cards"
       label: "Hop {v}"
@@ -193,7 +194,7 @@ content:
     review: { source: "ux-spec 8.3.5 S6 (v0.4: Full only, no units)" }
   result:                        # S7
     headline: "ENIAC flew the shell!"
-    body: "Each card was one hop. Joined up, the dots show the whole flight: up, over the top, and down. ENIAC worked it out from a card of numbers and the cables you placed."
+    body: "Each card was one second of the shell's flight. Joined up, the dots show the whole flight: up, over the top, and down. ENIAC worked it out from a card of numbers and the cables you placed."
     takeaway: "Numbers and cables made a flight path."
     takeawaySub: "That is what programming ENIAC meant."
     more: "The real ENIAC could work out a shell's path faster than the shell takes to fly. A person with a desk calculator needed many hours. Our simulator is slower, so you can watch every hop."

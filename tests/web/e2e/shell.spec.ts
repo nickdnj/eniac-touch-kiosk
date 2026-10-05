@@ -7,7 +7,7 @@ test("loads, pings the bridge and shows the credit footer at 24 px", async ({ pa
   await fresh(page);
   await expect(view(page)).toHaveAttribute("data-view", "start");
   const footer = page.locator("#footer");
-  await expect(footer).toHaveText("ENIAC simulator by Brian L. Stuart, Drexel University");
+  await expect(footer).toHaveText("ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by Brian L. Stuart, Drexel University");
   expect(await footer.evaluate((e) => getComputedStyle(e).fontSize)).toBe("24px");
   await expect.poll(async () => (await sent(page)).some((m) => m.t === "ping")).toBe(true);
 });

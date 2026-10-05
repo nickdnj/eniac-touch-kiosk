@@ -84,7 +84,6 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   const header = h(
     "div",
     { class: "header" },
-    button(`‹ ${COPY.header.missions}`, "light outline hdr-missions", () => backToMissions()),
     h("span", { class: "title" }, COPY.header.mission(mission.order, mission.title)),
     h("span", { class: "spacer" }),
     button(COPY.header.startOver, "light outline hdr-startover", () => startOver()),
@@ -380,6 +379,7 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   return {
     el,
     idle: "run",
+    home: () => void backToMissions(),
     mount: () => {
       renderTape();
       refreshReadouts();

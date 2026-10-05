@@ -2,8 +2,10 @@
 // JSON). Wording from docs/ux-spec.md.
 
 export const COPY = {
-  credit: "ENIAC simulator by Brian L. Stuart, Drexel University",
+  credit: "ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by Brian L. Stuart, Drexel University",
   wordmark: "ENIAC",
+  /** The Home button beside the wordmark: back to the mission picker from any screen. */
+  home: "Home",
   waitingMachine: "Waiting for the machine...",
   wakingUp: "Waking ENIAC up...",
   start: {
@@ -102,7 +104,7 @@ export const COPY = {
     joined: "Each dot is a card. Join the dots: that is the path.",
     air: "air slows it",
     gravity: "gravity pulls",
-    punched: "hop! a card is punched",
+    punched: "one second done: a card is punched",
     stillFlying: "still flying? yes: hop again",
     card: (n: number) => `card ${n}`,
     reader: "Card reader",

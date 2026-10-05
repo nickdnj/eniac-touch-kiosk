@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import { unitPanels } from "../../src/web/app/explore/panorama.ts";
 import { ROOM } from "../../src/web/app/explore/room.ts";
 import { lampUnit, unitLamps } from "../../src/web/app/lamps/derive.ts";
-import { planSvg } from "../../src/web/app/explore/plan.ts";
+import { cartRect, planRect, planSvg } from "../../src/web/app/explore/plan.ts";
 import type { MachineState } from "../../src/web/app/protocol.ts";
 
 const markup = ROOM.flatMap((u) => unitPanels(u)).join("");
@@ -68,4 +68,23 @@ test("the panels: one SVG per panel, at the kit's 300 x 680; CSP-safe (no inline
   }
   assert.doesNotMatch(markup, /\sstyle="/);
   assert.doesNotMatch(planSvg({ visible: [0, 7] }), /\sstyle="/);
+});
+
+test("the plan: three portable-table carts inside the U, beside their Function Tables, lit with them (Report on the ENIAC 7.1; fact-check A17)", () => {
+  const carts = (svg: string) => [...svg.matchAll(/<rect class="cart (on|off)"/g)].map((m) => m[1]);
+  assert.deepEqual(carts(planSvg({})), ["on", "on", "on"]);
+  const fts = ROOM.filter((u) => u.kind === "ft");
+  for (const u of fts) {
+    const c = cartRect(u.at);
+    // Inside the U: between the left wall's inner edge and the right wall's, below the back wall.
+    assert.ok(c.x >= 42 && c.x + c.w <= 296 && c.y >= 48, u.id);
+    // Clear of every panel.
+    for (let p = 0; p < 40; p++) {
+      const r = planRect(p);
+      assert.ok(c.x + c.w <= r.x || r.x + r.w <= c.x || c.y + c.h <= r.y || r.y + r.h <= c.y, `${u.id} cart overlaps panel ${p}`);
+    }
+  }
+  // State C: a mission using Function Table 1 lights only its cart.
+  const ft1 = fts[0];
+  assert.deepEqual(carts(planSvg({ marked: new Set([ft1.at, ft1.at + 1]) })), ["on", "off", "off"]);
 });

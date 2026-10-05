@@ -39,7 +39,7 @@ test("from the picker: intro, readout, arrows, minimap; a live attract core ligh
   await toExplore(page);
   // The picker's Explore button: 96 px, no number (UX 14.9).
   await expect(rail(page).locator("h2")).toHaveText("ENIAC filled a room.");
-  await expect(rail(page).locator(".body")).toContainText("Laid in a line, they would stretch about 80 feet.");
+  await expect(rail(page).locator(".body")).toContainText("Forty panels stood in a U shape, about 80 feet long along the front.");
   await expect(readout(page)).toHaveText("You are looking at: Initiating Unit to Accumulator 2");
   await expect(page.locator(".ex-arrow.l")).toHaveClass(/disabled/);
   for (const a of await page.locator(".ex-arrow").all()) {
@@ -262,7 +262,9 @@ test("Glossary: three pages of eight, the Transceiver shown, Show me opens the c
   await tapSlow(page, page.locator('.gl-tile[data-term="Stepper"] .gl-show'));
   await expect(view(page)).toHaveAttribute("data-view", "explore");
   await expect(rail(page).locator("h2")).toHaveText("Master Programmer");
-  await expect(page.locator(".ex-back")).toHaveText("‹ Missions");
+  // From the picker, Home is the way back (no second "Missions" button).
+  await expect(page.locator(".ex-back")).toHaveCount(0);
+  await expect(page.locator("#home-btn")).toBeVisible();
   expect((await sent(page)).filter((m) => m.ev === "glossary_open")).toHaveLength(2);
 });
 
@@ -298,7 +300,7 @@ test("attract hand-off: Explore keeps attract through the glossary; leaving for 
   await expect(view(page)).toHaveAttribute("data-view", "explore");
   expect(attractMsgs(await sent(page))).toEqual(["attract_start", "attract_stop:touch", "attract_start"]);
   expect((await mockGet(page, "session")).session.mode).toBe("attract");
-  await tapSlow(page, page.locator(".ex-back"));
+  await tapSlow(page, page.locator("#home-btn"));
   await expect(view(page)).toHaveAttribute("data-view", "picker");
   expect(attractMsgs(await sent(page))).toEqual(["attract_start", "attract_stop:touch", "attract_start", "attract_stop:menu"]);
   await expect.poll(async () => (await mockGet(page, "session")).session).toBeNull();
@@ -329,7 +331,7 @@ test("core down: the tour keeps working with the notice and no lamps; mission st
   await tapSlow(page, page.locator(".gl-close"));
   await expect(view(page)).toHaveAttribute("data-view", "explore");
   // The picker needs the core: S10.
-  await tapSlow(page, page.locator(".ex-back"));
+  await tapSlow(page, page.locator("#home-btn"));
   await expect(view(page)).toHaveAttribute("data-view", "error");
 });
 
