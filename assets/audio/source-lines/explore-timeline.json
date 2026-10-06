@@ -1,0 +1,78 @@
+{
+ "video": "explore",
+ "said": [
+  {
+   "idx": 0,
+   "file": "explore-00.wav",
+   "at": 3089,
+   "dur": 4.27
+  },
+  {
+   "idx": 1,
+   "file": "explore-01.wav",
+   "at": 8493,
+   "dur": 8.5
+  },
+  {
+   "idx": 2,
+   "file": "explore-02.wav",
+   "at": 17347,
+   "dur": 3.72
+  },
+  {
+   "idx": 3,
+   "file": "explore-03.wav",
+   "at": 25993,
+   "dur": 5.85
+  },
+  {
+   "idx": 4,
+   "file": "explore-04.wav",
+   "at": 33092,
+   "dur": 3.95
+  },
+  {
+   "idx": 5,
+   "file": "explore-05.wav",
+   "at": 38288,
+   "dur": 5.62
+  },
+  {
+   "idx": 6,
+   "file": "explore-06.wav",
+   "at": 46611,
+   "dur": 8.92
+  },
+  {
+   "idx": 7,
+   "file": "explore-07.wav",
+   "at": 57780,
+   "dur": 5.06
+  },
+  {
+   "idx": 8,
+   "file": "explore-08.wav",
+   "at": 65197,
+   "dur": 4.18
+  },
+  {
+   "idx": 9,
+   "file": "explore-09.wav",
+   "at": 70432,
+   "dur": 5.94
+  },
+  {
+   "idx": 10,
+   "file": "explore-10.wav",
+   "at": 80177,
+   "dur": 3.62
+  }
+ ],
+ "cuts": [
+  {
+   "from": 63,
+   "to": 3058,
+   "why": "loading"
+  }
+ ]
+}
