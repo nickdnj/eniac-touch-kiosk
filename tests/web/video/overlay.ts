@@ -5,9 +5,13 @@ import type { Page } from "@playwright/test";
 import { afterSpeech, lineMs, speak, speakNoWait } from "./narrate.ts";
 
 // Overlay helpers: title/end cards, captions, and a visible tap ripple.
+// CLEAN=1: captions are still set and timed (cap() and the narration run
+// exactly as before) but #vid-cap is never shown: clean kiosk screens and the
+// voice only. Tap ripples and title/end cards stay.
 export async function overlays(page: Page) {
-  await page.addInitScript(() => {
-    const css = `
+  const clean = process.env.CLEAN === "1";
+  await page.addInitScript((clean: boolean) => {
+    const css = (clean ? "#vid-cap{display:none!important}\n" : "") + `
       #vid-card{position:fixed;inset:0;z-index:99999;background:#0e1013;color:#f2ede1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;font-family:'Atkinson Hyperlegible',sans-serif;text-align:center;transition:opacity .6s}
       #vid-card h1{font-size:84px;margin:0;letter-spacing:.06em;color:#e8dcb5}
       #vid-card p{font-size:34px;margin:0;max-width:1300px;line-height:1.35;color:#cfc8b6}
@@ -25,7 +29,7 @@ export async function overlays(page: Page) {
         document.body.append(d); setTimeout(() => d.remove(), 800);
       }
     }, { capture: true, passive: true });
-  });
+  }, clean);
 }
 export async function card(page: Page, html: string, ms: number) {
   await page.evaluate((html) => {

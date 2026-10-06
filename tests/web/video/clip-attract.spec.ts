@@ -22,7 +22,7 @@ test("clip: attract", async ({ page }) => {
 
   await cap(page, "The ENIAC room, lit by the live simulator");
   await expect.poll(() => attractCards(page), { timeout: 60_000 }).toBeGreaterThanOrEqual(4);
-  await cap(page, "Each dot is a real punched card: one hop of the shell");
+  await cap(page, "Each dot is a punched card: one second of the shell's flight");
   await cap(page, null);
   await trimWait(page, "the rest of the flight", () => expect(scene(page)).toHaveAttribute("data-scene", "landed", { timeout: 300_000 }), 8000, 8000);
   await cap(page, "Landed: the hop and the card count, held for a moment");

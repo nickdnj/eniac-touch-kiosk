@@ -14,7 +14,7 @@ test("ENIAC touch kiosk walkthrough: Trajectory", async ({ page }) => {
   await narration(page, "trajectory");
   await page.goto("/");
   await expect(view(page)).toHaveAttribute("data-view", "start");
-  await card(page, "<h1>Mission 3: Trajectory</h1><p>ENIAC works out the path of a cannon shell, one hop at a time, from Brian L. Stuart's recreation of the February 15, 1946 demo.</p><small>Prototype · Trajectory mission · recorded live on the real simulator</small>", 5000);
+  await card(page, "<h1>Mission 3: Trajectory</h1><p>ENIAC works out the path of a cannon shell, a punched card for every second of flight, from Brian L. Stuart's reconstruction of the shell trajectory from ENIAC's February 15, 1946 unveiling.</p><small>Prototype · Trajectory mission · recorded live on the real simulator</small>", 5000);
 
   await tap(page, page.locator(".screen.start"));
   await expect(page.locator('.mission-card[data-mission="trajectory"]')).toBeVisible();
@@ -27,7 +27,7 @@ test("ENIAC touch kiosk walkthrough: Trajectory", async ({ page }) => {
   await pause(page, 7500);
   await tapSlow(page, mainBtn(page));
   await expect(page.locator(".step-card h2")).toHaveText("Hop by hop");
-  await cap(page, "One hop: the air slows the shell, gravity pulls it down, a card is punched");
+  await cap(page, "Each hop: one second of flight, in 50 tiny steps, then a card is punched");
   await pause(page, 9000);
   await tapSlow(page, mainBtn(page));
 

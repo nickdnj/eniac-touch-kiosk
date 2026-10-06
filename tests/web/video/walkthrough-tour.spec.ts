@@ -34,7 +34,7 @@ test("ENIAC touch kiosk: the whole tour", async ({ page }) => {
   // S1: the live attract flight.
   await cap(page, "Nobody is touching it, so ENIAC flies a shell, live");
   await expect.poll(() => attractCards(page), { timeout: 60_000 }).toBeGreaterThanOrEqual(3);
-  await cap(page, "Every dot is a real punched card from the simulator");
+  await cap(page, "Every dot is a card the simulator punches");
   await pause(page, 4000);
   await cap(page, "A visitor walks up and touches the screen");
   await tap(page, page.locator(".screen.start"));
@@ -103,7 +103,7 @@ test("ENIAC touch kiosk: the whole tour", async ({ page }) => {
   await cap(page, "Find the dead tube: a re-enactment");
   await tapSlow(page, rail(page).locator(".tb-run"));
   await expect(rail(page).locator("h2")).toHaveText("Which panel is wrong?");
-  await cap(page, "Every accumulator should show 5555555555");
+  await cap(page, "Every accumulator should show the same lamps");
   await tap(page, target(page, 0));
   await expect(rail(page).locator(".tb-fb")).toContainText("Not quite");
   await say(page, "(tour: not that one)");
