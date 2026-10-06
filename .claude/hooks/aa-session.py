@@ -5,9 +5,9 @@
   aa-session.py start   (SessionStart) tell the next session what was left behind
 
 Why: `/wrap` and the wiki session log are instructions, and instructions get
-skipped. A Wharfside session on 2026-09-15 never wrapped; its 76 files sat
-uncommitted for three weeks before anyone noticed. This makes the leftover
-visible at the start of the next session instead.
+skipped. A session that never wraps can leave its work uncommitted for weeks
+before anyone notices. This makes the leftover visible at the start of the
+next session instead.
 
 `start` prints at most a few lines, and only when there is something to say:
 uncommitted files untouched for over a day, or a substantive previous session
