@@ -3,13 +3,10 @@
     "openai-image": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "github:nickdnj/openai-image-mcp#feat/gpt-image-2"],
-      "env": {}
-    },
-    "video-editor": {
-      "type": "stdio",
-      "command": "python",
-      "args": ["-c", "from video_editor.server import mcp; mcp.run(transport='stdio')"],
+      "args": [
+        "-y",
+        "github:nickdnj/openai-image-mcp#feat/gpt-image-2"
+      ],
       "env": {}
     }
   }

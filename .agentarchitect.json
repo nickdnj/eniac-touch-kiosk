@@ -25,8 +25,7 @@
     "content-studio"
   ],
   "mcp": [
-    "openai-image",
-    "video-editor"
+    "openai-image"
   ],
   "provisionedAt": "2026-10-03",
   "aaCommit": "0969395ce937edc59bf5aafb8f4d7275ba1162ef",
