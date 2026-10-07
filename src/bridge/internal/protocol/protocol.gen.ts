@@ -145,6 +145,22 @@ export interface Hello {
 export interface HelloConfig {
   idle: IdleConfig;
   admin: AdminConfig;
+  /**
+   * OriginalUI says whether Brian L. Stuart's Tk front end can be shown
+   * (docs/original-ui-switch.md 6.3): the Explore tile is drawn only if
+   * available; S13 draws its button disabled otherwise.
+   */
+  originalUi: OriginalUIConfig;
+}
+/**
+ * OriginalUIConfig is hello.config.originalUi. Reason (when not available)
+ * is disabled, no-switch-dir, not-built, no-tk or running.
+ */
+export interface OriginalUIConfig {
+  available: boolean;
+  reason?: string;
+  tourIdleS: number /* int */;
+  interactiveIdleS: number /* int */;
 }
 /**
  * IdleConfig carries FR-32 timeouts to the UI.
@@ -336,6 +352,20 @@ export interface Error {
   message: string;
 }
 /**
+ * OriginalUIReply answers original_ui: the request is written and the
+ * kiosk session will close this page within about a second
+ * (docs/original-ui-switch.md 6.3). A repeat while one is pending or
+ * running answers the same id. The page has already drawn the switching
+ * screen and shows its failure state if it is still alive 15 s later.
+ */
+export interface OriginalUIReply {
+  t: 'original_ui';
+  re?: number /* int64 */;
+  phase: 'switching';
+  mode: 'tour' | 'interactive';
+  id: string;
+}
+/**
  * Pong answers ping.
  */
 export interface Pong {
@@ -416,6 +446,16 @@ export interface Ping {
   t: 'ping';
   id?: number /* int64 */;
 }
+/**
+ * OriginalUI is the visitor door to the original UI (the Explore tile,
+ * UX 7.12.4): only the self-running room tour, no PIN. The interactive
+ * mode is reachable only through the admin API (ADR-OUI-12).
+ */
+export interface OriginalUI {
+  t: 'original_ui';
+  id?: number /* int64 */;
+  mode: 'tour';
+}
 export interface MachineState {
   cycle: CycleState;
   init: string;
@@ -470,6 +510,53 @@ export interface Healthz {
   bridge: HealthzBridge;
   kiosk: HealthzKiosk;
   session?: HealthzSession;
+  /**
+   * OriginalUI: can it be shown, and is it on screen now (SSH/LAN check).
+   */
+  originalUi: HealthzOriginalUI;
+}
+export interface HealthzOriginalUI {
+  available: boolean;
+  reason: string;
+  active?: HealthzOriginalUIActive;
+}
+export interface HealthzOriginalUIActive {
+  mode: string;
+  id: string;
+  sinceS: number /* int64 */;
+}
+/**
+ * AdminLogin is the body of POST /api/admin/login (4 to 8 digits).
+ */
+export interface AdminLogin {
+  pin: string;
+}
+/**
+ * AdminLoginReply: the token goes in "Authorization: Bearer <token>".
+ */
+export interface AdminLoginReply {
+  token: string;
+  expiresInS: number /* int */;
+}
+/**
+ * AdminActionReply answers restart-core (200) and original-ui (202).
+ */
+export interface AdminActionReply {
+  ok: boolean;
+  mode?: string;
+  id?: string;
+}
+/**
+ * AdminError is every admin error body.
+ */
+export interface AdminError {
+  error: AdminErrorBody;
+}
+export interface AdminErrorBody {
+  code: 'BAD_PIN' | 'LOCKED' | 'NO_PIN' | 'TOKEN' | 'UNAVAILABLE' | 'BUSY' | 'BAD_REQUEST' | 'ORIGIN' | 'METHOD' | 'INTERNAL';
+  message: string;
+  retryAfterS?: number /* int */;
+  reason?: string;
 }
 export interface HealthzUpstream {
   commit: string;

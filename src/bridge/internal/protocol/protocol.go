@@ -72,6 +72,19 @@ type Hello struct {
 type HelloConfig struct {
 	Idle  IdleConfig  `json:"idle"`
 	Admin AdminConfig `json:"admin"`
+	// OriginalUI says whether Brian L. Stuart's Tk front end can be shown
+	// (docs/original-ui-switch.md 6.3): the Explore tile is drawn only if
+	// available; S13 draws its button disabled otherwise.
+	OriginalUI OriginalUIConfig `json:"originalUi"`
+}
+
+// OriginalUIConfig is hello.config.originalUi. Reason (when not available)
+// is disabled, no-switch-dir, not-built, no-tk or running.
+type OriginalUIConfig struct {
+	Available        bool   `json:"available"`
+	Reason           string `json:"reason,omitempty"`
+	TourIdleS        int    `json:"tourIdleS"`
+	InteractiveIdleS int    `json:"interactiveIdleS"`
 }
 
 // IdleConfig carries FR-32 timeouts to the UI.
@@ -238,6 +251,19 @@ type Error struct {
 	Message string `json:"message"`
 }
 
+// OriginalUIReply answers original_ui: the request is written and the
+// kiosk session will close this page within about a second
+// (docs/original-ui-switch.md 6.3). A repeat while one is pending or
+// running answers the same id. The page has already drawn the switching
+// screen and shows its failure state if it is still alive 15 s later.
+type OriginalUIReply struct {
+	T     string `json:"t" tstype:"'original_ui'"`
+	Re    *int64 `json:"re,omitempty"`
+	Phase string `json:"phase" tstype:"'switching'"`
+	Mode  string `json:"mode" tstype:"'tour' | 'interactive'"`
+	ID    string `json:"id"`
+}
+
 // Pong answers ping.
 type Pong struct {
 	T  string `json:"t" tstype:"'pong'"`
@@ -323,6 +349,15 @@ type Ping struct {
 	ID *int64 `json:"id,omitempty"`
 }
 
+// OriginalUI is the visitor door to the original UI (the Explore tile,
+// UX 7.12.4): only the self-running room tour, no PIN. The interactive
+// mode is reachable only through the admin API (ADR-OUI-12).
+type OriginalUI struct {
+	T    string `json:"t" tstype:"'original_ui'"`
+	ID   *int64 `json:"id,omitempty"`
+	Mode string `json:"mode" tstype:"'tour'"`
+}
+
 // ---------------------------------------------------------------------------
 // MachineState (5.4). The bridge encodes it from nested maps; these structs
 // document the shape and generate the TypeScript type. All keys are 1-based
@@ -393,6 +428,55 @@ type Healthz struct {
 	Bridge   HealthzBridge   `json:"bridge"`
 	Kiosk    HealthzKiosk    `json:"kiosk"`
 	Session  *HealthzSession `json:"session"`
+	// OriginalUI: can it be shown, and is it on screen now (SSH/LAN check).
+	OriginalUI HealthzOriginalUI `json:"originalUi"`
+}
+
+type HealthzOriginalUI struct {
+	Available bool                     `json:"available"`
+	Reason    string                   `json:"reason"`
+	Active    *HealthzOriginalUIActive `json:"active"`
+}
+
+type HealthzOriginalUIActive struct {
+	Mode   string `json:"mode"`
+	ID     string `json:"id"`
+	SinceS int64  `json:"sinceS"`
+}
+
+// ---------------------------------------------------------------------------
+// HTTP: the admin API on the loopback listener (architecture 8.4, v1
+// subset in docs/original-ui-switch.md 6.1). Every route is POST with a
+// JSON body of at most 1 KB and the kiosk page's Origin.
+
+// AdminLogin is the body of POST /api/admin/login (4 to 8 digits).
+type AdminLogin struct {
+	Pin string `json:"pin"`
+}
+
+// AdminLoginReply: the token goes in "Authorization: Bearer <token>".
+type AdminLoginReply struct {
+	Token      string `json:"token"`
+	ExpiresInS int    `json:"expiresInS"`
+}
+
+// AdminActionReply answers restart-core (200) and original-ui (202).
+type AdminActionReply struct {
+	OK   bool   `json:"ok"`
+	Mode string `json:"mode,omitempty"`
+	ID   string `json:"id,omitempty"`
+}
+
+// AdminError is every admin error body.
+type AdminError struct {
+	Error AdminErrorBody `json:"error"`
+}
+
+type AdminErrorBody struct {
+	Code        string `json:"code" tstype:"'BAD_PIN' | 'LOCKED' | 'NO_PIN' | 'TOKEN' | 'UNAVAILABLE' | 'BUSY' | 'BAD_REQUEST' | 'ORIGIN' | 'METHOD' | 'INTERNAL'"`
+	Message     string `json:"message"`
+	RetryAfterS int    `json:"retryAfterS,omitempty"`
+	Reason      string `json:"reason,omitempty"`
 }
 
 type HealthzUpstream struct {

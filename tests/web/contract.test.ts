@@ -63,6 +63,9 @@ test("fixtures: hello/health/state/frame/session/run are consumed by the UI", { 
   assert.equal(hello.protocol, PROTOCOL_VERSION);
   for (const k of ["setupS", "runS", "countdownS"]) assert.equal(typeof hello.config.idle[k], "number");
   assert.deepEqual(Object.keys(hello.config.admin.tapZone).sort(), ["corner", "heightPx", "taps", "widthPx"]);
+  // Original UI switch (docs/original-ui-switch.md 6.3): the Explore tile and S13 read these.
+  assert.equal(typeof hello.config.originalUi.available, "boolean");
+  for (const k of ["tourIdleS", "interactiveIdleS"]) assert.equal(typeof hello.config.originalUi[k], "number");
 
   const mirror = new Mirror();
   mirror.onLink(true);
