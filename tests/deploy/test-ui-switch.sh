@@ -42,7 +42,7 @@ cleanup() {
   [ -n "$SESSION" ] && kill -TERM -- "-$SESSION" 2>/dev/null
   [ -n "$BRIDGE" ] && kill "$BRIDGE" 2>/dev/null
   sleep 0.3
-  [ -n "$SESSION" ] && kill -KILL -- "-$SESSION" 2>/dev/null
+  if [ -n "$SESSION" ]; then kill -KILL -- "-$SESSION" 2>/dev/null || true; fi
   rm -rf -- "$T"
 }
 trap cleanup EXIT
@@ -89,6 +89,7 @@ until_() {
 browsers() { [ -f "$T/browser.log" ] && wc -l < "$T/browser.log" || echo 0; }
 browser_pid() { tail -n 1 "$T/browser.log" | cut -d' ' -f1; }
 alive() { kill -0 "$1" 2>/dev/null; }
+# shellcheck disable=SC2329
 dead() { ! kill -0 "$1" 2>/dev/null; }
 count_is() { [ "$(browsers)" -eq "$1" ]; }
 has() { [ -e "$UI/$1" ]; }
@@ -154,3 +155,5 @@ if until_ 3 count_is 4; then pass "6: Chromium back"; else failt "6: Chromium no
 echo
 echo "test-ui-switch: $PASS passed, $FAIL failed"
 if [ "$FAIL" -gt 0 ]; then echo "--- session log"; cat "$T/session.log"; exit 1; fi
+
+exit 0
