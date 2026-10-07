@@ -29,10 +29,18 @@ type Options struct {
 	Handler  Handler
 	// Healthz returns the /healthz document (nil: a minimal "ok").
 	Healthz func() protocol.Healthz
+	// Admin serves /api/admin/ (internal/admin), with the websocket's
+	// Origin check (nil: no admin routes).
+	Admin AdminAPI
 	// Listener overrides Config.Listen (tests).
 	Listener net.Listener
 	// Ready is called with the bound address once listening.
 	Ready func(addr string)
+}
+
+// AdminAPI is the staff API (internal/admin.Admin).
+type AdminAPI interface {
+	Handler(originOK func(origin string) bool) http.Handler
 }
 
 type srv struct {
@@ -58,6 +66,10 @@ func buildMux(ctx context.Context, o Options, addr string) (*http.ServeMux, *srv
 	}
 	if o.Hub != nil {
 		mux.HandleFunc("/ws", s.handleWS)
+	}
+	if o.Admin != nil {
+		// Same Origin rule as /ws: only the kiosk page itself.
+		mux.Handle("/api/admin/", o.Admin.Handler(func(origin string) bool { return originAllowed(origin, s.origins) }))
 	}
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		doc := protocol.Healthz{Status: "ok"}

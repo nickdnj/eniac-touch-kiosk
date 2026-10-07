@@ -176,3 +176,70 @@ func TestCancelStops(t *testing.T) {
 		t.Fatal("loop still running after cancel")
 	}
 }
+
+// Restart simulator (S13): after the budget is spent the loop waits 10 min
+// between quiet retries; Reset clears the budget and probes at once.
+func TestResetProbesNowAndRestoresTheBudget(t *testing.T) {
+	var mu sync.Mutex
+	var health []protocol.Health
+	probes := 0
+	waiting := make(chan time.Duration, 10)
+	recovered := make(chan struct{}, 1)
+	r := New(context.Background(), Options{
+		Budget: 1, Window: 5 * time.Minute, SlowRetry: 10 * time.Minute, Backoff: []time.Duration{time.Millisecond},
+		Sleep: func(ctx context.Context, d time.Duration) error {
+			if d < time.Minute {
+				return nil
+			}
+			waiting <- d
+			<-ctx.Done() // only a kick (or shutdown) ends the slow retry here
+			return ctx.Err()
+		},
+		Probe: func(context.Context) error {
+			mu.Lock()
+			defer mu.Unlock()
+			probes++
+			if probes == 1 {
+				return startFail
+			}
+			return nil
+		},
+		OnHealth:    func(x protocol.Health) { mu.Lock(); health = append(health, x); mu.Unlock() },
+		OnRecovered: func() { recovered <- struct{}{} },
+	})
+	r.Fault(core.Fault{Code: core.CodeDown, Detail: core.DetailExit})
+	select {
+	case d := <-waiting:
+		if d != 10*time.Minute {
+			t.Fatalf("slow retry %v", d)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("never reached the slow retry")
+	}
+	if st := r.Status(); !st.Final {
+		t.Fatalf("expected final: %+v", st)
+	}
+	r.Reset()
+	select {
+	case <-recovered:
+	case <-time.After(3 * time.Second):
+		t.Fatal("Reset did not probe")
+	}
+	if st := r.Status(); st.Final || st.Down {
+		t.Fatalf("after reset: %+v", st)
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	if probes != 2 || health[len(health)-1].Core != "up" {
+		t.Fatalf("probes %d health %+v", probes, health)
+	}
+}
+
+// With the core up, Reset only clears the counters (nothing to wake).
+func TestResetIdle(t *testing.T) {
+	h := newHarness()
+	h.r.Reset()
+	if st := h.r.Status(); st.Down || st.Recovering || len(h.probes) != 0 {
+		t.Fatalf("%+v", st)
+	}
+}
