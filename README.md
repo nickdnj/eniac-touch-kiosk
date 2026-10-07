@@ -50,7 +50,9 @@ make release ARCH=amd64   # Dell OptiPlex / any x86-64 Ubuntu 24.04 box (primary
 make release ARCH=arm64   # Raspberry Pi 5
 ```
 
-Copy `dist/eniac-touch-kiosk-<ver>-linux-<arch>.tar.gz` to the box, unpack, `sudo ./install.sh`. Removal: `sudo eniac-touch-kiosk-uninstall`. The full install-day procedure (USB stick, BIOS, touch check, power-cut test, rollback) is `docs/deploy-x86.md`. `tests/deploy/test-install-container.sh` rehearses install + removal in a throwaway Ubuntu 24.04 container.
+Copy `dist/eniac-touch-kiosk-<ver>-linux-<arch>.tar.gz` to the box, unpack, `sudo ./install.sh`, then set the staff PIN: `sudo eniac-touch-kiosk set-pin` (there is no default). Removal: `sudo eniac-touch-kiosk-uninstall`.
+
+Staff on the floor: one tap on the ENIAC wordmark (top left) asks to start over; **five taps** open the PIN pad and then the admin screen (**Restart simulator**, **Original UI**: Brian L. Stuart's own Tk front end, **Return to kiosk**). Visitors find Stuart's self-running **Original room tour** in Explore. **Back to kiosk** (top left) or the idle timeout returns; over SSH, `sudo eniac-touch-kiosk original-ui tour|interactive|off|status`. Design: `docs/original-ui-switch.md`. The full install-day procedure (USB stick, BIOS, touch check, power-cut test, rollback) is `docs/deploy-x86.md`. `tests/deploy/test-install-container.sh` rehearses install + removal in a throwaway Ubuntu 24.04 container.
 
 ## Upstream: pin, patches and taking Stuart's updates
 
