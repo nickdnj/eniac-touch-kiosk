@@ -7,6 +7,9 @@
 #   eniac-touch-kiosk restart    restart the bridge (sudo)
 #   eniac-touch-kiosk restart-display   restart X + Chromium on tty1 (sudo)
 #   eniac-touch-kiosk rollback   swap current <-> previous release (sudo)
+#   eniac-touch-kiosk set-pin [--stdin]   set the staff PIN, 4 to 8 digits (sudo)
+#   eniac-touch-kiosk original-ui tour|interactive|off|status
+#                                Stuart's original UI over SSH (sudo); off = back to the kiosk
 #   eniac-touch-kiosk version
 set -euo pipefail
 PREFIX=/opt/eniac-touch-kiosk
@@ -15,6 +18,8 @@ UNIT=eniac-touch-kiosk-bridge.service
 SVC_USER=eniac
 KIOSK_USER=eniac-kiosk
 RUN=/run/eniac-touch-kiosk
+ETC=/etc/eniac-touch-kiosk
+UI_DIR=/run/eniac-touch-kiosk-ui
 
 need_root() { [ "$(id -u)" -eq 0 ] || { echo "$1 needs sudo" >&2; exit 1; }; }
 
@@ -26,9 +31,13 @@ case "${1:-status}" in
     echo
     if pgrep -u "$KIOSK_USER" -x Xorg >/dev/null; then echo "display:  X running as $KIOSK_USER"; else echo "display:  X NOT running"; fi
     if pgrep -u "$KIOSK_USER" -f 'chromium.*--kiosk' >/dev/null; then echo "browser:  Chromium kiosk running"; else echo "browser:  Chromium NOT running"; fi
+    if [ -r "$UI_DIR/active" ]; then echo "original: on screen ($(cat "$UI_DIR/active"))"
+    elif pgrep -u "$KIOSK_USER" -x eniactk >/dev/null; then echo "original: Stuart's original UI is on screen"
+    else echo "original: not running"; fi
+    [ -s "$ETC/admin-pin" ] || [ ! -r "$ETC" ] || echo "staff PIN: NOT SET (sudo eniac-touch-kiosk set-pin)"
     ;;
   logs)
-    exec journalctl -f -n 50 -u "$UNIT" -t eniac-touch-kiosk-session -t eniac-touch-kiosk-chromium
+    exec journalctl -f -n 50 -u "$UNIT" -t eniac-touch-kiosk-session -t eniac-touch-kiosk-chromium -t eniac-touch-kiosk-original-ui
     ;;
   selftest)
     need_root selftest
@@ -55,10 +64,42 @@ case "${1:-status}" in
     pkill -u "$KIOSK_USER" -x Xorg || true
     echo "rolled back: current -> $prev (previous -> $cur)"
     ;;
+  set-pin)
+    # The staff PIN for S12 (docs/original-ui-switch.md 6.2). Only its bcrypt
+    # hash is stored, 0640 root:eniac; the bridge reads it on every login,
+    # so it applies at once. There is no default PIN.
+    need_root set-pin
+    pin="" pin2=""
+    if [ "${2:-}" = --stdin ]; then
+      IFS= read -r pin || true
+    else
+      [ -t 0 ] || { echo "set-pin: no terminal; use: echo PIN | sudo eniac-touch-kiosk set-pin --stdin" >&2; exit 1; }
+      IFS= read -r -s -p "New staff PIN (4 to 8 digits): " pin; echo
+      IFS= read -r -s -p "The same PIN again: " pin2; echo
+      [ "$pin" = "$pin2" ] || { echo "set-pin: the two PINs differ; nothing changed" >&2; exit 1; }
+    fi
+    [[ "$pin" =~ ^[0-9]{4,8}$ ]] || { echo "set-pin: the PIN must be 4 to 8 digits; nothing changed" >&2; exit 1; }
+    hash="$(printf '%s\n' "$pin" | "$PREFIX/current/bin/eniac-bridge" pin-hash)" || { echo "set-pin: hashing failed; nothing changed" >&2; exit 1; }
+    pin="" pin2=""
+    tmp="$(mktemp "$ETC/.admin-pin.XXXXXX")"
+    printf '%s\n' "$hash" > "$tmp"
+    chown "root:$SVC_USER" "$tmp"; chmod 0640 "$tmp"
+    mv -f "$tmp" "$ETC/admin-pin"
+    echo "staff PIN set ($ETC/admin-pin, 0640 root:$SVC_USER); it applies at the next login"
+    ;;
+  original-ui)
+    # The SSH door and the remote way back (docs/original-ui-switch.md 6.8).
+    need_root original-ui
+    case "${2:-}" in
+      tour|interactive|off|status) ;;
+      *) echo "usage: sudo eniac-touch-kiosk original-ui tour|interactive|off|status" >&2; exit 2 ;;
+    esac
+    exec runuser -u "$SVC_USER" -- "$PREFIX/current/bin/eniac-bridge" ui-request --config "$CONFIG" --mode "$2"
+    ;;
   version)
     cat "$PREFIX/current/BUILD-INFO"
     ;;
   *)
-    sed -n '2,11p' "$0"; exit 2
+    sed -n '2,14p' "$0"; exit 2
     ;;
 esac

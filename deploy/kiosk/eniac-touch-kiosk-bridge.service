@@ -18,6 +18,10 @@ RuntimeDirectoryMode=0750
 StateDirectory=eniac-touch-kiosk
 StateDirectoryMode=0750
 ProtectSystem=strict
+# The Original UI switch's request directory, shared with the kiosk session
+# (tmpfiles.d, 2770 eniac:eniac-kiosk). "-": the unit still starts without
+# it, and the bridge reports the switch unavailable (no-switch-dir).
+ReadWritePaths=-/run/eniac-touch-kiosk-ui
 ProtectHome=yes
 PrivateTmp=yes
 NoNewPrivileges=yes

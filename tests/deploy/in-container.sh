@@ -8,6 +8,11 @@
 # selftest, a headless Chromium render of the kiosk page, and removal with
 # a before/after diff. It does NOT cover: systemd units, tty1 autologin,
 # startx/kiosk-session, touch, or power behaviour.
+# Original UI switch (docs/original-ui-switch.md 8): tk/wish, the shipped
+# original-ui/ tree, the tmpfiles dir, ReadWritePaths, the appended config
+# block, set-pin + login with a 4-digit PIN, the SSH ui-request door, and a
+# smoke run of the supervisor under Xvfb (eniactk + images + tk inactive on
+# a real X server; xvfb is part of this container's baseline only).
 set -uo pipefail
 TARBALL="$1"
 fail=0
@@ -35,7 +40,7 @@ base_ok=0
 for _ in 1 2 3; do
   apt-get update -q >/dev/null 2>&1
   if apt-get install -y -q --no-install-recommends \
-       systemd systemd-sysv dbus udev iproute2 procps sudo software-properties-common >/dev/null; then base_ok=1; break; fi
+       systemd systemd-sysv dbus udev iproute2 procps sudo software-properties-common xvfb >/dev/null; then base_ok=1; break; fi
   sleep 20
 done
 [ "$base_ok" = 1 ] && pass "baseline packages present" || bad "baseline install failed (network?)"
@@ -77,6 +82,31 @@ grep -q 'already installed and identical' /tmp/install2.log && pass "second run 
 cmp -s /tmp/manifest1 /opt/eniac-touch-kiosk/INSTALL-MANIFEST && pass "manifest unchanged by re-run" || { bad "manifest changed"; diff /tmp/manifest1 /opt/eniac-touch-kiosk/INSTALL-MANIFEST; }
 [ "$(ls /opt/eniac-touch-kiosk/releases | wc -l)" = 1 ] && pass "one release dir" || bad "releases: $(ls /opt/eniac-touch-kiosk/releases)"
 
+echo "== original UI: package, release tree, switch dir, unit, config"
+dpkg -s tk >/dev/null 2>&1 && pass "package tk installed" || bad "package tk missing"
+[ -x /usr/bin/wish ] && pass "/usr/bin/wish present" || bad "no /usr/bin/wish"
+grep -q '^package tk$' /opt/eniac-touch-kiosk/INSTALL-MANIFEST && pass "tk recorded in the manifest" || bad "tk not in the manifest"
+OUI=/opt/eniac-touch-kiosk/current/original-ui
+[ "$(head -c4 "$OUI/bin/eniactk" | od -An -c | tr -d ' ')" = '177ELF' ] && pass "original-ui/bin/eniactk is an ELF" || bad "eniactk is not an ELF"
+"$OUI/bin/eniactk" -h 2>&1 | grep -q -- '-D' && pass "eniactk runs here (usage lists -D)" || bad "eniactk does not run"
+[ -r "$OUI/programs/trajdemo.e" ] && [ -r "$OUI/demo.card" ] && pass "original-ui/programs/trajdemo.e and demo.card resolve" || bad "original-ui links broken"
+[ -s "$OUI/images/e1900.ppm" ] && [ -s "$OUI/images/e1900s5.ppm" ] && [ -s "$OUI/images/control.ppm" ] && pass "original-ui/images has the 1900 set" || bad "images missing"
+[ -f /etc/tmpfiles.d/eniac-touch-kiosk.conf ] && grep -q '^file /etc/tmpfiles.d/eniac-touch-kiosk.conf$' /opt/eniac-touch-kiosk/INSTALL-MANIFEST && pass "tmpfiles conf written and recorded" || bad "tmpfiles conf"
+[ "$(stat -c '%a %U:%G' /run/eniac-touch-kiosk-ui 2>/dev/null)" = "2770 eniac:eniac-kiosk" ] && pass "/run/eniac-touch-kiosk-ui is 2770 eniac:eniac-kiosk" || bad "switch dir: $(stat -c '%a %U:%G' /run/eniac-touch-kiosk-ui 2>&1)"
+grep -qx 'ReadWritePaths=-/run/eniac-touch-kiosk-ui' /etc/systemd/system/eniac-touch-kiosk-bridge.service && pass "bridge unit has ReadWritePaths" || bad "unit lacks ReadWritePaths"
+[ "$(grep -c '^originalUi:' /etc/eniac-touch-kiosk/config.yaml)" = 1 ] && pass "config.yaml has one originalUi block" || bad "originalUi blocks: $(grep -c '^originalUi:' /etc/eniac-touch-kiosk/config.yaml)"
+[ ! -e /etc/eniac-touch-kiosk/admin-pin ] && pass "no default PIN (no TTY: not prompted)" || bad "a PIN file exists without set-pin"
+grep -q 'set-pin' /tmp/install1.log && pass "installer says how to set the PIN" || bad "no set-pin reminder"
+
+echo "== original UI: an old config.yaml gets the block appended once"
+sed -n '/^# Original UI switch/,$!p' /etc/eniac-touch-kiosk/config.yaml | grep -v -e 'pinFile' -e 'uiSwitch:' -e 'originalUi:' > /tmp/old-config.yaml
+sed -i 's/^admin: .*/admin: { sessionTimeoutS: 120, allowPowerActions: false, allowUpdates: false }/' /tmp/old-config.yaml
+cp /tmp/old-config.yaml /etc/eniac-touch-kiosk/config.yaml
+"$REL/install.sh" --no-packages > /tmp/install-append.log 2>&1 && pass "re-install over an old config exit 0" || { bad "re-install over old config failed"; tail -20 /tmp/install-append.log; }
+grep -q 'appended the originalUi block' /tmp/install-append.log && pass "installer appended the block" || bad "no append logged"
+"$REL/install.sh" --no-packages > /tmp/install-append2.log 2>&1
+[ "$(grep -c '^originalUi:' /etc/eniac-touch-kiosk/config.yaml)" = 1 ] && pass "appended exactly once" || bad "originalUi blocks after two runs: $(grep -c '^originalUi:' /etc/eniac-touch-kiosk/config.yaml)"
+
 echo "== upgrade to a second release, offline (--no-packages)"
 REL2=/root/rel/next && cp -a "$REL" "$REL2"
 sed -i 's/^version=.*/version=9.9.9-test/' "$REL2/BUILD-INFO"
@@ -97,6 +127,47 @@ if (exec 3<>/dev/tcp/127.0.0.1/8740) 2>/dev/null; then pass "bridge listening on
 resp="$(exec 3<>/dev/tcp/127.0.0.1/8740; printf 'GET / HTTP/1.0\r\nHost: 127.0.0.1:8740\r\n\r\n' >&3; cat <&3)"
 grep -q '200 OK' <<<"$resp" && grep -qi '<html' <<<"$resp" && pass "GET / serves the kiosk page" || bad "GET / failed: ${resp:0:300}"
 if eniac-touch-kiosk selftest; then pass "selftest (Squares on the amd64 core)"; else bad "selftest failed"; fi
+
+echo "== original UI: healthz, PIN 2468 end to end, the SSH door"
+http() { # <method> <path> [body] [extra header]
+  exec 3<>/dev/tcp/127.0.0.1/8740
+  printf '%s %s HTTP/1.0\r\nHost: 127.0.0.1:8740\r\nOrigin: http://127.0.0.1:8740\r\nContent-Type: application/json\r\nContent-Length: %d\r\n%s\r\n%s' \
+    "$1" "$2" "${#3}" "${4:+$4$'\r\n'}" "$3" >&3
+  cat <&3; exec 3<&-
+}
+hz="$(http GET /healthz '')"
+grep -q '"originalUi":{"available":true' <<<"$hz" && pass "/healthz: originalUi available" || bad "/healthz originalUi: $(grep -o '"originalUi":{[^}]*' <<<"$hz")"
+grep -q '"code":"NO_PIN"' <<<"$(http POST /api/admin/login '{"pin":"2468"}')" && pass "login before set-pin: NO_PIN" || bad "login without a PIN file did not say NO_PIN"
+echo 2468 | eniac-touch-kiosk set-pin --stdin && pass "set-pin --stdin 2468" || bad "set-pin failed"
+[ "$(stat -c '%a %U:%G' /etc/eniac-touch-kiosk/admin-pin)" = "640 root:eniac" ] && pass "admin-pin is 0640 root:eniac" || bad "admin-pin: $(stat -c '%a %U:%G' /etc/eniac-touch-kiosk/admin-pin)"
+grep -q 2468 /etc/eniac-touch-kiosk/admin-pin && bad "the PIN is stored in clear" || pass "only the hash is stored"
+login="$(http POST /api/admin/login '{"pin":"2468"}')"
+tok="$(grep -o '"token":"[0-9a-f]*"' <<<"$login" | cut -d'"' -f4)"
+[ ${#tok} = 32 ] && pass "login with 2468: a token" || bad "login with 2468: ${login:0:300}"
+grep -q '"code":"BAD_PIN"' <<<"$(http POST /api/admin/login '{"pin":"1357"}')" && pass "a wrong PIN: BAD_PIN" || bad "wrong PIN not refused"
+oui="$(http POST /api/admin/original-ui '{}' "Authorization: Bearer $tok")"
+grep -q '202' <<<"$oui" && grep -q '"mode":"interactive"' <<<"$oui" && pass "POST original-ui: 202 interactive" || bad "original-ui: ${oui:0:300}"
+grep -q 'door=staff' /run/eniac-touch-kiosk-ui/mode && pass "the request file says door=staff" || bad "no staff request file"
+eniac-touch-kiosk original-ui off | grep -q withdrawn && pass "original-ui off withdraws it" || bad "off failed"
+eniac-touch-kiosk original-ui tour | grep -q 'requested: tour' && pass "original-ui tour (SSH door)" || bad "ui-request tour failed"
+st="$(eniac-touch-kiosk original-ui status)"; echo "$st"
+grep -q 'door=remote' <<<"$st" && pass "original-ui status shows the request" || bad "status: $st"
+eniac-touch-kiosk original-ui off >/dev/null
+
+echo "== original UI: the supervisor under Xvfb (tour, idle 60 s, warn 5 s)"
+if command -v Xvfb >/dev/null; then
+  install -d -o eniac-kiosk -m 0700 /tmp/xvfb-home
+  t0=$(date +%s)
+  timeout 150 runuser -u eniac-kiosk -- xvfb-run -a -s '-screen 0 1920x1080x24' \
+    /opt/eniac-touch-kiosk/current/deploy/kiosk/original-ui --mode tour --idle-s 60 --warn-s 5 > /tmp/oui-smoke.log 2>&1
+  rc=$?
+  echo "supervisor exit $rc after $(( $(date +%s) - t0 )) s"; tail -15 /tmp/oui-smoke.log
+  [ "$rc" = 10 ] && pass "supervisor ran Stuart's UI on X and returned on idle (exit 10)" || bad "supervisor smoke exit $rc"
+  grep -q 'images e1900' /tmp/oui-smoke.log && pass "picked the 1900 image set for 1920x1080" || bad "image width not 1900"
+  grep -qi -e 'eniactk exited' -e 'core exited' -e 'window (wish) is gone' -e 'couldn.t open' /tmp/oui-smoke.log && bad "the smoke log shows a failure" || pass "no core/eniactk/wish failure in the log"
+else
+  echo "SKIP: no Xvfb in this container"
+fi
 eniac-touch-kiosk version
 echo "== headless Chromium render (as eniac-kiosk, 1920x1080)"
 if timeout 120 runuser -u eniac-kiosk -- /usr/bin/chromium --headless=new --no-sandbox --disable-gpu --hide-scrollbars \

@@ -13,7 +13,7 @@
 # upgraded alongside. It then proves it: a dry run that sees ONLY the new
 # repo must install everything install.sh installs, against that same status.
 set -euo pipefail
-PKGS_X=(xserver-xorg xinit x11-xserver-utils xinput openbox unclutter)
+PKGS_X=(xserver-xorg xinit x11-xserver-utils xinput openbox unclutter tk)
 PKGS_C=(chromium chromium-sandbox)
 W=/work
 OUT=/out/offline
