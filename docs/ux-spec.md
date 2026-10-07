@@ -572,6 +572,216 @@ Text is 28 px, wording to be approved by Doug Crawford (FR-41). If the QR cannot
 - **S12 PIN pad:** 3 x 4 keys, each 120x120 with 24 px gaps, centred. Dots show digits entered. A wrong PIN shows "Not right" for 1 s and **returns to the visitor screen**. 30 s of inactivity does the same.
 - **S13 Admin:** a header strip with "Exits in 1:42" (FR-74). Left: health tiles (core, bridge, uptime, restarts, last error, CPU temp, throttling) and metrics (today, 7 days, all time). Right: action buttons, each 96 px tall and 456 wide: **Restart simulator**, **Restart app**, **Run a mission in docent mode**, **Install update / Roll back**, **Reboot**, **Shut down**, and **Return to kiosk**. Reboot and shut down ask "Are you sure?" with two 96 px buttons. The visitor-facing type sizes apply here too (staff may wear gloves).
 
+> **v1 scope (v0.9, 2026-10-07):** S13 first ships with exactly three buttons: **Restart simulator**, **Original UI** and **Return to kiosk**, plus the "Exits in m:ss" header and the 2-minute idle exit (FR-74). The layout, the switch confirmation and the "switching" page are in 7.12. The rest of the list above follows in later versions and stacks under these three.
+
+
+### 7.12 Original UI and the room tour
+
+*Added v0.9 (2026-10-07). Source: Nick's two asks of 2026-10-07 and `~/Workspaces/vcf/outputs/2026-10-07-eniac-kiosk/original-ui-switch-brief.md`. Wording is for Nick to approve; how the switch works underneath is in `docs/original-ui-switch.md` and `docs/architecture.md`, not here.*
+
+**What this is.** Brian L. Stuart's own Tk front end for the simulator (`eniactk`) is a separate full-screen X11 app. Showing it means the kiosk's Chromium page is replaced, not routed away from. Two doors lead to it, one wrapper button leads back, and every part of that is touch-only (UX-05). It is a **real alternate UI on the real simulator**, never a video or a recording (PRD no-demo-fallback rule).
+
+#### 7.12.1 Decisions
+
+| # | Decision | Choice | Why |
+|---|---|---|---|
+| 1 | Staff door | 5 taps in the top-left corner, S12 PIN pad, S13 Admin, **Original UI** button, one confirmation | Unchanged gesture (FR-70); the PIN keeps visitors out. |
+| 2 | Visitor door | One tile in **Explore ENIAC (S14), rail state A**, labelled **Original room tour** | See 7.12.4 for why not Home, S1 or S2. |
+| 3 | Way back, both paths | A small always-on-top **Back to kiosk** button drawn by our wrapper, **top-left, 280 x 96**, no confirmation | Same corner as the admin zone and the wordmark and Home buttons, so "top-left is how you leave" holds in both worlds. |
+| 4 | Idle return | Visitor path **5 min**, staff path **15 min**, both with a 30 s warning on the Back button | See 7.12.6. |
+| 5 | Landing after any return | **S1 attract**, with the existing "Waking ENIAC..." caption | The visit's session was torn down on the way out; there is nothing to resume. |
+| 6 | Visitor launch uses `-D` (the demo cycle); staff launch is the normal interactive front end | Per the two asks | Visitors need no input in the Tk app; staff may want its buttons. |
+
+#### 7.12.2 Staff path: S12 to S13 to the Tk app
+
+S12 is unchanged (7.11): 5 taps, 3 x 4 PIN pad, wrong PIN or 30 s idle returns to the visitor screen.
+
+**S13 Admin, minimal v1.** Exactly three action buttons. The health tiles, metrics and the other buttons of 7.11 (Restart app, docent mode, update, reboot, shut down) are **not in v1**; the right column is laid out so they stack in later without moving these three.
+
+```
++------------------------------------------------------------------------------------+
+| [corner 0-120]  Staff                                      Exits in 1:42  (36 px)   |  header y0-96
++------------------------------------------------------------------------------------+
+|                                                                                    |
+|  Restart simulator      Starts the simulator fresh.        +----------------------+  |
+|    (28 px, x136-1280)    (24 px, under the label)          | Restart simulator    |  |
+|                                                            +----------------------+  |
+|                                                              x1384-1840, y200-296    |
+|  Original UI            Brian L. Stuart's own screen       +----------------------+  |
+|                         for the simulator.                 | Original UI          |  |
+|                                                            +----------------------+  |
+|                                                              x1384-1840, y328-424    |
+|                                                                                    |
+|                                                            +----------------------+  |
+|                                                            | Return to kiosk      |  |
+|                                                            +----------------------+  |
+|                                                              x1384-1840, y920-1016   |
++------------------------------------------------------------------------------------+
+| ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by ...  (footer) |
++------------------------------------------------------------------------------------+
+```
+
+| Element | Spec |
+|---|---|
+| Header | y0-96. "Staff" 48 px at x136. **"Exits in m:ss"** right-aligned to x1840, 36 px, counts down from 2:00 (FR-74); it resets on any touch and is the only timer on screen. At 0:00 the screen returns to **S1**. |
+| Buttons | 456 x 96, 12 px radius, label 32 px bold. **Restart simulator** and **Original UI**: secondary (panel fill `--panel`, cream border 2 px, cream text). **Return to kiosk**: primary (fill `--card`, ink text), set apart at the bottom so it is never tapped by mistake for an action. 32 px gap between the first two. |
+| Row notes | Left of each action button, label 32 px and a one-line note 24 px (`--jack-block` on `--bg-stage`), starting x136. They go when the health tiles arrive. |
+| Restart simulator | Behaves as today. No new confirmation (not part of this change). |
+| Original UI missing | If the bridge reports the Tk front end is not installed (`/health` field `originalUi: false`), the button is drawn **disabled** (40% opacity, still 96 px) and its note reads "Not installed on this box." It is never hidden for staff and never faked. |
+| Return to kiosk | Back to the screen the staff member came from (S1 if none). No confirmation. |
+
+**Confirmation before switching (staff).** One step, because Chromium goes away and the kiosk is dark until the Back button is tapped. A panel over a 70% scrim (the S9 pattern), 1000 x 480 at x460-1460, y300-780:
+
+```
++--------------------------------------------------------------+
+|  Switch to the original screen?                  (48 px)     |
+|  The kiosk will close for now. Tap "Back to kiosk"           |
+|  in the top-left corner to bring it back.        (32 px)     |
+|                                                              |
+|  [   Yes, switch   ]  [    Not now    ]       two 96 h x 440 w |
++--------------------------------------------------------------+
+```
+
+"Yes, switch" is the filled button on the left; "Not now" is secondary and closes the panel. The Exits timer pauses while the panel is open and resumes at its previous value on "Not now".
+
+**The "switching" state (both paths).** The instant the confirming button is released (UX-03), the page replaces itself with a full-screen **switching** page and sends the request. The page expects to be killed within one to two seconds; it must **not** wait for a reply before drawing, and it shows no buttons (nothing to tap and nothing that could race the teardown).
+
+```
++------------------------------------------------------------------------------------+
+|  background --plate #0E0F11, full bleed, no header, no footer                       |
+|                                                                                    |
+|                     (spinner 96 px, centred x960, y400)                             |
+|            Switching to the original screen...        (56 px, cream, y500)         |
+|                  The kiosk is closing. This takes a few seconds.   (32 px, y580)     |
+|                                                                                    |
++------------------------------------------------------------------------------------+
+```
+
+- The visitor path reads "Starting the room tour..." with "The kiosk is closing for a moment."
+- Reduced motion: the spinner becomes three static dots; nothing else changes.
+- **If the page is still alive after 15 s the switch failed.** The page says what happened and gives one 96 px button, nothing else: staff path "The original screen did not start." / "The kiosk is still running." / button **Back to admin** (returns to S13 with a fresh 2:00); visitor path "The room tour did not start." / "The kiosk is still running." / button **Back to Explore**. No retry button, no demo fallback.
+- The X root window must be set to `#0E0F11` before Chromium is killed so there is no white or grey flash between the page and Stuart's window.
+
+#### 7.12.3 Where the Tk app sits and what it looks like
+
+Stuart's front end is a grey (Tk default, about `#D9D9D9`) window with small Clean-10-font buttons (the PRD's reason for building the kiosk). We do not restyle or patch it. We only draw one button above it (7.12.5). **Nothing of ours is drawn inside Stuart's window**, and the kiosk's credit footer is not shown (FR-40 covers visitor screens of the kiosk; the Tk app is Stuart's own, and the visitor tile names him).
+
+#### 7.12.4 Visitor path: the Original room tour tile
+
+**Decision:** the tile lives in **Explore ENIAC (S14), rail state A**, at the bottom of the rail, under "Walk the room >".
+
+```
+RAIL x1408-1896 (state A)
++----------------------------------------------+
+|  "ENIAC filled a room." intro + plan of the U |
+|  [ Walk the room > ]               96 h       |
+|                                              |
+|  +----------------------------------------+  |
+|  | [drawn U icon]  Original room tour     |  |  tile x1432-1872 (440 w),
+|  |  Brian L. Stuart's own screens tour    |  |  y856-1000 (144 h)
+|  |  the room by themselves.               |  |  label 32 px bold, sub 24 px
+|  +----------------------------------------+  |
++----------------------------------------------+
+```
+
+| Element | Spec |
+|---|---|
+| Tile | 440 x 144, secondary fill (`--panel`, cream 2 px border), 12 px radius, the whole tile is the touch target. A small "leaving the kiosk" glyph (arrow out of a frame) at the right edge, so it does not read as another card inside the kiosk. |
+| Label | **Original room tour** (32 px bold) |
+| Sub-label | **Brian L. Stuart's own screens tour the room by themselves.** (24 px, 2 lines) It names him and says it is his screens, not ours. |
+| Visible in | Rail state A only (the browse state). In states B and C the rail belongs to the unit or mission card; the visitor closes the card (X) to see the tile again. |
+| Hidden when | The Tk front end is not installed (`originalUi: false`). The tile is **not drawn at all** for visitors (no dead buttons on the floor). |
+| Confirmation | **Only when the visit is not pristine** (a mission is in progress or finished, so a session would be lost), using the existing confirm panel pattern: "Leave the kiosk for the original room tour? This visit will end." / **Yes, take the tour** / **Keep exploring**. A fresh visit (Explore opened straight from S2 with nothing done) launches on one tap, straight to the switching page. |
+| Then | The switching page (7.12.2), then the Tk app launched with `-D`. |
+
+**Why Explore, and not Home, S1 or the attract loop's menu:**
+- **S1** is one whole-screen touch target that does one thing (FR-31). Adding a second target breaks that and puts an exit in front of a visitor who has not yet seen the kiosk.
+- **S2 / Home** is the guided path. It already carries three missions, Explore and About; a fourth action that leaves the product competes with "Start here" and sends the first-time visitor to the thing the kiosk was built to improve on.
+- **Explore** is about the room, and the old tour is the room in perspective. A visitor who has just walked the U and says "show me it moving" is exactly who wants it. It is two taps from S1 and costs nothing in the common frame.
+- If Nick wants it findable in one tap, the fallback is to add a 64 px text button "Original room tour" in S2's bottom row at x1424-1840. Not recommended; flagged as Q28.
+
+#### 7.12.5 Getting back: the wrapper's Back to kiosk button
+
+While the Tk app is on screen the wrapper draws **one** always-on-top button. It is its own small X window (not injected into Stuart's Tk window), so Tk redraws and `-D` view changes never hide it.
+
+| Property | Spec |
+|---|---|
+| Position | **Top-left, x0 to 280, y0 to 96.** Its left 120 px is exactly the admin corner, so the corner stays "the way out" in both worlds. It is wider than 120 so the label fits on one line at a readable size (13 characters at 32 px need about 260 px). |
+| Size | 280 x 96. It meets the 96 px glove target in both directions. |
+| Label | **Back to kiosk**, 32 px bold, centred, one line. No icon-only version. |
+| Colour | Fill `--plate` #0E0F11, text `--card` #F4EFE3 (contrast about 16:1), with a 3 px `--guide` yellow (#F0E442) border. Against Stuart's mid grey the fill is about 12:1 and the yellow edge about 1.4:1 with the grey, so the button reads as a dark tile on grey, not as part of his UI; the yellow edge is for recognition (it matches "look here"), the contrast comes from the dark fill. |
+| Pressed | Fill lightens to `--panel` #1B1D21 within 100 ms (UX-08); action fires on release (UX-03). |
+| Behaviour | **No confirmation, ever.** One tap on release starts the return. The only way to be wrong is to arrive back at attract, which costs nothing. Nothing in Tk is lost that matters (the visitor path is `-D`; staff can restart it). |
+| After the tap | The label changes at once to **Going back...** and the button disables, so the tap is acknowledged inside 100 ms. The Tk app is closed, Chromium starts, and the kiosk loads S1 ("Waking ENIAC..."). The root window stays `#0E0F11` in between. |
+| What it must NOT do | Not ask "Are you sure?". Not hide or fade on its own (idle or `-D` cycling must not remove it). Not move. Not take keyboard focus or accept keys. Not forward the touch to Tk (a tap on it must not also press a Tk button underneath). Not appear on the kiosk (Chromium) side. Not count as a "touch" differently from any other touch for idle. |
+| Overlap | It covers the top-left 280 x 96 of Stuart's window. **The developer must check** what Tk draws there on the 1920x1080 panel. If an essential Tk control sits under it in the staff (interactive) mode, move the button to the bottom-left (x0-280, y984-1080) for both paths and tell UX; the position must stay the same on both paths. |
+| Wrapper copy | The wrapper is not the web app, so its strings are listed in 7.12.7 but are not in `copy.ts`. |
+
+#### 7.12.6 Idle return
+
+| Path | Idle limit | Warning | What happens |
+|---|---|---|---|
+| Visitor (`-D` tour) | **5 min** with no touch anywhere | The last 30 s: the Back button label becomes **Back to kiosk 0:30** and counts down, border pulsing at 1 Hz (not in reduced motion) | At 0:00 the wrapper does the same return as a tap. |
+| Staff (interactive) | **15 min** with no touch | Same 30 s countdown on the button | Same. |
+
+- Why 5 min for visitors: the tour plays by itself, so a visitor who simply watches is "idle" by definition. Five minutes is long enough for several view changes, short enough that a walked-away tour does not hold the screen. If the full `-D` cycle is longer than 5 min (to be measured), set the limit to one full cycle plus 30 s. **Any touch, including on the Back button's neighbours or on Stuart's window, resets it.**
+- Why 15 min for staff: they are using the old buttons and thinking. Longer than the 2 min of S13, because Chromium is gone and the cost of a surprise return is higher.
+- **What the kiosk shows on return:** **S1 attract**, for every return (tap, idle or failure), with the panorama dark and "Waking ENIAC..." for up to 3 s, then live (14.2.4 "Return to S1"). Not the screen they left from: the visit's session and any mission were ended on the way out, so there is nothing true to resume. The metrics (FR-60) log `original_ui_enter` (door: `visitor` or `staff`) and `original_ui_exit` (cause: `tap`, `idle`, `failed`).
+
+#### 7.12.7 New copy (for `src/web/app/copy.ts` unless marked)
+
+| Key | Text |
+|---|---|
+| `originalUi.tour.label` | Original room tour |
+| `originalUi.tour.sub` | Brian L. Stuart's own screens tour the room by themselves. |
+| `originalUi.tour.confirm` | Leave the kiosk for the original room tour? This visit will end. |
+| `originalUi.tour.yes` | Yes, take the tour |
+| `originalUi.tour.no` | Keep exploring |
+| `originalUi.tour.switching` | Starting the room tour... |
+| `originalUi.tour.switchingSub` | The kiosk is closing for a moment. |
+| `originalUi.tour.failed` | The room tour did not start. |
+| `originalUi.tour.failedBack` | Back to Explore |
+| `originalUi.staff.header` | Staff |
+| `originalUi.staff.exits(m, ss)` | Exits in {m}:{ss} |
+| `originalUi.staff.restart` | Restart simulator |
+| `originalUi.staff.restartNote` | Starts the simulator fresh. |
+| `originalUi.staff.original` | Original UI |
+| `originalUi.staff.originalNote` | Brian L. Stuart's own screen for the simulator. |
+| `originalUi.staff.notInstalled` | Not installed on this box. |
+| `originalUi.staff.return` | Return to kiosk |
+| `originalUi.staff.confirmTitle` | Switch to the original screen? |
+| `originalUi.staff.confirmBody` | The kiosk will close for now. Tap "Back to kiosk" in the top-left corner to bring it back. |
+| `originalUi.staff.yes` | Yes, switch |
+| `originalUi.staff.no` | Not now |
+| `originalUi.staff.switching` | Switching to the original screen... |
+| `originalUi.staff.switchingSub` | The kiosk is closing. This takes a few seconds. |
+| `originalUi.staff.failed` | The original screen did not start. |
+| `originalUi.staff.failedSub` | The kiosk is still running. |
+| `originalUi.staff.failedBack` | Back to admin |
+| `originalUi.back` (wrapper) | Back to kiosk |
+| `originalUi.backWarn(m, ss)` (wrapper) | Back to kiosk {m}:{ss} |
+| `originalUi.backBusy` (wrapper) | Going back... |
+
+`restart` is only there if S13's existing label is not already in `copy.ts`; keep one copy of it. Reuse `still`-style ellipsis ("...", three plain dots) as elsewhere in `copy.ts`.
+
+#### 7.12.8 Accessibility and touch rules applied
+
+- All targets 96 px or more except none (the tile is 144, the wrapper button 96, confirm buttons 96); actions fire on release; first touch point only (UX-03, UX-06).
+- No keyboard anywhere. The wrapper button takes no focus and ignores keys.
+- The switching and failure pages carry the same words as their screen-reader text (`role="status"`); the Tk app itself is not made accessible by us (Stuart's window, out of scope).
+- The staff path adds no hint to the visitor UI: no text, counter or glow in the top-left corner (7.11).
+
+#### 7.12.9 Open questions
+
+| # | Question | Default used | Who |
+|---|---|---|---|
+| Q28 | Is Explore rail state A discoverable enough, or should S2 also carry the tile (one tap shorter, but it competes with the missions)? | Explore only | Nick |
+| Q29 | What does Stuart's window draw in its top-left 280 x 96 on the 1920x1080 panel, in `-D` and in interactive mode? | Assumed nothing essential | Developer, on the box |
+| Q30 | How long is one full `-D` cycle? | 5 min visitor limit | Developer |
+| Q31 | Should "Original room tour" name the room-sized demo `trajdemo` or just say "tour"? Does Brian Stuart approve being named on the tile (FR-41 recommends his review for credit wording)? | Name him, no program name | Nick |
+
+---
+
 ---
 
 ## 8. Mission scripts
@@ -2335,3 +2545,4 @@ With 19 terms the glossary is three pages of eight (14.11). **Neon lamp** (15) n
 | 0.6 | 2026-10-02 | ux-design agent, for Nick's 24-inch museum install | New section 14: live attract (trajdemo, Full speed, one flight per core, 60 s loop; 14.2); **Explore ENIAC** panorama of the 40-panel U with pan arrows, minimap strip, 12 unit cards (at most 40 words, [FC]-tagged), mission cross-links both ways, optional swipe (14.3; mockup in `docs/mockups/explore-eniac.html`); glossary S15 and section 15 (with the mission-word to real-word map); finale S8 rebuilt as five beats from this visit's real results (14.5); honor roll S11 in four pages crediting Stuart prominently and the original programmers, Eckert, Mauchly, the Goldstines, the Moore School and the Army BRL (14.6); idle, core-down and reduced-motion for every screen (14.7); [FC] list (14.8); picker row (14.9); Q15 to Q23. Flags F11 to F16. Gestures (9.2) and the 24-inch panel (9.4) updated; 7.1, 7.2, 7.7 and 7.10 point to section 14; the revision history is now section 16. |
 | 0.7 | 2026-10-02 | software-developer agent, recording Nick's direction for the honor roll | FR-46 relaxed (PRD 0.5): review status is an internal note, not a render gate; all four S11 pages render (14.1 rule 2, 14.6.2, 14.6.4); only `hold: true` blocks stay off screen. S11 page 3's tab reads "The project team" and the attract slide for the Goldstines "THE PROJECT TEAM" (fact-check B18); honor copy follows `docs/fact-check.md`. |
 | 0.8 | 2026-10-02 | software-developer agent, building Nick's tube story (`docs/tubes.md`) | New **14.11 S16 Keeping ENIAC alive**: five cards and a myth card with drawn figures, and "Find the dead tube", a five-step re-enactment with the RE-ENACTMENT plate on every state, three authored faults, the 5.2 ladder, Do it for me and Skip; entries from S14's header, the glossary and (with the finale) F2. 14.7 row for S16; 14.8 rows 20 to 25 (fact-check group E); Q24 to Q27; section 15 rows 17 to 19 and the Neon lamp rewording (three glossary pages). |
+| 0.9 | 2026-10-07 | ux-design agent, for Nick's Original UI asks | New **7.12 Original UI and the room tour**: minimal v1 S13 (three buttons), staff switch confirmation, the "switching" page and its failure state, the visitor **Original room tour** tile in Explore (S14 rail state A), the wrapper's **Back to kiosk** button (top-left 280 x 96, no confirmation), idle returns (5 min visitor, 15 min staff) to S1, copy table, Q28 to Q31. 7.11 notes the v1 scope. |
