@@ -1,0 +1,98 @@
+/* Staff screens and the Original UI switch (UX 7.11, 7.12;
+   docs/original-ui-switch.md 6.7). */
+
+/* ---------------------------------------------------------------- staff layer (S12, S13)
+   Above the screen, the overlay (40) and the footer (50); below the admin
+   corner (60), so the wordmark still sits in the corner. The footer shows
+   under it (y1032-1080). */
+#staff {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1032px;
+  z-index: 55;
+  background: var(--bg-stage);
+  color: var(--card);
+}
+.staff-panel { position: absolute; inset: 0; }
+
+/* S12: 3 x 4 keys, 120x120 with 24 px gaps, centred; dots for the digits. */
+.staff-pin { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; }
+.pin-title { font-size: 48px; line-height: 56px; margin: 0; }
+.pin-dots { display: flex; gap: 20px; height: 32px; align-items: center; }
+.pin-dots i { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--card); box-sizing: border-box; }
+.pin-dots i.on { background: var(--card); }
+.pin-msg { height: 48px; font-size: 36px; line-height: 48px; font-weight: 700; color: var(--card); }
+.pin-msg.bad { color: var(--guide); }
+.pin-pad { display: grid; grid-template-columns: repeat(3, 120px); grid-auto-rows: 120px; gap: 24px; }
+.pin-pad.inert { pointer-events: none; opacity: 0.6; }
+.pin-key {
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-btn); border: 3px solid var(--card);
+  background: var(--panel); color: var(--card);
+  font-size: 48px; font-weight: 700;
+  transition: background 100ms ease-out;
+}
+.pin-key.clear, .pin-key.ok { font-size: 30px; }
+.pin-key.ok { background: var(--card); color: var(--ink); }
+.pin-key.pressed { background: #2A2D33; }
+.pin-key.ok.pressed { background: #D9D3C4; }
+.pin-key.disabled { opacity: 0.4; }
+
+/* S13 minimal v1 (UX 7.12.2). */
+.adm-header {
+  position: absolute; left: 0; right: 0; top: 0; height: 96px;
+  display: flex; align-items: center; padding: 0 80px 0 136px;
+  background: #0D0E10; border-bottom: 1px solid #25282d;
+}
+.adm-title { font-size: 48px; font-weight: 700; }
+.adm-header .spacer { flex: 1; }
+.adm-exits { font-size: 36px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.adm-row { position: absolute; left: 136px; width: 1704px; height: 96px; display: flex; align-items: center; justify-content: space-between; }
+.adm-row.r1 { top: 200px; }
+.adm-row.r2 { top: 328px; }
+.adm-row.r3 { top: 920px; justify-content: flex-end; }
+.adm-label { font-size: 32px; line-height: 40px; font-weight: 700; }
+.adm-note { font-size: 24px; line-height: 32px; color: var(--jack-block); }
+.adm-btn { width: 456px; height: 96px; min-height: 96px; font-size: 32px; padding: 0 16px; border-radius: var(--radius-btn); }
+.adm-btn.secondary { background: var(--panel); color: var(--card); border: 2px solid var(--card); }
+.adm-btn.return { background: var(--card); color: var(--ink); border-color: var(--card); }
+.adm-btn.disabled { opacity: 0.4; }
+.adm-status { position: absolute; left: 136px; top: 456px; font-size: 28px; color: var(--guide); }
+.adm-confirm-scrim { position: absolute; inset: 0; z-index: 2; }
+.adm-confirm { width: 1000px; height: 480px; display: flex; flex-direction: column; }
+.adm-confirm h2 { font-size: 48px; line-height: 56px; margin: 0 0 24px; }
+.adm-confirm p { font-size: 32px; line-height: 44px; font-weight: 400; margin: 0; flex: 1; }
+.adm-confirm .btn { height: 96px; }
+
+/* ---------------------------------------------------------------- switching page */
+.screen.switching {
+  background: #0E0F11;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 0;
+}
+.sw-spin { height: 96px; margin-bottom: 40px; display: flex; align-items: center; }
+.sw-spin .spinner { width: 96px; height: 96px; border-width: 8px; color: var(--card); }
+.sw-spin .dots { display: none; font-size: 48px; letter-spacing: 8px; color: var(--card); }
+@media (prefers-reduced-motion: reduce) {
+  .sw-spin .spinner { display: none; }
+  .sw-spin .dots { display: inline; }
+}
+.sw-title { font-size: 56px; line-height: 64px; font-weight: 700; color: var(--card); }
+.sw-sub { font-size: 32px; line-height: 44px; margin-top: 16px; color: #C9C2A8; }
+.sw-back { margin-top: 64px; min-width: 440px; }
+
+/* ---------------------------------------------------------------- Explore: the Original room tour tile (UX 7.12.4) */
+.ex-rail.with-tour .ex-plan { width: 260px; height: 182px; }
+.ex-rail .ex-tour {
+  margin-top: 16px; height: 144px; box-sizing: border-box;
+  display: flex; align-items: center; gap: 16px; padding: 0 16px;
+  border-radius: var(--radius-btn); border: 2px solid var(--card);
+  background: var(--panel); color: var(--card);
+}
+.ex-rail .ex-tour.pressed { transform: scale(0.98); filter: brightness(1.2); }
+.ex-tour-icon, .ex-tour-out { flex: none; display: flex; color: var(--card); }
+.ex-tour-text { flex: 1; display: flex; flex-direction: column; }
+.ex-tour-text b { font-size: 32px; line-height: 40px; }
+.ex-tour-text span { font-size: 24px; line-height: 30px; color: var(--jack-block); }

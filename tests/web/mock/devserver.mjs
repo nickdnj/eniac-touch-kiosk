@@ -6,6 +6,9 @@
 //   cd src/web && npm run dev        -> http://127.0.0.1:8740/
 //   PORT=8750 npm run dev            -> another port
 //   MOCK_IDLE=6,9,3 npm run dev      -> short idle timeouts (setupS,runS,countdownS)
+//   MOCK_ORIGINAL_UI=1 MOCK_PIN=2468 npm run dev
+//                                    -> the Explore tour tile, and a staff PIN for S12/S13
+//                                       (no PIN unless MOCK_PIN is set: S12 says none is set)
 
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
@@ -35,6 +38,7 @@ const TYPES = {
 
 export function startDevServer({ port = PORT, host = HOST } = {}) {
   const bridge = new MockBridge();
+  const admin = { token: "", fails: 0, lockedUntil: 0 };
   if (process.env.MOCK_IDLE) {
     const [setupS, runS, countdownS] = process.env.MOCK_IDLE.split(",").map(Number);
     bridge.config = { ...defaultConfig(), idle: { setupS, runS, countdownS } };
@@ -81,6 +85,48 @@ export function startDevServer({ port = PORT, host = HOST } = {}) {
       if (p.startsWith("/api/missions/")) return json(res, 404, { error: "not found" });
       if (p === "/healthz") return json(res, 200, { status: bridge.health.core === "up" ? "ok" : "down", mock: true });
 
+      // ---- admin API (architecture 8.4 v1; internal/admin is the real one) ----
+      if (p.startsWith("/api/admin/")) {
+        const body = req.method === "POST" ? await readBody(req) : {};
+        const fail = (code, c, extra = {}) => json(res, code, { error: { code: c, message: c, ...extra } });
+        if (req.method !== "POST") return fail(405, "METHOD");
+        bridge.log.push({ at: Date.now(), t: `admin:${p.slice(11)}` });
+        const authed = admin.token && req.headers.authorization === `Bearer ${admin.token}`;
+        switch (p) {
+          case "/api/admin/login":
+            if (!process.env.MOCK_PIN) return fail(503, "NO_PIN");
+            if (Date.now() < admin.lockedUntil) return fail(429, "LOCKED", { retryAfterS: 60 });
+            if (body.pin !== process.env.MOCK_PIN) {
+              admin.fails++;
+              if (admin.fails >= 5) {
+                admin.fails = 0;
+                admin.lockedUntil = Date.now() + 60_000;
+                return fail(429, "LOCKED", { retryAfterS: 60 });
+              }
+              return fail(401, "BAD_PIN");
+            }
+            admin.fails = 0;
+            admin.token = "f".repeat(32);
+            return json(res, 200, { token: admin.token, expiresInS: 600 });
+          case "/api/admin/logout":
+            admin.token = "";
+            res.writeHead(204);
+            return res.end();
+          case "/api/admin/restart-core":
+            if (!authed) return fail(401, "TOKEN");
+            bridge.stopAttract();
+            bridge.endSession();
+            return json(res, 200, { ok: true });
+          case "/api/admin/original-ui":
+            if (!authed) return fail(401, "TOKEN");
+            if (!bridge.config.originalUi?.available) return fail(409, "UNAVAILABLE", { reason: bridge.config.originalUi?.reason ?? "disabled" });
+            bridge.stopAttract();
+            bridge.endSession();
+            return json(res, 202, { ok: true, mode: "interactive", id: "3f9a1c2e" });
+        }
+        return fail(404, "NOT_FOUND");
+      }
+
       // ---- test control (dev only) ----
       if (p.startsWith("/__mock/")) {
         const body = req.method === "POST" ? await readBody(req) : {};
@@ -89,6 +135,7 @@ export function startDevServer({ port = PORT, host = HOST } = {}) {
             return json(res, 200, bridge.log);
           case "/__mock/reset":
             bridge.reset();
+            Object.assign(admin, { token: "", fails: 0, lockedUntil: 0 });
             return json(res, 200, { ok: true });
           case "/__mock/fault":
             bridge.fault(body);

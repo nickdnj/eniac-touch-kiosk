@@ -186,4 +186,55 @@ export const COPY = {
     trying: (a?: number, of?: number) => (a && of ? `Trying to wake it up again... (${a} of ${of})` : "Trying to wake it up again..."),
     staff: "Staff: tap the top-left corner 5 times, then enter the PIN and choose Restart simulator.",
   },
+  // Staff screens (UX 7.11, 7.12.2; docs/original-ui-switch.md 6.7). No
+  // keyboard anywhere: the PIN is entered on the S12 pad.
+  admin: {
+    pin: {
+      title: "Staff PIN",
+      clear: "Clear",
+      ok: "OK",
+      wrong: "Not right",
+      locked: "Try again in a minute.",
+      none: "No staff PIN is set on this kiosk.",
+      checking: "Checking...",
+      /** Not in UX 7.12.7: the bridge did not answer the login. */
+      error: "The PIN could not be checked.",
+    },
+  },
+  // The Original UI and the room tour (UX 7.12.7). The wrapper's own strings
+  // (Back to kiosk, Going back...) live in deploy/kiosk/original-ui-back.tcl.
+  originalUi: {
+    tour: {
+      label: "Original room tour",
+      sub: "Brian L. Stuart's own screens tour the room by themselves.",
+      confirm: "Leave the kiosk for the original room tour? This visit will end.",
+      yes: "Yes, take the tour",
+      no: "Keep exploring",
+      switching: "Starting the room tour...",
+      switchingSub: "The kiosk is closing for a moment.",
+      failed: "The room tour did not start.",
+      failedBack: "Back to Explore",
+    },
+    staff: {
+      header: "Staff",
+      exits: (m: number, ss: string) => `Exits in ${m}:${ss}`,
+      restart: "Restart simulator",
+      restartNote: "Starts the simulator fresh.",
+      original: "Original UI",
+      originalNote: "Brian L. Stuart's own screen for the simulator.",
+      notInstalled: "Not installed on this box.",
+      return: "Return to kiosk",
+      confirmTitle: "Switch to the original screen?",
+      confirmBody: 'The kiosk will close for now. Tap "Back to kiosk" in the top-left corner to bring it back.',
+      yes: "Yes, switch",
+      no: "Not now",
+      switching: "Switching to the original screen...",
+      switchingSub: "The kiosk is closing. This takes a few seconds.",
+      failed: "The original screen did not start.",
+      failedSub: "The kiosk is still running.",
+      failedBack: "Back to admin",
+      /** Not in UX 7.12.7: Restart simulator's request failed. */
+      actionFailed: "That did not work. Try again.",
+    },
+  },
 };

@@ -16,13 +16,16 @@ import { IdleTimer, type IdleMode } from "./idle.ts";
 import { installGuards } from "./ui/guards.ts";
 import { installTapDispatcher, onTap, type TapPoint } from "./ui/tap.ts";
 import { h, clear, svgFromString } from "./ui/dom.ts";
-import { confirm } from "./ui/overlays.ts";
+import { confirm, dismissConfirms } from "./ui/overlays.ts";
 import { COPY } from "./copy.ts";
 import { CardLog } from "./run/cards.ts";
 import { Visit } from "./state/visit.ts";
 import { AttractController, AttractStore } from "./attract/store.ts";
+import { TapCounter, inZone } from "./admin/tapcount.ts";
+import { StaffLayer } from "./screens/admin.ts";
+import type { SwitchingOpen } from "./screens/switching.ts";
 
-export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor" | "explore" | "glossary" | "tubes" | "finale";
+export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor" | "explore" | "glossary" | "tubes" | "finale" | "switching";
 
 /**
  * Views that show the Home button (beside the wordmark, top left): every
@@ -46,6 +49,8 @@ export interface View {
   explore?: ExploreOpen;
   /** S16 Keeping ENIAC alive: where it was opened from and what to show (screens/tubes.ts). */
   tubes?: TubesOpen;
+  /** The switching page to the original UI (screens/switching.ts): which door. */
+  switching?: SwitchingOpen;
 }
 
 /** How S16 "Keeping ENIAC alive" was opened (docs/tubes.md 2.2; UX 14.11). */
@@ -105,7 +110,11 @@ export class App {
   readonly mirror = new Mirror();
   readonly link: Link;
   readonly idle: IdleTimer;
-  config: HelloConfig = { idle: { setupS: 90, runS: 180, countdownS: 15, exploreS: 120 }, admin: { tapZone: { corner: "top-left", widthPx: 120, heightPx: 96, taps: 5 } } };
+  config: HelloConfig = {
+    idle: { setupS: 90, runS: 180, countdownS: 15, exploreS: 120 },
+    admin: { tapZone: { corner: "top-left", widthPx: 120, heightPx: 96, taps: 5 } },
+    originalUi: { available: false, tourIdleS: 300, interactiveIdleS: 900 },
+  };
   missions: MissionSummary[] | null = null;
   mission: CompiledMission | null = null;
   view: View = { name: "boot" };
@@ -149,6 +158,11 @@ export class App {
   /** The session that existed when Start was tapped; S0 waits for a different one. */
   private priorSessionId: string | null = null;
   private screens: Record<string, ScreenFactory>;
+  /** The hidden staff gesture: 5 taps in the corner within 3 s (FR-70). */
+  private readonly tapCounter = new TapCounter();
+  /** S12/S13 over the current screen (screens/admin.ts), or null. */
+  private staff: StaffLayer | null = null;
+  private adminZone: HTMLElement;
   private overlayHooks: { onIdleWarn?: (s: number) => void; onIdleTick?: (s: number) => void; onIdleDismiss?: () => void } = {};
 
   constructor(root: HTMLElement, screens: Record<string, ScreenFactory>, makeSocket?: (url: string) => SocketLike) {
@@ -169,6 +183,7 @@ export class App {
     // styling, hidden from assistive tech), and a tap asks to start over.
     const adminZone = h("div", { id: "admin-zone", "aria-hidden": "true" }, COPY.wordmark);
     onTap(adminZone, () => void this.startOver());
+    this.adminZone = adminZone;
     root.append(
       this.screenHost,
       this.homeBtn,
@@ -205,10 +220,25 @@ export class App {
 
   start(): void {
     installGuards(document);
-    installTapDispatcher(this.root.parentElement ?? document.body, {
+    const host = this.root.parentElement ?? document.body;
+    installTapDispatcher(host, {
       toApp: (cx, cy) => this.toApp(cx, cy),
-      onActivity: () => this.idle.touch(),
+      onActivity: () => {
+        this.idle.touch();
+        this.staff?.touched();
+      },
     });
+    // The staff gesture counts every first-finger touch-down: inside the
+    // corner it counts, anywhere else it resets. The first tap still asks
+    // to start over at once (ADR-OUI-13); the fifth opens S12.
+    host.addEventListener(
+      "pointerdown",
+      (e) => {
+        if (!e.isPrimary) return;
+        if (this.tapCounter.down(inZone(this.toApp(e.clientX, e.clientY), this.config.admin.tapZone), this.now()) && !this.staff) this.openStaff();
+      },
+      { capture: true },
+    );
     const fit = () => this.fit();
     window.addEventListener("resize", fit);
     fit();
@@ -264,6 +294,7 @@ export class App {
         this.config = m.config;
         this.idle.setConfig(m.config.idle);
         this.applyTapZone(m.config.admin?.tapZone);
+        this.tapCounter.taps = m.config.admin?.tapZone?.taps || 5;
         this.mirror.onHealth(m.health);
         this.loadMissions();
         break;
@@ -492,7 +523,8 @@ export class App {
     if (this.screen) {
       this.screenHost.append(this.screen.el);
       this.screen.mount?.();
-      this.idle.setMode(this.screen.idle);
+      // The visitor idle timer stays off while the staff layer is up.
+      this.idle.setMode(this.staff ? "none" : this.screen.idle);
     } else this.idle.setMode("none");
     this.idle.touch();
     this.root.dataset.view = view.name;
@@ -529,7 +561,7 @@ export class App {
    */
   async startOver(): Promise<void> {
     const v = this.view.name;
-    if (v === "start" || v === "boot" || v === "error" || this.errorCode || this.askingStartOver) return;
+    if (v === "start" || v === "boot" || v === "error" || v === "switching" || this.errorCode || this.askingStartOver || this.staff) return;
     this.askingStartOver = true;
     const yes = await confirm(this, COPY.confirm.textStart, COPY.confirm.yes);
     this.askingStartOver = false;
@@ -539,6 +571,44 @@ export class App {
     this.overlayHooks.onIdleDismiss?.();
     for (const el of [...this.overlay.querySelectorAll(".scrim")]) el.remove();
     this.show({ name: "start" });
+  }
+
+  /**
+   * S12 (no token) or S13 (a valid token) on the staff layer, above the
+   * current screen, which stays as it is underneath. An open Start-over
+   * confirm is answered "No" (the 5th tap, ADR-OUI-13). The visitor idle
+   * timer is off until the layer closes.
+   */
+  openStaff(token?: string): void {
+    dismissConfirms();
+    if (!this.staff) {
+      this.staff = new StaffLayer(this);
+      this.root.insertBefore(this.staff.el, this.adminZone);
+      this.root.classList.add("staff-open");
+      this.idle.setMode("none");
+    }
+    if (token) this.staff.showAdmin(token);
+    else this.staff.showPin();
+  }
+
+  /** Closes S12/S13: back to the screen underneath, or to `then`. */
+  closeStaff(then?: View): void {
+    const st = this.staff;
+    if (!st) return;
+    this.staff = null;
+    st.dispose();
+    st.el.remove();
+    this.root.classList.remove("staff-open");
+    if (then) this.show(then);
+    else {
+      this.idle.setMode(this.screen?.idle ?? "none");
+      this.idle.touch();
+    }
+  }
+
+  /** True while S12 or S13 is up. */
+  get staffOpen(): boolean {
+    return this.staff !== null;
   }
 
   /** Open S16 "Keeping ENIAC alive" (docs/tubes.md 2.2): from Explore, the glossary or the finale (F2's chip). */

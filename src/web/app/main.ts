@@ -17,6 +17,7 @@ import { exploreScreen } from "./screens/explore.ts";
 import { glossaryScreen } from "./screens/glossary.ts";
 import { tubesScreen } from "./screens/tubes.ts";
 import { finaleScreen } from "./screens/finale.ts";
+import { switchingScreen } from "./screens/switching.ts";
 
 const screens: Record<string, ScreenFactory> = {
   explore: exploreScreen,
@@ -32,6 +33,7 @@ const screens: Record<string, ScreenFactory> = {
   result: resultScreen,
   honor: honorScreen,
   finale: finaleScreen,
+  switching: switchingScreen,
 };
 
 const root = document.getElementById("app");

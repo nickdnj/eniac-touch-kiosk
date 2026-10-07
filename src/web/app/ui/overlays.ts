@@ -12,13 +12,23 @@ export function button(label: string, cls: string, fn: () => void, attrs: Record
   return b;
 }
 
+/** Open D1 confirms, so the staff gesture can answer them "No". */
+const openConfirms = new Set<(v: boolean) => void>();
+
+/** Closes every open D1 confirm as "No" (the 5th tap opens S12; ADR-OUI-13). */
+export function dismissConfirms(): void {
+  for (const done of [...openConfirms]) done(false);
+}
+
 /** D1: two 96 px buttons. Resolves true for "yes". */
-export function confirm(app: App, text: string, yes: string): Promise<boolean> {
+export function confirm(app: App, text: string, yes: string, no: string = COPY.confirm.no): Promise<boolean> {
   return new Promise((resolve) => {
     const done = (v: boolean) => {
+      openConfirms.delete(done);
       scrim.remove();
       resolve(v);
     };
+    openConfirms.add(done);
     const scrim = h(
       "div",
       { class: "scrim confirm-scrim" },
@@ -26,7 +36,7 @@ export function confirm(app: App, text: string, yes: string): Promise<boolean> {
         "div",
         { class: "dialog confirm", role: "dialog" },
         h("p", {}, text),
-        h("div", { class: "dialog-actions" }, button(yes, "primary", () => done(true)), button(COPY.confirm.no, "primary outline", () => done(false))),
+        h("div", { class: "dialog-actions" }, button(yes, "primary", () => done(true)), button(no, "primary outline", () => done(false))),
       ),
     );
     app.overlay.append(scrim);
