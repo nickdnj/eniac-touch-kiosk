@@ -41,6 +41,10 @@ type Config struct {
 	Metrics  Metrics  `yaml:"metrics"`
 	Assets   Assets   `yaml:"assets"`
 	Paths    Paths    `yaml:"paths"`
+	// OriginalUI is the switch to Brian L. Stuart's own Tk front end
+	// (docs/original-ui-switch.md 6.6). Off by default: only the floor
+	// kiosk's config turns it on.
+	OriginalUI OriginalUI `yaml:"originalUi"`
 }
 
 type Health struct {
@@ -84,6 +88,25 @@ type Admin struct {
 	AllowPowerActions bool    `yaml:"allowPowerActions"`
 	AllowUpdates      bool    `yaml:"allowUpdates"`
 	TapZone           TapZone `yaml:"tapZone"`
+	// PinFile holds one bcrypt hash of the staff PIN (0640 root:eniac,
+	// written by `eniac-touch-kiosk set-pin`). Empty: admin-pin beside the
+	// config file. There is no default PIN (NFR-10).
+	PinFile string `yaml:"pinFile"`
+	// TokenTTLS is the admin token's absolute lifetime after login.
+	TokenTTLS int `yaml:"tokenTtlS"`
+}
+
+// OriginalUI configures the Original UI switch (docs/original-ui-switch.md
+// 6.6). The bridge, the only YAML reader, copies the idle values into each
+// request (ADR-OUI-14).
+type OriginalUI struct {
+	Enabled          bool   `yaml:"enabled"`
+	TourIdleS        int    `yaml:"tourIdleS"`        // visitor -D tour (UX 7.12.6)
+	InteractiveIdleS int    `yaml:"interactiveIdleS"` // staff interactive (UX 7.12.6)
+	WarnS            int    `yaml:"warnS"`            // countdown on the Back button
+	RequestTTLS      int    `yaml:"requestTtlS"`      // kiosk-session ignores older requests
+	MinGapS          int    `yaml:"minGapS"`          // repeat requests within this window are no-ops
+	Wish             string `yaml:"wish"`             // Tk's wish (apt package tk)
 }
 
 // TapZone is the hidden 5-tap admin corner (UX F5; UX 7 common frame: the
@@ -114,6 +137,11 @@ type Paths struct {
 	WebSrc   string `yaml:"webSrc"`   // dev only: src/web, bundled on request by esbuild
 	Run      string `yaml:"run"`      // /run/eniac-kiosk (vlink.sock, s/<session>/)
 	State    string `yaml:"state"`    // /var/lib/eniac-kiosk (metrics/)
+	// UISwitch is the tmpfs directory shared with the kiosk session
+	// (2770 eniac:eniac-kiosk). Empty: <run>-ui, so /run/eniac-touch-kiosk-ui.
+	UISwitch string `yaml:"uiSwitch"`
+	// OriginalUI is the shipped Tk front end. Empty: <release>/original-ui.
+	OriginalUI string `yaml:"originalUi"`
 }
 
 // Duration accepts Go duration strings ("1.5s") in YAML.
@@ -159,7 +187,9 @@ func Default() Config {
 		Idle: Idle{SetupS: 90, RunS: 180, CountdownS: 15, ExploreS: 120},
 		Attract: Attract{Mission: "trajectory", Hold: Duration(8 * time.Second), Stall: Duration(20 * time.Second),
 			ReadTimeout: Duration(15 * time.Second), FlightMax: Duration(5 * time.Minute)},
-		Admin:  Admin{SessionTimeoutS: 120, AllowPowerActions: true, AllowUpdates: true, TapZone: TapZone{Corner: "top-left", WidthPx: 120, HeightPx: 96, Taps: 5}},
+		Admin: Admin{SessionTimeoutS: 120, AllowPowerActions: true, AllowUpdates: true, TapZone: TapZone{Corner: "top-left", WidthPx: 120, HeightPx: 96, Taps: 5}, TokenTTLS: 600},
+		OriginalUI: OriginalUI{Enabled: false, TourIdleS: 300, InteractiveIdleS: 900, WarnS: 30, RequestTTLS: 10, MinGapS: 10,
+			Wish: "/usr/bin/wish"},
 		Metrics: Metrics{RetentionDays: 400},
 		Paths: Paths{
 			Release: "/opt/eniac-kiosk/current",
@@ -220,8 +250,21 @@ func (c *Config) resolvePaths(base string) {
 	if p.Web == "" {
 		p.Web = filepath.Join(p.Release, "web")
 	}
+	if p.OriginalUI == "" {
+		p.OriginalUI = filepath.Join(p.Release, "original-ui")
+	}
 	p.Core, p.Upstream, p.Missions, p.Web = abs(p.Core), abs(p.Upstream), abs(p.Missions), abs(p.Web)
-	p.WebSrc, p.Run, p.State = abs(p.WebSrc), abs(p.Run), abs(p.State)
+	p.WebSrc, p.Run, p.State, p.OriginalUI = abs(p.WebSrc), abs(p.Run), abs(p.State), abs(p.OriginalUI)
+	// Derived, so a config.yaml installed before these keys existed (whose
+	// admin and paths blocks are never rewritten) still finds them.
+	if p.UISwitch == "" && p.Run != "" {
+		p.UISwitch = strings.TrimRight(p.Run, "/") + "-ui"
+	}
+	p.UISwitch = abs(p.UISwitch)
+	if c.Admin.PinFile == "" {
+		c.Admin.PinFile = filepath.Join(base, "admin-pin")
+	}
+	c.Admin.PinFile = abs(c.Admin.PinFile)
 }
 
 // Validate checks values the bridge can't run with.
@@ -244,9 +287,33 @@ func (c Config) Validate() error {
 	if c.Recovery.Budget < 1 || len(c.Recovery.Backoff) == 0 {
 		errs = append(errs, "recovery.budget must be >= 1 and recovery.backoff non-empty")
 	}
+	{
+		o := c.OriginalUI
+		if o.TourIdleS < 60 || o.TourIdleS > 7200 || o.InteractiveIdleS < 60 || o.InteractiveIdleS > 7200 {
+			errs = append(errs, "originalUi.tourIdleS and interactiveIdleS must be 60 to 7200")
+		}
+		if o.WarnS < 0 || o.WarnS > 120 || o.WarnS >= min(o.TourIdleS, o.InteractiveIdleS) {
+			errs = append(errs, "originalUi.warnS must be 0 to 120 and less than both idle limits")
+		}
+		if o.RequestTTLS < 1 || o.RequestTTLS > 60 {
+			errs = append(errs, "originalUi.requestTtlS must be 1 to 60")
+		}
+		if o.MinGapS < 0 {
+			errs = append(errs, "originalUi.minGapS must be >= 0")
+		}
+		if o.Wish == "" {
+			errs = append(errs, "originalUi.wish must be set")
+		}
+	}
+	if c.Admin.TokenTTLS < 60 || c.Admin.TokenTTLS > 3600 {
+		errs = append(errs, "admin.tokenTtlS must be 60 to 3600")
+	}
 	// The core splits its -v argument on single spaces (architecture 3.4),
 	// and `l <file>` splits on whitespace, so these paths may not contain any.
-	for name, p := range map[string]string{"paths.run": c.Paths.Run, "paths.core": c.Paths.Core, "paths.upstream": c.Paths.Upstream} {
+	// The original UI passes its eniactk path through the same -v argument,
+	// and the kiosk session parses the switch files with plain bash.
+	for name, p := range map[string]string{"paths.run": c.Paths.Run, "paths.core": c.Paths.Core, "paths.upstream": c.Paths.Upstream,
+		"paths.uiSwitch": c.Paths.UISwitch, "paths.originalUi": c.Paths.OriginalUI} {
 		if strings.ContainsAny(p, " \t") {
 			errs = append(errs, fmt.Sprintf("%s must not contain spaces: %q", name, p))
 		}

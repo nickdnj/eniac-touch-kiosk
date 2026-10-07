@@ -12,10 +12,29 @@ health: { listen: "127.0.0.1:8741" }
 core: { gomaxprocs: 2, nice: 5, readyTimeout: 5s, ackTimeout: 1.5s, silenceTimeout: 2s, probeEvery: 5s }
 recovery: { budget: 3, window: 5m, backoff: [2s, 5s, 10s], slowRetry: 10m }
 idle: { setupS: 90, runS: 180, countdownS: 15 }
-admin: { sessionTimeoutS: 120, allowPowerActions: false, allowUpdates: false }
+# The staff PIN is never in this file: `sudo eniac-touch-kiosk set-pin`
+# writes its bcrypt hash to admin.pinFile (no default PIN).
+admin: { sessionTimeoutS: 120, allowPowerActions: false, allowUpdates: false,
+         pinFile: /etc/eniac-touch-kiosk/admin-pin, tokenTtlS: 600 }
 metrics: { retentionDays: 400 }
 assets: { upstreamPhotos: false }
 paths:
   release: /opt/eniac-touch-kiosk/current
   run: /run/eniac-touch-kiosk
   state: /var/lib/eniac-touch-kiosk
+  uiSwitch: /run/eniac-touch-kiosk-ui
+  originalUi: /opt/eniac-touch-kiosk/current/original-ui
+
+# Original UI switch (docs/original-ui-switch.md 6.6): Brian L. Stuart's own
+# Tk front end, from S13 Admin (staff, interactive) and the Explore tile
+# (visitors, the self-running room tour). Idle limits in seconds; the
+# countdown shows on the "Back to kiosk" button for the last warnS.
+# Set enabled: false to hide both doors.
+originalUi:
+  enabled: true
+  tourIdleS: 300
+  interactiveIdleS: 900
+  warnS: 30
+  requestTtlS: 10
+  minGapS: 10
+  wish: /usr/bin/wish
