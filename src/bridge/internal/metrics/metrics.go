@@ -79,6 +79,15 @@ var bridgeFields = map[string][]string{
 	"attract_flight_started": {"n"},
 	"attract_flight_landed":  {"n", "durS"},
 	"attract_touch":          {},
+	// The Original UI switch (docs/original-ui-switch.md 6.5): door is
+	// visitor, staff or remote; mode tour or interactive; cause tap, idle,
+	// failed or remote. The exit is read from the kiosk session's `last`
+	// file on the next hello.
+	"original_ui_enter": {"door", "mode"},
+	"original_ui_exit":  {"door", "mode", "cause", "durS"},
+	// The admin API (6.1): never the PIN. locked only on a 429.
+	"admin_login":  {"ok", "locked"},
+	"admin_action": {"action"},
 }
 
 var safe = regexp.MustCompile(`^[A-Za-z0-9_-]{1,64}$`)

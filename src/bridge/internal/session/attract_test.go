@@ -20,14 +20,16 @@ import (
 func attractRig(t *testing.T, env ...string) *rig { return attractRigHold(t, 300*time.Millisecond, env...) }
 
 func attractRigHold(t *testing.T, hold time.Duration, env ...string) *rig {
-	return newRig(t, func(o *Options) {
-		o.Config.Paths.Core = testenv.Fakecore(t)
-		o.CoreExtraEnv = append([]string{"FAKECORE_MODE=traj", "FAKECORE_N=6", "FAKECORE_AFTER=80"}, env...)
-		o.Config.Attract.Hold = config.Duration(hold)
-		o.Config.Attract.Stall = config.Duration(1500 * time.Millisecond)
-		o.Config.Attract.ReadTimeout = config.Duration(1500 * time.Millisecond)
-		o.StallOverride = 1500 * time.Millisecond
-	})
+	return newRig(t, func(o *Options) { attractOptions(t, o, hold, env...) })
+}
+
+func attractOptions(t *testing.T, o *Options, hold time.Duration, env ...string) {
+	o.Config.Paths.Core = testenv.Fakecore(t)
+	o.CoreExtraEnv = append([]string{"FAKECORE_MODE=traj", "FAKECORE_N=6", "FAKECORE_AFTER=80"}, env...)
+	o.Config.Attract.Hold = config.Duration(hold)
+	o.Config.Attract.Stall = config.Duration(1500 * time.Millisecond)
+	o.Config.Attract.ReadTimeout = config.Duration(1500 * time.Millisecond)
+	o.StallOverride = 1500 * time.Millisecond
 }
 
 // procs counts processes (cores and vlink children) of this rig.
