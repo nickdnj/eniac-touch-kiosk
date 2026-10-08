@@ -1,3 +1,13 @@
+> [!important] **v5 (2026-10-07): kiosk installed, new beats.**
+> The current in and out points, timings and chapters are in `edit-decision-list.md` and `storyboard-data.json` (v5, from `scripts/gen_storyboard_v5.py`). The scene details below are from v3/v4.
+>
+> v5 adds three beats:
+> - **S05a**, the Original room tour tile (tour-12);
+> - **S05b**, a 15 s music-only insert of Stuart's original Tk display;
+> - the **See the whole room** beat inside S12.
+>
+> The finale narration is now generic. Total: **8:20.92 with the intro**. The in-person wording is now true. v4 is kept as `storyboard.v4.md`.
+
 > [!important] **v4 (2026-10-05): clean screens.**
 > The sources were re-recorded with the kiosk caption box hidden (`assets/video/source-v4/`, CLEAN=1).
 > - **The in and out points and scene timings below are v3.** The current ones are in `edit-decision-list.md` and `storyboard-data.json` (v4; generator `scripts/gen_storyboard_v4.py`).

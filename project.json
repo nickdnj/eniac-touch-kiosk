@@ -31,7 +31,7 @@
       ]
     },
     "channel": "Nick's personal channel first, hopefully moved to the VCF channel later",
-    "publish": "draft only: upload-ready package. No upload without Nick's explicit go; if uploading, unlisted, after youtube-whoami.py",
+    "publish": "v5b public on @nickdnj 2026-10-08 (Nick's go)",
     "purpose": "Introduce the museum's new ENIAC exhibit (the touch kiosk) at VCF; say so in the docent intro, echo it in the close"
   },
   "editorial_rules": [
@@ -127,35 +127,82 @@
         "loudness": "-14.1 LUFS, TP -1.5",
         "notes": "v3 re-recorded with CLEAN=1 (no burned-in caption box, per Nick); sources assets/video/source-v4; Nick: keep screens clean, voiceover only",
         "metadata": "output/upload/metadata-v4.json"
+      },
+      "v5": {
+        "file": "output/eniac-kiosk-v5.mp4",
+        "date": "2026-10-07",
+        "duration": "8:20.92",
+        "loudness": "-14.1 LUFS, TP -1.5",
+        "notes": "Kiosk as deployed (a8bbf3a, original-ui-switch). New: Original room tour tile + 15 s of Stuart's original eniactk -D display (captured via Docker/Xvfb), Squares 'See the whole room' beat, generic finale (typical visit). Sources assets/video/source-v5; worktree eniac-touch-kiosk/.claude/worktrees/video-v5 (uncommitted, c897ac3 cherry-picked). Music bed extended: swing-bed-v5.wav",
+        "metadata": "output/upload/metadata-v5.json",
+        "published_cut": {
+          "file": "output/eniac-kiosk-v5b.mp4",
+          "duration": "8:02.40",
+          "loudness": "-14.1 LUFS",
+          "notes": "v5 with the 20 s S21 end-screen panel removed (Nick 2026-10-08); ends on the vcfed.org card with a 1.2 s fade. Re-add the end screen for a VCF-channel repost."
+        }
       }
     },
     "publish": {
-      "status": "uploaded_unlisted",
-      "date": "2026-10-05",
+      "status": "public",
+      "date": "2026-10-08",
       "channel": "Nick DeMarco (@nickdnj) UCkTzb0IcgeDYWT0ahsZ16OQ",
-      "video_id": "mAW7AuKXLBE",
-      "url": "https://www.youtube.com/watch?v=mAW7AuKXLBE",
-      "version": "v4",
+      "video_id": "KoWgoNo3F1k",
+      "url": "https://www.youtube.com/watch?v=KoWgoNo3F1k",
+      "version": "v5b",
       "thumbnail": "output/upload/thumbnail-alt.jpg",
       "previous": {
+        "v4": "mAW7AuKXLBE (unlisted)",
         "v2": "RCvTUH0kJxI (private, superseded)"
       },
       "email": "Draft reply to Doug (vcfed + gmail) on the 'rabbit hole' thread, demarconet Drafts r3381491975363444173, not sent",
       "open_items": [
         "music is Kevin MacLeod CC BY stand-in (credited)",
         "VCF intro is a prototype pending Jeff Brace's review; VCF owns the brand",
-        "re-voice N04/N06 with 'coming soon' if made public before kiosk install",
         "kiosk worktree video-v3 has uncommitted narration/caption/CLEAN changes to bring into the kiosk branch"
       ]
     }
   },
   "gate1_decisions": {
     "date": "2026-10-03",
-    "kiosk_installed": "not yet; will be by InfoAge/VCF channel release, so keep come-see-it wording",
+    "kiosk_installed": "installed at the museum 2026-10-07",
     "trajectory": "say it is Brian Stuart's recreation",
     "kiosk_ui_stuart_elements": "fine as is",
     "title": "Program ENIAC: Our New Touch-Screen Exhibit",
     "music": "1940s-period royalty-free bed",
     "runtime": "keep it tight; Squares untouched"
+  },
+  "shorts": {
+    "teaser": {
+      "status": "public",
+      "date": "2026-10-08",
+      "brief": {
+        "length": "~45 s vertical 1080x1920",
+        "voice": "Nick 2 voiceover with a hook",
+        "text": "minimal: a big hook line at the start and the 'VCF museum, Wall, NJ' invite at the end; no subtitles",
+        "publish": "@nickdnj Short, related video set to KoWgoNo3F1k; Reels/TikTok exports for Nick to post",
+        "goal": "drive museum visits to try the ENIAC exhibit"
+      },
+      "gate1": {
+        "date": "2026-10-08",
+        "hook": "A",
+        "stuart_not_named_in_short": "fine",
+        "music": "Hot Swing (stand-in) ok",
+        "script": "storyboard/short-teaser.md"
+      },
+      "angle": "Trajectory mission, history angle (Nick 2026-10-08); no Stuart name; nod to the other two missions",
+      "file": "output/short-teaser.mp4",
+      "duration": "45.0",
+      "loudness": "-14.1 LUFS, TP -4.2",
+      "script": "storyboard/short-teaser.md (v1 squares: short-teaser.v1.md)",
+      "assembly": "scripts/assemble_short_teaser.py",
+      "video_id": "pPPE7gik7Es",
+      "url": "https://youtube.com/shorts/pPPE7gik7Es",
+      "metadata": "output/upload/metadata-short-teaser.json",
+      "open_items": [
+        "set related video to KoWgoNo3F1k in YouTube Studio (not in the API)",
+        "optional v2: tighter arc crops, hide cut-off kiosk text, raise the invite"
+      ]
+    }
   }
 }

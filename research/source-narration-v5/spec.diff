@@ -1,0 +1,108 @@
+diff --git a/tests/web/video/clip-finale.spec.ts b/tests/web/video/clip-finale.spec.ts
+index b3a4051..b3ed09d 100644
+--- a/tests/web/video/clip-finale.spec.ts
++++ b/tests/web/video/clip-finale.spec.ts
+@@ -1,5 +1,5 @@
+-// Feature clip: the S8 finale (docs/video/finale.mp4), after a real visit
+-// on the REAL bridge and core. The three missions are done off camera (the
++// Feature clip: the S8 finale (docs/video/finale.mp4), after all three
++// missions on the REAL bridge and core. The three missions are done off camera (the
+ // cut is logged and removed by the mux; the narration says so). Not part of
+ // CI. From src/web:
+ //   NARRATE=1 npx playwright test -c ../../tests/web/video/playwright.config.ts clip-finale
+diff --git a/tests/web/video/config.video.yaml b/tests/web/video/config.video.yaml
+index bb1a44e..11967b0 100644
+--- a/tests/web/video/config.video.yaml
++++ b/tests/web/video/config.video.yaml
+@@ -7,6 +7,10 @@ idle: { setupS: 300, runS: 300, countdownS: 15, exploreS: 300 }
+ admin: { sessionTimeoutS: 120, allowPowerActions: false, allowUpdates: false }
+ metrics: { retentionDays: 400 }
+ assets: { upstreamPhotos: false }
++# The Original room tour tile (UX 7.12.4) needs hello.config.originalUi.available:
++# enabled, a writable switch dir, <paths.originalUi>/bin/eniactk and wish. On a Mac
++# no kiosk session reads the request, so the switching page times out (the video cuts it).
++originalUi: { enabled: true, wish: /Users/nickd/anaconda3/bin/wish }
+ paths:
+   release: ../../..
+   core: ../../../build/darwin-arm64/eniac-core
+@@ -16,3 +20,5 @@ paths:
+   webSrc: ../../../src/web
+   run: /tmp/eniac-kiosk-video/run
+   state: ../../../build/video/state
++  uiSwitch: /tmp/eniac-kiosk-video/ui
++  originalUi: ../../../build/video/original-ui
+diff --git a/tests/web/video/playwright.config.ts b/tests/web/video/playwright.config.ts
+index 2329d78..c924666 100644
+--- a/tests/web/video/playwright.config.ts
++++ b/tests/web/video/playwright.config.ts
+@@ -23,7 +23,7 @@ export default defineConfig({
+   },
+   webServer: {
+     command:
+-      "make -C ../../.. bridge-dev && mkdir -p ../../../build/video && exec ../../../build/dev/eniac-bridge serve --dev --config config.video.yaml 2> ../../../build/video/bridge.log",
++      "make -C ../../.. bridge-dev && mkdir -p ../../../build/video ../../../build/video/original-ui/bin /tmp/eniac-kiosk-video/ui && rm -f /tmp/eniac-kiosk-video/ui/* && cp ../../../build/darwin-arm64/eniactk ../../../build/video/original-ui/bin/eniactk && exec ../../../build/dev/eniac-bridge serve --dev --config config.video.yaml 2> ../../../build/video/bridge.log",
+     cwd: __dirname,
+     url: "http://127.0.0.1:8762/healthz",
+     reuseExistingServer: false,
+diff --git a/tests/web/video/walkthrough-tour.spec.ts b/tests/web/video/walkthrough-tour.spec.ts
+index 3488b23..c8f0225 100644
+--- a/tests/web/video/walkthrough-tour.spec.ts
++++ b/tests/web/video/walkthrough-tour.spec.ts
+@@ -80,6 +80,27 @@ test("ENIAC touch kiosk: the whole tour", async ({ page }) => {
+   await tapSlow(page, page.locator(".gl-close"));
+   await expect(view(page)).toHaveAttribute("data-view", "explore");
+ 
++  // The Original room tour tile (UX 7.12.4; the video config makes it
++  // available). Tap it and let the switching page draw; on a Mac nothing
++  // takes the request, so the 15 s wait, the failure page and "Back to
++  // Explore" are cut.
++  await tapSlow(page, page.locator(".ex-mchips .mchip.clear"));
++  await expect(page.locator(".ex-tour")).toBeVisible();
++  sayOver(page, "(tour: original room tour)");
++  await page.waitForTimeout(3500);
++  await tapSlow(page, page.locator(".ex-tour"));
++  const ask = page.locator(".confirm-scrim .dialog-actions .primary").first();
++  if (await ask.isVisible().catch(() => false)) await tapSlow(page, ask);
++  await expect(view(page)).toHaveAttribute("data-view", "switching");
++  await expect(page.locator(".sw-title")).toHaveText("Starting the room tour...");
++  await page.waitForTimeout(1500);
++  await cutFrom(page, "the room tour request: nothing switches on a Mac");
++  await expect(page.locator(".sw-back")).toBeVisible({ timeout: 30_000 });
++  await tapSlow(page, page.locator(".sw-back"));
++  await expect(view(page)).toHaveAttribute("data-view", "explore");
++  await page.waitForTimeout(1000);
++  await cutTo(page);
++
+   // S16 Keeping ENIAC alive.
+   await cap(page, null);
+   await tapSlow(page, page.locator(".ex-tubes-btn"));
+diff --git a/tests/web/video/walkthrough.spec.ts b/tests/web/video/walkthrough.spec.ts
+index 23293dd..b791758 100644
+--- a/tests/web/video/walkthrough.spec.ts
++++ b/tests/web/video/walkthrough.spec.ts
+@@ -1,7 +1,7 @@
+ // The Squares walkthrough (docs/video/eniac-touch-walkthrough-squares.mp4).
+ import { test, expect } from "@playwright/test";
+ import { tap, tapSlow, hit, mainBtn, feedback, view } from "../e2e/helpers.ts";
+-import { card, cap, overlays, pause } from "./overlay.ts";
++import { card, cap, overlays, pause, say } from "./overlay.ts";
+ import { finishNarration, narration, speakDuring } from "./narrate.ts";
+ 
+ test("ENIAC touch kiosk walkthrough", async ({ page }) => {
+@@ -74,6 +74,16 @@ test("ENIAC touch kiosk walkthrough", async ({ page }) => {
+   for (let i = 0; i < 3; i++) {
+     await tap(page, page.locator(".init-btn"));
+     await expect(page.locator(".init-btn")).toHaveClass(/busy/);
++    if (i === 1) {
++      // During press 2's lamp play: the whole room (run/roomview.ts), live, then back.
++      await tapSlow(page, page.locator(".hdr-room"));
++      await expect(page.locator(".screen.run")).toHaveClass(/room-view/);
++      const t = Date.now();
++      await say(page, "(squares: room view)");
++      await page.waitForTimeout(Math.max(0, 7000 - (Date.now() - t)));
++      await tapSlow(page, page.locator(".hdr-room"));
++      await expect(page.locator(".screen.run")).not.toHaveClass(/room-view/);
++    }
+     await expect(page.locator(".init-btn")).not.toHaveClass(/busy/, { timeout: 30_000 });
+     await speakDuring(page);
+     await pause(page, 3500);

@@ -1,8 +1,8 @@
 {
  "project": "Program ENIAC: Our New Touch-Screen Exhibit",
- "version": "4.0",
- "date": "2026-10-05",
- "status": "v4 = v3 with clean screens (no caption box), re-cut against assets/video/source-v4 (CLEAN=1); structure, chapters, rules and overlay positions as v3",
+ "version": "5.0",
+ "date": "2026-10-07",
+ "status": "v5: kiosk installed; re-cut against assets/video/source-v5 (NARRATE=1 CLEAN=1) with Original room tour beat + original-UI insert, See the whole room beat, generic finale; v4 structure, rules and overlay layout",
  "format": {
   "resolution": "1920x1080",
   "fps": 25,
@@ -13,11 +13,12 @@
   "dur": 8.12,
   "note": "VCF Power-On intro prepended; carries the title card. No S01 title open."
  },
- "program_total_s": 472.88,
- "total_with_intro_s": 481.0,
- "total_with_intro": "8:01.00",
+ "program_total_s": 492.8,
+ "total_with_intro_s": 500.92,
+ "total_with_intro": "8:20.92",
  "v2_total_with_intro_s": 478.28,
  "v3_total_with_intro_s": 477.08,
+ "v4_total_with_intro_s": 481.0,
  "units": [
   {
    "unit": "A",
@@ -28,84 +29,96 @@
   {
    "unit": "B",
    "program_in": 12.88,
-   "dur": 99.2,
+   "dur": 96.6,
    "crossfade_out": 0.4
   },
   {
+   "unit": "B2",
+   "program_in": 109.08,
+   "dur": 12.4,
+   "crossfade_out": 0.5
+  },
+  {
+   "unit": "U",
+   "program_in": 120.96,
+   "dur": 15.0,
+   "crossfade_out": 0.5
+  },
+  {
    "unit": "C",
-   "program_in": 111.68,
+   "program_in": 135.44,
    "dur": 1.8,
    "crossfade_out": 0.4
   },
   {
    "unit": "D",
-   "program_in": 113.08,
-   "dur": 23.96,
+   "program_in": 136.84,
+   "dur": 23.8,
    "crossfade_out": 0.4
   },
   {
    "unit": "E",
-   "program_in": 136.64,
-   "dur": 59.92,
+   "program_in": 160.24,
+   "dur": 59.96,
    "crossfade_out": 0.4
   },
   {
    "unit": "F",
-   "program_in": 196.16,
+   "program_in": 219.8,
    "dur": 1.8,
    "crossfade_out": 0.4
   },
   {
    "unit": "G",
-   "program_in": 197.56,
+   "program_in": 221.2,
    "dur": 18.04,
    "crossfade_out": 0.4
   },
   {
    "unit": "H",
-   "program_in": 215.2,
+   "program_in": 238.84,
    "dur": 3.28,
    "crossfade_out": 0.4
   },
   {
    "unit": "IJ",
-   "program_in": 218.08,
-   "dur": 158.36,
+   "program_in": 241.72,
+   "dur": 157.16,
    "crossfade_out": 0.4
   },
   {
    "unit": "K",
-   "program_in": 376.04,
+   "program_in": 398.48,
    "dur": 7.8,
    "crossfade_out": 0.4
   },
   {
    "unit": "L",
-   "program_in": 383.44,
+   "program_in": 405.88,
    "dur": 11.0,
    "crossfade_out": 0.4
   },
   {
    "unit": "M",
-   "program_in": 394.04,
-   "dur": 6.48,
+   "program_in": 416.48,
+   "dur": 4.48,
    "crossfade_out": 0.4
   },
   {
    "unit": "NO",
-   "program_in": 400.12,
-   "dur": 36.4,
+   "program_in": 420.56,
+   "dur": 35.88,
    "crossfade_out": 0.5
   },
   {
    "unit": "P",
-   "program_in": 436.0,
+   "program_in": 455.92,
    "dur": 17.4,
    "crossfade_out": 0.5
   },
   {
    "unit": "Q",
-   "program_in": 452.88,
+   "program_in": 472.8,
    "dur": 20.0,
    "crossfade_out": 0.0
   }
@@ -161,15 +174,15 @@
    "title": "The live attract screen",
    "video": {
     "type": "source",
-    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
+    "file": "assets/video/source-v5/eniac-touch-tour.mp4",
     "in": 11.48,
-    "out": 34.05
+    "out": 33.95
    },
    "audio": "REUSED baked tour-01, tour-02",
    "note": "Attract (v3 UI, v4 clean): taller room, rotating plates, no footer, no caption box. No clear header space -- no overlays, as in v2/v3.",
    "program_in": 12.88,
-   "program_out": 35.44,
-   "dur": 22.56,
+   "program_out": 35.36,
+   "dur": 22.48,
    "program_in_with_intro": 21.0,
    "overlays": [],
    "crossfade_out": 0.4
@@ -182,15 +195,15 @@
    "title": "One touch, and the missions appear",
    "video": {
     "type": "source",
-    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
-    "in": 34.05,
-    "out": 42.88
+    "file": "assets/video/source-v5/eniac-touch-tour.mp4",
+    "in": 33.95,
+    "out": 42.64
    },
    "audio": "REUSED baked tour-03, tour-04",
-   "program_in": 35.44,
-   "program_out": 44.28,
-   "dur": 8.84,
-   "program_in_with_intro": 43.56,
+   "program_in": 35.36,
+   "program_out": 44.04,
+   "dur": 8.68,
+   "program_in_with_intro": 43.48,
    "overlays": [],
    "crossfade_out": 0.4
   },
@@ -202,26 +215,69 @@
    "title": "Walk the room",
    "video": {
     "type": "source",
-    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
-    "in": 42.88,
-    "out": 110.7
+    "file": "assets/video/source-v5/eniac-touch-tour.mp4",
+    "in": 42.64,
+    "out": 108.08
    },
    "audio": "REUSED baked tour-05..tour-10",
-   "program_in": 44.28,
-   "program_out": 112.08,
-   "dur": 67.8,
-   "program_in_with_intro": 52.4,
+   "program_in": 44.04,
+   "program_out": 109.48,
+   "dur": 65.44,
+   "program_in_with_intro": 52.16,
    "overlays": [
     {
      "type": "header-tag",
      "label": "CHAPTER 2",
      "text": "Explore ENIAC",
      "pos": "Explore header gap, right edge x1165, y17 (box x807-1165)",
-     "tin": 32.9,
-     "tout": 36.4
+     "tin": 32.66,
+     "tout": 36.16
     }
    ],
    "crossfade_out": 0.4
+  },
+  {
+   "id": "S05a",
+   "unit": "B2",
+   "chapter": 2,
+   "chapter_title": "Explore ENIAC",
+   "title": "The Original room tour tile",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v5/eniac-touch-tour.mp4",
+    "in": 114.0,
+    "out": 126.4,
+    "dur": 12.4
+   },
+   "audio": "REUSED baked tour-12 (new row: \"And for anyone curious how it looked before the touch screen...\")",
+   "program_in": 109.08,
+   "program_out": 121.48,
+   "dur": 12.4,
+   "program_in_with_intro": 117.2,
+   "overlays": [],
+   "crossfade_out": 0.5
+  },
+  {
+   "id": "S05b",
+   "unit": "U",
+   "chapter": 2,
+   "chapter_title": "Explore ENIAC",
+   "title": "The simulator's own original display",
+   "video": {
+    "type": "source",
+    "file": "assets/video/source-v5/original-ui-tour.mp4",
+    "in": 26.64,
+    "out": 41.64,
+    "dur": 15.0,
+    "note": "silent source, 30 fps -> conform to 25 fps"
+   },
+   "audio": "music up, no voice",
+   "program_in": 120.96,
+   "program_out": 135.96,
+   "dur": 15.0,
+   "program_in_with_intro": 129.08,
+   "overlays": [],
+   "crossfade_out": 0.5
   },
   {
    "id": "S06",
@@ -233,10 +289,10 @@
     "type": "card"
    },
    "audio": "music",
-   "program_in": 111.68,
-   "program_out": 113.48,
+   "program_in": 135.44,
+   "program_out": 137.24,
    "dur": 1.8,
-   "program_in_with_intro": 119.8,
+   "program_in_with_intro": 143.56,
    "overlays": [
     {
      "type": "chapter-card",
@@ -253,16 +309,16 @@
    "title": "18,000 tubes and 150 kilowatts",
    "video": {
     "type": "source",
-    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
-    "in": 117.55,
-    "out": 141.52,
-    "dur": 23.97
+    "file": "assets/video/source-v5/eniac-touch-tour.mp4",
+    "in": 127.24,
+    "out": 151.04,
+    "dur": 23.8
    },
-   "audio": "REUSED baked tour-12, tour-13",
-   "program_in": 113.08,
-   "program_out": 137.04,
-   "dur": 23.96,
-   "program_in_with_intro": 121.2,
+   "audio": "REUSED baked tour-13, tour-14",
+   "program_in": 136.84,
+   "program_out": 160.64,
+   "dur": 23.8,
+   "program_in_with_intro": 144.96,
    "overlays": [],
    "crossfade_out": 0.4
   },
@@ -274,22 +330,22 @@
    "title": "Why tubes burned out, and find the dead tube",
    "video": {
     "type": "source",
-    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
-    "in": 151.1,
-    "out": 211.0,
-    "dur": 59.9
+    "file": "assets/video/source-v5/eniac-touch-tour.mp4",
+    "in": 160.5,
+    "out": 220.48,
+    "dur": 59.98
    },
    "cutaway": {
     "photo": "P2",
     "offset_in": 0.6,
     "offset_out": 7.6,
-    "source_equiv": "tour 151.70-158.70 (over tour-15, 151.35-158.55)"
+    "source_equiv": "tour 161.10-168.10 (over tour-16, 160.86-168.05)"
    },
-   "audio": "REUSED baked tour-15..tour-24",
-   "program_in": 136.64,
-   "program_out": 196.56,
-   "dur": 59.92,
-   "program_in_with_intro": 144.76,
+   "audio": "REUSED baked tour-16..tour-25",
+   "program_in": 160.24,
+   "program_out": 220.2,
+   "dur": 59.96,
+   "program_in_with_intro": 168.36,
    "overlays": [
     {
      "type": "credit",
@@ -311,10 +367,10 @@
     "type": "card"
    },
    "audio": "music",
-   "program_in": 196.16,
-   "program_out": 197.96,
+   "program_in": 219.8,
+   "program_out": 221.6,
    "dur": 1.8,
-   "program_in_with_intro": 204.28,
+   "program_in_with_intro": 227.92,
    "overlays": [
     {
      "type": "chapter-card",
@@ -331,22 +387,22 @@
    "title": "The honor roll: six first programmers",
    "video": {
     "type": "source",
-    "file": "assets/video/source-v4/eniac-touch-tour.mp4",
-    "in": 229.2,
-    "out": 247.25,
-    "dur": 18.05
+    "file": "assets/video/source-v5/eniac-touch-tour.mp4",
+    "in": 238.52,
+    "out": 256.56,
+    "dur": 18.04
    },
    "cutaway": {
     "photo": "P3",
     "offset_in": 9.9,
     "offset_out": 18.04,
-    "source_equiv": "tour 239.10-247.25 (after the six names; word gap 238.96-239.24)"
+    "source_equiv": "tour 248.42-256.56 (after the six names; word gap 248.25-248.53)"
    },
-   "audio": "REUSED baked tour-26",
-   "program_in": 197.56,
-   "program_out": 215.6,
+   "audio": "REUSED baked tour-27",
+   "program_in": 221.2,
+   "program_out": 239.24,
    "dur": 18.04,
-   "program_in_with_intro": 205.68,
+   "program_in_with_intro": 229.32,
    "overlays": [
     {
      "type": "credit",
@@ -367,11 +423,11 @@
    "video": {
     "type": "card"
    },
-   "audio": "REUSED WAV tour-27.wav 0.00-2.21 (\"Now it's my turn to program ENIAC.\")",
-   "program_in": 215.2,
-   "program_out": 218.48,
+   "audio": "REUSED WAV source-lines-v3/tour-27.wav 0.00-2.21 (\"Now it's my turn to program ENIAC.\")",
+   "program_in": 238.84,
+   "program_out": 242.12,
    "dur": 3.28,
-   "program_in_with_intro": 223.32,
+   "program_in_with_intro": 246.96,
    "overlays": [
     {
      "type": "chapter-card",
@@ -385,19 +441,19 @@
    "unit": "I",
    "chapter": 5,
    "chapter_title": "Mission 1: Squares",
-   "title": "The Squares mission (near-full)",
+   "title": "The Squares mission (near-full, with See the whole room)",
    "video": {
     "type": "source",
-    "file": "assets/video/source-v4/eniac-touch-walkthrough-squares.mp4",
+    "file": "assets/video/source-v5/eniac-touch-walkthrough-squares.mp4",
     "in": 15.68,
-    "out": 164.52,
-    "dur": 148.84
+    "out": 163.32,
+    "dur": 147.64
    },
-   "audio": "REUSED baked squares-02..squares-17",
-   "program_in": 218.08,
-   "program_out": 366.92,
-   "dur": 148.84,
-   "program_in_with_intro": 226.2,
+   "audio": "REUSED baked squares-02..squares-18 (squares-13 new: See the whole room, 111.03-118.09)",
+   "program_in": 241.72,
+   "program_out": 389.36,
+   "dur": 147.64,
+   "program_in_with_intro": 249.84,
    "overlays": [],
    "crossfade_out": 0.4
   },
@@ -409,17 +465,17 @@
    "title": "Teaser: Primes",
    "video": {
     "type": "source",
-    "file": "assets/video/source-v4/eniac-touch-walkthrough-primes.mp4",
+    "file": "assets/video/source-v5/eniac-touch-walkthrough-primes.mp4",
     "in": 102.4,
     "out": 111.92,
     "dur": 9.52,
     "mute_source": true
    },
    "audio": "NEW N02",
-   "program_in": 366.92,
-   "program_out": 376.44,
+   "program_in": 389.36,
+   "program_out": 398.88,
    "dur": 9.52,
-   "program_in_with_intro": 375.04,
+   "program_in_with_intro": 397.48,
    "overlays": [
     {
      "type": "header-tag",
@@ -448,17 +504,17 @@
    "title": "Teaser: Trajectory",
    "video": {
     "type": "source",
-    "file": "assets/video/source-v4/eniac-touch-walkthrough-trajectory.mp4",
-    "in": 133.1,
-    "out": 140.9,
+    "file": "assets/video/source-v5/eniac-touch-walkthrough-trajectory.mp4",
+    "in": 132.6,
+    "out": 140.4,
     "dur": 7.8,
     "mute_source": true
    },
    "audio": "NEW N03",
-   "program_in": 376.04,
-   "program_out": 383.84,
+   "program_in": 398.48,
+   "program_out": 406.28,
    "dur": 7.8,
-   "program_in_with_intro": 384.16,
+   "program_in_with_intro": 406.6,
    "overlays": [
     {
      "type": "column-tag",
@@ -484,13 +540,13 @@
    "title": "Museum invite card",
    "video": {
     "type": "graphic",
-    "bg": "split: primes freeze at 111.90 | trajectory freeze at 140.80 (landed), centre crops 960x1080, blur 5, 70% luma, amber divider"
+    "bg": "split: primes freeze at 111.90 | trajectory freeze at 140.30 (landed), centre crops 960x1080, blur 5, 70% luma, amber divider"
    },
    "audio": "NEW N04",
-   "program_in": 383.44,
-   "program_out": 394.44,
+   "program_in": 405.88,
+   "program_out": 416.88,
    "dur": 11.0,
-   "program_in_with_intro": 391.56,
+   "program_in_with_intro": 414.0,
    "overlays": [
     {
      "type": "headline",
@@ -512,11 +568,11 @@
    "video": {
     "type": "card"
    },
-   "audio": "REUSED WAV finale-00.wav",
-   "program_in": 394.04,
-   "program_out": 400.52,
-   "dur": 6.48,
-   "program_in_with_intro": 402.16,
+   "audio": "REUSED WAV source-lines-v5/finale-00.wav (\"Finish all three missions, and the kiosk ends with a finale.\")",
+   "program_in": 416.48,
+   "program_out": 420.96,
+   "dur": 4.48,
+   "program_in_with_intro": 424.6,
    "overlays": [
     {
      "type": "chapter-card",
@@ -533,16 +589,16 @@
    "title": "You programmed ENIAC",
    "video": {
     "type": "source",
-    "file": "assets/video/source-v4/finale.mp4",
-    "in": 6.85,
-    "out": 29.45,
-    "dur": 22.6
+    "file": "assets/video/source-v5/finale.mp4",
+    "in": 4.5,
+    "out": 26.6,
+    "dur": 22.1
    },
-   "audio": "REUSED baked finale-01..finale-03",
-   "program_in": 400.12,
-   "program_out": 422.72,
-   "dur": 22.6,
-   "program_in_with_intro": 408.24,
+   "audio": "REUSED baked finale-01..finale-03 (v5 generic wording)",
+   "program_in": 420.56,
+   "program_out": 442.64,
+   "dur": 22.08,
+   "program_in_with_intro": 428.68,
    "overlays": [],
    "crossfade_out": 0.5
   },
@@ -554,18 +610,18 @@
    "title": "The single thank-you: Brian L. Stuart",
    "video": {
     "type": "source",
-    "file": "assets/video/source-v4/finale.mp4",
-    "in": 31.4,
-    "out": 37.36,
-    "dur": 5.96,
+    "file": "assets/video/source-v5/finale.mp4",
+    "in": 28.5,
+    "out": 34.6,
+    "dur": 6.1,
     "mute_source": true,
     "hold": "freeze last frame to 13.8 s"
    },
    "audio": "NEW N05",
-   "program_in": 422.72,
-   "program_out": 436.52,
+   "program_in": 442.64,
+   "program_out": 456.44,
    "dur": 13.8,
-   "program_in_with_intro": 430.84,
+   "program_in_with_intro": 450.76,
    "overlays": [],
    "crossfade_out": 0.5
   },
@@ -577,13 +633,13 @@
    "title": "Close and call to action",
    "video": {
     "type": "graphic",
-    "bg": "freeze of the v4 live attract room (tour at 30.00), blur 22, 45% luma"
+    "bg": "freeze of the v5 live attract room (tour at 30.00), blur 22, 45% luma"
    },
    "audio": "NEW N06",
-   "program_in": 436.0,
-   "program_out": 453.4,
+   "program_in": 455.92,
+   "program_out": 473.32,
    "dur": 17.4,
-   "program_in_with_intro": 444.12,
+   "program_in_with_intro": 464.04,
    "overlays": [
     {
      "type": "headline",
@@ -615,10 +671,10 @@
     "type": "graphic"
    },
    "audio": "music",
-   "program_in": 452.88,
-   "program_out": 472.88,
+   "program_in": 472.8,
+   "program_out": 492.8,
    "dur": 20.0,
-   "program_in_with_intro": 461.0,
+   "program_in_with_intro": 480.92,
    "overlays": [
     {
      "type": "title",
@@ -642,49 +698,59 @@
  ],
  "cuts": {
   "B": [
-   "assets/video/source-v4/eniac-touch-tour.mp4",
+   "assets/video/source-v5/eniac-touch-tour.mp4",
    11.48,
-   110.7
+   108.08
+  ],
+  "B2": [
+   "assets/video/source-v5/eniac-touch-tour.mp4",
+   114.0,
+   126.4
+  ],
+  "U": [
+   "assets/video/source-v5/original-ui-tour.mp4",
+   26.64,
+   41.64
   ],
   "D": [
-   "assets/video/source-v4/eniac-touch-tour.mp4",
-   117.55,
-   141.52
+   "assets/video/source-v5/eniac-touch-tour.mp4",
+   127.24,
+   151.04
   ],
   "E": [
-   "assets/video/source-v4/eniac-touch-tour.mp4",
-   151.1,
-   211.0
+   "assets/video/source-v5/eniac-touch-tour.mp4",
+   160.5,
+   220.48
   ],
   "G": [
-   "assets/video/source-v4/eniac-touch-tour.mp4",
-   229.2,
-   247.25
+   "assets/video/source-v5/eniac-touch-tour.mp4",
+   238.52,
+   256.56
   ],
   "I": [
-   "assets/video/source-v4/eniac-touch-walkthrough-squares.mp4",
+   "assets/video/source-v5/eniac-touch-walkthrough-squares.mp4",
    15.68,
-   164.52
+   163.32
   ],
   "J": [
-   "assets/video/source-v4/eniac-touch-walkthrough-primes.mp4",
+   "assets/video/source-v5/eniac-touch-walkthrough-primes.mp4",
    102.4,
    111.92
   ],
   "K": [
-   "assets/video/source-v4/eniac-touch-walkthrough-trajectory.mp4",
-   133.1,
-   140.9
+   "assets/video/source-v5/eniac-touch-walkthrough-trajectory.mp4",
+   132.6,
+   140.4
   ],
   "N": [
-   "assets/video/source-v4/finale.mp4",
-   6.85,
-   29.45
+   "assets/video/source-v5/finale.mp4",
+   4.5,
+   26.6
   ],
   "O": [
-   "assets/video/source-v4/finale.mp4",
-   31.4,
-   37.36
+   "assets/video/source-v5/finale.mp4",
+   28.5,
+   34.6
   ]
  },
  "edge_check": [
@@ -693,107 +759,141 @@
    "edge": "in",
    "t": 11.48,
    "silence": [
-    10.38,
-    11.54
+    10.37,
+    11.51
    ],
-   "visual": "attract screen, title card gone (11.3 already clean); tour-01 from 11.54"
+   "visual": "attract screen, title card gone; tour-01 from 11.51"
   },
   {
    "unit": "B",
    "edge": "out",
-   "t": 110.7,
+   "t": 108.08,
    "silence": [
-    108.91,
-    111.51
+    106.64,
+    108.72
    ],
-   "visual": "Explore still clean at 110.8; glossary fades in from 110.96 (dropped tour-11 at 111.50)"
+   "visual": "Explore clean (Mission 3 units lit); glossary from 108.16 (tour-11 glossary dropped)"
+  },
+  {
+   "unit": "B2",
+   "edge": "in",
+   "t": 114.0,
+   "silence": [
+    112.74,
+    114.94
+   ],
+   "visual": "Explore back after glossary closes (113.72; 113.76 still fading); tour-12 from 114.84"
+  },
+  {
+   "unit": "B2",
+   "edge": "out",
+   "t": 126.4,
+   "silence": [
+    126.0,
+    127.36
+   ],
+   "visual": "\"Starting the room tour...\" switching page held 118.6-126.40; tour-12 ends 126.12. Failure timeout already cut at mux (raw 128.0-137.1)"
+  },
+  {
+   "unit": "U",
+   "edge": "in",
+   "t": 26.64,
+   "silence": null,
+   "visual": "original-ui-tour.mp4 (silent, 30 fps): first frame of the 3D Perspective View (view switch at 26.60)"
+  },
+  {
+   "unit": "U",
+   "edge": "out",
+   "t": 41.64,
+   "silence": null,
+   "visual": "S1 panel view mid-sweep (panel views from 31.63); music only"
   },
   {
    "unit": "D",
    "edge": "in",
-   "t": 117.55,
+   "t": 127.24,
    "silence": [
-    115.54,
-    117.85
+    126.0,
+    127.36
    ],
-   "visual": "tubes screen fully in (fading at 117.3); tour-12 from 117.82"
+   "visual": "tubes screen clean (fading at 126.9-127.12); tour-13 from 127.32 (80 ms)"
   },
   {
    "unit": "D",
    "edge": "out",
-   "t": 141.52,
+   "t": 151.04,
    "silence": [
-    141.34,
-    142.22
+    150.84,
+    151.72
    ],
-   "visual": "\"Where the power went\" through 141.56; MYTH card (\"A story people still tell\") from 141.60"
+   "visual": "\"Where the power went\" clean through 151.04; MYTH card (\"A story people still tell\") from 151.12"
   },
   {
    "unit": "E",
    "edge": "in",
-   "t": 151.1,
+   "t": 160.5,
    "silence": [
-    149.97,
-    151.42
+    159.47,
+    160.93
    ],
-   "visual": "\"Heaters on, the rest off\" screen up by 150.80 (power screen 150.4-150.6, MYTH before); no caption box in v4"
+   "visual": "\"Heaters on, the rest off\" up by 160.4 (power screen at 160.2); tour-16 from 160.86"
   },
   {
    "unit": "E",
    "edge": "out",
-   "t": 211.0,
+   "t": 220.48,
    "silence": [
-    210.66,
-    213.89
+    220.09,
+    223.18
    ],
-   "visual": "\"Fixed!\" screen clean at 211.1; scene change 211.16; Stuart honor-roll screen from about 212"
+   "visual": "\"Fixed!\" screen clean; fade from 220.6; Stuart honor screen from about 221.5"
   },
   {
    "unit": "G",
    "edge": "in",
-   "t": 229.2,
+   "t": 238.52,
    "silence": [
-    228.64,
-    229.71
+    237.93,
+    239.0
    ],
-   "visual": "Stuart honor-roll screen (\"...Thank you, Brian.\") full at 228.9, cross-fading out from 229.00; programmers screen clean by 229.16; tour-26 from 229.60. No caption box in v4"
+   "visual": "Stuart honor screen cross-fade over by 238.52 (238.44 still fading); tour-27 from 238.89"
   },
   {
    "unit": "G",
    "edge": "out",
-   "t": 247.25,
+   "t": 256.56,
    "silence": [
-    247.03,
-    249.96
+    256.32,
+    259.24
    ],
-   "visual": "programmers screen at 247.2; picker fades in from 247.32"
+   "visual": "programmers screen; picker fades in from 256.64"
   },
   {
    "unit": "I",
    "edge": "in",
    "t": 15.68,
    "silence": [
-    14.82,
-    15.73
+    14.9,
+    15.75
    ],
-   "visual": "blank transition frame between attract and picker (scdet 15.68); squares-02 onset 15.73 (50 ms)"
+   "visual": "picker fading in (scdet 15.64); squares-02 onset 15.75"
   },
   {
    "unit": "I",
    "edge": "out",
-   "t": 164.52,
+   "t": 163.32,
    "silence": [
-    164.26,
-    164.79
+    163.11,
+    163.64
    ],
-   "visual": "table screen at 164.52; \"Thank you / Simulator: Brian L. Stuart\" end card at 164.6"
+   "visual": "table screen at 163.32; \"Thank you / Simulator: Brian L. Stuart\" end card from 163.36"
   },
   {
    "unit": "J",
    "edge": "in",
    "t": 102.4,
    "silence": null,
-   "visual": "muted; full-speed card pile-up (cards 5 -> 8); primes hand cut (raw 140-160) is later"
+   "visual": "muted; full-speed card pile-up (cards 5 -> 8); primes hand cut (raw 140.5-161.5) is later"
   },
   {
    "unit": "J",
@@ -805,50 +905,50 @@
   {
    "unit": "K",
    "edge": "in",
-   "t": 133.1,
+   "t": 132.6,
    "silence": null,
-   "visual": "muted; hand-cut jump at 133.00 (hop 20 at 132.96 -> hop 32 at 133.04; raw cut 167-216.3); window is after it"
+   "visual": "muted; hand-cut jump at 132.40 (hop 21 at 132.32 -> hop 32 at 132.44; raw 153.6-188.1); earlier jump 113.12 outside"
   },
   {
    "unit": "K",
    "edge": "out",
-   "t": 140.9,
+   "t": 140.4,
    "silence": null,
-   "visual": "muted; \"Landed\" from 139.0, held; summary screen at 141.76. Earlier jump 113.72 (raw 113.7-147.7) is outside"
+   "visual": "muted; \"Landed\" from about 138.3, held; summary screen at 141.24"
   },
   {
    "unit": "N",
    "edge": "in",
-   "t": 6.85,
+   "t": 4.5,
    "silence": [
-    5.62,
-    7.0
+    3.16,
+    4.77
    ],
-   "visual": "\"ENIAC flew the shell!\" screen, title ghost gone; finale-01 from 6.91"
+   "visual": "finale.mp4 opens on \"The finale\" title card (0-4.4, fading); Trajectory result screen clean at 4.5; finale-01 from 4.75"
   },
   {
    "unit": "N",
    "edge": "out",
-   "t": 29.45,
+   "t": 26.6,
    "silence": [
-    27.84,
-    31.03
+    25.19,
+    28.35
    ],
-   "visual": "\"Here is every unit you used\"; f3 Stuart screen from 31.12"
+   "visual": "\"Here is every unit you used\"; f3 Stuart screen from 28.40"
   },
   {
    "unit": "O",
    "edge": "in",
-   "t": 31.4,
+   "t": 28.5,
    "silence": null,
-   "visual": "muted; f3 \"Brian L. Stuart wrote this simulator\" fully in (fading at 31.2)"
+   "visual": "muted; f3 \"Brian L. Stuart wrote this simulator\" fully in"
   },
   {
    "unit": "O",
    "edge": "out",
-   "t": 37.36,
+   "t": 34.6,
    "silence": null,
-   "visual": "muted; last clean f3 frame, freeze it; blank/f4 from 37.44"
+   "visual": "muted; last clean f3 frame, freeze; f4 from 34.68"
   }
  ],
  "voice_events": [
@@ -866,41 +966,51 @@
    "unit": "B",
    "offset": 0.0,
    "kind": "baked",
-   "path": "assets/video/source-v4/eniac-touch-tour.mp4",
+   "path": "assets/video/source-v5/eniac-touch-tour.mp4",
    "ss": 11.48,
-   "t": 99.2,
+   "t": 96.6,
    "label": "tour-01..10",
    "program_t": 12.88
+  },
+  {
+   "unit": "B2",
+   "offset": 0.0,
+   "kind": "baked",
+   "path": "assets/video/source-v5/eniac-touch-tour.mp4",
+   "ss": 114.0,
+   "t": 12.4,
+   "label": "tour-12 (new: Original room tour)",
+   "program_t": 109.08
   },
   {
    "unit": "D",
    "offset": 0.0,
    "kind": "baked",
-   "path": "assets/video/source-v4/eniac-touch-tour.mp4",
-   "ss": 117.55,
-   "t": 23.96,
-   "label": "tour-12, 13",
-   "program_t": 113.08
+   "path": "assets/video/source-v5/eniac-touch-tour.mp4",
+   "ss": 127.24,
+   "t": 23.8,
+   "label": "tour-13, 14",
+   "program_t": 136.84
   },
   {
    "unit": "E",
    "offset": 0.0,
    "kind": "baked",
-   "path": "assets/video/source-v4/eniac-touch-tour.mp4",
-   "ss": 151.1,
-   "t": 59.92,
-   "label": "tour-15..24",
-   "program_t": 136.64
+   "path": "assets/video/source-v5/eniac-touch-tour.mp4",
+   "ss": 160.5,
+   "t": 59.96,
+   "label": "tour-16..25",
+   "program_t": 160.24
   },
   {
    "unit": "G",
    "offset": 0.0,
    "kind": "baked",
-   "path": "assets/video/source-v4/eniac-touch-tour.mp4",
-   "ss": 229.2,
+   "path": "assets/video/source-v5/eniac-touch-tour.mp4",
+   "ss": 238.52,
    "t": 18.04,
-   "label": "tour-26",
-   "program_t": 197.56
+   "label": "tour-27",
+   "program_t": 221.2
   },
   {
    "unit": "H",
@@ -909,18 +1019,18 @@
    "path": "assets/audio/source-lines-v3/tour-27.wav",
    "ss": 0.0,
    "t": 2.21,
-   "label": "tour-27 bridge (word gap 2.06-2.37)",
-   "program_t": 215.7
+   "label": "v5 tour-28 = v3 tour-27.wav bridge (word gap 2.06-2.37)",
+   "program_t": 239.34
   },
   {
    "unit": "I",
    "offset": 0.0,
    "kind": "baked",
-   "path": "assets/video/source-v4/eniac-touch-walkthrough-squares.mp4",
+   "path": "assets/video/source-v5/eniac-touch-walkthrough-squares.mp4",
    "ss": 15.68,
-   "t": 148.84,
-   "label": "squares-02..17",
-   "program_t": 218.08
+   "t": 147.64,
+   "label": "squares-02..18 (incl. new squares-13)",
+   "program_t": 241.72
   },
   {
    "unit": "J",
@@ -930,7 +1040,7 @@
    "ss": null,
    "t": null,
    "label": "N02",
-   "program_t": 367.32
+   "program_t": 389.76
   },
   {
    "unit": "K",
@@ -940,7 +1050,7 @@
    "ss": null,
    "t": null,
    "label": "N03",
-   "program_t": 376.19
+   "program_t": 398.63
   },
   {
    "unit": "L",
@@ -950,27 +1060,27 @@
    "ss": null,
    "t": null,
    "label": "N04",
-   "program_t": 383.74
+   "program_t": 406.18
   },
   {
    "unit": "M",
    "offset": 0.2,
    "kind": "wav",
-   "path": "assets/audio/source-lines-v3/finale-00.wav",
+   "path": "assets/audio/source-lines-v5/finale-00.wav",
    "ss": null,
    "t": null,
-   "label": "finale-00",
-   "program_t": 394.24
+   "label": "finale-00 (v5 generic, 3.43 s)",
+   "program_t": 416.68
   },
   {
    "unit": "N",
    "offset": 0.0,
    "kind": "baked",
-   "path": "assets/video/source-v4/finale.mp4",
-   "ss": 6.85,
-   "t": 22.6,
+   "path": "assets/video/source-v5/finale.mp4",
+   "ss": 4.5,
+   "t": 22.08,
    "label": "finale-01..03",
-   "program_t": 400.12
+   "program_t": 420.56
   },
   {
    "unit": "O",
@@ -980,7 +1090,7 @@
    "ss": null,
    "t": null,
    "label": "N05 (the single Stuart thank-you)",
-   "program_t": 423.12
+   "program_t": 443.04
   },
   {
    "unit": "P",
@@ -990,7 +1100,7 @@
    "ss": null,
    "t": null,
    "label": "N06",
-   "program_t": 436.5
+   "program_t": 456.42
   }
  ],
  "new_line_fit": {
@@ -1053,44 +1163,44 @@
   {
    "n": 2,
    "title": "Explore ENIAC",
-   "t": 53.9,
+   "t": 53.66,
    "stamp": "0:53"
   },
   {
    "n": 3,
    "title": "Keeping ENIAC alive",
-   "t": 119.8,
-   "stamp": "1:59"
+   "t": 143.56,
+   "stamp": "2:23"
   },
   {
    "n": 4,
    "title": "The first programmers",
-   "t": 204.28,
-   "stamp": "3:24"
+   "t": 227.92,
+   "stamp": "3:47"
   },
   {
    "n": 5,
    "title": "Mission 1: Squares",
-   "t": 223.32,
-   "stamp": "3:43"
+   "t": 246.96,
+   "stamp": "4:06"
   },
   {
    "n": 6,
    "title": "Only at the museum",
-   "t": 375.04,
-   "stamp": "6:15"
+   "t": 397.48,
+   "stamp": "6:37"
   },
   {
    "n": 7,
    "title": "The finale",
-   "t": 402.16,
-   "stamp": "6:42"
+   "t": 424.6,
+   "stamp": "7:04"
   },
   {
    "n": 8,
    "title": "Come see it",
-   "t": 444.12,
-   "stamp": "7:24"
+   "t": 464.04,
+   "stamp": "7:44"
   }
  ],
  "stuart_audit": {
@@ -1102,80 +1212,71 @@
   "spoken_found": [
    [
     "tour-00",
-    "0.06-10.46",
+    "0.05-10.46",
     "cut: unit B starts 11.48"
    ],
    [
-    "tour-25",
-    "213.87-228.77",
-    "cut: E ends 211.00, G starts 229.20"
+    "tour-26",
+    "223.16-238.07",
+    "cut: E ends 220.48, G starts 238.52"
    ],
    [
-    "tour-39",
-    "341.72-347.29",
+    "tour-40",
+    "352.91-358.48",
     "not used (tour finale replaced by finale.mp4)"
    ],
    [
-    "tour-42",
-    "361.63-367.90",
+    "tour-43",
+    "372.81-379.08",
     "not used"
    ],
    [
     "squares-00",
-    "0.39-10.42",
+    "0.48-10.51",
     "cut: I starts 15.68"
    ],
    [
-    "squares-18",
-    "164.71-169.53",
-    "cut: I ends 164.52"
+    "squares-19",
+    "163.55-168.38",
+    "cut: I ends 163.32"
    ],
    [
-    "attract-06",
-    "v3 63.82-68.14",
-    "not used (attract.mp4 not re-recorded, unused)"
-   ],
-   [
-    "explore-10",
-    "v3 80.75-84.37",
-    "not used (explore.mp4 not re-recorded, unused)"
-   ],
-   [
-    "tubes-13",
-    "v3 103.28-107.56",
-    "not used (tubes.mp4 not re-recorded, unused)"
+    "attract-06 / explore-10 / tubes-13",
+    "v3 sources",
+    "not used (not re-recorded, unused)"
    ],
    [
     "finale-04",
-    "30.97-37.15",
-    "MUTED under N05 (O uses 31.40-37.36 video only)"
+    "28.29-34.47",
+    "MUTED under N05 (O uses 28.50-34.60 video only)"
    ],
    [
     "finale-07",
-    "48.29-52.79",
-    "cut: N/O footage ends 37.36"
+    "45.61-50.11",
+    "cut: finale footage ends 34.60"
    ],
    [
     "primes-17",
-    "173.40-179.25",
+    "173.38-179.23",
     "not used (J is 102.40-111.92, muted)"
    ],
    [
     "trajectory-00",
-    "0.36-8.95",
-    "not used (K is 133.10-140.90, muted)"
+    "0.32-8.91",
+    "not used (K is 132.60-140.40, muted)"
    ],
    [
     "trajectory-14",
-    "149.95-154.96",
+    "149.32-154.33",
     "not used"
    ]
   ],
   "on_screen": [
-   "v4 has NO burned-in caption box (CLEAN=1), so the v3 \"The honor roll: Brian L. Stuart\" caption carry-over is gone",
-   "Title cards naming Stuart (tour, squares, primes, trajectory, finale): tour and squares cut (B in 11.48, I in 15.68); others unused",
-   "\"Thank you / Simulator: Brian L. Stuart\" end cards: squares (from 164.6) cut by I out 164.52; finale end card unused (footage ends 37.36); primes/trajectory unused",
-   "Tour honor-roll Stuart screen incl. \"Thank you, Brian.\" (about 212-229.1, cross-fading out 229.00-229.16): cut by E out 211.00 and G in 229.20"
+   "No burned-in caption box (CLEAN=1)",
+   "Title cards naming Stuart: tour and squares cut (B in 11.48, I in 15.68); finale title card (\"The finale ... thanks the people behind ENIAC\", 0-4.4) cut by N in 4.50; primes/trajectory unused",
+   "\"Thank you / Simulator: Brian L. Stuart\" end cards: squares (from 163.36) cut by I out 163.32; finale end card unused (footage ends 34.60)",
+   "Tour honor-roll Stuart screen incl. \"Thank you, Brian.\" (about 221.5-238.5): cut by E out 220.48 and G in 238.52",
+   "original-ui-tour.mp4 (S05b) shows no Stuart name or thanks: Tk panel views + control strip only"
   ],
   "kept_ui": [
    "v3 footer \"ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by Brian L. Stuart, Drexel University\" (all kiosk screens except attract)",
@@ -1183,7 +1284,7 @@
    "honor-roll tab label \"Brian L. Stuart\" (S10)",
    "f3 screen \"Brian L. Stuart wrote this simulator\" under N05 (S18) -- the single thank-you visual"
   ],
-  "new_in_v4": "narration identical to v3 (same WAVs); no new spoken thank-yous; caption box removed"
+  "new_in_v5": "new rows tour-12 and squares-13 and reworded finale-00..03 contain no Stuart mention or thanks; same thank-you lines as v4, renumbered"
  },
  "removed_scenes": [
   {
