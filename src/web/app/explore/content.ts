@@ -114,7 +114,7 @@ export const CARDS: Record<Stop, UnitCard> = {
     title: "Initiating Unit",
     tag: "The GO button",
     plate: ["INITIATING", "UNIT"],
-    body: "This unit has ENIAC's GO button, called INIT. Press it and a first signal shoots out and starts the job. It also holds CLEAR, and the button that starts the card reader.",
+    body: "This unit has the initiating pulse button, which Stuart's simulator labels INIT. Press it and a first signal shoots out and starts the job. It also holds CLEAR, and the button that starts the card reader.",
     review: "pending",
     source: "UX 14.3.6 card 1 (INITIATE, CLEAR and READ are on the approved art)",
   },
