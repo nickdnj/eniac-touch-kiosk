@@ -28,7 +28,29 @@
       "speed": 1.12,
       "never_speak": [
         "Lehmer"
-      ]
+      ],
+      "pronunciation_dictionary": {
+        "status": "pending: ElevenLabs API key lacks pronunciation_dictionaries_write (see notes/m2-pronunciation-2026-10-12.md). Run scripts/create_pronunciation_dictionary.py once the key has it; it fills id and version_id.",
+        "id": null,
+        "version_id": null,
+        "rules": [
+          {
+            "type": "alias",
+            "string_to_replace": "ENIAC's",
+            "alias": "Ennie-ack's"
+          },
+          {
+            "type": "alias",
+            "string_to_replace": "ENIAC",
+            "alias": "Ennie-ack"
+          }
+        ],
+        "inline_alias_fallback": {
+          "ENIAC": "Ennie-ack"
+        },
+        "note": "Until id/version_id are set, gen_narration.py applies the same alias as a text substitution (what the dictionary does server-side). Proven 2026-10-12: notes/m2-pronunciation-2026-10-12.md. Phoneme rules are NOT honoured by eleven_multilingual_v2. The old note 'ElevenLabs needs no respelling' is superseded.",
+        "listening_check": "Nick listened to output/pronunciation-test/ENIAC-reel-test.mp3 on 2026-10-12 (voice): second half (alias Ennie-ack) 'sounds good'. Final-audio reel gate still required."
+      }
     },
     "channel": "Nick's personal channel first, hopefully moved to the VCF channel later",
     "publish": "v5b public on @nickdnj 2026-10-08 (Nick's go)",
@@ -141,6 +163,15 @@
           "loudness": "-14.1 LUFS",
           "notes": "v5 with the 20 s S21 end-screen panel removed (Nick 2026-10-08); ends on the vcfed.org card with a 1.2 s fade. Re-add the end screen for a VCF-channel repost."
         }
+      },
+      "v6": {
+        "video_id": "eZE-r3WcyVI",
+        "url": "https://www.youtube.com/watch?v=eZE-r3WcyVI",
+        "published_url": "https://www.youtube.com/watch?v=eZE-r3WcyVI",
+        "status": "public on @nickdnj",
+        "uploaded": "2026-10-12T10:55:30-04:00",
+        "thumbnail": "output/upload/thumbnail.jpg",
+        "metadata": "output/upload/metadata-v6.json"
       }
     },
     "publish": {
@@ -203,6 +234,55 @@
         "set related video to KoWgoNo3F1k in YouTube Studio (not in the API)",
         "optional v2: tighter arc crops, hide cut-off kiosk text, raise the invite"
       ]
+    },
+    "v6_cuts": {
+      "date": "2026-10-12",
+      "source": "research/video-briefing-2026-10-12.md M4",
+      "30s": {
+        "status": "public",
+        "option": "A",
+        "hook": "PROGRAM ENIAC / WITH YOUR FINGERTIP",
+        "voice": "Touch the screen. Watch a nineteen forty-six computer work, lamp by lamp.",
+        "spoken_eniac": false,
+        "script": "storyboard/short-30s.md",
+        "video_id": "FknKT7MEsrU",
+        "url": "https://www.youtube.com/watch?v=FknKT7MEsrU",
+        "uploaded": "2026-10-12T10:55:30-04:00",
+        "metadata": "output/upload/metadata-short-30s-v2.json"
+      },
+      "8s": {
+        "status": "public",
+        "option": "A",
+        "voice": "Come watch a nineteen forty-six computer work, at the Vintage Computer Federation.",
+        "spoken_eniac": false,
+        "script": "storyboard/short-8s.md",
+        "video_id": "BY7A2aVB524",
+        "url": "https://www.youtube.com/watch?v=BY7A2aVB524",
+        "uploaded": "2026-10-12T10:55:30-04:00",
+        "metadata": "output/upload/metadata-short-8s-v2.json"
+      },
+      "hours": "Wed, Sat & Sun, 12 to 5 (Nick confirmed 2026-10-12)",
+      "open_items": [
+        "want 10 s CLEAN=1 full-speed Squares clip from v6 build for continuous lamp motion",
+        "Stuart not named (Nick's call for description)",
+        "set related video to eZE-r3WcyVI in YouTube Studio for both Shorts (not in the API)"
+      ]
     }
+  },
+  "v6_review": {
+    "date": "2026-10-12",
+    "decided_by": "Nick (chat)",
+    "reviewers_watched": "the public cut on @nickdnj (KoWgoNo3F1k, v5b). The briefing's unlisted link mAW7AuKXLBE is v4 and is not what they watched.",
+    "visibility": "public on Nick's own channel. His channel is the review channel: public = easy to share and reshare for early feedback before the VCF channel. 'Published' (VCF / InfoAge sites and social) is separate and still gated.",
+    "preconditions": "Nick's Gate 2 listening (ENIAC reel + init reel) done; youtube-whoami.py run first; Stuart second pass before anything is called final or goes to VCF / InfoAge / VCF channel.",
+    "names": "No reviewer flagged Marlyn or Ruth Lichterman; the only voice issue reported was ENIAC. Kept as is (sheet status PROBABLE).",
+    "eniac_alias": "Nick heard the Ennie-ack alias reel and accepted it (twice: 2026-10-12).",
+    "gate2_eniac": "Nick (chat, 2026-10-12): 'we're okay with the ENIAC pronunciation... go live.' Final-audio ENIAC ear gate waived by Nick; phoneme proxy still runs and is reported. The 'init' reel is still offered, not blocking.",
+    "go_live": "Authorized by Nick: upload v6 review cut PUBLIC on @nickdnj as soon as it is assembled and passes technical checks (lamps by eye, one audio stream, loudness, duration, youtube-whoami.py first). Not VCF / InfoAge / VCF channel. No emails from Claude.",
+    "short_recommendations_taken": "8s: wait for continuous full-speed lamp clip re-recorded from kiosk main; music per approved storyboard (seeked big ending).",
+    "published_url": "https://www.youtube.com/watch?v=eZE-r3WcyVI",
+    "video_id": "eZE-r3WcyVI",
+    "status": "public on @nickdnj",
+    "published_date": "2026-10-12T10:55:30-04:00"
   }
 }

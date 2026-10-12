@@ -1,0 +1,7 @@
+narration-review-v6-shorts.mp3  (30 s L1, L2, 8 s L1; no spoken ENIAC)
+
+   0.00s  s30-L1       1.07s  30 s Short L1: Touch the screen.
+   1.67s  s30-L2       3.07s  30 s Short L2
+   5.33s  s8-L1        4.46s  8 s Short L1
+
+total 9.79s, gaps 0.6s

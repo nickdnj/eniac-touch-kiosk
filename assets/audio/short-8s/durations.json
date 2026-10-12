@@ -1,0 +1,15 @@
+{
+ "cut": "8s",
+ "option": "A",
+ "spoken_eniac": 0,
+ "lines": {
+  "L1": {
+   "text": "Come watch a nineteen forty-six computer work, at the Vintage Computer Federation.",
+   "duration_s": 4.458,
+   "plan_s": "0.30 to about 4.60 (4.3 est)",
+   "ends_at_plan_start_s": 4.76,
+   "beat_table_limits": "music under 0.25-4.65; end text fades in at 4.4",
+   "over_plan_s": 0.16
+  }
+ }
+}

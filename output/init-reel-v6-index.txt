@@ -1,0 +1,11 @@
+init reel, kiosk-baked clips. The word is written lowercase 'init' in the narration; expected sound 'in it' (rhymes), not 'ine-it'.
+4 clips, 7 s. Each clip is the word with 0.45 s before and 0.45 s after, 0.5 s silence between, no speech added.
+Number | clip | line | time in WAV (s) | time in the muxed clip (s) | heard by whisper (locator only) | phoneme proxy window | flag
+01 | squares | squares-11 | 0.34 | 85.8 | in it. | p ɹ ɛ s ɪ n ɪ t ɪ t s ɛ n d z | -
+    line: Press init. It sends the initiating pulse, ENIAC's go signal. Those lamps are the simulator's real accumulators.
+02 | primes | primes-08 | 0.46 | 80.1 | in it | s ɪ n ɪ t æ n d w | -
+    line: Press init and watch. At slow speed, fourteen checkers test every odd number at the same time.
+03 | trajectory | trajectory-08 | 4.78 | 83.1 | init | s ʌ v ɪ n ɪ t f l aɪ | -
+    line: Ninety-seven thousand three hundred sixty-seven is in Accumulator One. One press of init flies the shell.
+04 | tour | tour-33 | 0.43 | 298.0 | in it. | p ɹ ɛ s ɪ n ɪ t | -
+    line: Now press init.
