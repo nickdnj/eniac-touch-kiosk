@@ -213,14 +213,16 @@ interface AccOpts {
   slots: { w: number; h: number; dy: number };
 }
 
-/** One drawn accumulator: ten places (left to right), lamps 0 to 9 down each, a plug-in slot under each place. */
+/** One drawn accumulator: ten places (left to right), lamps 9 (top) down to 0 (bottom) in each, a plug-in slot under each place. */
 export function accSvg(digits: number[], o: AccOpts): string {
   const { w, h, gx, gy, px, py, r, label, tall, slots } = o;
   let s = `<rect x="0" y="0" width="${w}" height="${h}" rx="10" fill="#101215"/><rect x="4" y="4" width="${w - 8}" height="${h - 8}" rx="8" fill="url(#g-panel)" stroke="#34383f" stroke-width="2"/>`;
   s += `<rect x="${w / 2 - 110}" y="16" width="220" height="${tall ? 56 : 44}" rx="6" fill="#0E0F11" stroke="#D9D0B0" stroke-width="2"/><text x="${w / 2}" y="${tall ? 52 : 46}" text-anchor="middle" font-size="${tall ? 30 : 24}" font-weight="700" fill="#D9D0B0" ${FONT} letter-spacing="2">${esc(label)}</text>`;
   for (let row = 0; row < 10; row++) {
-    s += `<text x="${gx - px * 0.8}" y="${gy + row * py + 8}" text-anchor="middle" font-size="${tall ? 24 : 20}" fill="#9AA0A8" font-family="IBM Plex Mono, monospace">${row}</text>`;
-    for (let c = 0; c < 10; c++) s += lamp(gx + c * px, gy + row * py, r, digits[c] === row, c, row);
+    // Digit 0 is the bottom row and 9 the top, as on the real machine (same rule as app/panels/art.ts, 52105ee).
+    const y = gy + (9 - row) * py;
+    s += `<text x="${gx - px * 0.8}" y="${y + 8}" text-anchor="middle" font-size="${tall ? 24 : 20}" fill="#9AA0A8" font-family="IBM Plex Mono, monospace">${row}</text>`;
+    for (let c = 0; c < 10; c++) s += lamp(gx + c * px, y, r, digits[c] === row, c, row);
   }
   for (let c = 0; c < 10; c++) {
     const x = gx + c * px - slots.w / 2, y = gy + 9 * py + slots.dy;

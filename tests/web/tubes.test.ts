@@ -12,7 +12,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { BANNED, CAPTIONS, DOTS, FAULTS, MYTH, PLATE, POWER, TRY, TUBE_CARDS, TUBES, WEEK, WORK } from "../../src/web/app/tubes/content.ts";
 import { Reenactment } from "../../src/web/app/tubes/reenact.ts";
-import { LAYOUT, STAGE, banner, figPower, figTubes, figWeek, panelSvg, placeSvg, targets } from "../../src/web/app/tubes/art.ts";
+import { LAYOUT, STAGE, accSvg, banner, figPower, figTubes, figWeek, panelSvg, placeSvg, targets } from "../../src/web/app/tubes/art.ts";
 import { GLOSSARY, GLOSSARY_COPY, words } from "../../src/web/app/explore/content.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -398,4 +398,13 @@ test("TUBE-23: the screen sends only the FR-101 counters, each whitelisted by th
   }
   // No free text: the only fields are screen (a name), n and assisted.
   for (const m of screen.matchAll(/app\.metric\(\{([^}]*)\}\)/g)) assert.doesNotMatch(m[1], /\b(text|label|title|body)\b/);
+});
+
+test("TUBE-22: accumulator lamps run 0 at the bottom and 9 at the top, as on the real machine (Stuart and Crawford, 2026-10-11)", () => {
+  const svg = accSvg(Array(10).fill(0), { w: 400, h: 620, gx: 50, gy: 100, px: 25, py: 40, r: 8, label: "ACC 1", tall: false, slots: { w: 10, h: 10, dy: 20 } });
+  const y = new Map<number, number>();
+  for (const m of svg.matchAll(/data-place="1" data-digit="(\d)"><circle cx="[\d.]+" cy="([\d.]+)"/g)) y.set(Number(m[1]), Number(m[2]));
+  assert.equal(y.size, 10, "ten lamps in the first place");
+  for (let d = 0; d < 9; d++) assert.ok(y.get(d + 1)! < y.get(d)!, `digit ${d + 1} is above digit ${d}`);
+  assert.ok(y.get(9)! < y.get(0)!, "9 is above 0");
 });
