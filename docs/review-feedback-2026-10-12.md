@@ -59,5 +59,5 @@ Full briefing: `docs/video-briefing-2026-10-12.md`.
 |---|---|---|
 | D1 | How does Stuart see the repo? Invite him as a read-only collaborator (his GitHub is almost certainly `blstuart`, the owner of upstream), or make the repo public. | Invite now. Decide on public later, and add a LICENSE first. Sending an invite emails him, so it needs your go. |
 | D2 | When does the fixed build go on the floor? The school-group tour is Wednesday Oct 14 at 8 AM and you are there. | Build and rehearse in the container today and tomorrow. Install after the group, not before. |
-| D3 | Input for the first-person view: an on-screen touch pad, or a USB gamepad? | Spike both in S4. Touch pad first, since the stand has no spare ports to rely on. |
+| D3 | Input for the first-person view: an on-screen touch pad, or a USB gamepad? | **Decided (Nick, 2026-10-12): touch screen.** Brian suggested arrow keys or a joystick; the kiosk is touch-first, so S4 builds a touch control. |
 | D4 | The fix sits on `original-ui-switch`, which is main plus 12 commits and has no PR yet. Open one PR for the lot, or split? | One PR. The museum box needs the Original UI anyway. |

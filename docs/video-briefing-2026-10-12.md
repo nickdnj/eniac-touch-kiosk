@@ -39,13 +39,13 @@ Nick noticed the voice says INIT oddly. Checked against the primary sources on 2
 - **1946 name:** the **initiating pulse button**. *Report on the ENIAC* (Moore School, 1 June 1946), Part I, Chapter 2, section 2.3, "Reader Start Button and Initiating Pulse Button": "When the initiating pulse button is pushed, the computation begins." The remote terminal that parallels it is marked I[s] on drawing PX-9-302. The same chapter has a *reader start button* and an *initial clear push button*.
 - **"INIT" is Brian Stuart's label, not ENIAC's.** In his simulator `i` is the initiating pulse button, and his `eniactk` labels it INIT, next to CLEAR (initial clear) and READ (reader start). Fine to show on screen, because that is what visitors see in his interface.
 - **"GO button" is our plain-language gloss.** The 1946 report never uses "Go" or "Initiate" as a label. Careful: in that report the unit's *start button* (section 2.1.1) is the **power-on** button, so never say "start button" for INIT.
-- **Why the voice trips:** a TTS voice has to guess how to read the all-caps token "INIT" ("in-it", the letters, or "initiate"), and may change between takes, as with ENIAC.
+- **Why the voice trips:** a TTS voice has to guess how to read the all-caps token "INIT" ("in-it", the letters, or "initiate"), and may change between takes, as with ENIAC. Nick's decision, 2026-10-12: it should come out as a word, "init".
 
 **What to do**
 
-1. In the voice-over, say the full name once: "the initiating pulse button, labeled INIT on screen", and afterwards "the INIT button" via a pronunciation-dictionary alias to "initiating pulse" (or reword the line so the voice never has to say INIT). Do not rely on how the model reads the bare token.
+1. **Spoken, INIT is a word: "init"** (rhymes with "in it"), the way the simulator's own users say it. Not the letters I-N-I-T and not "initiate". Write it lowercase, "init", in the TTS script (or alias INIT to "init" in the pronunciation dictionary), because an all-caps token is what makes a voice guess. On screen it stays INIT. Introduce it once with the full name: "the initiating pulse button, which the simulator labels init".
 2. Reword "ENIAC's GO button" / "ENIAC's go button" so it does not claim that ENIAC labelled it GO. Suggested: "Press INIT. It sends the initiating pulse, ENIAC's go signal."
-3. Add INIT to the listening reel next to ENIAC.
+3. Add "init" to the listening reel next to ENIAC; every take must say it as one syllable-pair word, "IN-it".
 4. Source for the fact-check file: 1946 *Report on the ENIAC*, Part I, ch. 2 (section 2.3), https://ftp.arl.army.mil/~mike/comphist/46eniac-report/chap2.html; Stuart's reference, `ref.pdf` ("Initiating Unit": c, i, r).
 
 **Kiosk copy to adjust later** (not in the Wednesday release): `src/web/app/explore/content.ts:117` says "ENIAC's GO button, called INIT". Suggested: "the initiating pulse button, which Stuart's simulator labels INIT".

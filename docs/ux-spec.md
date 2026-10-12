@@ -2163,7 +2163,7 @@ Vocabulary matches the missions: "data trunk" and "program trunk" are the missio
 
 | # | Stop | Card title | Tagline | Copy (<= 40 words) | Words | Used in |
 |---|---|---|---|---|---|---|
-| 1 | init | Initiating Unit | The GO button | This unit has ENIAC's GO button, called INIT. Press it and a first signal shoots out and starts the job. It also holds CLEAR, and the button that starts the card reader. | 32 | 1 Squares, 2 Primes, 3 Trajectory |
+| 1 | init | Initiating Unit | The GO button | This unit has the initiating pulse button, which Stuart's simulator labels INIT. Press it and a first signal shoots out and starts the job. It also holds CLEAR, and the button that starts the card reader. | 32 | 1 Squares, 2 Primes, 3 Trajectory |
 | 2 | cyc | Cycling Unit | The heartbeat | ENIAC's clock. It ticks about 100,000 times a second [FC]. Every unit follows this beat, so numbers and signals arrive at exactly the right moment. One addition takes 20 ticks [FC]. | 31 | none |
 | 3 | mp | Master Programmer | The conductor | The conductor. It counts, and decides what happens next, like "do this ten times, then do that." It has ten steppers [FC], a bit like a music box with pins. | 30 | 2 Primes, 3 Trajectory |
 | 4 | acc | Accumulator | Adds and remembers | An accumulator adds numbers and remembers them. Each holds one 10-digit number, shown in neon lamps [FC]. ENIAC had 20, so it could keep 20 numbers at once. | 28 | 1 Squares, 2 Primes, 3 Trajectory |

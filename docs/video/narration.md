@@ -58,7 +58,7 @@ Voice-over scripts for the narrated videos in `docs/video/`, keyed to the `card(
 | Step 2: plug a cable — tap one jack, then the other | 8 s | Step two. Plug in a cable. Tap one jack, then the other, and the number can travel. |
 | Step 3: carry the number to Accumulator 1 | 7 s | Step three. Carry the number to Accumulator One, one of ENIAC's adding machines. |
 | Short on time? Skip ahead — the rest is wired automatically | 14 s | Short on time? Skip ahead, and the rest gets wired for you. On the real ENIAC, programmers placed hundreds of cables by hand. Setting up a new problem could take a day or more. [FC] |
-| Press INIT — ENIAC's GO button. Lamps show the simulator's real accumulators. | about 55 s in all (4 s, then three presses) | Press INIT, ENIAC's go button. Those lamps are the simulator's real accumulators. |
+| Press INIT — ENIAC's GO button. Lamps show the simulator's real accumulators. | about 55 s in all (4 s, then three presses) | Press init. It sends the initiating pulse, ENIAC's go signal. Those lamps are the simulator's real accumulators. |
 | (same beat, during press 1) | about 15 s | One times one is one. [pause: let the lamps play] |
 | (same beat, during press 2) | about 15 s | Press again. Two times two is four. [pause: let the lamps play] |
 | (same beat, during press 3) | about 15 s | And again. Three times three is nine. [pause: let the lamps play] |
@@ -81,7 +81,7 @@ Voice-over scripts for the narrated videos in `docs/video/`, keyed to the `card(
 | Step 2: the groups-of-3 checker calls out 'fits!' on trunk 1-7 | 7 s | Step two. The groups-of-three checker shouts, fits, over trunk one-seven. |
 | Step 3: the Master Programmer listens. A wrong jack gets a hint, never the simulator | 9 s | Step three. The Master Programmer, ENIAC's conductor, listens for that call. Pick the wrong jack and you only get a hint. |
 | Skip the last two steps: the rest is wired for you, 264 cables and 285 switches | 9 s | The rest is wired for you: two hundred sixty-four cables and two hundred eighty-five switches. Your fingers can rest. |
-| Press INIT. Slow: every odd number is tested by 14 checkers at once | about 8 s | Press INIT and watch. At slow speed, fourteen checkers test every odd number at the same time. [pause: let the lamps play] |
+| Press INIT. Slow: every odd number is tested by 14 checkers at once | about 8 s | Press init and watch. At slow speed, fourteen checkers test every odd number at the same time. [pause: let the lamps play] |
 | 3 won't split into equal groups: a real punched card | about 3 s | Three won't split evenly. Card number one! |
 | 9 splits into 3 groups of 3: the checker calls 'fits!', so no card | about 8 s | Nine splits into three groups of three. The checker calls out, fits, and no card is punched. [pause: let the lamps play] |
 | Full speed: the card punch sets the pace, a card every 0.6 s | about 50 s | Full speed! But now the card punch sets the pace. A real punch managed about one hundred cards a minute, and the simulator copies it: one card every six tenths of a second. [FC] |
@@ -193,7 +193,7 @@ About a minute and a half: the room, a pan, Walk the room, a live accumulator, t
 | title card | 5 s | Explore ENIAC lets a visitor walk around the whole machine, panel by panel. |
 | Forty panels in a U, with live lamps | 10 s | ENIAC's forty panels stood in a U shape. Laid in a line, they'd stretch about eighty feet. And the lamps are live: ENIAC is flying a cannon shell while we look. [FC] |
 | (explore: pan) | 5 s | Tap the arrows, or the map along the bottom, to walk down the room. |
-| Walk the room: twelve cards, one for each kind of unit | 7 s | Walk the room, and you meet each kind of unit. The Initiating Unit has ENIAC's go button, called INIT. |
+| Walk the room: twelve cards, one for each kind of unit | 7 s | Walk the room, and you meet each kind of unit. The Initiating Unit has the initiating pulse button, which the simulator calls init. |
 | (explore: cycling) | 5 s | The Cycling Unit is the clock. It ticks about a hundred thousand times a second. [FC] |
 | (explore: master programmer) | 6 s | The Master Programmer is the conductor, with ten steppers, a bit like a music box with pins. [FC] |
 | Tap any panel: this number is live | 9 s | Tap any panel to meet it. An accumulator adds, and remembers one ten-digit number. ENIAC had twenty. This card shows this one's number, live. [FC] |
