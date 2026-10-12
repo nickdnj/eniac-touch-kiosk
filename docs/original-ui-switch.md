@@ -235,7 +235,7 @@ This implements architecture 8.4 for v1. The base is `http://127.0.0.1:8740`, on
 - **Storage:** `/etc/eniac-touch-kiosk/admin-pin` holds one bcrypt hash (cost 10), owner `root:eniac`, mode **0640**. It is never in config.yaml (which is 0644 and comes from the repo) and never in the repo (NFR-10). Config key: `admin.pinFile`. The bridge reads it on every login attempt, so a change applies at once with no restart.
 - **No default PIN** (NFR-10: "no default credentials"). If the file is missing, login returns `NO_PIN`, and S12 shows "No staff PIN is set on this kiosk." The visitor tour does not need a PIN, so it works either way.
 - **Setting and changing it:** `sudo eniac-touch-kiosk set-pin` prompts twice without echo. `sudo eniac-touch-kiosk set-pin --stdin` reads one line, for scripted setup. Both check the PIN is 4 to 8 digits and pipe it to `eniac-bridge pin-hash` (a new subcommand: reads stdin, prints the bcrypt hash; dependency `golang.org/x/crypto/bcrypt`). They then write the file atomically with `install -m 0640 -o root -g eniac`. `install.sh` prompts for a PIN only when stdin is a TTY **and** the file does not exist. With `--no-pin` or no TTY it skips the prompt and prints a reminder to run `set-pin`.
-- **Museum install:** Nick chose the museum PIN (2468, 2026-10-07). The deploy steps (section 10) set it explicitly with `echo 2468 | sudo eniac-touch-kiosk set-pin --stdin`; the code still has no default PIN, and only the bcrypt hash is stored on the box. S12 accepts 4 to 8 digits, OK enabled from the 4th. Floor staff cannot change the PIN without SSH in v1 (open question Q-OUI-3).
+- **Museum install:** Nick chose the museum PIN (<PIN>, 2026-10-07). The deploy steps (section 10) set it explicitly with `echo <PIN> | sudo eniac-touch-kiosk set-pin --stdin`; the code still has no default PIN, and only the bcrypt hash is stored on the box. S12 accepts 4 to 8 digits, OK enabled from the 4th. Floor staff cannot change the PIN without SSH in v1 (open question Q-OUI-3).
 
 ### 6.3 Websocket: the visitor door
 
@@ -370,9 +370,9 @@ Build it for `linux/arm64`, `linux/amd64` and the host, into `build/<os>-<arch>/
 - A visitor can open the tour without a PIN. It is a read-only view of a separate simulator. It ends the visitor's own session, has a 10 s rate limit, and is bounded by the 5 min idle timeout. Stuart's LOAD CONF and RESET buttons can only affect that separate simulator.
 - The PIN hash is root-owned, readable by `eniac` only, and never logged. A 4 to 8 digit PIN is weak against offline attack whatever the hash; the 0640 file mode and the online lockout are the real protection. The PIN must be strengthened before M3 turns on `allowPowerActions` or `allowUpdates` (Q-OUI-3).
 
-## 10. Deploy to the OptiPlex at 10.130.10.42
+## 10. Deploy to the OptiPlex at <museum-lan>.42
 
-The box had release `0.1.0-dev+ge571048133`, installed by hand following `docs/deploy-x86.md`. SSH: `ssh -i ~/.ssh/kiosk_3280 vcfed@10.130.10.42`, with passwordless sudo. apt sources are https only, which already covers the xtradeb PPA (`ppa.launchpadcontent.net` is https). `tk` and `golang-go` were not installed, and the box needs no Go. These are the steps as built (v0.2); `docs/deploy-x86.md` ("Upgrading to the Original UI release") carries the same block.
+The box had release `0.1.0-dev+ge571048133`, installed by hand following `docs/deploy-x86.md`. SSH: `ssh -i ~/.ssh/kiosk_3280 vcfed@<museum-lan>.42`, with passwordless sudo. apt sources are https only, which already covers the xtradeb PPA (`ppa.launchpadcontent.net` is https). `tk` and `golang-go` were not installed, and the box needs no Go. These are the steps as built (v0.2); `docs/deploy-x86.md` ("Upgrading to the Original UI release") carries the same block.
 
 ```bash
 # --- 1. On the Mac: test and build ------------------------------------------
@@ -382,14 +382,14 @@ tests/deploy/test-install-container.sh      # optional, ~20 min: install, origin
 make release ARCH=amd64
 REL=$(ls -t dist/eniac-touch-kiosk-*-linux-amd64.tar.gz | head -1); B=$(basename "$REL" .tar.gz); echo "$REL"
 tar tzf "$REL" | grep -E 'original-ui/(bin/eniactk|images/e1900.ppm)$'   # both must print
-K="ssh -i $HOME/.ssh/kiosk_3280 vcfed@10.130.10.42"
+K="ssh -i $HOME/.ssh/kiosk_3280 vcfed@<museum-lan>.42"
 
 # --- 2. Snapshot what is there (the rollback reference) ----------------------
 $K "ls /opt/eniac-touch-kiosk/releases; readlink /opt/eniac-touch-kiosk/current; \
     systemctl --no-pager status eniac-touch-kiosk-bridge | head -5; cat /etc/eniac-touch-kiosk/config.yaml"
 
 # --- 3. Copy and check ---------------------------------------------------------
-scp -i ~/.ssh/kiosk_3280 "$REL" "$REL.sha256" vcfed@10.130.10.42:
+scp -i ~/.ssh/kiosk_3280 "$REL" "$REL.sha256" vcfed@<museum-lan>.42:
 $K "sha256sum -c $B.tar.gz.sha256"
 
 # --- 4. Install WITH packages (adds tk; records it in the manifest) ------------
@@ -401,9 +401,9 @@ $K "tar xzf $B.tar.gz && cd $B && sudo ./install.sh --no-pin"
 $K "command -v wish; ls -ld /run/eniac-touch-kiosk-ui; grep -n '^originalUi:' /etc/eniac-touch-kiosk/config.yaml"
 #   /usr/bin/wish ; drwxrws--- eniac eniac-kiosk ; one originalUi: line
 
-# --- 5. Staff PIN: 2468 (Nick's choice, 2026-10-07) ------------------------------
+# --- 5. Staff PIN: <PIN> (Nick's choice, 2026-10-07) ------------------------------
 # The bridge has no default PIN; set it explicitly. Only the bcrypt hash is stored.
-$K "echo 2468 | sudo eniac-touch-kiosk set-pin --stdin"
+$K "echo <PIN> | sudo eniac-touch-kiosk set-pin --stdin"
 $K "sudo ls -l /etc/eniac-touch-kiosk/admin-pin"    # -rw-r----- root eniac
 #   To change it later: sudo eniac-touch-kiosk set-pin (prompts twice, no echo).
 
@@ -428,7 +428,7 @@ sleep 10; $K "eniac-touch-kiosk status"            # Chromium kiosk running agai
 
 1. Explore, then **Original room tour**: the switching page, then Stuart's window. The view changes every 5 s. **Back to kiosk** is at the top left and nothing important is under it (UX Q29). Tap it: "Going back..." appears and S1 follows within about 5 s.
 2. Tour again, then hands off for 5 min. At 4:30 the button counts down `0:30`, and at 0:00 the kiosk returns to S1.
-3. Five taps on the wordmark: the S12 PIN pad. Enter a wrong PIN, then OK: "Not right", then back to the visitor screen. Enter **2468**, then OK: S13 with three buttons. Tap **Original UI**, then "Yes, switch": interactive Stuart window (no auto-cycling). Tap **LOAD CONF**: the menu draws over the Back button. Load `sq.e` and press INIT, then tap Back.
+3. Five taps on the wordmark: the S12 PIN pad. Enter a wrong PIN, then OK: "Not right", then back to the visitor screen. Enter **<PIN>**, then OK: S13 with three buttons. Tap **Original UI**, then "Yes, switch": interactive Stuart window (no auto-cycling). Tap **LOAD CONF**: the menu draws over the Back button. Load `sq.e` and press INIT, then tap Back.
 4. S13, then **Restart simulator**: S1, and attract restarts.
 5. With the tour running, pull the power. It boots to the new kiosk (S1), never to the original UI.
 6. `eniac-touch-kiosk logs` shows the matching `ui:` lines. After a few switches, the metrics for the month contain `original_ui_enter` and `original_ui_exit` records: `sudo tail /var/lib/eniac-touch-kiosk/metrics/$(date +%Y-%m).jsonl`.
@@ -538,4 +538,4 @@ The old kiosk-session has no watcher, so a request just expires (`ttlS`) and doe
 | Version | Date | Author | Changes |
 |---|---|---|---|
 | 0.1 | 2026-10-07 | software-architecture agent, for Nick (unattended) | Initial design: staff switch on S13, visitor room tour over ws, request-file mechanism, supervisor + Back button, admin API + PIN, build/release, tests, deploy steps, 14 ADRs |
-| 0.2 | 2026-10-07 | software-developer agent, for Nick (unattended) | Built. Deviations from 0.1: `admin.pinFile`, `paths.uiSwitch` and `paths.originalUi` are **derived when unset** (admin-pin beside the config file, `<paths.run>-ui`, `<release>/original-ui`), so the box's old config.yaml only needs the `originalUi:` block, which the installer appends once from `deploy/kiosk/config-original-ui.yaml`; kiosk-session also records the supervisor's group in `$UI_DIR/session.pgid` and a new X session clears a previous session's `active`, `mode` and leftover group; extra test seams `KIOSK_ENV_FILE`, `KIOSK_URL` (env), `KIOSK_LOG=stderr`; the supervisor also watches eniactk's own wish window (3 missed polls: exit 21); the remote `ui-request` door does not stop attract in the bridge (the orphan reaper ends it 30 s after Chromium closes); two copy strings not in UX 7.12.7 (`admin.pin.checking` "Checking...", `admin.pin.error` "The PIN could not be checked.", `originalUi.staff.actionFailed`). Nick's decisions of 2026-10-07: Stuart's permission covers the photographs (Q-OUI-2 closed, ADR-OUI-9 updated); the museum PIN is 2468, set by the deploy steps (section 10). Rollback note: the old bridge refuses the `originalUi:` key, so remove the block before `rollback`. |
+| 0.2 | 2026-10-07 | software-developer agent, for Nick (unattended) | Built. Deviations from 0.1: `admin.pinFile`, `paths.uiSwitch` and `paths.originalUi` are **derived when unset** (admin-pin beside the config file, `<paths.run>-ui`, `<release>/original-ui`), so the box's old config.yaml only needs the `originalUi:` block, which the installer appends once from `deploy/kiosk/config-original-ui.yaml`; kiosk-session also records the supervisor's group in `$UI_DIR/session.pgid` and a new X session clears a previous session's `active`, `mode` and leftover group; extra test seams `KIOSK_ENV_FILE`, `KIOSK_URL` (env), `KIOSK_LOG=stderr`; the supervisor also watches eniactk's own wish window (3 missed polls: exit 21); the remote `ui-request` door does not stop attract in the bridge (the orphan reaper ends it 30 s after Chromium closes); two copy strings not in UX 7.12.7 (`admin.pin.checking` "Checking...", `admin.pin.error` "The PIN could not be checked.", `originalUi.staff.actionFailed`). Nick's decisions of 2026-10-07: Stuart's permission covers the photographs (Q-OUI-2 closed, ADR-OUI-9 updated); the museum PIN is <PIN>, set by the deploy steps (section 10). Rollback note: the old bridge refuses the `originalUi:` key, so remove the block before `rollback`. |

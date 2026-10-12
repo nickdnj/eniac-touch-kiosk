@@ -101,3 +101,6 @@ Do this on a branch, as its own PR. Never bump the pin automatically.
    A mission whose `.e` changed fails `missions-check` until its steps and sha256 are reviewed.
 6. **Record it.** Add a line to the revision history in `docs/architecture.md` (and `docs/PRD.md` if a requirement changed), close the upstream-report items for the dropped patches, and open the PR.
 
+## License
+
+The code and documentation in this repository are MIT licensed (`LICENSE`). Brian L. Stuart's ENIAC simulator, which this kiosk runs, is **not** included and is **not** covered by that license; see `NOTICE.md`.

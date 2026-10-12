@@ -347,10 +347,10 @@ If you ran it **on the console (tty1)**: after the reboot tty1 *is* the
 exhibit. For a shell use **Ctrl+Alt+F2** or SSH.
 
 Then set the **staff PIN** (the hidden admin screen: 5 taps on the ENIAC
-wordmark, top left). There is no default PIN; the museum's is 2468:
+wordmark, top left). There is no default PIN; the museum's is <PIN>:
 
 ```bash
-echo 2468 | sudo eniac-touch-kiosk set-pin --stdin   # or: sudo eniac-touch-kiosk set-pin (asks twice)
+echo <PIN> | sudo eniac-touch-kiosk set-pin --stdin   # or: sudo eniac-touch-kiosk set-pin (asks twice)
 ```
 
 Only its bcrypt hash is stored (`/etc/eniac-touch-kiosk/admin-pin`,
@@ -463,14 +463,14 @@ tests/deploy/test-install-container.sh      # optional, ~20 min: install, origin
 make release ARCH=amd64
 REL=$(ls -t dist/eniac-touch-kiosk-*-linux-amd64.tar.gz | head -1); B=$(basename "$REL" .tar.gz); echo "$REL"
 tar tzf "$REL" | grep -E 'original-ui/(bin/eniactk|images/e1900.ppm)$'   # both must print
-K="ssh -i $HOME/.ssh/kiosk_3280 vcfed@10.130.10.42"
+K="ssh -i $HOME/.ssh/kiosk_3280 vcfed@<museum-lan>.42"
 
 # --- 2. Snapshot what is there (the rollback reference) ----------------------
 $K "ls /opt/eniac-touch-kiosk/releases; readlink /opt/eniac-touch-kiosk/current; \
     systemctl --no-pager status eniac-touch-kiosk-bridge | head -5; cat /etc/eniac-touch-kiosk/config.yaml"
 
 # --- 3. Copy and check ---------------------------------------------------------
-scp -i ~/.ssh/kiosk_3280 "$REL" "$REL.sha256" vcfed@10.130.10.42:
+scp -i ~/.ssh/kiosk_3280 "$REL" "$REL.sha256" vcfed@<museum-lan>.42:
 $K "sha256sum -c $B.tar.gz.sha256"
 
 # --- 4. Install WITH packages (adds tk; records it in the manifest) ------------
@@ -482,9 +482,9 @@ $K "tar xzf $B.tar.gz && cd $B && sudo ./install.sh --no-pin"
 $K "command -v wish; ls -ld /run/eniac-touch-kiosk-ui; grep -n '^originalUi:' /etc/eniac-touch-kiosk/config.yaml"
 #   /usr/bin/wish ; drwxrws--- eniac eniac-kiosk ; one originalUi: line
 
-# --- 5. Staff PIN: 2468 (Nick's choice, 2026-10-07) ------------------------------
+# --- 5. Staff PIN: <PIN> (Nick's choice, 2026-10-07) ------------------------------
 # The bridge has no default PIN; set it explicitly. Only the bcrypt hash is stored.
-$K "echo 2468 | sudo eniac-touch-kiosk set-pin --stdin"
+$K "echo <PIN> | sudo eniac-touch-kiosk set-pin --stdin"
 $K "sudo ls -l /etc/eniac-touch-kiosk/admin-pin"    # -rw-r----- root eniac
 #   To change it later: sudo eniac-touch-kiosk set-pin (prompts twice, no echo).
 
@@ -509,7 +509,7 @@ sleep 10; $K "eniac-touch-kiosk status"            # Chromium kiosk running agai
 
 1. Explore, then **Original room tour**: the switching page, then Stuart's window. The view changes every 5 s. **Back to kiosk** is at the top left and nothing important is under it (UX Q29). Tap it: "Going back..." appears and S1 follows within about 5 s.
 2. Tour again, then hands off for 5 min. At 4:30 the button counts down `0:30`, and at 0:00 the kiosk returns to S1.
-3. Five taps on the wordmark: the S12 PIN pad. Enter a wrong PIN, then OK: "Not right", then back to the visitor screen. Enter **2468**, then OK: S13 with three buttons. Tap **Original UI**, then "Yes, switch": interactive Stuart window (no auto-cycling). Tap **LOAD CONF**: the menu draws over the Back button. Load `sq.e` and press INIT, then tap Back.
+3. Five taps on the wordmark: the S12 PIN pad. Enter a wrong PIN, then OK: "Not right", then back to the visitor screen. Enter **<PIN>**, then OK: S13 with three buttons. Tap **Original UI**, then "Yes, switch": interactive Stuart window (no auto-cycling). Tap **LOAD CONF**: the menu draws over the Back button. Load `sq.e` and press INIT, then tap Back.
 4. S13, then **Restart simulator**: S1, and attract restarts.
 5. With the tour running, pull the power. It boots to the new kiosk (S1), never to the original UI.
 6. `eniac-touch-kiosk logs` shows the matching `ui:` lines. After a few switches, the metrics for the month contain `original_ui_enter` and `original_ui_exit` records: `sudo tail /var/lib/eniac-touch-kiosk/metrics/$(date +%Y-%m).jsonl`.

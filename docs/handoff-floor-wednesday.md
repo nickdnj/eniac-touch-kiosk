@@ -4,7 +4,7 @@
 
 > From my point of view, this could be ready to put out on the floor as soon as we pop this on a mini PC and touchscreen display and replace the monitor that's there now. We could do it on Wednesday.
 
-**Target: install at the museum on Wednesday 2026-10-07.** It replaces the current ENIAC exhibit screen: an old Pi at 10.130.10.27 running Stuart's `eniactk` with `trajdemo.e -D`, on a VIZIO monitor. See wiki `teams/vcf-museum/eniac-exhibit.md`.
+**Target: install at the museum on Wednesday 2026-10-07.** It replaces the current ENIAC exhibit screen: an old Pi at <museum-lan>.27 running Stuart's `eniactk` with `trajdemo.e -D`, on a VIZIO monitor. See wiki `teams/vcf-museum/eniac-exhibit.md`.
 
 ## Where things stand
 
@@ -40,7 +40,7 @@ Run `make test` and check that the mission still reads well. The video narration
 
 ### 3. Questions for Doug (raise on the day if he doesn't answer them by email)
 
-- **The old exhibit Pi** (10.130.10.27): unplug it and keep it as a fallback, or retire it? Its known issues (no autologin, under-voltage) go away if it's retired.
+- **The old exhibit Pi** (<museum-lan>.27): unplug it and keep it as a fallback, or retire it? Its known issues (no autologin, under-voltage) go away if it's retired.
 - **Network:** does the kiosk need the museum LAN, or does it run offline?
 - **Stuart's permission:** the wiki notes say to ask Stuart before baking his simulator into a kiosk image. Credit is on every screen and the code is fetched, not copied, but it does run with 3 local patches. Ask Doug whether he's comfortable going to the floor before Brian replies, or whether the intro should come first.
 

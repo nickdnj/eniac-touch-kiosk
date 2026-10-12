@@ -1027,7 +1027,7 @@ eniac-touch-kiosk/
 | `make test` | `go test ./...` (including golden and headless-core tests against the darwin core), `go vet`, `tsc --noEmit`, `node --test tests/web`, `eniac-bridge mission check missions/*.yaml` |
 | `make e2e` | Playwright: Squares start to finish by touch events; kill -9 the core mid-run → S10 → recovery → attract |
 | `make release` | Cross-compiles bridge + core for `linux/arm64`, bundles web and missions, computes the runtime-file closure, writes `SHA256SUMS`, and runs a fake-core exclusion check → `dist/…tar.gz` |
-| `make deploy-test HOST=admin@10.130.10.36` | scp + `install.sh --profile test` + `eniac-kiosk selftest` |
+| `make deploy-test HOST=admin@<museum-lan>.36` | scp + `install.sh --profile test` + `eniac-kiosk selftest` |
 
 The Mac keeps working with no network once `make upstream` and the Go module cache are warm.
 

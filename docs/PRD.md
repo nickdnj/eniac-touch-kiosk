@@ -13,7 +13,7 @@
 
 ### 1.1 Problem
 
-The VCF museum at InfoAge runs Brian L. Stuart's pulse-level ENIAC simulator on an older Pi (10.130.10.27). It auto-cycles views of `trajdemo.e`, so visitors take it for a video. Nobody can interact with it. The upstream Tk front end (`eniactk`) has tiny buttons (`butparam`, the Clean 10 font, `-pady 0`), no guidance, and a Tk memory problem on ARM. It isn't usable by walk-up visitors on a touchscreen.
+The VCF museum at InfoAge runs Brian L. Stuart's pulse-level ENIAC simulator on an older Pi (<museum-lan>.27). It auto-cycles views of `trajdemo.e`, so visitors take it for a video. Nobody can interact with it. The upstream Tk front end (`eniactk`) has tiny buttons (`butparam`, the Clean 10 font, `-pady 0`), no guidance, and a Tk memory problem on ARM. It isn't usable by walk-up visitors on a touchscreen.
 
 The simulator is the real thing: every jumper cable and switch of the 1946 machine. What's missing is a way for a museum visitor to program it themselves. That means plugging cables, setting switches, pressing READ and INIT, and watching the neon lamps and punched cards.
 
@@ -29,7 +29,7 @@ Version 0.4 adds four things for the museum install (Nick, 2026-10-02): a **live
 |---|---|
 | D1 | A new **web front end** rendered in Chromium, like the other museum kiosks. A **Go websocket bridge** wraps Stuart's simulator core. Tk `eniactk` is reference only. |
 | D2 | **Guided missions:** squares → primes → the 1946 trajectory demo. Each mission covers its key plugging and switch steps with explanations, then READ → INIT → lamps and card output. |
-| D3 | **Production hardware** is a new dedicated Pi 5 with a touchscreen. **Dev and test hardware** is the Model 4 kiosk's Pi 5 for now (10.130.10.37 Wi-Fi / .36 wired, the current trial install). *(0.4: the production screen is a **24-inch landscape touch panel on the museum's existing mount**, which today shows the old simulator as static screens. Which computer drives it is open, Q15.)* |
+| D3 | **Production hardware** is a new dedicated Pi 5 with a touchscreen. **Dev and test hardware** is the Model 4 kiosk's Pi 5 for now (<museum-lan>.37 Wi-Fi / .36 wired, the current trial install). *(0.4: the production screen is a **24-inch landscape touch panel on the museum's existing mount**, which today shows the old simulator as static screens. Which computer drives it is open, Q15.)* |
 | D4 | **Install target (0.4):** the first museum install is the **M3-lite** milestone (10.1): the three missions, live attract and the honor roll on the 24-inch screen, targeted for the week of 2026-10-05. It is a supervised preview, not the ownership handoff (M4). |
 
 ### 1.4 Target users
@@ -76,7 +76,7 @@ Measured by on-box, anonymous, local-only counters (FR-60). No cameras, no perso
 - Missions beyond the three, such as cube.e, hellorld.e and turing.e. The design should make adding them a content task, not a code change (FR-24).
 - 3D/first-person views (`eniacfp`, `eniac3d`, `eniact5`) and the GPIO control station (`-c`). The Explore ENIAC panorama is a flat, drawn elevation of the room, not a 3D view.
 - Photographs of people or of the real ENIAC on the honor screens (rights are not cleared); the honor roll uses engraved-plate typography.
-- Replacing or modifying the existing ENIAC exhibit Pi at 10.130.10.27. Its autologin and under-voltage fixes are tracked on the wiki page, not here.
+- Replacing or modifying the existing ENIAC exhibit Pi at <museum-lan>.27. Its autologin and under-voltage fixes are tracked on the wiki page, not here.
 - Remote/cloud monitoring, accounts, online analytics, internet dependency.
 - Sound, multiple languages, and screen-reader support (see Open Questions).
 - Publishing a public fork or a redistributable image of Stuart's code until permission is granted (R1).
@@ -385,7 +385,7 @@ M3-lite is a **supervised preview** on the museum's own screen. It is **not** th
 |---|---|---|---|
 | Q1 | Who is the named museum owner for the kiosk? | Doug Crawford, as exhibit approver, until someone else is named | Doug / museum |
 | Q2 | **Dedicated Pi 5 procurement and timing:** who buys it (and the case, 27 W PSU, active cooler), budget, mounting, and a date before the floor? *(0.4: the screen is now a 24" landscape touch panel on the museum's existing mount, so screen size and orientation are answered; see Q15 and Q16.)* | Pi 5 8 GB driving the 24" panel. Procurement is needed before M4; M3-lite may use the dev Pi 5 or the mount's existing computer (Q15). | Nick / Doug |
-| Q3 | Where does it go on the floor? Next to the existing ENIAC exhibit Pi (10.130.10.27) as a companion, or replacing it? | A companion next to the existing exhibit. The existing Pi is untouched. | Doug |
+| Q3 | Where does it go on the floor? Next to the existing ENIAC exhibit Pi (<museum-lan>.27) as a companion, or replacing it? | A companion next to the existing exhibit. The existing Pi is untouched. | Doug |
 | Q4 | Mission lengths and how many steps the visitor does (FR-10, FR-11) | Squares 2–3 min / 6–8 steps, Primes 3–4 min / 3–5 steps, Trajectory 4–6 min / 3–5 steps + READ | Nick (to validate in usability testing) |
 | Q5 | Where does the code live long-term: Nick's GitHub, or a VCF-controlled org? Public or private? | Private repo, with the museum owner granted access at handoff. It goes public only after R1. | Nick / Doug / Stuart |
 | Q6 | Idle timeouts (FR-32) | 90 s in setup and on the menu, **120 s in Explore ENIAC**, 3 min while running, 15 s "Still there?" countdown | Nick |
@@ -397,7 +397,7 @@ M3-lite is a **supervised preview** on the museum's own screen. It is **not** th
 | Q12 | Admin escape gesture and PIN | 5 taps top-left within 3 s, then a museum-set PIN | Museum staff |
 | Q13 | Mission gating: free choice, or must Squares come first? | All unlocked, with the suggested order marked | Nick |
 | Q14 | Updates: USB-only, or network pull from GitHub when the LAN has internet? | Both, with USB as the guaranteed path | Museum IT volunteer |
-| Q15 | **What computer drives the 24" mount?** The old exhibit Pi at 10.130.10.27 (older Pi: which model, which OS, 32- or 64-bit?), the Model 4 kiosk's Pi 5, or the new dedicated Pi 5? The release bundle is arm64. | A Pi 5 (arm64), as in D3 | Nick |
+| Q15 | **What computer drives the 24" mount?** The old exhibit Pi at <museum-lan>.27 (older Pi: which model, which OS, 32- or 64-bit?), the Model 4 kiosk's Pi 5, or the new dedicated Pi 5? The release bundle is arm64. | A Pi 5 (arm64), as in D3 | Nick |
 | Q16 | The 24" panel's **native resolution and aspect**, its **touch technology** (projected-capacitive or infrared frame), and the **mounting height**. | 1920×1080 (16:9); touch to be tested with a finger, a palm and a glove on install day | Nick / Doug |
 | Q17 | The honor roll: which names, what **format** (the women's names as known later in life, as given, or with their earlier names too), what **one-line role** for each builder, and **anyone else** to honor (for example other engineers or the Moore School's human computers). | The people and bodies in FR-44; roles in UX 14.6.2 | Doug (Fact-Checker first) |
 | Q18 | Does Stuart approve the wording of his credit, and how is the maker of this screen credited (Nick, the museum, or neither)? | His wording goes to Stuart with the R1 permission request; the maker line is left out until decided | Nick / Stuart |

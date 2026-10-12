@@ -20,9 +20,9 @@ The goal is a touch-first version of the ENIAC simulator for a museum kiosk. It 
 
 ## Where it runs now (trial)
 
-- The Model 4 kiosk's Pi 5 (8 GB, Pi OS trixie arm64, a 15.6" USB touchscreen with a wch.cn multitouch controller). Museum address 10.130.10.37 on Wi-Fi, 10.130.10.36 wired; user `admin`.
+- The Model 4 kiosk's Pi 5 (8 GB, Pi OS trixie arm64, a 15.6" USB touchscreen with a wch.cn multitouch controller). Museum address <museum-lan>.37 on Wi-Fi, <museum-lan>.36 wired; user `admin`.
 - It's installed at `/opt/eniac-simulator`, owned by the `kiosk` user, with apt `golang-go` + `tk`. `scripts/eniac-try.sh` (install | fix | start | stop | remove) overlays the Tk window on the kiosk's Chromium on :0. It's **temporary**, and that box belongs to the Model 4 kiosk, so remove it before the floor.
-- The museum's own ENIAC exhibit is a separate older Pi at 10.130.10.27 running an older copy of the same simulator (trajdemo.e, `-D`). See the wiki page `teams/vcf-museum/eniac-exhibit.md`.
+- The museum's own ENIAC exhibit is a separate older Pi at <museum-lan>.27 running an older copy of the same simulator (trajdemo.e, `-D`). See the wiki page `teams/vcf-museum/eniac-exhibit.md`.
 
 ## Open design decisions (for the first session)
 
