@@ -1,0 +1,20 @@
+{
+ "id": "N04",
+ "text": "The primes hunt, and Brian Stuart's reconstruction of ENIAC's nineteen forty-six shell flight? Live, card by card, only at the museum. Come wire them up yourself.",
+ "sent": "The primes hunt, and Brian Stuart's reconstruction of Ennie-ack's nineteen forty-six shell flight? Live, card by card, only at the museum. Come wire them up yourself.",
+ "voice": "6SxuwKUiBpZjFTc06v9Y",
+ "model": "eleven_multilingual_v2",
+ "settings": {
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "style": 0.4,
+  "speed": 1.12,
+  "use_speaker_boost": true
+ },
+ "pronunciation": "inline:{\"ENIAC\": \"Ennie-ack\"}",
+ "endpoint": "with-timestamps",
+ "seed": null,
+ "previous_text": null,
+ "next_text": null,
+ "generated": "2026-10-12T08:36:24"
+}

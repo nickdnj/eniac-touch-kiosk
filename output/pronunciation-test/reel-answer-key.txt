@@ -1,0 +1,74 @@
+Answer key (open AFTER listening). Phoneme-recogniser reading of the ENIAC window in each take (wav2vec2 espeak). Only long-I flags are interesting.
+
+base_A00       ee-ack                 æ n i æ k
+base_A01       ee-ack                 æ n i æ k w
+base_A02       ee-ack                 æ n i æ k
+base_A03       ee-ack                 ɛ n i æ k
+base_A04       ee-ack                 æ n i æ k
+base_A05       ee-ack                 ɛ n i j æ k w
+base_A06       ee-ack                 ɛ n i æ k
+base_A07       ee-ack                 ɛ n i æ k
+base_A08       ee-ack                 ɛ n i æ k
+base_A09       ee-ack                 ɛ n i æ k
+base_B00       ee-ack                 ɛ n i æ k ɛ
+base_B01       ee-ack                 ɛ n i æ k ɛ
+base_B02       ee-ack                 ɛ n i æ k ɛ
+base_B03       ee-ack                 ɛ n iː æ k ɛ
+base_B04       ee-ack                 ɛ n i æ k ɛ
+base_B05       ee-ack                 ɪ n ɪ æ k ɛ
+base_B06       ee-ack                 ɛ n i æ k ɛ
+base_B07       ee-ack                 ɪ n i æ k ɛ
+base_B08       ee-ack                 ɪ n i æ k
+base_B09       ee-ack                 æ n i æ k ɛ
+base_D1_00     ee-ack                 ɪ n i æ k
+base_D1_01     ee-ack                 ɛ n i æ k
+base_D1_02     ee-ack                 ɪ n i æ k
+base_D1_03     LONG-I (recogniser)    iː n aɪ æ k
+base_D1_04     ee-ack                 ɛ n i æ k
+base_D1_05     ee-ack                 ɪ n i æ k
+base_D1_06     LONG-I (recogniser)    iː n aɪ æ k
+base_D1_07     ee-ack                 ɛ n i æ k
+base_D2_00     ee-ack                 iː n i æ k
+base_D2_01     LONG-I (recogniser)    iː n aɪ æ k
+base_D2_02     ee-ack                 ɛ n i æ k
+base_D2_03     ee-ack                 ɪ n i æ k
+base_D2_04     ee-ack                 ɛ n i æ k
+base_D2_05     ee-ack                 ɛ n i æ k
+base_D2_06     ee-ack                 ɪ n i æ k
+base_D2_07     ee-ack                 iː n i æ k
+with_A00       ee-ack                 ɛ n i æ k
+with_A01       ee-ack                 ɛ n i æ k w
+with_A02       ee-ack                 æ n i æ k
+with_A03       ee-ack                 ɛ n i æ k w
+with_A04       ee-ack                 ɛ n i æ k
+with_A05       ee-ack                 ɛ n i æ k
+with_A06       ee-ack                 ɛ n i æ k t
+with_A07       ee-ack                 ɛ n i æ k
+with_A08       ee-ack                 ɛ n i æ k
+with_A09       ee-ack                 æ n i æ k
+with_B00       ee-ack                 ɛ n i æ k ɛ
+with_B01       ee-ack                 ɛ n i æ k ɛ
+with_B02       ee-ack                 ɛ n i æ k ɛ
+with_B03       ee-ack                 ɛ n i æ k ɛ
+with_B04       ee-ack                 ɛ n i æ k ɛ
+with_B05       ee-ack                 ɛ n i æ k ɪ
+with_B06       ee-ack                 ɛ n i æ k ɛ
+with_B07       ee-ack                 ɛ n i æ k
+with_B08       ee-ack                 ɛ n i æ k ɛ
+with_B09       ee-ack                 æ n i æ k ɛ
+with_D1_00     ee-ack                 ɛ n i æ k
+with_D1_01     ee-ack                 ɛ n i æ k
+with_D1_02     ee-ack                 ɛ n i æ k
+with_D1_03     ee-ack                 ɛ n i æ k
+with_D1_04     ee-ack                 ɛ n i æ k
+with_D1_05     ee-ack                 æ n i æ k
+with_D1_06     ee-ack                 ɛ n i æ k
+with_D1_07     ee-ack                 æ n i æ k
+with_D2_00     ee-ack                 ɛ n i æ k
+with_D2_01     ee-ack                 ɛ n i æ k
+with_D2_02     ee-ack                 ɛ n i æ k
+with_D2_03     ee-ack                 ɛ n i æ k
+with_D2_04     ee-ack                 ɛ n i æ k
+with_D2_05     ee-ack                 ɛ n i æ k
+with_D2_06     ee-ack                 ɛ n i æ k
+with_D2_07     ee-ack                 ɛ n i æ k

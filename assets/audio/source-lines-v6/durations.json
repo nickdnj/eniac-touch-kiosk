@@ -1,0 +1,61 @@
+{
+ "note": "duration_s v6 vs v5; flag if |delta|>0.3 s",
+ "lines": {
+  "N01": {
+   "v6_s": 12.957,
+   "v5_s": 12.446,
+   "delta_s": 0.511,
+   "flag_gt_0.3s": true,
+   "v5_file": "assets/audio/narration/N01.wav"
+  },
+  "N02": {
+   "v6_s": 8.916,
+   "v5_s": 8.498,
+   "delta_s": 0.418,
+   "flag_gt_0.3s": true,
+   "v5_file": "assets/audio/narration/N02.wav"
+  },
+  "N03": {
+   "v6_s": 7.616,
+   "v5_s": 7.291,
+   "delta_s": 0.325,
+   "flag_gt_0.3s": true,
+   "v5_file": "assets/audio/narration/N03.wav"
+  },
+  "N04": {
+   "v6_s": 9.752,
+   "v5_s": 10.124,
+   "delta_s": -0.372,
+   "flag_gt_0.3s": true,
+   "v5_file": "assets/audio/narration/N04.wav"
+  },
+  "N05": {
+   "v6_s": 12.446,
+   "v5_s": 12.585,
+   "delta_s": -0.139,
+   "flag_gt_0.3s": false,
+   "v5_file": "assets/audio/narration/N05.wav"
+  },
+  "N06": {
+   "v6_s": 15.325,
+   "v5_s": 16.068,
+   "delta_s": -0.743,
+   "flag_gt_0.3s": true,
+   "v5_file": "assets/audio/narration/N06.wav"
+  },
+  "finale-00": {
+   "v6_s": 3.437,
+   "v5_s": 3.437,
+   "delta_s": 0.0,
+   "flag_gt_0.3s": false,
+   "v5_file": "assets/audio/source-lines-v5/finale-00.wav"
+  },
+  "tour-27": {
+   "v6_s": 8.916,
+   "v5_s": 7.523,
+   "delta_s": 1.393,
+   "flag_gt_0.3s": true,
+   "v5_file": "assets/audio/source-lines-v3/tour-27.wav"
+  }
+ }
+}

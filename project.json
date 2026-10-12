@@ -28,7 +28,29 @@
       "speed": 1.12,
       "never_speak": [
         "Lehmer"
-      ]
+      ],
+      "pronunciation_dictionary": {
+        "status": "pending: ElevenLabs API key lacks pronunciation_dictionaries_write (see notes/m2-pronunciation-2026-10-12.md). Run scripts/create_pronunciation_dictionary.py once the key has it; it fills id and version_id.",
+        "id": null,
+        "version_id": null,
+        "rules": [
+          {
+            "type": "alias",
+            "string_to_replace": "ENIAC's",
+            "alias": "Ennie-ack's"
+          },
+          {
+            "type": "alias",
+            "string_to_replace": "ENIAC",
+            "alias": "Ennie-ack"
+          }
+        ],
+        "inline_alias_fallback": {
+          "ENIAC": "Ennie-ack"
+        },
+        "note": "Until id/version_id are set, gen_narration.py applies the same alias as a text substitution (what the dictionary does server-side). Proven 2026-10-12: notes/m2-pronunciation-2026-10-12.md. Phoneme rules are NOT honoured by eleven_multilingual_v2. The old note 'ElevenLabs needs no respelling' is superseded.",
+        "listening_check": "Nick listened to output/pronunciation-test/ENIAC-reel-test.mp3 on 2026-10-12 (voice): second half (alias Ennie-ack) 'sounds good'. Final-audio reel gate still required."
+      }
     },
     "channel": "Nick's personal channel first, hopefully moved to the VCF channel later",
     "publish": "v5b public on @nickdnj 2026-10-08 (Nick's go)",
@@ -202,6 +224,30 @@
       "open_items": [
         "set related video to KoWgoNo3F1k in YouTube Studio (not in the API)",
         "optional v2: tighter arc crops, hide cut-off kiosk text, raise the invite"
+      ]
+    },
+    "v6_cuts": {
+      "date": "2026-10-12",
+      "source": "research/video-briefing-2026-10-12.md M4",
+      "30s": {
+        "status": "gate1_approved",
+        "option": "A",
+        "hook": "PROGRAM ENIAC / WITH YOUR FINGERTIP",
+        "voice": "Touch the screen. Watch a nineteen forty-six computer work, lamp by lamp.",
+        "spoken_eniac": false,
+        "script": "storyboard/short-30s.md"
+      },
+      "8s": {
+        "status": "gate1_approved",
+        "option": "A",
+        "voice": "Come watch a nineteen forty-six computer work, at the Vintage Computer Federation.",
+        "spoken_eniac": false,
+        "script": "storyboard/short-8s.md"
+      },
+      "hours": "Wed, Sat & Sun, 12 to 5 (Nick confirmed 2026-10-12)",
+      "open_items": [
+        "want 10 s CLEAN=1 full-speed Squares clip from v6 build for continuous lamp motion",
+        "Stuart not named (Nick's call for description)"
       ]
     }
   }
