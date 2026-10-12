@@ -1,0 +1,1098 @@
+[
+ {
+  "video": "squares",
+  "idx": 0,
+  "beat": "title card",
+  "text": "Hi, I'm Nick, a docent at the Vintage Computer Federation museum. This is our ENIAC Touch Kiosk, running Brian L. Stuart's ENIAC simulator, live.",
+  "file": "squares-00.wav",
+  "dur": 10.26
+ },
+ {
+  "video": "squares",
+  "idx": 1,
+  "beat": "Attract screen: a visitor walks up and touches",
+  "text": "A visitor walks up and touches the screen. That is the whole invitation.",
+  "file": "squares-01.wav",
+  "dur": 3.3
+ },
+ {
+  "video": "squares",
+  "idx": 2,
+  "beat": "Pick a mission",
+  "text": "Pick a mission. We will start with Squares.",
+  "file": "squares-02.wav",
+  "dur": 2.14
+ },
+ {
+  "video": "squares",
+  "idx": 3,
+  "beat": "What is a square? Tiles on a floor",
+  "text": "Picture tiles on a floor. Three rows of three makes nine tiles. So nine is the square of three.",
+  "file": "squares-03.wav",
+  "dur": 6.27
+ },
+ {
+  "video": "squares",
+  "idx": 4,
+  "beat": "The trick: a bigger square is a row, a column and a corner added",
+  "text": "To grow the square one size, add a row, a column, and one corner tile. Nine, plus three, plus three, plus one, makes sixteen. ENIAC never multiplies here. It just adds.",
+  "file": "squares-04.wav",
+  "dur": 10.54
+ },
+ {
+  "video": "squares",
+  "idx": 5,
+  "beat": "Step 1: set a dial on the Constant Transmitter",
+  "text": "Step one. Set a dial on the Constant Transmitter. Your first job is the number one.",
+  "file": "squares-05.wav",
+  "dur": 5.48
+ },
+ {
+  "video": "squares",
+  "idx": 6,
+  "beat": "A wrong choice gets a gentle hint, and never reaches the simulator",
+  "text": "Pick the wrong number and you get a gentle hint. Nothing reaches the simulator, so no harm done.",
+  "file": "squares-06.wav",
+  "dur": 4.74
+ },
+ {
+  "video": "squares",
+  "idx": 7,
+  "beat": "(caption cleared)",
+  "text": "There. Dial set to one.",
+  "file": "squares-07.wav",
+  "dur": 1.81
+ },
+ {
+  "video": "squares",
+  "idx": 8,
+  "beat": "Step 2: plug a cable \u2014 tap one jack, then the other",
+  "text": "Step two. Plug in a cable. Tap one jack, then the other, and the number can travel.",
+  "file": "squares-08.wav",
+  "dur": 4.37
+ },
+ {
+  "video": "squares",
+  "idx": 9,
+  "beat": "Step 3: carry the number to Accumulator 1",
+  "text": "Step three. Carry the number to Accumulator One, one of ENIAC's adding machines.",
+  "file": "squares-09.wav",
+  "dur": 4.55
+ },
+ {
+  "video": "squares",
+  "idx": 10,
+  "beat": "Short on time? Skip ahead \u2014 the rest is wired automatically",
+  "text": "Short on time? Skip ahead, and the rest gets wired for you. On the real ENIAC, programmers placed hundreds of cables by hand. Setting up a new problem could take a day or more.",
+  "file": "squares-10.wav",
+  "dur": 9.98
+ },
+ {
+  "video": "squares",
+  "idx": 11,
+  "beat": "Press INIT \u2014 ENIAC's GO button. Lamps show the simulator's real accumulators.",
+  "text": "Press init. It sends the initiating pulse, ENIAC's go signal. Those lamps are the simulator's real accumulators.",
+  "file": "squares-11.wav",
+  "dur": 6.46
+ },
+ {
+  "video": "squares",
+  "idx": 12,
+  "beat": "(same beat, during press 1)",
+  "text": "One times one is one.",
+  "file": "squares-12.wav",
+  "dur": 1.53
+ },
+ {
+  "video": "squares",
+  "idx": 13,
+  "beat": "(squares: room view)",
+  "text": "Tap See the whole room, and the mission steps back: there's your program, lit up across the real ENIAC panels, live, as it runs.",
+  "file": "squares-13.wav",
+  "dur": 9.33
+ },
+ {
+  "video": "squares",
+  "idx": 14,
+  "beat": "(same beat, during press 2)",
+  "text": "Press again. Two times two is four.",
+  "file": "squares-14.wav",
+  "dur": 2.04
+ },
+ {
+  "video": "squares",
+  "idx": 15,
+  "beat": "(same beat, during press 3)",
+  "text": "And again. Three times three is nine.",
+  "file": "squares-15.wav",
+  "dur": 2.23
+ },
+ {
+  "video": "squares",
+  "idx": 16,
+  "beat": "1, 4, 9 \u2026 each press adds a row, a column and a corner",
+  "text": "One, four, nine. Each press adds a row, a column, and a corner.",
+  "file": "squares-16.wav",
+  "dur": 4.55
+ },
+ {
+  "video": "squares",
+  "idx": 17,
+  "beat": "Skip to the answer: full speed up to 12 \u00d7 12",
+  "text": "Or skip to the answer, full speed, all the way to twelve times twelve.",
+  "file": "squares-17.wav",
+  "dur": 3.72
+ },
+ {
+  "video": "squares",
+  "idx": 18,
+  "beat": "(caption cleared)",
+  "text": "There is the whole table, up to one hundred forty-four. The cables were the program. And next time, ENIAC meets a card punch, and learns patience.",
+  "file": "squares-18.wav",
+  "dur": 8.41
+ },
+ {
+  "video": "squares",
+  "idx": 19,
+  "beat": "end card",
+  "text": "Warm thanks to Brian L. Stuart of Drexel University, whose simulator makes this real.",
+  "file": "squares-19.wav",
+  "dur": 4.41
+ },
+ {
+  "video": "primes",
+  "idx": 0,
+  "beat": "title card",
+  "text": "ENIAC hunts for primes, in a program based on a real run from July nineteen forty-six.",
+  "file": "primes-00.wav",
+  "dur": 6.08
+ },
+ {
+  "video": "primes",
+  "idx": 1,
+  "beat": "Missions in a suggested order. Primes is number 2",
+  "text": "Welcome back. Missions come in a suggested order, and primes is number two.",
+  "file": "primes-01.wav",
+  "dur": 4.83
+ },
+ {
+  "video": "primes",
+  "idx": 2,
+  "beat": "What is a prime? Share cookies evenly, on the same tile floor",
+  "text": "Remember the tiles from Squares? Same floor, now with cookies. Twelve cookies share evenly: two groups of six, three groups of four. Seven always leaves one over. Numbers like seven are prime.",
+  "file": "primes-02.wav",
+  "dur": 11.75
+ },
+ {
+  "video": "primes",
+  "idx": 3,
+  "beat": "The trick: group checkers try 3, 5, 7 and more, all at once",
+  "text": "ENIAC tries groups of three, five, seven and more, all at once. If any size fits, the number is out. If none fit, it is prime.",
+  "file": "primes-03.wav",
+  "dur": 10.87
+ },
+ {
+  "video": "primes",
+  "idx": 4,
+  "beat": "Step 1: only odd numbers, so ENIAC counts up by 2",
+  "text": "Step one. Only odd numbers need testing, so ENIAC counts up by two.",
+  "file": "primes-04.wav",
+  "dur": 5.29
+ },
+ {
+  "video": "primes",
+  "idx": 5,
+  "beat": "Step 2: the groups-of-3 checker calls out 'fits!' on trunk 1-7",
+  "text": "Step two. The groups-of-three checker shouts, fits, over trunk one-seven.",
+  "file": "primes-05.wav",
+  "dur": 5.99
+ },
+ {
+  "video": "primes",
+  "idx": 6,
+  "beat": "Step 3: the Master Programmer listens. A wrong jack gets a hint, never the simulator",
+  "text": "Step three. The Master Programmer, ENIAC's conductor, listens for that call. Pick the wrong jack and you only get a hint.",
+  "file": "primes-06.wav",
+  "dur": 7.85
+ },
+ {
+  "video": "primes",
+  "idx": 7,
+  "beat": "Skip the last two steps: the rest is wired for you, 264 cables and 285 switches",
+  "text": "The rest is wired for you: two hundred sixty-four cables and two hundred eighty-five switches. Your fingers can rest.",
+  "file": "primes-07.wav",
+  "dur": 7.11
+ },
+ {
+  "video": "primes",
+  "idx": 8,
+  "beat": "Press INIT. Slow: every odd number is tested by 14 checkers at once",
+  "text": "Press init and watch. At slow speed, fourteen checkers test every odd number at the same time.",
+  "file": "primes-08.wav",
+  "dur": 6.64
+ },
+ {
+  "video": "primes",
+  "idx": 9,
+  "beat": "3 won't split into equal groups: a real punched card",
+  "text": "Three won't split evenly. Card number one!",
+  "file": "primes-09.wav",
+  "dur": 2.41
+ },
+ {
+  "video": "primes",
+  "idx": 10,
+  "beat": "9 splits into 3 groups of 3: the checker calls 'fits!', so no card",
+  "text": "Nine splits into three groups of three. The checker calls out, fits, and no card is punched.",
+  "file": "primes-10.wav",
+  "dur": 4.55
+ },
+ {
+  "video": "primes",
+  "idx": 11,
+  "beat": "Full speed: the card punch sets the pace, a card every 0.6 s",
+  "text": "Full speed! But now the card punch sets the pace. A real punch managed about one hundred cards a minute, and the simulator copies it: one card every six tenths of a second.",
+  "file": "primes-11.wav",
+  "dur": 11.15
+ },
+ {
+  "video": "primes",
+  "idx": 12,
+  "beat": "(same beat, a little later)",
+  "text": "",
+  "file": null,
+  "dur": 0.0
+ },
+ {
+  "video": "primes",
+  "idx": 13,
+  "beat": "(same beat, a little later)",
+  "text": "On the real machine an addition took one five-thousandth of a second. So while the punch finishes a single card, ENIAC could add about three thousand times. It is very patient. It has to be.",
+  "file": "primes-13.wav",
+  "dur": 11.89
+ },
+ {
+  "video": "primes",
+  "idx": 14,
+  "beat": "(same beat, a little later)",
+  "text": "Every card is a number that no cookie plan can share evenly.",
+  "file": "primes-14.wav",
+  "dur": 4.04
+ },
+ {
+  "video": "primes",
+  "idx": 15,
+  "beat": "Skip to the answer: the first 100 primes",
+  "text": "Let us skip ahead to the first one hundred primes. ENIAC taps its foot a little longer.",
+  "file": "primes-15.wav",
+  "dur": 5.06
+ },
+ {
+  "video": "primes",
+  "idx": 16,
+  "beat": "Card 100 is 547. The result stays live: ENIAC keeps counting to 2,801",
+  "text": "Card one hundred is five hundred forty-seven, and ENIAC keeps counting up to twenty-eight oh one. Same machine as Squares, different cables.",
+  "file": "primes-16.wav",
+  "dur": 8.08
+ },
+ {
+  "video": "primes",
+  "idx": 17,
+  "beat": "end card",
+  "text": "Warm thanks to Brian L. Stuart, and to De Mol and Bullynck, who reconstructed that nineteen forty-six run.",
+  "file": "primes-17.wav",
+  "dur": 5.76
+ },
+ {
+  "video": "trajectory",
+  "idx": 0,
+  "beat": "title card",
+  "text": "Mission three: one cannon shell, from Brian L. Stuart's reconstruction of the shell trajectory from ENIAC's February nineteen forty-six unveiling.",
+  "file": "trajectory-00.wav",
+  "dur": 9.38
+ },
+ {
+  "video": "trajectory",
+  "idx": 1,
+  "beat": "Three missions in a suggested order. Trajectory is number 3",
+  "text": "Three missions now, and trajectory is the last of them.",
+  "file": "trajectory-01.wav",
+  "dur": 3.16
+ },
+ {
+  "video": "trajectory",
+  "idx": 2,
+  "beat": "Each card ENIAC punches is one dot. Join the dots: the path",
+  "text": "A shell flies in an arc. ENIAC works out the flight in tiny time steps, and punches a card for every second of flight. Each card is one dot.",
+  "file": "trajectory-02.wav",
+  "dur": 10.77
+ },
+ {
+  "video": "trajectory",
+  "idx": 3,
+  "beat": "Each hop: one second of flight, in 50 tiny steps, then a card is punched",
+  "text": "Each hop is one second of flight, worked out in fifty tiny steps. Every step, the air slows the shell and gravity pulls it down. Then a card is punched. ENIAC was built to work out firing tables for Army guns.",
+  "file": "trajectory-03.wav",
+  "dur": 13.14
+ },
+ {
+  "video": "trajectory",
+  "idx": 4,
+  "beat": "Step 1: the card reader tells ENIAC it is done",
+  "text": "Step one. The card reader tells ENIAC it is done. One cable carries the news.",
+  "file": "trajectory-04.wav",
+  "dur": 5.34
+ },
+ {
+  "video": "trajectory",
+  "idx": 5,
+  "beat": "Step 2: punch the hop number on every card",
+  "text": "Step two. Punch the hop number on every card, so each dot knows its place.",
+  "file": "trajectory-05.wav",
+  "dur": 5.53
+ },
+ {
+  "video": "trajectory",
+  "idx": 6,
+  "beat": "Skip ahead: 293 cables and 1,147 switches, most of them the drag table",
+  "text": "Skip ahead: two hundred ninety-three cables and one thousand one hundred forty-seven switches, most of them the drag table, where ENIAC looks up how much the air slows the shell.",
+  "file": "trajectory-06.wav",
+  "dur": 9.61
+ },
+ {
+  "video": "trajectory",
+  "idx": 7,
+  "beat": "First READ: the real card of numbers goes into ENIAC",
+  "text": "Press READ, and a card of numbers goes into ENIAC.",
+  "file": "trajectory-07.wav",
+  "dur": 4.13
+ },
+ {
+  "video": "trajectory",
+  "idx": 8,
+  "beat": "97,367 is in Accumulator 1. Now INIT: one press flies the shell",
+  "text": "Ninety-seven thousand three hundred sixty-seven is in Accumulator One. One press of init flies the shell.",
+  "file": "trajectory-08.wav",
+  "dur": 6.22
+ },
+ {
+  "video": "trajectory",
+  "idx": 9,
+  "beat": "Each card is one hop: how far along, how high up. Each dot is a real card",
+  "text": "Each card is one hop: how far along, and how high up. Every dot is a card from the simulator. No cookies this time, just shells.",
+  "file": "trajectory-09.wav",
+  "dur": 6.83
+ },
+ {
+  "video": "trajectory",
+  "idx": 10,
+  "beat": "The multiplier and the drag table work between cards",
+  "text": "Between cards, the multiplier and the drag table do the heavy lifting. Squares never needed the multiplier. This flight does.",
+  "file": "trajectory-10.wav",
+  "dur": 8.36
+ },
+ {
+  "video": "trajectory",
+  "idx": 11,
+  "beat": "Highest point: from here the shell comes down",
+  "text": "The highest point. From here, the shell comes down. Gravity, as ever, wins.",
+  "file": "trajectory-11.wav",
+  "dur": 5.67
+ },
+ {
+  "video": "trajectory",
+  "idx": 12,
+  "beat": "Landed: the height dropped below zero, and ENIAC stops on that card",
+  "text": "Landed. The height has dropped below zero, and ENIAC stops on that card.",
+  "file": "trajectory-12.wav",
+  "dur": 3.85
+ },
+ {
+  "video": "trajectory",
+  "idx": 13,
+  "beat": "34 hops, 34 cards: the whole flight, drawn from the punched cards",
+  "text": "Thirty-four hops, thirty-four cards: one shell's whole flight, drawn from the dots.",
+  "file": "trajectory-13.wav",
+  "dur": 4.64
+ },
+ {
+  "video": "trajectory",
+  "idx": 14,
+  "beat": "end card",
+  "text": "Warm thanks to Brian L. Stuart, whose reconstruction we borrowed one shell path from.",
+  "file": "trajectory-14.wav",
+  "dur": 4.6
+ },
+ {
+  "video": "tour",
+  "idx": 0,
+  "beat": "title card",
+  "text": "Hi, I'm Nick, a docent at the Vintage Computer Federation museum. Come take a tour of our new ENIAC exhibit with me. Everything you'll see runs live, on Brian L. Stuart's ENIAC simulator.",
+  "file": "tour-00.wav",
+  "dur": 10.91
+ },
+ {
+  "video": "tour",
+  "idx": 1,
+  "beat": "Nobody is touching it, so ENIAC flies a shell, live",
+  "text": "When nobody's at the screen, the kiosk doesn't play a canned video. It runs ENIAC. Right now it's working out the path of a cannon shell, and every lamp in this room is the simulator's real state.",
+  "file": "tour-01.wav",
+  "dur": 10.73
+ },
+ {
+  "video": "tour",
+  "idx": 2,
+  "beat": "Every dot is a card the simulator punches",
+  "text": "Every dot is a card the simulator punches. ENIAC was built to work out firing tables for Army guns, so a cannon shell is just the right thing to keep it busy.",
+  "file": "tour-02.wav",
+  "dur": 10.31
+ },
+ {
+  "video": "tour",
+  "idx": 3,
+  "beat": "A visitor walks up and touches the screen",
+  "text": "But the moment someone touches the screen...",
+  "file": "tour-03.wav",
+  "dur": 2.18
+ },
+ {
+  "video": "tour",
+  "idx": 4,
+  "beat": "Three missions, a walk around the room, and an honor roll",
+  "text": "you're in. Three missions, in a suggested order. But first, let's look around the room itself.",
+  "file": "tour-04.wav",
+  "dur": 5.11
+ },
+ {
+  "video": "tour",
+  "idx": 5,
+  "beat": "Explore ENIAC: the real room, with live lamps",
+  "text": "This is ENIAC. Forty panels stood in a U shape, about eighty feet long along the front. And these lamps are live: that shell is still flying while we look around.",
+  "file": "tour-05.wav",
+  "dur": 12.12
+ },
+ {
+  "video": "tour",
+  "idx": 6,
+  "beat": "(tour: pan)",
+  "text": "Tap the arrows, or the map along the bottom, to walk down the room.",
+  "file": "tour-06.wav",
+  "dur": 3.58
+ },
+ {
+  "video": "tour",
+  "idx": 7,
+  "beat": "Walk the room: one card for each kind of unit",
+  "text": "Or press Walk the room, and meet the units one at a time. The Cycling Unit is ENIAC's clock. It ticks about a hundred thousand times a second, and one addition takes twenty ticks.",
+  "file": "tour-07.wav",
+  "dur": 9.71
+ },
+ {
+  "video": "tour",
+  "idx": 8,
+  "beat": "(tour: master programmer)",
+  "text": "The Master Programmer is the conductor. It counts, and decides what happens next. It has ten steppers, a bit like a music box with pins.",
+  "file": "tour-08.wav",
+  "dur": 8.22
+ },
+ {
+  "video": "tour",
+  "idx": 9,
+  "beat": "Right now: a live number from the simulator",
+  "text": "Here's one of ENIAC's twenty accumulators. Each one adds, and remembers one ten-digit number. And that number on the card is live. It changes as the shell flies.",
+  "file": "tour-09.wav",
+  "dur": 10.26
+ },
+ {
+  "video": "tour",
+  "idx": 10,
+  "beat": "Tap a mission to light up the units it uses",
+  "text": "Tap a mission, and the room lights up every unit it uses. The cannon shell needs nineteen accumulators, a function table, and the multiplier, which works on every step.",
+  "file": "tour-10.wav",
+  "dur": 10.17
+ },
+ {
+  "video": "tour",
+  "idx": 11,
+  "beat": "The glossary: ENIAC's words, in plain English",
+  "text": "Stuck on a word? The glossary explains them all, in plain English.",
+  "file": "tour-11.wav",
+  "dur": 4.04
+ },
+ {
+  "video": "tour",
+  "idx": 12,
+  "beat": "(tour: original room tour)",
+  "text": "And for anyone curious how it looked before the touch screen: the Original room tour tile hands the screen to the simulator's own original display, which walks through the room on its own.",
+  "file": "tour-12.wav",
+  "dur": 11.38
+ },
+ {
+  "video": "tour",
+  "idx": 13,
+  "beat": "Keeping ENIAC alive: about 18,000 vacuum tubes",
+  "text": "Now, my favorite part: keeping ENIAC alive. It had about eighteen thousand vacuum tubes. Each dot here is one. A radio had about ten! And here's a surprise: the glowing lamps you see are neon. The tubes sat inside.",
+  "file": "tour-13.wav",
+  "dur": 15.28
+ },
+ {
+  "video": "tour",
+  "idx": 14,
+  "beat": "About 150 kilowatts: as much as 1,500 bright bulbs",
+  "text": "ENIAC used about a hundred and fifty kilowatts, as much as fifteen hundred bright light bulbs. More than half of it just kept the tubes hot.",
+  "file": "tour-14.wav",
+  "dur": 7.8
+ },
+ {
+  "video": "tour",
+  "idx": 15,
+  "beat": "Myth check: did the lights of Philadelphia dim?",
+  "text": "So, did ENIAC dim the lights of Philadelphia when it switched on? It's a great story. But Eckert, who built it, called it total fiction.",
+  "file": "tour-15.wav",
+  "dur": 7.01
+ },
+ {
+  "video": "tour",
+  "idx": 16,
+  "beat": "Why tubes burned out",
+  "text": "Tubes wear out like light bulbs, and switching on and off is hard on them. So early on, the crew left the heaters on overnight.",
+  "file": "tour-16.wav",
+  "dur": 7.29
+ },
+ {
+  "video": "tour",
+  "idx": 17,
+  "beat": "The hunt: which unit, which circuit, which tube?",
+  "text": "When an answer came out wrong, the crew went hunting. Which unit? Which circuit? Which tube? Let's try it.",
+  "file": "tour-17.wav",
+  "dur": 5.62
+ },
+ {
+  "video": "tour",
+  "idx": 18,
+  "beat": "Find the dead tube: a re-enactment",
+  "text": "This part is a re-enactment. The panels are drawn and the fault is made up, but the steps follow the nineteen forty-six maintenance manual. First, run a test problem with a known answer.",
+  "file": "tour-18.wav",
+  "dur": 11.47
+ },
+ {
+  "video": "tour",
+  "idx": 19,
+  "beat": "Every accumulator should show the same lamps",
+  "text": "Every accumulator should show the same lamps. One of them doesn't. Which one?",
+  "file": "tour-19.wav",
+  "dur": 4.32
+ },
+ {
+  "video": "tour",
+  "idx": 20,
+  "beat": "(tour: not that one)",
+  "text": "Hmm, not that one. It lines up with the others.",
+  "file": "tour-20.wav",
+  "dur": 2.51
+ },
+ {
+  "video": "tour",
+  "idx": 21,
+  "beat": "(tour: acc 3)",
+  "text": "There it is, the third one. One of its lamps is out of line.",
+  "file": "tour-21.wav",
+  "dur": 3.16
+ },
+ {
+  "video": "tour",
+  "idx": 22,
+  "beat": "(tour: place 4)",
+  "text": "Place four shows a nine instead of a five. So out comes its plug-in unit.",
+  "file": "tour-22.wav",
+  "dur": 4.88
+ },
+ {
+  "video": "tour",
+  "idx": 23,
+  "beat": "(tour: warm)",
+  "text": "Now touch the tubes. Warm means that one works.",
+  "file": "tour-23.wav",
+  "dur": 2.97
+ },
+ {
+  "video": "tour",
+  "idx": 24,
+  "beat": "(tour: cold)",
+  "text": "Cold! That's our dead tube.",
+  "file": "tour-24.wav",
+  "dur": 1.76
+ },
+ {
+  "video": "tour",
+  "idx": 25,
+  "beat": "Fixed! Every lamp lines up again",
+  "text": "Plug in a fresh unit, run the test again, and every lamp lines up. Eckert said a hunt like this took up to fifteen minutes.",
+  "file": "tour-25.wav",
+  "dur": 7.2
+ },
+ {
+  "video": "tour",
+  "idx": 26,
+  "beat": "The honor roll: Brian L. Stuart",
+  "text": "None of this would exist without Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it simulates ENIAC at the level of individual pulses. Without his work, this exhibit would be an empty screen.",
+  "file": "tour-26.wav",
+  "dur": 13.61
+ },
+ {
+  "video": "tour",
+  "idx": 27,
+  "beat": "ENIAC's first programmers",
+  "text": "And these are ENIAC's first programmers: Kay McNulty, Betty Jean Jennings, Betty Snyder, Marlyn Wescoff, Fran Bilas, and Ruth Lichterman. There was no programming language and no manual yet. They learned the machine from its diagrams, and worked out every cable by hand.",
+  "file": "tour-27.wav",
+  "dur": 15.74
+ },
+ {
+  "video": "tour",
+  "idx": 28,
+  "beat": "Mission 1, Squares: now I program ENIAC",
+  "text": "Now it's my turn to program ENIAC. Mission one is Squares. Picture tiles on a floor: three rows of three make nine.",
+  "file": "tour-28.wav",
+  "dur": 8.31
+ },
+ {
+  "video": "tour",
+  "idx": 29,
+  "beat": "(tour: the trick)",
+  "text": "To grow the square, add a row, a column, and one corner tile. ENIAC never multiplies here. It just adds.",
+  "file": "tour-29.wav",
+  "dur": 7.11
+ },
+ {
+  "video": "tour",
+  "idx": 30,
+  "beat": "Step 1: set a dial to 1",
+  "text": "Step one: set a dial on the Constant Transmitter to one.",
+  "file": "tour-30.wav",
+  "dur": 3.53
+ },
+ {
+  "video": "tour",
+  "idx": 31,
+  "beat": "Step 2: plug a cable, one jack, then the other",
+  "text": "Step two: plug in a cable. Tap one jack, then the other.",
+  "file": "tour-31.wav",
+  "dur": 3.25
+ },
+ {
+  "video": "tour",
+  "idx": 32,
+  "beat": "Short on time? Skip: the rest is wired for you",
+  "text": "In nineteen forty-six, setting up a new problem could take a day or more. I'll let the kiosk wire the rest for me.",
+  "file": "tour-32.wav",
+  "dur": 6.46
+ },
+ {
+  "video": "tour",
+  "idx": 33,
+  "beat": "Press INIT, ENIAC's GO button",
+  "text": "Now press init.",
+  "file": "tour-33.wav",
+  "dur": 1.02
+ },
+ {
+  "video": "tour",
+  "idx": 34,
+  "beat": "(tour: one)",
+  "text": "One times one is one.",
+  "file": "tour-34.wav",
+  "dur": 1.81
+ },
+ {
+  "video": "tour",
+  "idx": 35,
+  "beat": "Skip to the answer: every square up to 12 \u00d7 12",
+  "text": "Or skip to the answer: every square up to twelve times twelve, a hundred forty-four, all by adding.",
+  "file": "tour-35.wav",
+  "dur": 5.39
+ },
+ {
+  "video": "tour",
+  "idx": 36,
+  "beat": "Fast-forward: Missions 2 and 3, the quick way",
+  "text": "I'll fast-forward through missions two and three, the primes and the cannon shell. They each have their own video.",
+  "file": "tour-36.wav",
+  "dur": 5.94
+ },
+ {
+  "video": "tour",
+  "idx": 37,
+  "beat": "All three missions done: Finish",
+  "text": "And we're back. The shell has landed, all three missions are done, and the button says Finish.",
+  "file": "tour-37.wav",
+  "dur": 5.39
+ },
+ {
+  "video": "tour",
+  "idx": 38,
+  "beat": "(tour: f1)",
+  "text": "The finale. You programmed ENIAC, and the kiosk remembers what your visit did: the squares, the primes ENIAC punched, and the shell's flight.",
+  "file": "tour-38.wav",
+  "dur": 9.61
+ },
+ {
+  "video": "tour",
+  "idx": 39,
+  "beat": "(tour: f2)",
+  "text": "Then every unit you used lights up in the room. After all three missions, that's almost the whole machine.",
+  "file": "tour-39.wav",
+  "dur": 6.04
+ },
+ {
+  "video": "tour",
+  "idx": 40,
+  "beat": "(tour: f3)",
+  "text": "And again, Brian L. Stuart, who wrote this simulator. Every lamp we saw was run by his program.",
+  "file": "tour-40.wav",
+  "dur": 5.06
+ },
+ {
+  "video": "tour",
+  "idx": 41,
+  "beat": "(tour: f4)",
+  "text": "The people who made ENIAC. Six women were its first programmers. Engineers and an Army team built it. Thank you to all of them.",
+  "file": "tour-41.wav",
+  "dur": 7.06
+ },
+ {
+  "video": "tour",
+  "idx": 42,
+  "beat": "(tour: f5)",
+  "text": "Thanks for visiting! From here, a visitor can start over, or go exploring.",
+  "file": "tour-42.wav",
+  "dur": 4.09
+ },
+ {
+  "video": "tour",
+  "idx": 43,
+  "beat": "end card",
+  "text": "A huge thank-you to Brian L. Stuart, whose simulator is the beating heart of this exhibit. And thank you for watching.",
+  "file": "tour-43.wav",
+  "dur": 6.27
+ },
+ {
+  "video": "attract",
+  "idx": 0,
+  "beat": "title card",
+  "text": "When nobody's using the kiosk, it doesn't play a canned video. It runs ENIAC, live.",
+  "file": "attract-00.wav",
+  "dur": 4.88
+ },
+ {
+  "video": "attract",
+  "idx": 1,
+  "beat": "The ENIAC room, lit by the live simulator",
+  "text": "This is the ENIAC room, panel by panel, and every lamp is the simulator's real state. The room drifts slowly, so people walking by see the whole machine.",
+  "file": "attract-01.wav",
+  "dur": 10.63
+ },
+ {
+  "video": "attract",
+  "idx": 2,
+  "beat": "Each dot is a punched card: one second of the shell's flight",
+  "text": "ENIAC is working out the path of a cannon shell in tiny time steps, and punches a card for every second of flight. Each card becomes a dot. ENIAC was built to work out firing tables for Army guns.",
+  "file": "attract-02.wav",
+  "dur": 13.51
+ },
+ {
+  "video": "attract",
+  "idx": 3,
+  "beat": "Landed: the hop and the card count, held for a moment",
+  "text": "Landed! The kiosk holds the landing for a moment, with the hop it landed on and the cards it punched.",
+  "file": "attract-03.wav",
+  "dur": 5.34
+ },
+ {
+  "video": "attract",
+  "idx": 4,
+  "beat": "Then a fresh flight, on a fresh run of the simulator",
+  "text": "Then it starts over, on a fresh run of the simulator.",
+  "file": "attract-04.wav",
+  "dur": 3.25
+ },
+ {
+  "video": "attract",
+  "idx": 5,
+  "beat": "One touch, and the visitor is in",
+  "text": "And the moment someone touches the screen, the flight stops and the missions appear.",
+  "file": "attract-05.wav",
+  "dur": 4.6
+ },
+ {
+  "video": "attract",
+  "idx": 6,
+  "beat": "end card",
+  "text": "Thanks to Brian L. Stuart, whose simulator flies every one of these shells.",
+  "file": "attract-06.wav",
+  "dur": 4.32
+ },
+ {
+  "video": "explore",
+  "idx": 0,
+  "beat": "title card",
+  "text": "Explore ENIAC lets a visitor walk around the whole machine, panel by panel.",
+  "file": "explore-00.wav",
+  "dur": 4.27
+ },
+ {
+  "video": "explore",
+  "idx": 1,
+  "beat": "Forty panels in a U, with live lamps",
+  "text": "ENIAC's forty panels stood in a U shape, about eighty feet long along the front. And the lamps are live: ENIAC is flying a cannon shell while we look.",
+  "file": "explore-01.wav",
+  "dur": 10.68
+ },
+ {
+  "video": "explore",
+  "idx": 2,
+  "beat": "(explore: pan)",
+  "text": "Tap the arrows, or the map along the bottom, to walk down the room.",
+  "file": "explore-02.wav",
+  "dur": 3.72
+ },
+ {
+  "video": "explore",
+  "idx": 3,
+  "beat": "Walk the room: twelve cards, one for each kind of unit",
+  "text": "Walk the room, and you meet each kind of unit. The Initiating Unit has ENIAC's go button, called INIT.",
+  "file": "explore-03.wav",
+  "dur": 5.85
+ },
+ {
+  "video": "explore",
+  "idx": 4,
+  "beat": "(explore: cycling)",
+  "text": "The Cycling Unit is the clock. It ticks about a hundred thousand times a second.",
+  "file": "explore-04.wav",
+  "dur": 3.95
+ },
+ {
+  "video": "explore",
+  "idx": 5,
+  "beat": "(explore: master programmer)",
+  "text": "The Master Programmer is the conductor, with ten steppers, a bit like a music box with pins.",
+  "file": "explore-05.wav",
+  "dur": 5.62
+ },
+ {
+  "video": "explore",
+  "idx": 6,
+  "beat": "Tap any panel: this number is live",
+  "text": "Tap any panel to meet it. An accumulator adds, and remembers one ten-digit number. ENIAC had twenty. This card shows this one's number, live.",
+  "file": "explore-06.wav",
+  "dur": 8.92
+ },
+ {
+  "video": "explore",
+  "idx": 7,
+  "beat": "Tap a mission: the room lights up the units it uses",
+  "text": "Tap a mission, and the room lights up the units it uses. Squares needs just four.",
+  "file": "explore-07.wav",
+  "dur": 5.06
+ },
+ {
+  "video": "explore",
+  "idx": 8,
+  "beat": "(explore: trajectory)",
+  "text": "The cannon shell needs nineteen accumulators, a function table, and the multiplier.",
+  "file": "explore-08.wav",
+  "dur": 4.18
+ },
+ {
+  "video": "explore",
+  "idx": 9,
+  "beat": "The glossary: ENIAC's words, in plain English",
+  "text": "And the glossary explains every word in plain English, from accumulator to vacuum tube.",
+  "file": "explore-09.wav",
+  "dur": 5.94
+ },
+ {
+  "video": "explore",
+  "idx": 10,
+  "beat": "end card",
+  "text": "Thanks to Brian L. Stuart, whose simulator lights every lamp in the room.",
+  "file": "explore-10.wav",
+  "dur": 3.62
+ },
+ {
+  "video": "tubes",
+  "idx": 0,
+  "beat": "title card",
+  "text": "How do you keep a machine with about eighteen thousand vacuum tubes running? Let's find out.",
+  "file": "tubes-00.wav",
+  "dur": 4.92
+ },
+ {
+  "video": "tubes",
+  "idx": 1,
+  "beat": "Each dot is one vacuum tube",
+  "text": "Each dot is one of ENIAC's tubes. A radio had about ten! A tube is a sealed bulb that switches a signal on and off, with nothing moving. The glowing lamps you see are neon. The tubes sat inside.",
+  "file": "tubes-01.wav",
+  "dur": 14.95
+ },
+ {
+  "video": "tubes",
+  "idx": 2,
+  "beat": "Power and heat: about 150 kilowatts",
+  "text": "ENIAC used about a hundred and fifty kilowatts. In one hour, that's as much electricity as a typical American home uses today in five to six days.",
+  "file": "tubes-02.wav",
+  "dur": 10.31
+ },
+ {
+  "video": "tubes",
+  "idx": 3,
+  "beat": "Myth check",
+  "text": "Did it dim the lights of Philadelphia? No. Eckert, who built it, called that story total fiction. ENIAC took its power from the city grid, through its own regulators.",
+  "file": "tubes-03.wav",
+  "dur": 10.68
+ },
+ {
+  "video": "tubes",
+  "idx": 4,
+  "beat": "Why tubes burned out",
+  "text": "Switching on and off is hard on tubes, so early on, the crew left the heaters on overnight. Eckert remembered losing about one tube every two days.",
+  "file": "tubes-04.wav",
+  "dur": 8.92
+ },
+ {
+  "video": "tubes",
+  "idx": 5,
+  "beat": "The hunt: which unit, which circuit, which tube?",
+  "text": "So when an answer came out wrong, the crew went hunting. Let's try it.",
+  "file": "tubes-05.wav",
+  "dur": 3.81
+ },
+ {
+  "video": "tubes",
+  "idx": 6,
+  "beat": "A re-enactment that follows the 1946 maintenance manual",
+  "text": "This is a re-enactment: drawn panels and a made-up fault, but the real steps from the nineteen forty-six maintenance manual. Run the test.",
+  "file": "tubes-06.wav",
+  "dur": 9.06
+ },
+ {
+  "video": "tubes",
+  "idx": 7,
+  "beat": "(tubes: which panel)",
+  "text": "Every accumulator should show the same lamps. Which one doesn't?",
+  "file": "tubes-07.wav",
+  "dur": 3.48
+ },
+ {
+  "video": "tubes",
+  "idx": 8,
+  "beat": "(tubes: the ring)",
+  "text": "Two misses, so the kiosk helps: a glowing ring around the right panel.",
+  "file": "tubes-08.wav",
+  "dur": 3.9
+ },
+ {
+  "video": "tubes",
+  "idx": 9,
+  "beat": "(tubes: which place)",
+  "text": "Now, which digit place? Look for the lamp that's lit at the wrong number.",
+  "file": "tubes-09.wav",
+  "dur": 4.18
+ },
+ {
+  "video": "tubes",
+  "idx": 10,
+  "beat": "(tubes: which tube)",
+  "text": "Place four shows nine, not five. Its plug-in unit slides out. Now touch each tube.",
+  "file": "tubes-10.wav",
+  "dur": 5.34
+ },
+ {
+  "video": "tubes",
+  "idx": 11,
+  "beat": "(tubes: cold)",
+  "text": "The first two were warm, and this one is cold. That's the dead tube.",
+  "file": "tubes-11.wav",
+  "dur": 3.58
+ },
+ {
+  "video": "tubes",
+  "idx": 12,
+  "beat": "Fixed! Every lamp lines up on 5",
+  "text": "A fresh unit, the test runs again, and every lamp lines up. A real crew would also write the dead tube in the log.",
+  "file": "tubes-12.wav",
+  "dur": 7.15
+ },
+ {
+  "video": "tubes",
+  "idx": 13,
+  "beat": "end card",
+  "text": "Thanks to Brian L. Stuart, and to the crews who kept the real ENIAC running.",
+  "file": "tubes-13.wav",
+  "dur": 4.27
+ },
+ {
+  "video": "finale",
+  "idx": 0,
+  "beat": "title card",
+  "text": "Finish all three missions, and the kiosk ends with a finale.",
+  "file": "finale-00.wav",
+  "dur": 3.81
+ },
+ {
+  "video": "finale",
+  "idx": 1,
+  "beat": "Mission 3 done: all three missions, so the button says Finish",
+  "text": "Land the cannon shell, the last of the three missions, and the button says Finish.",
+  "file": "finale-01.wav",
+  "dur": 4.6
+ },
+ {
+  "video": "finale",
+  "idx": 2,
+  "beat": "(finale: f1)",
+  "text": "First: you programmed ENIAC. The kiosk remembers what your visit did: the squares you counted, the cards ENIAC punched, the shell's flight.",
+  "file": "finale-02.wav",
+  "dur": 8.96
+ },
+ {
+  "video": "finale",
+  "idx": 3,
+  "beat": "(finale: f2)",
+  "text": "Then every unit you used lights up in the room. After all three missions, that's almost the whole machine.",
+  "file": "finale-03.wav",
+  "dur": 5.11
+ },
+ {
+  "video": "finale",
+  "idx": 4,
+  "beat": "(finale: f3)",
+  "text": "Then the person who made it all possible: Brian L. Stuart, who wrote the simulator. Scan the code to visit his page.",
+  "file": "finale-04.wav",
+  "dur": 6.04
+ },
+ {
+  "video": "finale",
+  "idx": 5,
+  "beat": "(finale: f4)",
+  "text": "Then the people who made ENIAC. Six women were its first programmers. Engineers and an Army team built it. Thank you to all of them.",
+  "file": "finale-05.wav",
+  "dur": 7.71
+ },
+ {
+  "video": "finale",
+  "idx": 6,
+  "beat": "(finale: f5)",
+  "text": "And finally: thanks for visiting!",
+  "file": "finale-06.wav",
+  "dur": 1.49
+ },
+ {
+  "video": "finale",
+  "idx": 7,
+  "beat": "end card",
+  "text": "And my thanks to Brian L. Stuart, whose simulator makes all of this real.",
+  "file": "finale-07.wav",
+  "dur": 3.67
+ }
+]
