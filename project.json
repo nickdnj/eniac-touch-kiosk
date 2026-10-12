@@ -163,6 +163,15 @@
           "loudness": "-14.1 LUFS",
           "notes": "v5 with the 20 s S21 end-screen panel removed (Nick 2026-10-08); ends on the vcfed.org card with a 1.2 s fade. Re-add the end screen for a VCF-channel repost."
         }
+      },
+      "v6": {
+        "video_id": "eZE-r3WcyVI",
+        "url": "https://www.youtube.com/watch?v=eZE-r3WcyVI",
+        "published_url": "https://www.youtube.com/watch?v=eZE-r3WcyVI",
+        "status": "public on @nickdnj",
+        "uploaded": "2026-10-12T10:55:30-04:00",
+        "thumbnail": "output/upload/thumbnail.jpg",
+        "metadata": "output/upload/metadata-v6.json"
       }
     },
     "publish": {
@@ -230,24 +239,33 @@
       "date": "2026-10-12",
       "source": "research/video-briefing-2026-10-12.md M4",
       "30s": {
-        "status": "gate1_approved",
+        "status": "public",
         "option": "A",
         "hook": "PROGRAM ENIAC / WITH YOUR FINGERTIP",
         "voice": "Touch the screen. Watch a nineteen forty-six computer work, lamp by lamp.",
         "spoken_eniac": false,
-        "script": "storyboard/short-30s.md"
+        "script": "storyboard/short-30s.md",
+        "video_id": "FknKT7MEsrU",
+        "url": "https://www.youtube.com/watch?v=FknKT7MEsrU",
+        "uploaded": "2026-10-12T10:55:30-04:00",
+        "metadata": "output/upload/metadata-short-30s-v2.json"
       },
       "8s": {
-        "status": "gate1_approved",
+        "status": "public",
         "option": "A",
         "voice": "Come watch a nineteen forty-six computer work, at the Vintage Computer Federation.",
         "spoken_eniac": false,
-        "script": "storyboard/short-8s.md"
+        "script": "storyboard/short-8s.md",
+        "video_id": "BY7A2aVB524",
+        "url": "https://www.youtube.com/watch?v=BY7A2aVB524",
+        "uploaded": "2026-10-12T10:55:30-04:00",
+        "metadata": "output/upload/metadata-short-8s-v2.json"
       },
       "hours": "Wed, Sat & Sun, 12 to 5 (Nick confirmed 2026-10-12)",
       "open_items": [
         "want 10 s CLEAN=1 full-speed Squares clip from v6 build for continuous lamp motion",
-        "Stuart not named (Nick's call for description)"
+        "Stuart not named (Nick's call for description)",
+        "set related video to eZE-r3WcyVI in YouTube Studio for both Shorts (not in the API)"
       ]
     }
   },
@@ -261,6 +279,10 @@
     "eniac_alias": "Nick heard the Ennie-ack alias reel and accepted it (twice: 2026-10-12).",
     "gate2_eniac": "Nick (chat, 2026-10-12): 'we're okay with the ENIAC pronunciation... go live.' Final-audio ENIAC ear gate waived by Nick; phoneme proxy still runs and is reported. The 'init' reel is still offered, not blocking.",
     "go_live": "Authorized by Nick: upload v6 review cut PUBLIC on @nickdnj as soon as it is assembled and passes technical checks (lamps by eye, one audio stream, loudness, duration, youtube-whoami.py first). Not VCF / InfoAge / VCF channel. No emails from Claude.",
-    "short_recommendations_taken": "8s: wait for continuous full-speed lamp clip re-recorded from kiosk main; music per approved storyboard (seeked big ending)."
+    "short_recommendations_taken": "8s: wait for continuous full-speed lamp clip re-recorded from kiosk main; music per approved storyboard (seeked big ending).",
+    "published_url": "https://www.youtube.com/watch?v=eZE-r3WcyVI",
+    "video_id": "eZE-r3WcyVI",
+    "status": "public on @nickdnj",
+    "published_date": "2026-10-12T10:55:30-04:00"
   }
 }

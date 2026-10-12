@@ -23,11 +23,13 @@
    "v5_file": "assets/audio/narration/N03.wav"
   },
   "N04": {
-   "v6_s": 9.752,
+   "v6_s": 10.124,
    "v5_s": 10.124,
-   "delta_s": -0.372,
-   "flag_gt_0.3s": true,
-   "v5_file": "assets/audio/narration/N04.wav"
+   "delta_s": -0.0,
+   "flag_gt_0.3s": false,
+   "v5_file": "assets/audio/narration/N04.wav",
+   "pre_live_v6_s": 9.752,
+   "note": "re-taken with 'Live'->'Lyve' respelling (Nick: verb /liv/ at ~7:00)"
   },
   "N05": {
    "v6_s": 12.446,
