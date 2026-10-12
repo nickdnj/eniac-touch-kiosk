@@ -250,5 +250,17 @@
         "Stuart not named (Nick's call for description)"
       ]
     }
+  },
+  "v6_review": {
+    "date": "2026-10-12",
+    "decided_by": "Nick (chat)",
+    "reviewers_watched": "the public cut on @nickdnj (KoWgoNo3F1k, v5b). The briefing's unlisted link mAW7AuKXLBE is v4 and is not what they watched.",
+    "visibility": "public on Nick's own channel. His channel is the review channel: public = easy to share and reshare for early feedback before the VCF channel. 'Published' (VCF / InfoAge sites and social) is separate and still gated.",
+    "preconditions": "Nick's Gate 2 listening (ENIAC reel + init reel) done; youtube-whoami.py run first; Stuart second pass before anything is called final or goes to VCF / InfoAge / VCF channel.",
+    "names": "No reviewer flagged Marlyn or Ruth Lichterman; the only voice issue reported was ENIAC. Kept as is (sheet status PROBABLE).",
+    "eniac_alias": "Nick heard the Ennie-ack alias reel and accepted it (twice: 2026-10-12).",
+    "gate2_eniac": "Nick (chat, 2026-10-12): 'we're okay with the ENIAC pronunciation... go live.' Final-audio ENIAC ear gate waived by Nick; phoneme proxy still runs and is reported. The 'init' reel is still offered, not blocking.",
+    "go_live": "Authorized by Nick: upload v6 review cut PUBLIC on @nickdnj as soon as it is assembled and passes technical checks (lamps by eye, one audio stream, loudness, duration, youtube-whoami.py first). Not VCF / InfoAge / VCF channel. No emails from Claude.",
+    "short_recommendations_taken": "8s: wait for continuous full-speed lamp clip re-recorded from kiosk main; music per approved storyboard (seeked big ending)."
   }
 }

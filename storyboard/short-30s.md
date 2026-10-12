@@ -1,142 +1,217 @@
-# Short 30 s: "Touch the screen" (Gate 1)
+# Short 30 s v2: "Could you?" (Gate 1)
 
-**Status:** GATE 1, script and shot list only. No audio, image or video generated. Requested by Jeff Brace (social media) via the 2026-10-12 briefing, section 3 M4.
-**Goal:** bring people to the Vintage Computer Federation museum. Not to teach ENIAC.
-**Format:** 1080x1920, **30.0 s**, YouTube Shorts first, then Reels and TikTok exports.
-**Shape (Nick):** attract screen, one tap, lamps playing, one line of voice, address and hours as the end card.
-**Inherits:** M1 (lamps 0 at the bottom, 9 at the top: footage must come from the v6 re-record, never a flip) and M2 (ENIAC pronunciation, listening gate if spoken).
-**Not in this Short:** any name from the simulator's credit, "new exhibit", "opening", "finished", Trajectory/history claims, photos (so no photo credit).
+**Status:** GATE 1, v2 creative pass (2026-10-12). Storyboard and build plan only. Nothing rendered, nothing published. v1 (option A, "Touch the screen") is kept at `storyboard/short-30s.v1.md`. Address and hours sources are in v1 section 4.
+**Goal (Jeff Brace):** bring people to the Vintage Computer Federation museum. Do not teach ENIAC.
+**Format:** 1080x1920, **30.000 s = exactly 18 bars** of the music at 144 BPM. YouTube Shorts on @nickdnj, then Reels and TikTok.
+**Inherits:** M1 (lamps 0 at the bottom, 9 at the top, the sign lamp level with 0 and 1: footage from kiosk main v6 only, never v5, never flipped). M2: **spoken ENIAC = 0**.
+**Not in this Short:** the simulator author's name or credit, the attract plates (they rotate through names including his), the kiosk footer, "new", "opening", "finished", anything about "first" or "only", photos.
 
 ---
 
-## 1. Hook and line options (pick one at Gate 1)
+## 1. Concepts considered
 
-Voice: Nick 2, id `6SxuwKUiBpZjFTc06v9Y`, stability 0.5, similarity 0.75, style 0.4, speed 1.12. Unchanged. If the voice call fails, stop and ask.
-Write years as words in the TTS text ("nineteen forty-six").
-Duration estimate: 0.36 s per spoken word (the 45 s Short averaged 109 words in 39.24 s of speech, 0.36 s/word). Replace with the real WAV lengths after synthesis.
-
-| | Option A (recommended) | Option B |
+| | Concept | One-line pitch |
 |---|---|---|
-| Hook overlay (0.0 to 3.6 s) | PROGRAM ENIAC / WITH YOUR FINGERTIP (the Gate 1 "A" hook from the 45 s Short, unchanged) | A ROOM-SIZED COMPUTER. / ONE FINGERTIP. |
-| Spoken line | L1 "Touch the screen." then L2 "Watch a nineteen forty-six computer work, lamp by lamp." | L1 "ENIAC, nineteen forty-six." then L2 "Touch the screen, and program it yourself." |
-| Spoken words | 3 + 9 = 12 | 3 + 7 = 10 |
-| Est. duration at 1.12 | L1 about 1.2 s, L2 about 3.3 s (4.5 s total) | L1 about 1.5 s, L2 about 2.6 s (4.1 s total) |
-| Spoken "ENIAC" | **0** (name is on screen) | **1** (needs the listening-gate reel) |
-| Why | Fewest gate items, reuses the hook Nick and Jeff already liked, no pronunciation risk | Names the machine aloud, stronger "what is this" for people who skim with sound on |
+| **A (pick)** | **Could you?** | Open on a question, "Could you program a computer from 1946?". Tap, the lamps count to 144 on the beat, the whole machine lights up, the kiosk's own screen says "You programmed ENIAC.", the voice says "Yes. With your fingertip.", then come and try it. |
+| B | v1, refined | Calm attract hold, one tap, two lamp sweeps, end card. The approved baseline, cut to the beat. |
+| C | Three missions, three bars | Squares lamps, Primes checkers and the Trajectory arc, one musical phrase each, then the card. A faster version of the 45 s teaser. |
 
-Recommendation: **A**. Nothing in it can be mispronounced, and the on-screen hook still carries the name.
-
-"Lamp by lamp" and "work" are chosen to be true of a simulation of the machine. Avoid "still running", "the real machine", "new" and "opening".
+**Why A.** It is the three-beat shape Nick and Jeff asked for (touch, watch, come see), with a question and an answer around it, so the 30 s has a story and not just a sequence. The payoff is the kiosk's own words ("You programmed ENIAC." and "You counted up to 12 x 12 = 144."), not our claim, and it pays off the 144 the viewer has just watched the lamps count to. B is safe but has no payoff, and its 7 s attract hold loses thumbs. C teaches, which Jeff asked us not to do, and it overlaps the published 45 s Short.
 
 ---
 
-## 2. Source clips (planned against v5 names; swap to `assets/video/source-v6/` when it lands)
+## 2. Music grid
 
-| Tag | File | Length | Used for |
+Kevin MacLeod "Hot Swing" (approved stand-in, CC BY). **144.0 BPM**, beat 0.41667 s, bar 1.66667 s. Downbeats in the file: D_n = n x 1.66667 - 0.008 s. The ending: a stop at about 45.20 to 45.40, hits at 45.56 and 46.38, and the final chord at 46.66 (= D_28). Machine-measured on 2026-10-12. **Confirm by ear at Gate 2. If the Audio Library track replaces Hot Swing, re-measure; the table is written in beats so it can be re-timed.**
+
+**Music in point: `-ss 18.325` (D_11).** The track starts a new, louder section here (the RMS jumps at about 18 s). Output = file - 18.325:
+
+| Event | Output (s) |
+|---|---|
+| Section start, downbeat | 0.000 |
+| Stop (gap) | 26.88 to 27.08 |
+| Hit 1 | **27.235** |
+| Hit 2 | **28.055** |
+| Final chord (bar 18 downbeat) | **28.333** |
+| Chord rings to near silence | 29.7 to 30.0 |
+
+No fade. The chord decays into the loop seam, and the next loop starts on a downbeat with the full band.
+
+---
+
+## 3. Voice (three short lines, zero spoken ENIAC)
+
+Nick 2, id `6SxuwKUiBpZjFTc06v9Y`, stability 0.5, similarity 0.75, style 0.4, speed 1.12, `eleven_multilingual_v2`, project pronunciation dictionary attached (the Ennie-ack alias; no line here says ENIAC, but every call stays identical). If the voice call fails, stop and ask; no fallback voice. Years are written as words. Duration estimate: 0.36 s per word, from the existing Short takes (1.068 s for 3 words, 3.065 s for 9, 4.458 s for 12). Replace with the real WAV lengths.
+
+| ID | TTS text | Words | Est. | Starts | Job |
+|---|---|---|---|---|---|
+| **Q** | "Could you program a computer from nineteen forty-six?" | 8 | about 2.9 s | 0.10 | The tension. **Same take as the 8 s cut** (`assets/audio/shorts-v2/Q.wav`) |
+| **Y** | "Yes. With your fingertip." | 4 | about 1.6 s (with the pause after "Yes.") | 18.45 | The answer, spoken over the kiosk's "You programmed ENIAC." It echoes the "fingertip" hook from the 45 s Short that Jeff liked |
+| **C** | "Come try it, at the Vintage Computer Federation." | 8 | about 2.9 s | 21.75 | The ask, with the museum named aloud |
+
+Total 20 words, about 7.4 s of speech. **Spoken ENIAC: 0.** ENIAC is on screen: the kiosk's own wordmark at frame 0, the hook, and the payoff screen. Whisper cannot tell how ENIAC is pronounced (it transcribes every variant the same), so the script avoids saying it and this cut needs no listening-gate reel. A Whisper pass still checks the words, including "Vintage Computer Federation".
+
+No voice from 5.0 to 18.3 s. That stretch is the "watch" beat: music up, lamps cut to the beat.
+
+---
+
+## 4. Beat table
+
+Output 30 fps; a cut at time t goes on frame round(t x 30), at most 16.7 ms off the beat. Bars and beats count from 0.
+
+| Shot | Bars (beats) | Out (s) | Source and in/out | Picture | Voice | Music | Overlay / FX |
+|---|---|---|---|---|---|---|---|
+| **S1** TOUCH | 1-2 (b0 to b8) | 0.000 to 3.333 | **F1** attract, `[T_tap - 3.194, T_tap + 0.139]` (T_tap = the logged tap time). Fallback, current `source-v6/eniac-touch-tour.mp4`: attract runs about 10 to 36 s and the tap is at about 36.2 (frame-step it), so about 33.0 to 36.34 | **Attract poster** (section 5, L1): the kiosk's ENIAC wordmark, the live room strip with its lamps moving, and the "Touch to program ENIAC" button | Q 0.10 to about 3.0 | section start, ducked under Q | **Hook** frame 0 to 3.20. **Tap ripple + tap click at 3.194** (the swung "and" of beat 7) on the button |
+| **S2** | 3 (b8 to b12) | 3.333 to 5.000 | **F1** Pick a mission, settled (after its fade-in), 1.667 s. Fallback: tour about 37.5 to 39.17 | **Squares card**, large (L2): "1 / START HERE / Squares / Make ENIAC count in squares. / Start" | | up | Tap ripple + click at **4.861** on "Start" |
+| **S3** WATCH | 4-6 (b12 to b24) | 5.000 to 10.000 | **F2** lamp run, beat-snapped (method in `short-8s.md` 5a). Fallback: current lamp clip, n=1 to 10 from run 2 (8.48 to 12.96), n=11 to 12 from run 1 (4.48, 4.92) | **Accumulator 2 with its readout** (L3), counting **1, 4, 9 ... 144**: **n=k on beat 11+k** (n=1 at 5.000, n=12 at 9.583), 144 held to 10.000 | | up, full band | **Bloom pulse on 144** at 9.583 |
+| **S4** | 7-8 (b24 to b32) | 10.000 to 13.333 | `source-v6/eniac-touch-walkthrough-primes.mp4` **138.00 to 141.33**, real time (Full speed; the counter climbs through the 200s and 300s). Frame-step: Full already on, no button press in the crop | **Primes**: "TESTING / Accumulator 19 / [number]" and the 14 group-checker lamp grids (L4) | | up | none. Hard cut in on the bar-7 downbeat |
+| **S5** | 9-11 (b32 to b44) | 13.333 to 18.333 | `source-v6/finale.mp4` **19.60 to 24.60**, "Here is every unit you used." with the room strip LIVE (the shell run) | **The whole machine**: a slow pan along the strip of accumulators, lamps moving in every panel (L5) | | up | none |
+| **S6** PAYOFF | 12-13 (b44 to b52) | 18.333 to 21.667 | `source-v6/finale.mp4` **10.00 to 13.333** (the "You programmed ENIAC." hold is clean from about 9.0 to 16.4) | **Kiosk payoff** (L6): **"You programmed ENIAC."** above the Squares card **"You counted up to 12 x 12 = 144."** | **Y** 18.45 to about 20.05 | ducked under Y | none (the kiosk's text is the payoff). Push 1.00 to 1.04 |
+| **S7** COME SEE | 14-18 (b52 to b72) | 21.667 to 30.000 | **F1** attract, `[T_tap - 3.194 - 8.333, T_tap - 3.194]`: the 8.333 s **immediately before S1's first frame** | Attract poster again (L1 layout), dimmed (section 5) | **C** 21.75 to about 24.65 | ducked under C, up from 24.8; stop, hit, hit, chord | **End card** builds line by line on beats 52 to 56; bloom on the background lamps at 27.235 and 28.055; **chord 28.333: vcfed.org flashes yellow** |
+
+Lamps on screen: S1, S3, S4, S5 and S7 (the strip behind the card), about 25 of the 30 s.
+
+**Frame 0:** the kiosk's ENIAC wordmark, live lamps and the button, with the hook on top. Bright and legible on the first frame. No fade-in, no black.
+
+**Loop:** S7 is the stretch of attract footage that comes **directly before** S1's first frame, dimmed under the card. When the Short loops, the room-strip lamps keep moving across the seam without a jump: the lights come up, the card goes and the question returns. The music comes back from the decayed chord onto a downbeat. It is the most seamless loop available with this footage. (Fallback footage gives the same result: S7 = tour about 24.68 to 33.01.)
+
+---
+
+## 5. Layouts (pre-crop to 9:16 before any motion)
+
+Every shot is composited onto a 1080x1920 canvas **before** any push or pan (the project rule: pre-crop to 9:16 before zoompan). Pushes use `scale=eval=frame` and a **centred `overlay` on a black canvas**, not a `crop` after the scale (the assembler found that form left-anchors). Background for every shot: the shot's main crop scaled to cover 1080x1920, `boxblur=40:5`, `eq=brightness=-0.30` (the existing `pb()`). Source coordinates below come from the current v6 frames (1920x1080). **Re-measure on F1 and F2**; the layout should be the same in the kiosk main build.
+
+Some layouts are a **collage**: several crops from the **same live frame** stacked vertically. Each element is real and on the same screen at the same moment. The collage leaves out the plates, the footer and the status line, which is how the simulator credit stays out of frame.
+
+**L1, attract poster** (S1, S7):
+| Element | Source crop (w:h:x:y) | Scale | Placed at (x, y) |
 |---|---|---|---|
-| TOUR | `assets/video/source-v5/eniac-touch-tour.mp4` | 381.3 s, 1920x1080, 25 fps | attract, tap, Pick a mission, end-card background |
-| SQUA | `assets/video/source-v5/eniac-touch-walkthrough-squares.mp4` | 172.0 s | accumulator lamps |
+| ENIAC wordmark | `450:115:120:70` | x1.60 to 720x184 | 180, 455 |
+| Live room strip | `980:490:470:300` | x1.102 to 1080x540 | 0, 665 |
+| "Touch to program ENIAC" button | `740:144:590:888` | x1.25 to 925x180 | 78, 1250 |
 
-Both are recorded with no caption boxes (CLAUDE.md and memory: CLEAN=1). All in and out points are from contact sheets at 0.5 to 4 s steps, so **every point needs a frame step at assembly**.
+Left out: the tagline, the shell-path inset, the "Live: ..." line and **both plates** (the left plate rotates through the simulator credit, at about 30 to 34.5 s in the current tour). The strip scrolls slowly during the attract, so labels may slide in and out at the crop edges. That is fine. A label frozen half-cut is not: check at build. **Tap point: (540, 1340).**
+S7 only: the whole poster `eq=brightness=-0.38`, the button layer at -0.20 (it stays readable under the card and works as a second ask).
 
-**Do not render from v5.** Every accumulator lamp grid in v5 SQUA has 0 at the top (confirmed in the sheets). The Pick screen and attract screen carry no lamp grid; the room strip has tiny lamps and also needs a look in v6.
+**L2, Squares card** (S2): title crop `455:76:130:12` ("Pick a mission"), x1.40 to 637x106 at (222, 300). Card crop `544:640:80:184` (card 1, including START HERE), x1.45 to 789x928 at (146, 440). **Tap point, the Start button: (540, 1250).** Cards 2 and 3 and the footer are out.
 
----
+**L3, accumulator** (S3): the same as the 8 s cut: `644:540:722:110` (ACCUMULATOR 2, the readout, the grid with 0 to 9 labels and the sign lamp; stops above REPEAT), x1.335 to 860x721 at (60, 600). The active ones digit sits at about x 890, clear of the right-side UI. Push 1.00 to 1.04.
 
-## 3. Beat table
+**L4, Primes** (S4): `860:510:38:118` (TESTING readout plus all 14 checkers; the punched-card column, the right panel and the footer are out), x1.047 to 900x534 at (40, 690). Push 1.00 to 1.06. The checker tiles have no row labels, so a viewer cannot judge lamp order from them, but they are v6. Check one tile at full size against the A19 tile (0 at the bottom) at build.
 
-| # | Out time | Source and in/out | Vertical crop and motion | VO | Music | Overlay |
-|---|---|---|---|---|---|---|
-| B1 | 0.00 to 7.20 (7.2 s) | TOUR 29.30 to 36.50. Attract: room strip live, "Touch to program ENIAC" button. Screen is still attract at 36.0 and Pick a mission shows by 37.0, so the cut lands on the last attract frame before the tap. | **CW** `crop=607:1080:657:0` (same window as S10 in `assemble_short_teaser.py`: sits between the two rotating attract plates, so neither the left plate's name nor the right plate's text is in frame), scale to 1080x1920, slow push 1.00 to 1.04 via `scale=eval=frame` then `crop=1080:1920`. | L1 "Touch the screen." at 4.60 to about 5.8 | Up at 0, under from 4.55 to 6.0 | Hook, 0.0 to 3.6 |
-| B2 | 7.20 to 8.60 (1.4 s) | TOUR 36.90 to 38.30. "Pick a mission" (Squares, Primes, Trajectory cards). First Pick frame is between 36.5 and 37.0: step to it. | **PB** (blurred-fill pillarbox, same `pb()` helper), `crop=1800:900:60:40` (cards and header; ends y=940, so the kiosk footer at y about 1050 to 1075 is out), scale to 1080x540. | none | Up | none |
-| B3a | 8.60 to 14.60 (6.0 s) | SQUA about 94.0 to 100.0 (v6 equivalent). Accumulator 1: lamp rows sweep after INIT (3-row at about 96, 8-row at about 100). | **PB** around Accumulator 1: `crop=670:428:20:222` (lamp grid with 0-9 row labels; y=222 starts below the header so the "helper readout" flicker, e.g. "3333333333" over the label, is cut off), scale to 1080x690. Composite to 1080x1920 first, then push 1.00 to 1.05. | L2 starts at 8.90, ends about 12.2 | Under during L2, up after | none |
-| B3b | 14.60 to 20.60 (6.0 s) | SQUA about 100.0 to 106.0. Accumulator 2 sweep (the "66" flicker is in its header, also cropped out). | **PB**, same as B3a with `crop=670:428:600:222` (Accumulator 2). | none | Up (-20 LUFS), "let the lamps play" | none |
-| B4 | 20.60 to 30.00 (9.4 s) | TOUR 22.00 to 31.40. Live attract room, echoing the open. | **CW** `crop=607:1080:657:0`, push 1.00 to 1.03, `eq=brightness=-0.35` so the end text reads (S10 recipe from the script). | none | Swell from 20.6, fade 28.8 to 30.0 | End card, 21.2 to 30.0 |
+**L5, the whole machine** (S5): window `820:492:x:200` on the finale strip (strip spans x 82 to 1838, y 200 to 692). Pan x = 82 + 936 x smoothstep(0, 5, t), from Function Table and Accumulator 1 toward Accumulator 8 and beyond. Scale x1.317 to 1080x648 at y 636. The headline, the "LIVE" pill (above y 200) and the "You used 38 of ENIAC's 40 panels" text (below y 692) are out.
 
-Total: 5 clips. Lamps are on screen for 12 s, 40 percent of the Short.
+**L6, payoff** (S6): headline crop `1145:105:70:140` ("You programmed ENIAC."), x0.751 to 860x79 at (110, 600). Squares card crop `566:298:82:362` ("1 SQUARES / You counted up to 12 x 12 = 144."), x1.48 to 838x441 at (121, 720). Left out: the "In 1946, setting up a job..." sub-line (small, and it is a history claim we do not need), the Primes and Trajectory cards, Next and the footer.
 
-**Known weakness:** in v5 SQUA the lamps only "play" for about 1 s per INIT press, then sit still (one lit lamp per column, readout 1). A 6 s window holds one or two sweeps. See the recording request in section 7; a dedicated lamp-run clip would fix this for both cuts.
+**Tap ripple** (S1, S2): an FFmpeg-drawn graphic, not an image with text. On a transparent 600x600 layer: `geq` alpha for a ring of radius R = 30 + 260 x u (u = (t - t0)/0.45, clamped 0 to 1), 10 px thick, alpha 220 x (1 - u), plus a filled 34 px dot at alpha 200 for the first 0.12 s (the "finger"). It is overlaid centred on the tap point. White ring, no hand graphic: the standard screen-recording convention for a touch.
 
-**Safe zone:** overlays stay inside y=250 to 1500 and x<=960 (right 120 px reserved for platform UI).
+**Bloom pulse** (S3 at 9.583; S7 at 27.235, 28.055 and 28.333): `split`, `gblur=sigma=14`, `blend=all_expr='min(255,A+B*K)'`, K = a sum of a x exp(-(T - t_i) x 8) x gte(T, t_i), with a = 0.55 on the hits and 1.0 on 144 and the chord. Lit lamps flare for about 0.2 s; it does not change what the lamps show. In S7 it goes on the poster layer under the text.
 
 ---
 
-## 4. On-screen text (FFmpeg `drawtext`, never baked into images)
+## 6. On-screen text (`drawtext` on `ffmpeg-full`; never baked into images)
 
-Same font and look as the 45 s Short: Georgia Bold, white fill, 5 px black outline, centred, alpha fade.
+Georgia Bold, white, 5 px black outline, centred on x=540, auto-shrunk to fit 840 px. **Safe area:** every line is inside y 250 to 1500 and x 120 to 960.
 
-**Hook** (0.0 to 3.6 s, fade in 0.15, out 0.25), about 68 pt, uppercase, y about 285 and 375 over the top of B1:
-```
-PROGRAM ENIAC
-WITH YOUR FINGERTIP
-```
-(Option B: `A ROOM-SIZED COMPUTER.` / `ONE FINGERTIP.`)
-
-**End card** (21.2 to 30.0 s, fade in 0.3, held to the end), y from about 760 to 1160:
-```
-Vintage Computer Federation        (60 pt)
-InfoAge · 2201 Marconi Rd · Wall, NJ   (44 pt)
-Wed, Sat & Sun, 12 to 5            (56 pt)
-vcfed.org                          (88 pt)
-```
-Option B has no spoken-then-shown name on the end card, so add `ENIAC touch screen` above line 1 (44 pt). Option A does not need it (hook already named it).
-
-**Address and hours: sources**
-- Address: https://vcfed.org/museum-info/ (fetched 2026-10-12): "displayed in a building on campus of InfoAge Science Center, 2201 Marconi Rd., Wall, New Jersey, 07719."
-- Hours: same page: "open 12pm-5pm on Saturdays, Sundays and some Wednesdays ... also open other times by appointment." https://www.infoage.org/visit/ (fetched 2026-10-12): InfoAge open Wednesdays, Saturdays, Sundays, 12:00 to 5:00 PM.
-- The two agree on Saturday and Sunday, noon to 5. They differ on Wednesdays ("some" vs every). The card originally said Sat & Sun and left Wednesday out. **Nick confirmed 2026-10-12 (voice): Wednesday, Saturday, Sunday, noon to 5. The card now says Wed, Sat & Sun, 12 to 5.**
-- **Nick or Doug should confirm before posting.** The repo had no hours anywhere (the 45 s Short's card only says "VCF museum · Wall, NJ" and "vcfed.org").
-- Fallback if not confirmed: drop line 3, and line 4 becomes `Hours: vcfed.org`.
-- Not on the card: phone, admission prices, "free parking" (InfoAge page, not VCF's, and it changes).
-
----
-
-## 5. Music and loudness
-
-- Bed: Kevin MacLeod "Hot Swing" (`assets/audio/music/Hot Swing.mp3`, 0:50), the approved stand-in for the 45 s Short (Gate 1, 2026-10-08). Same CC BY credit line in the description.
-- Seek: `-ss 20` so the track's big ending lands on the last frame (50 s track, 30 s Short). Listening call at Gate 2; if it feels abrupt, use `-ss 0` with the 28.8 to 30.0 fade.
-- Ducking: voice about -16 LUFS. Music "under" about -32 LUFS while a line plays (-0.05 s margins), "up" about -20 LUFS in the gaps, 0.15 s smoothing. Same envelope as `build_audio()`.
-- Master: **-14 LUFS integrated**, sample peak <= -2 dBFS before AAC (the 45 s Short measured -14.1 LUFS, TP -4.2). Light compressor, then `alimiter`, then gain search, as in the script.
-- AAC 192 kb/s, 44.1 kHz, H.264 CRF 18, +faststart.
-
----
-
-## 6. Gate checklist
-
-1. Nick picks Option A or B.
-2. ~~Nick or Doug confirms hours.~~ Done: Nick confirmed Wed, Sat, Sun, 12 to 5 (2026-10-12).
-3. Pronunciation (M2): Option A has no spoken ENIAC. Option B has one, so it goes through the listening-gate reel (a one-clip reel; Whisper cannot judge it).
-4. Frame-step checks: B1 plates (no name in frame from 29.3 to 36.5), B2 footer out of frame, B3 header flicker out of frame, lamps 0-at-bottom in v6.
-5. Per-scene WAVs plus one review MP3 (L1, L2).
-6. Draft only, no publish. Run `youtube-whoami.py` before any upload.
-
-## 8. What changed vs the 45 s Short (applies to both cuts)
-
-| | 45 s (`short-teaser.md`) | 30 s | 8 s |
+**Hook**, frame 0 to 3.20 (on at frame 0, fade out 2.95 to 3.20). It ends before the S2 title crop appears at y 300.
+| Line | Text | Size | Centre y |
 |---|---|---|---|
-| Job | Tell the Trajectory story, then invite | Invite, with a glimpse of the screen | Invite |
-| Voice | 8 lines, 109 words, ENIAC spoken 5 times | 2 sentences, 10 to 12 words, 0 or 1 ENIAC | 1 sentence, 12 to 13 words, 0 ENIAC |
-| Shots | 12 clips, 2 Army photos | 5 clips, no photos | 1 clip |
-| Teaching content | Shells, cables, cards, missions | None | None |
-| Overlays | hook + invite (VCF museum, vcfed.org) | hook + full end card with address and hours | name + museum |
-| Credits | photo credit and music in description | music only (no photos) | music only |
-| Pronunciation gate | 5 spoken ENIAC | 0 (A) or 1 (B) | 0 |
+| 1 | `COULD YOU PROGRAM` | 66 pt (auto-shrinks) | 300 |
+| 2 | `A 1946 COMPUTER?` | 66 pt | 382 |
+Above the wordmark (top 455).
 
-## 9. Assembly note: what `scripts/assemble_short_teaser.py` can be reused for
+**End card**, from 21.667, held to 30.000. Each line fades in over 0.12 s on a beat:
+| Line | Text | Size | Centre y | In at (beat) |
+|---|---|---|---|---|
+| 1 | `COME TRY IT` | 62 pt | 580 | 21.667 (b52) |
+| 2 | `Vintage Computer Federation` | 56 pt (auto-shrinks) | 700 | 22.083 (b53) |
+| 3 | `InfoAge · 2201 Marconi Rd · Wall, NJ` | 40 pt (auto-shrinks) | 790 | 22.500 (b54) |
+| 4 | `Wed, Sat & Sun · 12 to 5` | 52 pt | 880 | 22.917 (b55) |
+| 5 | `vcfed.org` | 100 pt | 1020 | 23.333 (b56) |
+On the chord (28.333), a yellow copy of `vcfed.org` (`fontcolor=0xFFC23A`) fades in over 0.05 s and back out over 0.6 s, a "button" on the last hit. The card is fully built by 23.4 s and readable for 6.6 s, more on loops. The dimmed button "Touch to program ENIAC" stays visible below it, at y 1250 to 1430.
 
-Do not edit that script (it produced the published Short). Copy to a parameterised `scripts/assemble_short.py --cut 30s|8s` at the assembly stage.
+No subtitle track and no caption boxes in the picture. Two of the three spoken lines are on screen word for word (Q is the hook, C is card line 1). Y is answered visually by the kiosk's own headline.
 
-Reusable as is: `run()`, `FF`/`FP` (ffmpeg-full, needed for `drawtext`), `BG` and `pb()` (blurred-fill pillarbox), `EASE` (pan expression), the S10 CW-crop-plus-push-plus-darken block (B1 and B4 here), `render_shot()` frame-count logic and `NUDGE` json (frame-step nudges), `concat` of shot MP4s, `lufs()`, the compressor/limiter/gain-search chain in `build_audio()`, `dt()` and `final()` for the overlays, and the encode settings.
+---
 
-Needs changing:
-- `SHOTS` table, `LINES` and `TOTAL` become per-cut data (30.0 and 8.0).
-- `SRC` points to `source-v6` (v5 is wrong on lamps).
-- Music: add `-ss` (20 for 30 s, 42 for 8 s); the hard-coded swell at 42.7 s and fade at 44.2 s become parameters.
-- Overlays: the invite card becomes 3 to 4 lines; hook text per option.
-- New PB window for the single accumulator (`crop=670:428:x:222`), plus a post-composite push; the existing `pb()` has no push.
-- Paths: `output/build/short-30s/`, `output/short-30s.mp4`, `assets/audio/short-30s/`, and the same for 8 s.
-- No `zoom_still()` or photo shots needed.
+## 7. Sound
 
-## 7. Recording request to the kiosk side (optional, improves both cuts)
+- **Mix:** voice about -16 LUFS. Music "under" about -30 LUFS at 0.05 to 3.05 (Q), 18.40 to 20.10 (Y) and 21.70 to 24.75 (C), with 0.15 s smoothing. Music "up" about -17 LUFS everywhere else. It is a music-led Short, and the lamps need the band behind them.
+- **Tap click (the one sound effect):** synthesised, so honestly sourced: 6 ms of white noise with a 1.5 ms exponential decay, first-differenced (a cheap high-pass), plus a 170 Hz sine with a 20 ms decay at half amplitude. Peak about -8 dBFS, placed at 3.194 and 4.861, sitting about 8 dB under the voice. Save as `assets/audio/sfx/tap.wav` with a note "synthesised UI tap, not a recording of ENIAC or of the kiosk". It is the sound of a finger on glass, which is what the picture shows.
+- **No relay or card-punch sounds on the lamps.** The accumulators were electronic, so a click per count would suggest a sound ENIAC did not make while counting. The primes shot does not show cards being punched (that column is cropped out), so it gets no punch sound either.
+- **Master:** -14 LUFS integrated, **true peak <= -1.5 dBTP** (limiter ceiling -2.0, measured with `ebur128=peak=true` on the final AAC). v1 draft measured -14.1 / -4.5, but this mix is louder in the middle, so measure again.
+- AAC 192 kb/s 44.1 kHz, H.264 CRF 18, yuv420p, +faststart.
 
-A 10 s clip of Squares accumulators with Full speed running ("Skip to the answer" or "Keep pressing"), CLEAN=1, from the v6 build. At full speed the lamps flicker continuously, which is the "lamps running" picture the 8 s cut needs. The v5 clip has only short sweeps.
+---
+
+## 8. Title, description, captions (draft; Nick publishes)
+
+**Channel:** @nickdnj. **Related video:** the v6 long cut once it is published (empty until then). Run `/Users/nickd/Workspaces/AgentArchitect/scripts/youtube-whoami.py` before any upload.
+
+**Title (43 chars):** `Could you program a 1946 computer? #Shorts`
+Alternatives: `Program ENIAC with your fingertip, in NJ #Shorts` (48) · `You programmed ENIAC. (Yes, you can.) #Shorts` (45)
+
+**Description:**
+```
+Could you program a computer from 1946? Yes, with your fingertip. At the Vintage Computer Federation museum, a touch screen on a simulator of ENIAC lets you set up a job and watch the lamps work through it.
+
+The touch screen is on the museum floor and still being tested with visitors.
+
+Vintage Computer Federation museum
+InfoAge Science and History Museums, 2201 Marconi Rd, Wall, NJ 07719
+Open Wed, Sat and Sun, 12 to 5. Check vcfed.org before you go.
+https://vcfed.org
+
+#Shorts #ENIAC #ComputerHistory #VintageComputing #VCF #InfoAge #NewJersey #Museum
+
+Music: "Hot Swing" by Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 4.0 License
+http://creativecommons.org/licenses/by/4.0/
+```
+(The "still being tested" line is Nick's call. It is true and gives a reason to come, but whether to say so publicly is his decision. Nothing else in the Short or the copy implies a finished exhibit. When the v6 long cut is up, add a line "Full walkthrough: <link>"; that video carries the credits.)
+
+**YouTube captions:** an SRT with Q (0.10 to 3.00), Y (18.45 to 20.05) and C (21.75 to 24.65), years as digits.
+
+**Reels:** "Could you program a 1946 computer? Yes, with your fingertip, on a touch screen on a simulator of ENIAC at the Vintage Computer Federation museum, InfoAge, Wall NJ. Wed, Sat, Sun 12 to 5. vcfed.org #ENIAC #ComputerHistory #VintageComputing #NewJersey #Museum #Reels"
+**TikTok:** "Could you program a 1946 computer? Come find out. VCF museum, Wall NJ #ENIAC #ComputerHistory #VintageComputing #NJ #museum"
+
+---
+
+## 9. New footage needed (M1 records from kiosk main)
+
+All clips: kiosk main build (lamps 0 at the bottom), `CLEAN=1` (no caption boxes), **no cursor and no touch marker**, 1920x1080 at 25 fps as before. **If the harness allows, use `deviceScaleFactor: 2`** (a 3840x2160 capture of the same 1920x1080 layout): every shot here enlarges a crop 1.0 to 1.6x, so double-density pixels make the text and lamps visibly sharper. Each clip gets a sidecar `<clip>.events.json` with ms timestamps (and x,y in video px) of every tap and every screen change. Those times become the in and out points, with no guessing from contact sheets.
+
+| ID | Priority | What | Spec |
+|---|---|---|---|
+| **F1** `attract-tap.mp4` | **Required** | Attract screen, one tap, Pick a mission, Squares Start | Fresh load to the attract screen. Let it run **at least 20 s untouched** with the room strip live (S7 needs 8.33 s plus S1's 3.33 s before the tap, plus slack). Then **one tap** on the centre of "Touch to program ENIAC". Record Pick a mission for **at least 5 s after its fade-in finishes**, then one tap on card 1's **Start**, and record 3 s more. About 30 s. Log: the tap times and points, the time Pick a mission is fully in, and (useful, not needed) the times the plates change. |
+| **F2** `squares-fullspeed-lamps.mp4` | **Required** (shared with the 8 s; the re-record in progress) | One unbroken Squares run, 0 to 144 | Squares, cables placed; CLEAR, Speed **Full**, "Keep pressing for me". **One unbroken run from readout 0 to 144, then hold on 144 for at least 3 s**; then CLEAR and a second full run as a spare. About 25 to 30 s. Log every Accumulator 2 readout change (DOM text change) in ms. |
+| F3 `finale-hold.mp4` | Optional (exists today) | Payoff and room | The finale from "You programmed ENIAC." (at least 6 s hold after its fade-in) through "Here is every unit you used." (at least 8 s hold with the strip live). Today's `finale.mp4` already has both (9.0 to 16.4 and 19.5 to 27). Re-record only for double density. |
+| F4 `primes-fullspeed.mp4` | Optional (exists today) | Busy checkers | Primes, already at Full when recording starts (so no mode change in frame), 15 s of the run between about 200 and 450 on the TESTING readout. Today's walkthrough has it at about 132 to 156. Re-record only for double density. |
+
+After recording, before any use: frame-check the lamp order (0 at the bottom, 9 at the top, the sign lamp level with 0 and 1) on F2 and on one strip frame of F1.
+
+---
+
+## 10. Gate checklist
+
+1. Nick picks concept A (or B or C), the title, and whether to keep the "still being tested" line.
+2. Voice: three new takes, Q (shared with the 8 s), Y and C. Whisper pass on the words. No ENIAC listening reel (spoken ENIAC = 0).
+3. Footage: F1 and F2 recorded and lamp order checked. Until they land, a proof build can run on the fallbacks named in section 4.
+4. Music: confirm by ear the downbeats at 3.333, 5.000, 10.000, 13.333, 18.333 and 21.667, the hits at 27.235 and 28.055, and the chord at 28.333.
+5. Frame-step: no plate, footer, status line or simulator credit in any crop; ripples sit on the button and on Start; the S3 step joints; S7 to S1 is continuous across the loop seam.
+6. Loudness on the final file: -14 LUFS, TP <= -1.5 dBTP.
+7. Gate 2 review: per-line WAVs (Q, Y, C) plus one review MP3 of the finished mix.
+8. Draft only. `youtube-whoami.py` before any upload; Nick publishes.
+
+## 11. What is better than v1, and why
+
+| v1 | v2 | Why it matters |
+|---|---|---|
+| 7.2 s attract hold before anything happens | A question, a tap and a cut within 3.3 s; a new shot every 1.7 to 5 s, every cut on a downbeat | Shorts decide in 1 to 3 s |
+| Sequence with no payoff | Question, then the lamps count to 144, then "You programmed ENIAC. / You counted up to 12 x 12 = 144.", then "Yes. With your fingertip." | A story with an answer, and the answer is in the kiosk's own words |
+| One accumulator in two 6 s INIT sweeps (about 1 s of movement each) | Lamps beat-locked to the music, 14 checkers at Full speed, then the whole machine lit up | Lamps as the star, with real motion |
+| Opens on CTA wording ("Touch the screen.") | Opens on tension ("Could you ...?") | A reason to keep watching |
+| Music `-ss 20`: chord at 26.7, a 1.2 s fade, no picture event on it | Music `-ss 18.325`: 30 s = 18 bars, cuts on downbeats, end card builds on beats, chord on vcfed.org | The edit is cut to the music |
+| Loop: hard cut from card to hook | The card's background is the attract footage right before frame 0, so the lamps run straight across the seam | A loop you do not notice |
+| 607 px full-height crop of the attract (the button did not fit, and plates were near the edge) | A collage of real elements from one live frame: wordmark, strip, button | Legible on a phone, and the credit plates are left out by design |
+| No sound design | One honest synthesised tap click; deliberately no fake machine sounds | A touch you can hear, without an inaccuracy experts would notice |
