@@ -50,6 +50,9 @@ export type Attract = P.Attract;
 export type AttractInfo = Omit<P.Attract, "t" | "re">;
 export type AttractPhase = P.Attract["phase"];
 export type AttractLanding = P.AttractLanding;
+export type OriginalUIConfig = P.OriginalUIConfig;
+export type OriginalUIReply = P.OriginalUIReply;
+export type AdminErrorBody = P.AdminErrorBody;
 
 export type ServerMsg =
   | P.Hello
@@ -64,7 +67,8 @@ export type ServerMsg =
   | P.Error
   | P.Pong
   | P.Punch
-  | (P.Attract & { t: "attract" });
+  | (P.Attract & { t: "attract" })
+  | P.OriginalUIReply;
 
 export type ButtonName = P.Button["b"];
 export type EndReason = P.EndSession["reason"];
@@ -79,7 +83,8 @@ export type ClientMsg =
   | P.AttractStart
   | P.AttractStop
   | P.Metric
-  | P.Ping;
+  | P.Ping
+  | P.OriginalUI;
 
 export type MissionSummary = M.Summary;
 export type Hints = M.Hints;

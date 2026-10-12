@@ -931,6 +931,12 @@ Stories are cut when each milestone starts, using M1 results and the spike repor
 
 ---
 
+### Original UI switch (2026-10-07, branch `original-ui-switch`)
+
+Built in one pass from `docs/original-ui-switch.md` and UX 7.11/7.12 while Nick was at the museum. It pulls part of M3's admin forward (#38): the 5-tap counter, S12 PIN pad, a three-button S13 (Restart simulator, Original UI, Return to kiosk), the admin API (`login`, `logout`, `restart-core`, `original-ui`) with a bcrypt PIN file and no default PIN, plus the visitor's **Original room tour** tile in Explore. Underneath: `internal/uiswitch` (request files in `/run/eniac-touch-kiosk-ui`), the kiosk-session watcher, `deploy/kiosk/original-ui` (supervisor), `original-ui-back.tcl` (Back to kiosk + idle), `openbox-rc.xml`, `tk` in the installer, `original-ui/` in the release (eniactk from the pinned export, images 1280 and 1900). Tests: Go units (uiswitch, admin, decode, config, session, recovery reset, metrics), `tests/web/{tapcount,pinpad}.test.ts`, `tests/deploy/test-ui-switch.sh` (in `make test`), the container rehearsal's original-UI checks. Still M3: health tiles, metrics view, restart-app, reboot, update, Change PIN on S13 (Q-OUI-3).
+
+---
+
 ## 7. Under-specified or conflicting items in the docs
 
 Raised while planning; each is folded into the named story where it can be, and otherwise needs an owner.

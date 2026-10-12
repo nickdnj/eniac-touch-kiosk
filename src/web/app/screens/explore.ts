@@ -11,7 +11,8 @@ import type { App, ExploreOpen, Screen, View } from "../app.ts";
 import type { ServerMsg } from "../protocol.ts";
 import { h, svgFromString } from "../ui/dom.ts";
 import { onTap, setDisabled, type TapPoint } from "../ui/tap.ts";
-import { button } from "../ui/overlays.ts";
+import { button, confirm } from "../ui/overlays.ts";
+import { COPY } from "../copy.ts";
 import { plate } from "../panels/art.ts";
 import { fetchMission } from "../net/api.ts";
 import { Panorama, type PanoTarget } from "../explore/panorama.ts";
@@ -235,13 +236,45 @@ export function exploreScreen(app: App, view: View): Screen {
       return;
     }
     const walk = button(`${EXPLORE.intro.walk} ›`, "primary ex-walk", () => goStop(0));
+    const tour = tourTile();
+    rail.classList.toggle("with-tour", !!tour);
     rail.append(
       h("div", { class: "eyebrow" }, h("span", {}, EXPLORE.intro.eyebrow)),
       h("h2", {}, EXPLORE.intro.title),
       h("p", { class: "body" }, EXPLORE.intro.body),
       planBlock(planSvg({ visible: visibleRange(pano.x) }), EXPLORE.planCaption, true),
-      h("div", { class: "rail-foot" }, walk),
+      h("div", { class: "rail-foot" }, walk, tour),
     );
+  }
+
+  /**
+   * The Original room tour tile (UX 7.12.4): rail state A only, and only
+   * when the bridge says the original UI can start (no dead buttons on the
+   * floor). A fresh visit leaves on one tap; a visit with a mission started
+   * or done asks first, since it will end.
+   */
+  function tourTile(): HTMLElement | null {
+    if (app.config.originalUi?.available !== true) return null;
+    const T = COPY.originalUi.tour;
+    const tile = h(
+      "div",
+      { class: "ex-tour", role: "button" },
+      h("span", { class: "ex-tour-icon", "aria-hidden": "true" }, svgFromString(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48"><path d="M8 40V12h32v28" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M16 40V20h16v20" fill="none" stroke="currentColor" stroke-width="3"/></svg>`)),
+      h("span", { class: "ex-tour-text" }, h("b", {}, T.label), h("span", {}, T.sub)),
+      h("span", { class: "ex-tour-out", "aria-hidden": "true" }, svgFromString(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40"><path d="M22 6h12v12M34 6L18 22M28 24v10H6V12h10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`)),
+    );
+    onTap(tile, () => void takeTour());
+    return tile;
+  }
+
+  async function takeTour(): Promise<void> {
+    const s = app.mirror.session;
+    const pristine = (!s || s.mode === "attract") && app.visit.startedAt === null && app.visit.done.size === 0;
+    const T = COPY.originalUi.tour;
+    if (!pristine && !(await confirm(app, T.confirm, T.yes, T.no))) return;
+    if (disposed) return;
+    saveState();
+    app.show({ name: "switching", switching: { door: "visitor", back: { name: "explore", explore: { from: open.from, restore: true } } } });
   }
 
   /** The plan of the room; with no caption it is the mission card's smaller one. */
@@ -460,6 +493,8 @@ export function exploreScreen(app: App, view: View): Screen {
         ensureAttract(app);
         renderLive();
       }
+      // The tour tile follows hello.config.originalUi.
+      if (m.t === "hello" && !st.sel && !st.mission) renderRail();
     },
     onMachine: (units) => {
       pano.invalidate(units);

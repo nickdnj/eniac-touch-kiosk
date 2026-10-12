@@ -2,8 +2,11 @@
 //
 //	eniac-bridge serve [--config FILE] [--dev]   run the websocket bridge
 //	eniac-bridge version                         print version and upstream pin
+//	eniac-bridge pin-hash < pin                  bcrypt hash for the staff PIN file
+//	eniac-bridge ui-request --mode tour|interactive|off|status
+//	                                             the Original UI switch over SSH
 //
-// Later stories add: vlink, record, mission check, selftest.
+// Also: vlink, record, mission check, selftest.
 package main
 
 import (

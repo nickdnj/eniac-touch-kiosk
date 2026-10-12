@@ -22,6 +22,8 @@ func TestDecodeValid(t *testing.T) {
 		`{"t":"attract_stop","id":4,"reason":"touch"}`,
 		`{"t":"attract_stop","reason":"menu"}`,
 		`{"t":"attract_stop"}`,
+		`{"t":"original_ui","mode":"tour"}`,
+		`{"t":"original_ui","id":7,"mode":"tour"}`,
 	} {
 		if m, e := Decode([]byte(s)); e != nil || m == nil {
 			t.Errorf("%s: %+v", s, e)
@@ -49,6 +51,9 @@ func TestDecodeRejects(t *testing.T) {
 		`{"t":"metric","ev":"wrong_tap","ip":"1.2.3.4"}`, `{"t":"metric","ev":"free text here"}`,
 		`{"t":"metric","ev":"explore_card","unit":"Acc 7!"}`,
 		`{"t":"ping","id":"x"}`, `{"t":"ping","id":1.5}`,
+		`{"t":"original_ui"}`, `{"t":"original_ui","mode":"interactive"}`, `{"t":"original_ui","mode":"Tour"}`,
+		`{"t":"original_ui","mode":"tour","idleS":7200}`, `{"t":"original_ui","mode":"tour","program":"sq.e"}`,
+		`{"t":"original_ui","mode":"tour","door":"staff"}`, `{"t":"original_ui","mode":["tour"]}`,
 		`{"t":"ping"} {"t":"ping"}`,
 		`{"t":"ping","pad":"` + strings.Repeat("x", MaxClientFrame) + `"}`,
 	} {

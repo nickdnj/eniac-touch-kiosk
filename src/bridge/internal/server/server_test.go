@@ -57,6 +57,19 @@ type env struct {
 
 func start(t *testing.T, dev bool) *env { return startWith(t, dev, nil) }
 
+// fakeAdmin records the origin check it was given.
+type fakeAdmin struct{}
+
+func (fakeAdmin) Handler(originOK func(string) bool) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !originOK(r.Header.Get("Origin")) {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+		w.WriteHeader(http.StatusTeapot)
+	})
+}
+
 func startWith(t *testing.T, dev bool, tweak func(*config.Config)) *env {
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
@@ -71,7 +84,7 @@ func startWith(t *testing.T, dev bool, tweak func(*config.Config)) *env {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	t.Cleanup(cancel)
-	go Run(ctx, Options{Config: cfg, Dev: dev, Log: log, Hub: e.hub, Handler: e.h, Listener: ln,
+	go Run(ctx, Options{Config: cfg, Dev: dev, Log: log, Hub: e.hub, Handler: e.h, Listener: ln, Admin: fakeAdmin{},
 		Healthz: func() protocol.Healthz {
 			if *e.down {
 				return protocol.Healthz{Status: "down"}
@@ -272,5 +285,25 @@ func TestWebFilesRevalidate(t *testing.T) {
 	}
 	if got := resp.Header.Get("Cache-Control"); got != "no-cache" {
 		t.Fatalf("page Cache-Control %q, want no-cache", got)
+	}
+}
+
+// /api/admin/ is mounted with the websocket's Origin rule (the kiosk page's
+// own address only).
+func TestAdminRoutesShareTheOriginCheck(t *testing.T) {
+	e := start(t, false)
+	for origin, want := range map[string]int{"http://" + e.addr: http.StatusTeapot, "": 403, "http://evil.example": 403} {
+		req, _ := http.NewRequest("POST", "http://"+e.addr+"/api/admin/login", strings.NewReader(`{"pin":"1234"}`))
+		if origin != "" {
+			req.Header.Set("Origin", origin)
+		}
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp.Body.Close()
+		if resp.StatusCode != want {
+			t.Errorf("origin %q: %d, want %d", origin, resp.StatusCode, want)
+		}
 	}
 }

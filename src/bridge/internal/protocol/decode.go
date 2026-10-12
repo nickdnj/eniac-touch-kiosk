@@ -15,7 +15,7 @@ var (
 
 // Decode strictly parses one client frame into one of the client message
 // types (StartMission, ApplyStep, SkipSetup, Button, SetSpeed, EndSession,
-// AttractStart, AttractStop, Metric, Ping). Unknown types, unknown fields, wrong field types, bad
+// AttractStart, AttractStop, Metric, Ping, OriginalUI). Unknown types, unknown fields, wrong field types, bad
 // values and oversize frames return an Error with code BAD_MESSAGE; they
 // never reach the core (FR-02).
 func Decode(b []byte) (any, *Error) {
@@ -134,6 +134,14 @@ func Decode(b []byte) (any, *Error) {
 	case "ping":
 		var m Ping
 		err = strict(&m)
+		msg = m
+	case "original_ui":
+		// The visitor door: the room tour only. "interactive" is staff-only
+		// and goes through the admin API with the PIN.
+		var m OriginalUI
+		if err = strict(&m); err == nil && m.Mode != "tour" {
+			return fail(re, "mode must be tour")
+		}
 		msg = m
 	default:
 		return fail(re, "unknown message type %q", head.T)

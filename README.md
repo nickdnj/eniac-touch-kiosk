@@ -50,7 +50,9 @@ make release ARCH=amd64   # Dell OptiPlex / any x86-64 Ubuntu 24.04 box (primary
 make release ARCH=arm64   # Raspberry Pi 5
 ```
 
-Copy `dist/eniac-touch-kiosk-<ver>-linux-<arch>.tar.gz` to the box, unpack, `sudo ./install.sh`. Removal: `sudo eniac-touch-kiosk-uninstall`. The full install-day procedure (USB stick, BIOS, touch check, power-cut test, rollback) is `docs/deploy-x86.md`. `tests/deploy/test-install-container.sh` rehearses install + removal in a throwaway Ubuntu 24.04 container.
+Copy `dist/eniac-touch-kiosk-<ver>-linux-<arch>.tar.gz` to the box, unpack, `sudo ./install.sh`, then set the staff PIN: `sudo eniac-touch-kiosk set-pin` (there is no default). Removal: `sudo eniac-touch-kiosk-uninstall`.
+
+Staff on the floor: one tap on the ENIAC wordmark (top left) asks to start over; **five taps** open the PIN pad and then the admin screen (**Restart simulator**, **Original UI**: Brian L. Stuart's own Tk front end, **Return to kiosk**). Visitors find Stuart's self-running **Original room tour** in Explore. **Back to kiosk** (top left) or the idle timeout returns; over SSH, `sudo eniac-touch-kiosk original-ui tour|interactive|off|status`. Design: `docs/original-ui-switch.md`. The full install-day procedure (USB stick, BIOS, touch check, power-cut test, rollback) is `docs/deploy-x86.md`. `tests/deploy/test-install-container.sh` rehearses install + removal in a throwaway Ubuntu 24.04 container.
 
 ## Upstream: pin, patches and taking Stuart's updates
 
@@ -99,3 +101,6 @@ Do this on a branch, as its own PR. Never bump the pin automatically.
    A mission whose `.e` changed fails `missions-check` until its steps and sha256 are reviewed.
 6. **Record it.** Add a line to the revision history in `docs/architecture.md` (and `docs/PRD.md` if a requirement changed), close the upstream-report items for the dropped patches, and open the PR.
 
+## License
+
+The code and documentation in this repository are MIT licensed (`LICENSE`). Brian L. Stuart's ENIAC simulator, which this kiosk runs, is **not** included and is **not** covered by that license; see `NOTICE.md`.

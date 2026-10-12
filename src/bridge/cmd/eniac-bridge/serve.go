@@ -8,11 +8,14 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"eniac-kiosk/bridge/internal/admin"
 	"eniac-kiosk/bridge/internal/config"
 	"eniac-kiosk/bridge/internal/mission"
 	"eniac-kiosk/bridge/internal/server"
 	"eniac-kiosk/bridge/internal/session"
+	"eniac-kiosk/bridge/internal/uiswitch"
 )
 
 func init() {
@@ -62,15 +65,26 @@ func runServe(args []string) int {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	hub := server.NewHub(log)
+	rec := newMetrics(cfg, log)
+	so := uiswitch.FromConfig(cfg)
+	so.Log = log
+	sw := uiswitch.New(so)
+	if ok, reason := sw.Available(); ok {
+		log.Info("original UI available", "dir", cfg.Paths.UISwitch)
+	} else {
+		log.Info("original UI unavailable", "reason", reason)
+	}
 	mgr, err := session.New(ctx, session.Options{Config: cfg, Missions: reg, Hub: hub, VlinkExe: self, Log: log,
-		Metrics: newMetrics(cfg, log)})
+		Metrics: rec, Switch: sw})
 	if err != nil {
 		log.Error("session manager", "err", err)
 		return 1
 	}
 	defer mgr.Close()
+	adm := admin.New(admin.Options{PinFile: cfg.Admin.PinFile, TokenTTL: time.Duration(cfg.Admin.TokenTTLS) * time.Second,
+		Hooks: admin.Hooks{RestartCore: mgr.AdminRestartCore, OriginalUI: mgr.AdminOriginalUI}, Metrics: rec, Log: log})
 	if err := server.Run(ctx, server.Options{Config: cfg, Dev: *dev, Log: log, Missions: reg, Hub: hub,
-		Handler: mgr, Healthz: mgr.Healthz}); err != nil {
+		Handler: mgr, Healthz: mgr.Healthz, Admin: adm}); err != nil {
 		log.Error("serve failed", "err", err)
 		return 1
 	}

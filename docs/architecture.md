@@ -348,7 +348,7 @@ This is the complete list. Nothing else is ever written.
 
 | `t` | When | Payload | M |
 |---|---|---|---|
-| `hello` | On connect | `protocol`, `build` (version + upstream commit), `config` (`idle.setupS`, `idle.runS`, `idle.countdownS`, `admin.tapZone` = `{corner: "top-left", widthPx: 120, heightPx: 96, taps: 5}`), `health` (as below) | M1 |
+| `hello` | On connect | `protocol`, `build` (version + upstream commit), `config` (`idle.setupS`, `idle.runS`, `idle.countdownS`, `admin.tapZone` = `{corner: "top-left", widthPx: 120, heightPx: 96, taps: 5}`, `originalUi` = `{available, reason?, tourIdleS, interactiveIdleS}`), `health` (as below). A hello after the original UI ran also records its `original_ui_exit` metric once | M1 |
 | `state` | After `hello`, on every new session, and on resync | `session` (below, `null` when there is none), `seq`, `machine` (full MachineState, `null` when there is no session: nothing to render, no demo fallback), `cards` (last 20), `run` (below) | M1 |
 | `frame` | ≤ 30 Hz while a session exists and something changed | `seq`, `d`: a **JSON Merge Patch** against MachineState. `seq` increases monotonically for the life of the bridge (not per session); apply a frame only if its `seq` is greater than the last `state`/`frame` applied | M1 |
 | `session` | Session state change | `id`, `mission`, `mode` (`visitor`/`docent`/`attract`), `state` (5.5), `applied` (step IDs), `remaining` (count) | M1 |
@@ -360,6 +360,7 @@ This is the complete list. Nothing else is ever written.
 | `health` | Change, and every 5 s | `core`: `starting`\|`up`\|`down`; `code` (5.8); `detail` (for example `hang-cmd`); `attempt`, `of`; `final` (retry budget exhausted); `kioskClient` (bool) | M1 |
 | `error` | A rejected client action | `re`, `code` (`BUSY`, `BAD_STATE`, `UNKNOWN_STEP`, `NOT_ALLOWED`, `BAD_MESSAGE`), `message` | M1 |
 | `pong` | Reply to `ping` | `re` | M1 |
+| `original_ui` | Reply to `original_ui` (the visitor's room tour) | `re`, `phase: "switching"`, `mode`, `id` (the request id; a repeat while pending or running answers the same id). The kiosk session closes the page within about a second; the page shows its failure state at 15 s. `docs/original-ui-switch.md` 6.3 | M3-lite |
 | `attract` | Attract phase change; reply to `attract_start`/`attract_stop`; also `state.attract` | `phase` (`off`/`starting`/`reading`/`flying`/`landed`/`recycling`/`error`), `mission`, `session`, `flight`, `landed`, `total`, `cards`, `holdMs` (landed), `landing` {`card`, `hop`, `along`, `up`, `text`, `flightMs`} (landed, recycling), `code`/`detail` (error), `re`. See 5.10 | M3-lite |
 
 **MachineState (JSON).** Everything is 1-based, and the keys are the `.e` unit numbers. Bit and digit vectors are strings, which keeps merge-patches small and exact. Arrays are never used, because merge-patch replaces arrays wholesale.
@@ -430,7 +431,8 @@ stateDiagram-v2
 | `ping` | none | any | Replies `pong`. Updates `kioskClient` last-seen. | M1 |
 | `attract_start` | none | any | Idempotent. Ends any other live session, then runs the attract loop (5.10) until stopped; it survives core faults and resumes after recovery. Replies `attract` | M3-lite |
 | `attract_stop` | `reason`: `touch`\|`menu` | any | The hand-off: stops the loop, kills the attract core, ends its session; replies `attract {phase:"off", re}` once the process is gone. `start_mission` and `end_session` do the same first. `start_mission` with `mode:"attract"` is `NOT_ALLOWED` | M3-lite |
-| `admin_*` | Over HTTP, not ws; section 8.4 | | | M3 |
+| `original_ui` | `mode`: `"tour"` only (`interactive`, other values and extra fields are `BAD_MESSAGE`) | any | The visitor door to Stuart's original UI (no PIN): if available, stops attract, ends any session (reason `original_ui`), writes the request (door `visitor`, `originalUi.tourIdleS`), replies `original_ui {phase:"switching"}`, records `original_ui_enter`; otherwise `NOT_ALLOWED` with the reason. `docs/original-ui-switch.md` 6.3 | M3-lite |
+| `admin_*` | Over HTTP, not ws; section 8.4. v1: `login`, `logout`, `restart-core`, `original-ui` (`docs/original-ui-switch.md` 6.1) | | | M3 |
 
 **"Keep pressing for me" and "Skip to the answer"** (UX 8.1.4) are **UI-side loops** over `button {b:"init"}`: wait for `run: idle`, check the `settled` values, press again. "Skip to the answer" first sends `set_speed {speed:"full"}`. The mission's `checkpoints` tell the UI when to stop (Squares: `a1 == 12`). The bridge's `BUSY` guard means a UI bug can't stack INITs.
 
@@ -791,7 +793,19 @@ health: { listen: "0.0.0.0:8741" }        # test profile: 127.0.0.1:8741
 core: { gomaxprocs: 2, nice: 5, readyTimeout: 5s, ackTimeout: 1.5s, silenceTimeout: 2s, probeEvery: 5s }
 recovery: { budget: 3, window: 5m, backoff: [2s, 5s, 10s], slowRetry: 10m }
 idle: { setupS: 90, runS: 180, countdownS: 15 }  # FR-32, sent to the UI in hello.config
-admin: { sessionTimeoutS: 120, allowPowerActions: true, allowUpdates: true }  # both false on the test profile
+admin: { sessionTimeoutS: 120, allowPowerActions: true, allowUpdates: true,   # both false on the test profile
+         pinFile: /etc/eniac-kiosk/admin-pin, tokenTtlS: 600 }   # pinFile default: admin-pin beside this file
+originalUi:                              # docs/original-ui-switch.md 6.6; off unless set (the floor config turns it on)
+  enabled: false
+  tourIdleS: 300                         # visitor -D room tour (UX 7.12.6)
+  interactiveIdleS: 900                  # staff, interactive
+  warnS: 30                              # countdown on the Back to kiosk button
+  requestTtlS: 10                        # the kiosk session ignores older requests
+  minGapS: 10                            # repeats within this are no-ops
+  wish: /usr/bin/wish
+paths:                                   # (M1) derived from release when empty; these two are new
+  uiSwitch: /run/eniac-kiosk-ui          # default <paths.run>-ui; 2770 eniac:<kiosk user>, tmpfiles.d
+  originalUi: /opt/eniac-kiosk/current/original-ui   # default <release>/original-ui
 metrics: { retentionDays: 400 }
 assets: { upstreamPhotos: false }        # FR-42 / R1
 ```
@@ -810,6 +824,8 @@ assets: { upstreamPhotos: false }        # FR-42 / R1
 HTTP on the loopback listener only:
 - `POST /api/admin/login {pin}` checks bcrypt and returns a short-lived token (2 min idle, FR-74). A wrong PIN adds a 2 s delay. After 5 failures → 60 s lockout.
 - `POST /api/admin/{restart-core|restart-app|reboot|shutdown|update|rollback}` with the token. Actions that need privilege go through **polkit** (prod only), which lets user `eniac` do exactly these: `systemctl restart eniac-kiosk-*.service`, `start eniac-kiosk-update.service` / `eniac-kiosk-rollback.service`, `reboot`, `poweroff`. On the test profile, reboot, shutdown and update return `NOT_ALLOWED`, because they would disrupt the Model 4.
+
+**v1 subset and the Original UI switch (2026-10-07):** the first admin build is `login`, `logout`, `restart-core` and `original-ui` only, with the PIN as a bcrypt file `/etc/eniac-touch-kiosk/admin-pin` (no default, set by `eniac-touch-kiosk set-pin`) and a 10 min token. The same change adds the visitor-side websocket intent `original_ui {mode:"tour"}` (no PIN) to the 5.6 whitelist, and `hello.config.originalUi`. Endpoints, error codes, lockout, metrics and the ADRs are in [`docs/original-ui-switch.md`](original-ui-switch.md) (sections 6 and 11).
 
 ---
 
@@ -948,6 +964,7 @@ The floor kiosk is now a **Dell OptiPlex 9020M (amd64) on Ubuntu 24.04 + X11**, 
 - **Install:** `deploy/kiosk/install.sh` (top-level `install.sh` in the tarball). It is idempotent and manifest-driven. It sets up apt: X11, openbox, unclutter, xinput, and **Chromium as a .deb**. On Ubuntu the .deb comes from the xtradeb PPA, pinned to Chromium only. The snap is refused: it can't use a profile outside `~/snap`, and snapd refreshes kill it. On Debian / Pi OS it uses the distro `chromium`. It creates the system user `eniac` (runs the bridge) and the login user `eniac-kiosk` (no sudo, password locked; owns X). It installs `/opt/eniac-touch-kiosk/{releases/<v>,current,previous}` and `/etc/eniac-touch-kiosk/config.yaml`, with everything on loopback and power/update actions off until M3. It adds `eniac-touch-kiosk-bridge.service` (`Restart=always`, sandboxed as in 3.5) and sets tty1 autologin → `startx -- -nocursor -s 0 -dpms` → `deploy/kiosk/kiosk-session`, which waits for the bridge, then loops Chromium with the 3.5 flags (`deploy/chromium/flags`) and a fresh tmpfs profile under `/run/user/<uid>`. The default target is `multi-user.target`; the previous value is recorded. This replaces the `eniac-kiosk-display.service` xinit unit of 3.5 with the proven getty+startx chain, so the display has one start path, not two.
 - **Remove:** `eniac-touch-kiosk-uninstall [--purge-packages] [--keep-data]` removes exactly the manifest, verifies, and reports. Package purge is simulated first and refused if apt would take anything the installer didn't add.
 - **Naming:** this profile uses `eniac-touch-kiosk` for paths and units (per the 2026-10 install request). The `eniac-kiosk` names in 3.5 and 8.1 still describe the Model 4 test profile (10.3), which is not built yet. Reconcile when M3 brings the update/rollback units.
+- **Original UI switch (2026-10-07):** Stuart's Tk front end (`eniactk`, built from the same pinned and patched export as the core, run on our own `bin/eniac-core`) can replace Chromium on the same X display: the bridge writes a request into the shared tmpfs directory `/run/eniac-touch-kiosk-ui` (2770 `eniac:eniac-kiosk`, tmpfiles.d), the kiosk-session loop closes its own Chromium and runs `deploy/kiosk/original-ui`, and a "Back to kiosk" overlay or an idle timeout brings Chromium back. Nothing survives a reboot. The release gains `original-ui/` and the installer adds the `tk` package and an openbox config with no decorations. Design, ADRs and the deploy steps for the floor box: [`docs/original-ui-switch.md`](original-ui-switch.md).
 - **Container-tested** (Docker, ubuntu:24.04 amd64, `tests/deploy/test-install-container.sh`): apt, users, files, idempotency, bridge + core + selftest, headless Chromium render, uninstall diff. **Not yet tested:** systemd, autologin/X, touch, BIOS power-on.
 
 ---
@@ -1010,7 +1027,7 @@ eniac-touch-kiosk/
 | `make test` | `go test ./...` (including golden and headless-core tests against the darwin core), `go vet`, `tsc --noEmit`, `node --test tests/web`, `eniac-bridge mission check missions/*.yaml` |
 | `make e2e` | Playwright: Squares start to finish by touch events; kill -9 the core mid-run → S10 → recovery → attract |
 | `make release` | Cross-compiles bridge + core for `linux/arm64`, bundles web and missions, computes the runtime-file closure, writes `SHA256SUMS`, and runs a fake-core exclusion check → `dist/…tar.gz` |
-| `make deploy-test HOST=admin@10.130.10.36` | scp + `install.sh --profile test` + `eniac-kiosk selftest` |
+| `make deploy-test HOST=admin@<museum-lan>.36` | scp + `install.sh --profile test` + `eniac-kiosk selftest` |
 
 The Mac keeps working with no network once `make upstream` and the Go module cache are warm.
 
@@ -1132,3 +1149,4 @@ The Mac keeps working with no network once `make upstream` and the Go module cac
 | 0.6 | 2026-10-02 | software-developer agent (attract engine) | 5.10: the live attract loop (one `trajdemo.e` flight per core), `attract` message and `state.attract`, `attract_start`/`attract_stop`, config `attract:`, attract metrics; 5.4 and 5.6 rows. Soak: `docs/spikes/S5-attract-soak.md`. |
 | 0.7 | 2026-10-02 | software-developer agent (M3 Explore ENIAC) | 9.3: the panorama component and its API, Explore's live lamps from the 5.10 attract loop (kept through Explore, the Glossary and the honor roll; stopped with reason menu on to the picker or a mission), `hello.config.idle.exploreS` (120 s), `metric.unit` and the Explore / glossary counters (FR-98). 6.1: divider lamp IDs. |
 | 0.8 | 2026-10-02 | software-developer agent (M3 finale) | 9.4: the S8 finale (trigger, beat sequencer, real-number rules, F2 lamps and core-down behaviour, the S16 chip) and the finale counters. |
+| 0.9 | 2026-10-07 | software-developer agent (Original UI switch) | 5.4 `original_ui` reply and `hello.config.originalUi`; 5.6 `original_ui {mode:"tour"}` and the v1 `admin_*` routes; 8.2 `admin.pinFile`/`tokenTtlS`, `originalUi:`, `paths.uiSwitch`/`originalUi`; 8.4 and 10.5 pointers. Design and ADRs: `docs/original-ui-switch.md`. |

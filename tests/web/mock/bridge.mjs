@@ -31,7 +31,7 @@ export const RATES = { squares: { slow: 13, full: 0 }, primes: { slow: 100, full
 /** The 14 group checkers of sieve.e: Acc n watches the nth odd prime. */
 export const CHECKERS = [3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47];
 
-const WL = new Set(["start_mission", "apply_step", "skip_setup", "button", "set_speed", "end_session", "attract_start", "attract_stop", "metric", "ping"]);
+const WL = new Set(["start_mission", "apply_step", "skip_setup", "button", "set_speed", "end_session", "attract_start", "attract_stop", "metric", "ping", "original_ui"]);
 // UI metric whitelist (architecture 8.3, protocol.gen.ts Metric.ev); bridge-owned names are NOT_ALLOWED.
 const METRICS = new Set(["wrong_tap", "step_done", "speed", "skip_to_answer", "setup_skipped", "idle_reset", "mission_picked", "picker_next_used", "honor_page_view",
   "explore_open", "explore_card", "explore_walk_completed", "explore_mission_chip", "glossary_open",
@@ -45,6 +45,9 @@ export function defaultConfig() {
   return {
     idle: { setupS: 90, runS: 180, countdownS: 15, exploreS: 120 },
     admin: { tapZone: { corner: "top-left", widthPx: 120, heightPx: 96, taps: 5 } },
+    // The Original UI switch (docs/original-ui-switch.md 6.3). MOCK_ORIGINAL_UI=1 (or
+    // /__mock/config) makes it available; the mock only answers "switching" (nothing swaps).
+    originalUi: { available: process.env.MOCK_ORIGINAL_UI === "1", ...(process.env.MOCK_ORIGINAL_UI === "1" ? {} : { reason: "disabled" }), tourIdleS: 300, interactiveIdleS: 900 },
   };
 }
 
@@ -195,6 +198,12 @@ export class MockBridge {
       case "attract_stop":
         this.stopAttract();
         return this.send(ws, this.attractMsg({ re: m.id }));
+      case "original_ui":
+        if (m.mode !== "tour") return err("BAD_MESSAGE", "mode must be tour");
+        if (!this.config.originalUi?.available) return err("NOT_ALLOWED", `the original UI is not available (${this.config.originalUi?.reason ?? "disabled"})`);
+        this.stopAttract();
+        this.endSession();
+        return this.send(ws, { t: "original_ui", re: m.id, phase: "switching", mode: "tour", id: "0badc0de" });
     }
     // Like the real bridge: an attract flight runs by itself.
     if (s && s.mode === "attract") return err("NOT_ALLOWED", "attract runs by itself");

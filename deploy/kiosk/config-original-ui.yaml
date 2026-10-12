@@ -1,0 +1,14 @@
+
+# Original UI switch (docs/original-ui-switch.md 6.6): Brian L. Stuart's own
+# Tk front end, from S13 Admin (staff, interactive) and the Explore tile
+# (visitors, the self-running room tour). Idle limits in seconds; the
+# countdown shows on the "Back to kiosk" button for the last warnS.
+# Set enabled: false to hide both doors.
+originalUi:
+  enabled: true
+  tourIdleS: 300
+  interactiveIdleS: 900
+  warnS: 30
+  requestTtlS: 10
+  minGapS: 10
+  wish: /usr/bin/wish

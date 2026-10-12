@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  openbox config for the kiosk X session (docs/original-ui-switch.md 5.4,
+  ADR-OUI-10). kiosk-session passes it with
+  "openbox (config-file option) deploy/kiosk/openbox-rc.xml"; nothing is
+  written to /etc/xdg/openbox.
+
+  - No window decorations: no title bar, so no close or minimise button a
+    visitor could reach by touch on Stuart's Tk window (closing it would
+    leave a black screen behind a running simulator).
+  - No root menu, no Alt+Tab, no window dragging or resizing: the keyboard
+    and mouse bindings are empty but for focus-on-press in a client.
+  - The "Back to kiosk" window (title eniac-back, original-ui-back.tcl) is
+    kept in the above layer at 0,0 and never takes focus.
+  Chromium in kiosk mode is fullscreen and undecorated anyway.
+-->
+<openbox_config xmlns="http://openbox.org/3.4/rc">
+  <resistance><strength>0</strength><screen_edge_strength>0</screen_edge_strength></resistance>
+  <focus>
+    <focusNew>yes</focusNew>
+    <followMouse>no</followMouse>
+  </focus>
+  <placement><policy>Smart</policy><center>no</center></placement>
+  <theme>
+    <keepBorder>no</keepBorder>
+    <animateIconify>no</animateIconify>
+  </theme>
+  <desktops><number>1</number><firstdesk>1</firstdesk></desktops>
+  <margins><top>0</top><bottom>0</bottom><left>0</left><right>0</right></margins>
+  <keyboard>
+  </keyboard>
+  <mouse>
+    <dragThreshold>1</dragThreshold>
+    <doubleClickTime>500</doubleClickTime>
+    <screenEdgeWarpTime>0</screenEdgeWarpTime>
+    <context name="Client">
+      <mousebind button="Left" action="Press">
+        <action name="Focus"/>
+      </mousebind>
+    </context>
+  </mouse>
+  <menu>
+  </menu>
+  <applications>
+    <application class="*">
+      <decor>no</decor>
+      <maximized>no</maximized>
+    </application>
+    <application title="eniac-back">
+      <decor>no</decor>
+      <layer>above</layer>
+      <focus>no</focus>
+      <position force="yes"><x>0</x><y>0</y></position>
+    </application>
+  </applications>
+</openbox_config>

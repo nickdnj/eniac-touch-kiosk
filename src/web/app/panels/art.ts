@@ -198,10 +198,12 @@ export function accumulatorPanel(n: number, standalone = false): Panel {
   b += plate(14, 14, W - 28, 52, [`ACCUMULATOR ${n}`]);
 
   // Lamp band: sign + 10 digit columns x rows 0..9 (UX 6.2: 14 px lamps).
+  // Digit 0 is the bottom row and 9 the top, as in Stuart's eniactk (neonpos: y = 149 + val * 38, y up).
+  // The P and M sign lamps sit level with rows 0 and 1.
   b += recess(12, 76, W - 24, 252);
   const col = (d: number) => 68 + (d - 1) * 22.4;
-  const row = (v: number) => 102 + v * 16;
-  b += text(26, 92, "±", { size: 11 });
+  const row = (v: number) => 102 + (9 - v) * 16;
+  b += text(26, row(2) + 3.5, "±", { size: 11 });
   for (let v = 0; v <= 9; v++) b += text(50, row(v) + 3.5, String(v), { size: 10, weight: 400 });
   for (const [s, v] of [["P", 0], ["M", 1]] as const) {
     const id = `lamp:acc.${n}.sign.${s}`;
@@ -492,7 +494,7 @@ export function accumulatorRunGrid(n: number, standalone = false): Panel {
   let b = panelFace(W, H);
   b += recess(14, 14, W - 28, 420);
   const col = (d: number) => 128 + (d - 1) * 52;
-  const row = (v: number) => 46 + v * 38;
+  const row = (v: number) => 46 + (9 - v) * 38; // 0 at the bottom, 9 at the top, as on the real machine
   for (let v = 0; v <= 9; v++) b += text(32, row(v) + 8, String(v), { size: 24, weight: 400, fill: "#9aa0a8", mono: true });
   for (const [s, v] of [["P", 0], ["M", 1]] as const) {
     const id = `lamp:acc.${n}.sign.${s}`;
@@ -689,7 +691,7 @@ export function accumulatorCompact(n: number, standalone = false, pitch = 9): Pa
   b += `<rect x="2" y="12" width="${W - 4}" height="${H - 14}" rx="3" fill="${C.recess}"/>`;
   b += text(4, 9, `A${n}`, { size: 8, anchor: "start", weight: 700 });
   const col = (d: number) => gx + (d - 1) * pitch + pitch / 2;
-  const row = (v: number) => gy + v * pitch + pitch / 2;
+  const row = (v: number) => gy + (9 - v) * pitch + pitch / 2; // 0 at the bottom, 9 at the top
   for (const [s, v] of [["P", 0], ["M", 1]] as const) {
     const id = `lamp:acc.${n}.sign.${s}`;
     b += lamp(id, 10, row(v), r);

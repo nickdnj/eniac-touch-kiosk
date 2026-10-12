@@ -21,6 +21,7 @@ PREFIX=/opt/eniac-touch-kiosk
 ETC=/etc/eniac-touch-kiosk
 STATE=/var/lib/eniac-touch-kiosk
 RUN=/run/eniac-touch-kiosk
+UI_DIR=/run/eniac-touch-kiosk-ui
 MANIFEST=$PREFIX/INSTALL-MANIFEST
 UNIT=eniac-touch-kiosk-bridge.service
 SVC_USER=eniac
@@ -30,7 +31,9 @@ CANON_FILES=("/etc/systemd/system/$UNIT"
              /etc/systemd/system/getty@tty1.service.d/eniac-touch-kiosk-autologin.conf
              /etc/apt/preferences.d/eniac-touch-kiosk-chromium
              /usr/local/bin/eniac-touch-kiosk
-             /usr/local/sbin/eniac-touch-kiosk-uninstall)
+             /usr/local/sbin/eniac-touch-kiosk-uninstall
+             /etc/tmpfiles.d/eniac-touch-kiosk.conf
+             /etc/eniac-touch-kiosk/admin-pin)
 
 die()  { echo "uninstall: ERROR: $*" >&2; exit 1; }
 log()  { echo "uninstall: $*"; }
@@ -122,7 +125,7 @@ done
 [ "${#APTFILES[@]}" -gt 0 ] && command -v apt-get >/dev/null && { apt-get update -q >/dev/null 2>&1 || true; }
 [ "$SYSTEMD" = 1 ] && { systemctl daemon-reload; systemctl reset-failed "$UNIT" 2>/dev/null || true; }
 
-for d in "$ETC" "$RUN"; do
+for d in "$ETC" "$RUN" "$UI_DIR"; do
   if [ -e "$d" ]; then rm -rf -- "$d"; gone "$d"; fi
 done
 if [ -e "$STATE" ]; then
@@ -148,7 +151,7 @@ fi
 
 # --- verify ------------------------------------------------------------------
 left=()
-for p in "$PREFIX" "$ETC" "$RUN" "${FILES[@]}" "${APTFILES[@]}"; do [ -e "$p" ] || [ -L "$p" ] && left+=("$p"); done
+for p in "$PREFIX" "$ETC" "$RUN" "$UI_DIR" "${FILES[@]}" "${APTFILES[@]}"; do [ -e "$p" ] || [ -L "$p" ] && left+=("$p"); done
 [ "$KEEP_DATA" = 1 ] || { [ -e "$STATE" ] && left+=("$STATE"); }
 for u in "${USERS[@]}"; do id -u "$u" >/dev/null 2>&1 && left+=("user $u"); done
 if [ "$SYSTEMD" = 1 ] && systemctl cat "$UNIT" >/dev/null 2>&1; then left+=("unit $UNIT still loaded"); fi

@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# The original-UI supervisor (docs/original-ui-switch.md 5.2). kiosk-session
+# runs it with setsid in place of Chromium for one turn of its loop:
+#
+#   original-ui --mode tour|interactive --idle-s N --warn-s N
+#
+# It starts Brian L. Stuart's own Tk front end (eniactk, built from the same
+# pinned and patched upstream as the kiosk's core) on OUR bin/eniac-core,
+# exactly as the museum's old Pi ran it but without xterm:
+#
+#   tail -f /dev/null | eniac-core -v "eniactk[ -D]" trajdemo.e
+#
+# (-D, the visitor's room tour, cycles the views every 5 s; staff get the
+# interactive front end), plus the always-on-top "Back to kiosk" button
+# (original-ui-back.tcl), which also owns the idle timeout. It then
+# watches: whichever ends first decides the exit code. It never cleans up
+# its children itself; kiosk-session kills the whole process group.
+#
+#   exit 0    Back to kiosk tapped          (cause tap)
+#   exit 10   idle timeout                  (cause idle)
+#   exit 20   preflight failed              (cause failed: no wish, no eniactk,
+#                                            no images for this screen, ...)
+#   exit 21   core, eniactk, its window or the Back button died (cause failed)
+#   143/137   withdrawn over SSH, or killed (cause remote)
+set -u
+
+HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
+REL="$(cd "$HERE/../.." && pwd)"
+OUI="${KIOSK_OUI_DIR:-$REL/original-ui}"
+CORE="${KIOSK_CORE:-$REL/bin/eniac-core}"
+WISH="${KIOSK_WISH:-/usr/bin/wish}"
+# eniactk's image widths (vis/eniactk.go innergui: widset).
+WIDTHS=(480 720 1020 1280 1360 1600 1800 1900 2500 3500)
+
+log() { echo "original-ui: $*" >&2; }
+fail() { log "$*"; exit 20; }
+
+MODE="" IDLE="" WARN=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --mode) MODE="${2:-}"; shift 2 ;;
+    --idle-s) IDLE="${2:-}"; shift 2 ;;
+    --warn-s) WARN="${2:-}"; shift 2 ;;
+    *) fail "unknown argument: $1" ;;
+  esac
+done
+[[ "$MODE" =~ ^(tour|interactive)$ ]] || fail "--mode must be tour or interactive"
+[[ "$IDLE" =~ ^[0-9]+$ ]] && [[ "$WARN" =~ ^[0-9]+$ ]] || fail "--idle-s and --warn-s must be whole seconds"
+
+# --- preflight: one log line naming the missing piece, exit 20 -------------
+[ -x "$CORE" ] || fail "missing $CORE"
+[ -x "$OUI/bin/eniactk" ] || fail "missing $OUI/bin/eniactk (release built without original-ui/)"
+[ -x "$WISH" ] || fail "missing $WISH (apt package tk; re-run the installer)"
+[ -r "$OUI/programs/trajdemo.e" ] || fail "missing $OUI/programs/trajdemo.e"
+[ -r "$OUI/demo.card" ] || fail "missing $OUI/demo.card"
+
+# The image width eniactk will pick for this screen, by its own rule: if
+# W/2+120 > H then W = (H-120)*2; the largest width below W; 1900 if none.
+read -r SW SH < <(xrandr --current 2>/dev/null | sed -n 's/.* current \([0-9]*\) x \([0-9]*\),.*/\1 \2/p')
+if ! [[ "${SW:-}" =~ ^[0-9]+$ && "${SH:-}" =~ ^[0-9]+$ ]]; then
+  log "WARNING: could not read the screen size (xrandr); assuming 1920x1080"
+  SW=1920 SH=1080
+fi
+w="$SW"
+if [ $((w / 2 + 120)) -gt "$SH" ]; then w=$(( (SH - 120) * 2 )); fi
+width=0
+for i in "${!WIDTHS[@]}"; do
+  if [ "$w" -lt "${WIDTHS[$i]}" ] && [ "$i" -gt 0 ]; then width="${WIDTHS[$((i - 1))]}"; break; fi
+done
+[ "$width" -gt 0 ] || width=1900
+for f in "e$width.ppm" "e${width}s1.ppm" "e${width}s2.ppm" "e${width}s3.ppm" "e${width}s4.ppm" "e${width}s5.ppm" control.ppm orange.ppm gpilot.ppm apilot.ppm; do
+  [ -r "$OUI/images/$f" ] || fail "missing $OUI/images/$f (screen ${SW}x${SH} needs width $width; ORIGINAL_UI_WIDTHS in scripts/build-release.sh)"
+done
+
+cd "$OUI" || fail "cannot cd to $OUI"
+flag=""
+[ "$MODE" = tour ] && flag=" -D"
+log "starting: $MODE, screen ${SW}x${SH}, images e$width, idle ${IDLE}s, warning ${WARN}s"
+
+# --- the simulator + Stuart's window ---------------------------------------
+# The core reads stdin until EOF, so tail holds it open (upstream O5). It
+# splits its -v argument on single spaces; release paths have none.
+tail -f /dev/null | GOMAXPROCS=2 nice -n 5 "$CORE" -v "$OUI/bin/eniactk$flag" trajdemo.e &
+COREPID=$!
+
+# --- our Back to kiosk button + idle -----------------------------------------
+"$WISH" "$HERE/original-ui-back.tcl" --idle-s "$IDLE" --warn-s "$WARN" &
+BACKPID=$!
+
+started="$(date +%s)"
+nowin=0
+while sleep 1; do
+  if ! kill -0 "$BACKPID" 2>/dev/null; then
+    wait "$BACKPID"; rc=$?
+    case "$rc" in
+      0) log "Back to kiosk tapped"; exit 0 ;;
+      10) log "idle: back to the kiosk"; exit 10 ;;
+      *) log "the Back to kiosk button exited ($rc)"; exit 21 ;;
+    esac
+  fi
+  if ! kill -0 "$COREPID" 2>/dev/null; then
+    log "core exited"; exit 21
+  fi
+  # After a 5 s start grace: eniactk must be the core's child, and its own
+  # wish (Stuart's window) must be up (closing it would leave a black screen).
+  if [ $(( $(date +%s) - started )) -ge 5 ]; then
+    tk="$(pgrep -P "$COREPID" -x eniactk | head -n 1)"
+    if [ -z "$tk" ]; then log "eniactk exited"; exit 21; fi
+    if pgrep -P "$tk" -x wish >/dev/null; then nowin=0; else nowin=$((nowin + 1)); fi
+    if [ "$nowin" -ge 3 ]; then log "eniactk's window (wish) is gone"; exit 21; fi
+  fi
+done

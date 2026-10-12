@@ -326,8 +326,9 @@ cd eniac-touch-kiosk-<ver>-linux-amd64
 sudo ./install.sh
 ```
 
-It asks nothing and stores no secrets. Expect, in order: checksum
-verification; apt installing X11, openbox, unclutter, xinput; the xtradeb
+Over SSH it asks nothing (on a terminal it asks for the staff PIN if none
+is set; `--no-pin` skips that). Expect, in order: checksum
+verification; apt installing X11, openbox, unclutter, xinput, tk; the xtradeb
 PPA being added and **Chromium installed as a .deb**; the two users; files;
 the bridge started; and a line starting `selftest: ok squares:` (the
 Squares mission booted headless on the real core, known answer checked).
@@ -344,6 +345,16 @@ installed beside the old one, which becomes `previous`.
 
 If you ran it **on the console (tty1)**: after the reboot tty1 *is* the
 exhibit. For a shell use **Ctrl+Alt+F2** or SSH.
+
+Then set the **staff PIN** (the hidden admin screen: 5 taps on the ENIAC
+wordmark, top left). There is no default PIN; the museum's is <PIN>:
+
+```bash
+echo <PIN> | sudo eniac-touch-kiosk set-pin --stdin   # or: sudo eniac-touch-kiosk set-pin (asks twice)
+```
+
+Only its bcrypt hash is stored (`/etc/eniac-touch-kiosk/admin-pin`,
+0640 root:eniac); a new PIN applies at the next login, no restart.
 
 ## Step 6: reboot into the exhibit
 
@@ -429,6 +440,90 @@ sudo eniac-touch-kiosk rollback      # swap current <-> previous, restart bridge
 ```
 
 Config edits in `/etc/eniac-touch-kiosk/config.yaml` survive both directions.
+Exception: rolling back to a release from before the Original UI switch
+(older than 2026-10-07) needs the `originalUi:` block removed first; see
+below.
+
+## Upgrading to the Original UI release (2026-10-07)
+
+This release adds Brian L. Stuart's own Tk front end beside the kiosk
+(design: `docs/original-ui-switch.md`): visitors get **Original room tour**
+in Explore; staff get **Original UI** on the admin screen (5 taps, PIN). A
+**Back to kiosk** button (top left) or 5 min idle (15 min for staff) brings
+the kiosk back. The upgrade needs packages (`tk`), so run the installer
+**with** packages. The installer appends the `originalUi:` block to the
+existing `/etc/eniac-touch-kiosk/config.yaml` once and creates
+`/run/eniac-touch-kiosk-ui` (tmpfiles.d).
+
+```bash
+# --- 1. On the Mac: test and build ------------------------------------------
+cd ~/Workspaces/eniac-touch-kiosk
+make test                                   # Go, web, and tests/deploy/test-ui-switch.sh (docker on a Mac)
+tests/deploy/test-install-container.sh      # optional, ~20 min: install, original-ui checks, Xvfb smoke, removal
+make release ARCH=amd64
+REL=$(ls -t dist/eniac-touch-kiosk-*-linux-amd64.tar.gz | head -1); B=$(basename "$REL" .tar.gz); echo "$REL"
+tar tzf "$REL" | grep -E 'original-ui/(bin/eniactk|images/e1900.ppm)$'   # both must print
+K="ssh -i $HOME/.ssh/kiosk_3280 vcfed@<museum-lan>.42"
+
+# --- 2. Snapshot what is there (the rollback reference) ----------------------
+$K "ls /opt/eniac-touch-kiosk/releases; readlink /opt/eniac-touch-kiosk/current; \
+    systemctl --no-pager status eniac-touch-kiosk-bridge | head -5; cat /etc/eniac-touch-kiosk/config.yaml"
+
+# --- 3. Copy and check ---------------------------------------------------------
+scp -i ~/.ssh/kiosk_3280 "$REL" "$REL.sha256" vcfed@<museum-lan>.42:
+$K "sha256sum -c $B.tar.gz.sha256"
+
+# --- 4. Install WITH packages (adds tk; records it in the manifest) ------------
+$K "tar xzf $B.tar.gz && cd $B && sudo ./install.sh --no-pin"
+#   expect: apt installs tk (+ tk8.6, tcl8.6, libxss1 ...);
+#   "original UI: /run/eniac-touch-kiosk-ui via /etc/tmpfiles.d/eniac-touch-kiosk.conf";
+#   "config: appended the originalUi block to /etc/eniac-touch-kiosk/config.yaml";
+#   the bridge restarted; "selftest: ok squares: ..."
+$K "command -v wish; ls -ld /run/eniac-touch-kiosk-ui; grep -n '^originalUi:' /etc/eniac-touch-kiosk/config.yaml"
+#   /usr/bin/wish ; drwxrws--- eniac eniac-kiosk ; one originalUi: line
+
+# --- 5. Staff PIN: <PIN> (Nick's choice, 2026-10-07) ------------------------------
+# The bridge has no default PIN; set it explicitly. Only the bcrypt hash is stored.
+$K "echo <PIN> | sudo eniac-touch-kiosk set-pin --stdin"
+$K "sudo ls -l /etc/eniac-touch-kiosk/admin-pin"    # -rw-r----- root eniac
+#   To change it later: sudo eniac-touch-kiosk set-pin (prompts twice, no echo).
+
+# --- 6. The bridge sees the switch ---------------------------------------------
+$K "curl -s 127.0.0.1:8740/healthz | grep -o '\"originalUi\":{[^}]*'"
+#   expect "available":true
+
+# --- 7. New X session (new kiosk-session + openbox config) -------------------
+$K "sudo eniac-touch-kiosk restart-display"
+sleep 20; $K "eniac-touch-kiosk status"            # Chromium kiosk running; original: not running
+
+# --- 8. Remote round trip (no touch needed; keep it short on the floor) --------
+$K "sudo eniac-touch-kiosk original-ui tour"
+sleep 10; $K "pgrep -u eniac-kiosk -a eniactk; pgrep -u eniac-kiosk -a wish; sudo eniac-touch-kiosk original-ui status"
+#   expect: eniactk -D, two wish processes, an active line mode=tour
+$K "journalctl -t eniac-touch-kiosk-original-ui -n 30 --no-pager"   # "starting: tour, screen 1920x1080, images e1900"
+$K "sudo eniac-touch-kiosk original-ui off"
+sleep 10; $K "eniac-touch-kiosk status"            # Chromium kiosk running again
+```
+
+**On the floor, by touch** (Nick, or anyone at the box). Each check notes what to look for:
+
+1. Explore, then **Original room tour**: the switching page, then Stuart's window. The view changes every 5 s. **Back to kiosk** is at the top left and nothing important is under it (UX Q29). Tap it: "Going back..." appears and S1 follows within about 5 s.
+2. Tour again, then hands off for 5 min. At 4:30 the button counts down `0:30`, and at 0:00 the kiosk returns to S1.
+3. Five taps on the wordmark: the S12 PIN pad. Enter a wrong PIN, then OK: "Not right", then back to the visitor screen. Enter **<PIN>**, then OK: S13 with three buttons. Tap **Original UI**, then "Yes, switch": interactive Stuart window (no auto-cycling). Tap **LOAD CONF**: the menu draws over the Back button. Load `sq.e` and press INIT, then tap Back.
+4. S13, then **Restart simulator**: S1, and attract restarts.
+5. With the tour running, pull the power. It boots to the new kiosk (S1), never to the original UI.
+6. `eniac-touch-kiosk logs` shows the matching `ui:` lines. After a few switches, the metrics for the month contain `original_ui_enter` and `original_ui_exit` records: `sudo tail /var/lib/eniac-touch-kiosk/metrics/$(date +%Y-%m).jsonl`.
+
+**Rollback** (to the release before the switch). The old bridge reads config.yaml with unknown keys refused, so the appended `originalUi:` block must go **first**, or the old bridge will not start:
+
+```bash
+sudo cp /etc/eniac-touch-kiosk/config.yaml /etc/eniac-touch-kiosk/config.yaml.with-original-ui
+sudo sed -i '/^# Original UI switch/,$d' /etc/eniac-touch-kiosk/config.yaml
+sudo eniac-touch-kiosk rollback     # current <-> previous; restarts the bridge and the display
+```
+
+The old kiosk-session has no watcher, so a request just expires (`ttlS`) and does nothing. The tmpfiles directory, the PIN file and the `tk` package stay in place and are harmless. To go forward again: `sudo eniac-touch-kiosk rollback` once more (the installer's append puts the block back on the next install, or copy it back from `config.yaml.with-original-ui`).
+
 
 ## Removing it (rollback of the whole install)
 
@@ -470,6 +565,10 @@ The last-resort rollback is reinstalling Ubuntu (Steps 1–3).
 | Touch offset or missing | Step 8 |
 | Screen blanks | X must run with `-s 0 -dpms` (`ps -ef \| grep Xorg`); `x xset q` |
 | Cursor visible | X runs with `-nocursor`; unclutter is the backup |
+| Stuck on Stuart's original screen (touch not working) | Over SSH: `sudo eniac-touch-kiosk original-ui off` (Chromium is back within a few seconds). `sudo eniac-touch-kiosk original-ui status` shows the request, `active` and `last` |
+| Original room tour tile missing / S13 says "Not installed on this box." | `curl -s 127.0.0.1:8740/healthz` → `originalUi.reason`: `disabled` (no `originalUi:` block, or `enabled: false`), `no-switch-dir` (`/run/eniac-touch-kiosk-ui` missing: `sudo systemd-tmpfiles --create /etc/tmpfiles.d/eniac-touch-kiosk.conf`), `not-built` (release without `original-ui/`), `no-tk` (`sudo apt install tk`), `running` |
+| The switching page says it did not start | `journalctl -t eniac-touch-kiosk-original-ui -t eniac-touch-kiosk-session -n 50`: the supervisor names what is missing (exit 20) or what died (exit 21) |
+| S12 says "No staff PIN is set on this kiosk." | `sudo eniac-touch-kiosk set-pin` |
 
 ## Pi 5 (secondary)
 

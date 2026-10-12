@@ -13,6 +13,9 @@
 #   bin/{eniac-bridge,eniac-core}   static linux binaries
 #   web/ missions/                  production UI bundle, mission files
 #   upstream/                       core cwd: programs/, *.card, .provenance.json
+#   original-ui/                    Stuart's Tk front end for the Original UI switch:
+#                                   bin/eniactk, images/ (ORIGINAL_UI_WIDTHS + sprites),
+#                                   programs -> ../upstream/programs, *.card links
 #   deploy/kiosk/ deploy/chromium/  installer payload (units, X session, flags)
 #   install.sh uninstall.sh         the dedicated-kiosk installer (deploy/kiosk)
 #   BUILD-INFO SHA256SUMS
@@ -38,14 +41,19 @@ VER="${BASE_VERSION}+g${GIT_SHA}${DIRTY}"
 
 BRIDGE_BIN="$BUILD/linux-$ARCH/eniac-bridge"
 CORE_BIN="$BUILD/linux-$ARCH/eniac-core"
+ENIACTK_BIN="$BUILD/linux-$ARCH/eniactk"
 UP="$BUILD/upstream"
-for f in "$BRIDGE_BIN" "$CORE_BIN" "$UP/.provenance.json" "$BUILD/web/app.js" "$BUILD/web/index.html"; do
+# eniactk image widths shipped (docs/original-ui-switch.md ADR-OUI-9): 1900
+# for the 1920x1080 panel, 1280 for a 1366x768 one. The supervisor refuses to
+# start (back to Chromium) on a screen that needs a width not shipped.
+ORIGINAL_UI_WIDTHS="${ORIGINAL_UI_WIDTHS:-1280 1900}"
+for f in "$BRIDGE_BIN" "$CORE_BIN" "$ENIACTK_BIN" "$UP/.provenance.json" "$BUILD/web/app.js" "$BUILD/web/index.html"; do
   [ -e "$f" ] || die "missing $f (run: make release ARCH=$ARCH)"
 done
 
 # The binaries must really be for the target CPU.
 case "$ARCH" in amd64) want='x86-64' ;; arm64) want='ARM aarch64' ;; esac
-for b in "$BRIDGE_BIN" "$CORE_BIN"; do
+for b in "$BRIDGE_BIN" "$CORE_BIN" "$ENIACTK_BIN"; do
   file "$b" | grep -q "ELF 64-bit.*$want.*statically linked" || die "$b is not a static linux/$ARCH ELF: $(file -b "$b")"
 done
 
@@ -67,9 +75,27 @@ mkdir -p "$STAGE/missions" && cp "$ROOT"/missions/*.yaml "$STAGE/missions/"
 cp -R "$UP/programs" "$STAGE/upstream/programs"
 cp "$UP"/*.card "$UP/.provenance.json" "$STAGE/upstream/"
 
+# The Original UI (docs/original-ui-switch.md 7.2): eniactk looks for
+# images/ and programs/ in its cwd (original-ui/), and trajdemo.e reads
+# demo.card from there too. Programs and cards are links into upstream/, so
+# the core and Stuart's front end load the very same files.
+OUI="$STAGE/original-ui"
+mkdir -p "$OUI/bin" "$OUI/images"
+install -m 0755 "$ENIACTK_BIN" "$OUI/bin/eniactk"
+imgs=(control.ppm orange.ppm orange2.ppm orange3.ppm gpilot.ppm apilot.ppm)
+for w in $ORIGINAL_UI_WIDTHS; do imgs+=("e$w.ppm" "e${w}s1.ppm" "e${w}s2.ppm" "e${w}s3.ppm" "e${w}s4.ppm" "e${w}s5.ppm"); done
+for f in "${imgs[@]}"; do
+  [ -f "$UP/images/$f" ] || die "missing $UP/images/$f (ORIGINAL_UI_WIDTHS=$ORIGINAL_UI_WIDTHS)"
+  install -m 0644 "$UP/images/$f" "$OUI/images/$f"
+done
+ln -s ../upstream/programs "$OUI/programs"
+for c in "$UP"/*.card; do ln -s "../upstream/$(basename "$c")" "$OUI/$(basename "$c")"; done
+[ -e "$OUI/programs/trajdemo.e" ] && [ -e "$OUI/demo.card" ] || die "original-ui/ links do not resolve (programs/trajdemo.e, demo.card)"
+
 cp -R "$ROOT/deploy/kiosk" "$ROOT/deploy/chromium" "$STAGE/deploy/"
 install -m 0755 "$ROOT/deploy/kiosk/install.sh" "$STAGE/install.sh"
 install -m 0755 "$ROOT/deploy/kiosk/uninstall.sh" "$STAGE/uninstall.sh"
+chmod 0755 "$STAGE/deploy/kiosk/original-ui" "$STAGE/deploy/kiosk/kiosk-session"
 
 # Forbidden content (dev-plan #25): fakecore, test fixtures, dev configs.
 bad="$(cd "$STAGE" && find . \( -path '*fakecore*' -o -path '*fixture*' -o -name 'config.dev.yaml' -o -name '*.test.ts' -o -name node_modules \) -print)"
@@ -90,6 +116,8 @@ git=$GIT_SHA$DIRTY
 upstream=$UPSTREAM_COMMIT
 built=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 unsigned=1
+originalUi=1
+originalUiWidths=${ORIGINAL_UI_WIDTHS// /,}
 EOF
 
 SUMS="$BUILD/release/SHA256SUMS.tmp"

@@ -49,6 +49,7 @@ type Recovery struct {
 	total    int // restarts (probe attempts) since boot
 	restarts []time.Time
 	lastErr  *LastError
+	kick     chan struct{} // Reset: wake the loop's backoff now
 }
 
 // LastError is the most recent fault, for /healthz.
@@ -78,7 +79,45 @@ func New(ctx context.Context, o Options) *Recovery {
 	if o.Log == nil {
 		o.Log = slog.Default()
 	}
-	return &Recovery{o: o, ctx: ctx}
+	return &Recovery{o: o, ctx: ctx, kick: make(chan struct{}, 1)}
+}
+
+// Reset is the staff's "Restart simulator" (S13, docs/original-ui-switch.md
+// 6.1): the failure count and the final state (E-RETRY-BUDGET) are cleared,
+// so the full budget is available again, and a loop that is waiting (the
+// 10 min slow retry, or a backoff) probes at once. With no loop running it
+// only clears the counters.
+func (r *Recovery) Reset() {
+	r.mu.Lock()
+	r.failures = nil
+	r.final = false
+	running := r.running
+	r.mu.Unlock()
+	if running {
+		select {
+		case r.kick <- struct{}{}:
+		default:
+		}
+	}
+}
+
+// sleep waits for d, or until Reset kicks the loop.
+func (r *Recovery) sleep(d time.Duration) error {
+	ctx, cancel := context.WithCancel(r.ctx)
+	defer cancel()
+	go func() {
+		select {
+		case <-r.kick:
+			cancel()
+		case <-ctx.Done():
+		}
+	}()
+	err := r.o.Sleep(ctx, d)
+	if r.ctx.Err() != nil {
+		return r.ctx.Err()
+	}
+	_ = err // a kick cancels the wait: probe now
+	return nil
 }
 
 func (r *Recovery) prune(now time.Time) {
@@ -159,7 +198,7 @@ func (r *Recovery) loop(last core.Fault) {
 		if final {
 			wait = r.o.SlowRetry
 		}
-		if err := r.o.Sleep(r.ctx, wait); err != nil {
+		if err := r.sleep(wait); err != nil {
 			return
 		}
 		r.mu.Lock()

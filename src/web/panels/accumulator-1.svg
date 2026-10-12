@@ -64,731 +64,731 @@
 <text x="150" y="48.6" font-family="Atkinson Hyperlegible, sans-serif" font-size="24" font-weight="700" fill="#D9D0B0" text-anchor="middle" letter-spacing="1.5">ACCUMULATOR 1</text>
 <rect x="12" y="76" width="276" height="252" rx="6" fill="#0B0C0E" stroke="#000" stroke-width="1"/>
 <path d="M14 326H286" stroke="#2c2f35" stroke-width="1"/>
-<text x="26" y="92" font-family="Atkinson Hyperlegible, sans-serif" font-size="11" font-weight="700" fill="#8A8E96" text-anchor="middle">±</text>
-<text x="50" y="105.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">0</text>
-<text x="50" y="121.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">1</text>
-<text x="50" y="137.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">2</text>
-<text x="50" y="153.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">3</text>
-<text x="50" y="169.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">4</text>
-<text x="50" y="185.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">5</text>
-<text x="50" y="201.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">6</text>
-<text x="50" y="217.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">7</text>
-<text x="50" y="233.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">8</text>
-<text x="50" y="249.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">9</text>
+<text x="26" y="217.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="11" font-weight="700" fill="#8A8E96" text-anchor="middle">±</text>
+<text x="50" y="249.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">0</text>
+<text x="50" y="233.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">1</text>
+<text x="50" y="217.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">2</text>
+<text x="50" y="201.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">3</text>
+<text x="50" y="185.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">4</text>
+<text x="50" y="169.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">5</text>
+<text x="50" y="153.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">6</text>
+<text x="50" y="137.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">7</text>
+<text x="50" y="121.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">8</text>
+<text x="50" y="105.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="10" font-weight="400" fill="#8A8E96" text-anchor="middle">9</text>
 <g id="lamp:acc.1.sign.P" class="lamp">
-<circle class="lamp-off" cx="24" cy="102" r="6.5" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<circle class="lamp-off" cx="24" cy="246" r="6.5" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
-<circle cx="24" cy="102" r="13.7" fill="url(#g-lamp-glow)"/>
-<circle cx="24" cy="102" r="6.6" fill="url(#g-lamp-core)"/>
+<circle cx="24" cy="246" r="13.7" fill="url(#g-lamp-glow)"/>
+<circle cx="24" cy="246" r="6.6" fill="url(#g-lamp-core)"/>
 </g>
 </g>
 <g id="lamp:acc.1.sign.M" class="lamp">
-<circle class="lamp-off" cx="24" cy="118" r="6.5" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<circle class="lamp-off" cx="24" cy="230" r="6.5" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
-<circle cx="24" cy="118" r="13.7" fill="url(#g-lamp-glow)"/>
-<circle cx="24" cy="118" r="6.6" fill="url(#g-lamp-core)"/>
+<circle cx="24" cy="230" r="13.7" fill="url(#g-lamp-glow)"/>
+<circle cx="24" cy="230" r="6.6" fill="url(#g-lamp-core)"/>
 </g>
 </g>
-<text x="36" y="105.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">P</text>
-<text x="36" y="121.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">M</text>
+<text x="36" y="249.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">P</text>
+<text x="36" y="233.5" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">M</text>
 <g id="lamp:acc.1.d.1.0" class="lamp">
-<circle class="lamp-off" cx="68" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="68" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="68" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.1.1" class="lamp">
-<circle class="lamp-off" cx="68" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="68" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="68" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.1.2" class="lamp">
-<circle class="lamp-off" cx="68" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="68" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="68" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.1.3" class="lamp">
-<circle class="lamp-off" cx="68" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="68" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="68" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.1.4" class="lamp">
-<circle class="lamp-off" cx="68" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="68" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="68" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.1.5" class="lamp">
-<circle class="lamp-off" cx="68" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="68" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="68" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.1.6" class="lamp">
-<circle class="lamp-off" cx="68" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="68" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="68" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.1.7" class="lamp">
-<circle class="lamp-off" cx="68" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="68" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="68" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.1.8" class="lamp">
-<circle class="lamp-off" cx="68" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="68" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="68" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.1.9" class="lamp">
 <circle class="lamp-off" cx="68" cy="246" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
 <circle cx="68" cy="246" r="14.7" fill="url(#g-lamp-glow)"/>
 <circle cx="68" cy="246" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
+<g id="lamp:acc.1.d.1.1" class="lamp">
+<circle class="lamp-off" cx="68" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="68" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="68" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.1.2" class="lamp">
+<circle class="lamp-off" cx="68" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="68" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="68" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.1.3" class="lamp">
+<circle class="lamp-off" cx="68" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="68" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="68" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.1.4" class="lamp">
+<circle class="lamp-off" cx="68" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="68" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="68" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.1.5" class="lamp">
+<circle class="lamp-off" cx="68" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="68" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="68" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.1.6" class="lamp">
+<circle class="lamp-off" cx="68" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="68" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="68" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.1.7" class="lamp">
+<circle class="lamp-off" cx="68" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="68" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="68" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.1.8" class="lamp">
+<circle class="lamp-off" cx="68" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="68" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="68" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.1.9" class="lamp">
+<circle class="lamp-off" cx="68" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="68" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="68" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
 <g id="lamp:acc.1.d.2.0" class="lamp">
-<circle class="lamp-off" cx="90.4" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="90.4" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="90.4" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.2.1" class="lamp">
-<circle class="lamp-off" cx="90.4" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="90.4" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="90.4" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.2.2" class="lamp">
-<circle class="lamp-off" cx="90.4" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="90.4" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="90.4" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.2.3" class="lamp">
-<circle class="lamp-off" cx="90.4" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="90.4" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="90.4" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.2.4" class="lamp">
-<circle class="lamp-off" cx="90.4" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="90.4" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="90.4" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.2.5" class="lamp">
-<circle class="lamp-off" cx="90.4" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="90.4" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="90.4" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.2.6" class="lamp">
-<circle class="lamp-off" cx="90.4" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="90.4" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="90.4" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.2.7" class="lamp">
-<circle class="lamp-off" cx="90.4" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="90.4" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="90.4" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.2.8" class="lamp">
-<circle class="lamp-off" cx="90.4" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="90.4" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="90.4" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.2.9" class="lamp">
 <circle class="lamp-off" cx="90.4" cy="246" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
 <circle cx="90.4" cy="246" r="14.7" fill="url(#g-lamp-glow)"/>
 <circle cx="90.4" cy="246" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
+<g id="lamp:acc.1.d.2.1" class="lamp">
+<circle class="lamp-off" cx="90.4" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="90.4" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="90.4" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.2.2" class="lamp">
+<circle class="lamp-off" cx="90.4" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="90.4" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="90.4" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.2.3" class="lamp">
+<circle class="lamp-off" cx="90.4" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="90.4" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="90.4" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.2.4" class="lamp">
+<circle class="lamp-off" cx="90.4" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="90.4" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="90.4" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.2.5" class="lamp">
+<circle class="lamp-off" cx="90.4" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="90.4" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="90.4" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.2.6" class="lamp">
+<circle class="lamp-off" cx="90.4" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="90.4" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="90.4" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.2.7" class="lamp">
+<circle class="lamp-off" cx="90.4" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="90.4" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="90.4" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.2.8" class="lamp">
+<circle class="lamp-off" cx="90.4" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="90.4" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="90.4" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.2.9" class="lamp">
+<circle class="lamp-off" cx="90.4" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="90.4" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="90.4" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
 <g id="lamp:acc.1.d.3.0" class="lamp">
-<circle class="lamp-off" cx="112.8" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="112.8" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="112.8" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.3.1" class="lamp">
-<circle class="lamp-off" cx="112.8" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="112.8" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="112.8" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.3.2" class="lamp">
-<circle class="lamp-off" cx="112.8" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="112.8" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="112.8" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.3.3" class="lamp">
-<circle class="lamp-off" cx="112.8" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="112.8" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="112.8" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.3.4" class="lamp">
-<circle class="lamp-off" cx="112.8" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="112.8" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="112.8" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.3.5" class="lamp">
-<circle class="lamp-off" cx="112.8" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="112.8" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="112.8" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.3.6" class="lamp">
-<circle class="lamp-off" cx="112.8" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="112.8" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="112.8" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.3.7" class="lamp">
-<circle class="lamp-off" cx="112.8" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="112.8" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="112.8" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.3.8" class="lamp">
-<circle class="lamp-off" cx="112.8" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="112.8" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="112.8" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.3.9" class="lamp">
 <circle class="lamp-off" cx="112.8" cy="246" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
 <circle cx="112.8" cy="246" r="14.7" fill="url(#g-lamp-glow)"/>
 <circle cx="112.8" cy="246" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
+<g id="lamp:acc.1.d.3.1" class="lamp">
+<circle class="lamp-off" cx="112.8" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="112.8" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="112.8" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.3.2" class="lamp">
+<circle class="lamp-off" cx="112.8" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="112.8" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="112.8" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.3.3" class="lamp">
+<circle class="lamp-off" cx="112.8" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="112.8" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="112.8" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.3.4" class="lamp">
+<circle class="lamp-off" cx="112.8" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="112.8" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="112.8" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.3.5" class="lamp">
+<circle class="lamp-off" cx="112.8" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="112.8" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="112.8" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.3.6" class="lamp">
+<circle class="lamp-off" cx="112.8" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="112.8" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="112.8" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.3.7" class="lamp">
+<circle class="lamp-off" cx="112.8" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="112.8" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="112.8" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.3.8" class="lamp">
+<circle class="lamp-off" cx="112.8" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="112.8" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="112.8" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.3.9" class="lamp">
+<circle class="lamp-off" cx="112.8" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="112.8" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="112.8" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
 <g id="lamp:acc.1.d.4.0" class="lamp">
-<circle class="lamp-off" cx="135.2" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="135.2" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="135.2" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.4.1" class="lamp">
-<circle class="lamp-off" cx="135.2" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="135.2" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="135.2" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.4.2" class="lamp">
-<circle class="lamp-off" cx="135.2" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="135.2" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="135.2" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.4.3" class="lamp">
-<circle class="lamp-off" cx="135.2" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="135.2" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="135.2" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.4.4" class="lamp">
-<circle class="lamp-off" cx="135.2" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="135.2" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="135.2" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.4.5" class="lamp">
-<circle class="lamp-off" cx="135.2" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="135.2" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="135.2" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.4.6" class="lamp">
-<circle class="lamp-off" cx="135.2" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="135.2" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="135.2" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.4.7" class="lamp">
-<circle class="lamp-off" cx="135.2" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="135.2" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="135.2" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.4.8" class="lamp">
-<circle class="lamp-off" cx="135.2" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="135.2" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="135.2" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.4.9" class="lamp">
 <circle class="lamp-off" cx="135.2" cy="246" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
 <circle cx="135.2" cy="246" r="14.7" fill="url(#g-lamp-glow)"/>
 <circle cx="135.2" cy="246" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
+<g id="lamp:acc.1.d.4.1" class="lamp">
+<circle class="lamp-off" cx="135.2" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="135.2" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="135.2" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.4.2" class="lamp">
+<circle class="lamp-off" cx="135.2" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="135.2" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="135.2" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.4.3" class="lamp">
+<circle class="lamp-off" cx="135.2" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="135.2" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="135.2" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.4.4" class="lamp">
+<circle class="lamp-off" cx="135.2" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="135.2" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="135.2" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.4.5" class="lamp">
+<circle class="lamp-off" cx="135.2" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="135.2" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="135.2" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.4.6" class="lamp">
+<circle class="lamp-off" cx="135.2" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="135.2" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="135.2" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.4.7" class="lamp">
+<circle class="lamp-off" cx="135.2" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="135.2" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="135.2" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.4.8" class="lamp">
+<circle class="lamp-off" cx="135.2" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="135.2" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="135.2" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.4.9" class="lamp">
+<circle class="lamp-off" cx="135.2" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="135.2" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="135.2" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
 <g id="lamp:acc.1.d.5.0" class="lamp">
-<circle class="lamp-off" cx="157.6" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="157.6" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="157.6" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.5.1" class="lamp">
-<circle class="lamp-off" cx="157.6" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="157.6" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="157.6" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.5.2" class="lamp">
-<circle class="lamp-off" cx="157.6" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="157.6" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="157.6" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.5.3" class="lamp">
-<circle class="lamp-off" cx="157.6" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="157.6" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="157.6" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.5.4" class="lamp">
-<circle class="lamp-off" cx="157.6" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="157.6" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="157.6" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.5.5" class="lamp">
-<circle class="lamp-off" cx="157.6" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="157.6" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="157.6" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.5.6" class="lamp">
-<circle class="lamp-off" cx="157.6" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="157.6" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="157.6" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.5.7" class="lamp">
-<circle class="lamp-off" cx="157.6" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="157.6" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="157.6" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.5.8" class="lamp">
-<circle class="lamp-off" cx="157.6" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="157.6" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="157.6" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.5.9" class="lamp">
 <circle class="lamp-off" cx="157.6" cy="246" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
 <circle cx="157.6" cy="246" r="14.7" fill="url(#g-lamp-glow)"/>
 <circle cx="157.6" cy="246" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
+<g id="lamp:acc.1.d.5.1" class="lamp">
+<circle class="lamp-off" cx="157.6" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="157.6" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="157.6" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.5.2" class="lamp">
+<circle class="lamp-off" cx="157.6" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="157.6" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="157.6" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.5.3" class="lamp">
+<circle class="lamp-off" cx="157.6" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="157.6" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="157.6" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.5.4" class="lamp">
+<circle class="lamp-off" cx="157.6" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="157.6" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="157.6" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.5.5" class="lamp">
+<circle class="lamp-off" cx="157.6" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="157.6" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="157.6" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.5.6" class="lamp">
+<circle class="lamp-off" cx="157.6" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="157.6" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="157.6" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.5.7" class="lamp">
+<circle class="lamp-off" cx="157.6" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="157.6" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="157.6" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.5.8" class="lamp">
+<circle class="lamp-off" cx="157.6" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="157.6" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="157.6" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.5.9" class="lamp">
+<circle class="lamp-off" cx="157.6" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="157.6" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="157.6" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
 <g id="lamp:acc.1.d.6.0" class="lamp">
-<circle class="lamp-off" cx="180" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="180" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="180" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.6.1" class="lamp">
-<circle class="lamp-off" cx="180" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="180" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="180" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.6.2" class="lamp">
-<circle class="lamp-off" cx="180" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="180" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="180" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.6.3" class="lamp">
-<circle class="lamp-off" cx="180" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="180" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="180" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.6.4" class="lamp">
-<circle class="lamp-off" cx="180" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="180" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="180" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.6.5" class="lamp">
-<circle class="lamp-off" cx="180" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="180" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="180" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.6.6" class="lamp">
-<circle class="lamp-off" cx="180" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="180" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="180" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.6.7" class="lamp">
-<circle class="lamp-off" cx="180" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="180" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="180" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.6.8" class="lamp">
-<circle class="lamp-off" cx="180" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="180" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="180" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.6.9" class="lamp">
 <circle class="lamp-off" cx="180" cy="246" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
 <circle cx="180" cy="246" r="14.7" fill="url(#g-lamp-glow)"/>
 <circle cx="180" cy="246" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
+<g id="lamp:acc.1.d.6.1" class="lamp">
+<circle class="lamp-off" cx="180" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="180" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="180" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.6.2" class="lamp">
+<circle class="lamp-off" cx="180" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="180" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="180" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.6.3" class="lamp">
+<circle class="lamp-off" cx="180" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="180" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="180" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.6.4" class="lamp">
+<circle class="lamp-off" cx="180" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="180" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="180" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.6.5" class="lamp">
+<circle class="lamp-off" cx="180" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="180" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="180" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.6.6" class="lamp">
+<circle class="lamp-off" cx="180" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="180" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="180" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.6.7" class="lamp">
+<circle class="lamp-off" cx="180" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="180" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="180" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.6.8" class="lamp">
+<circle class="lamp-off" cx="180" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="180" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="180" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.6.9" class="lamp">
+<circle class="lamp-off" cx="180" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="180" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="180" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
 <g id="lamp:acc.1.d.7.0" class="lamp">
-<circle class="lamp-off" cx="202.4" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="202.4" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="202.4" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.7.1" class="lamp">
-<circle class="lamp-off" cx="202.4" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="202.4" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="202.4" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.7.2" class="lamp">
-<circle class="lamp-off" cx="202.4" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="202.4" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="202.4" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.7.3" class="lamp">
-<circle class="lamp-off" cx="202.4" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="202.4" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="202.4" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.7.4" class="lamp">
-<circle class="lamp-off" cx="202.4" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="202.4" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="202.4" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.7.5" class="lamp">
-<circle class="lamp-off" cx="202.4" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="202.4" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="202.4" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.7.6" class="lamp">
-<circle class="lamp-off" cx="202.4" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="202.4" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="202.4" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.7.7" class="lamp">
-<circle class="lamp-off" cx="202.4" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="202.4" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="202.4" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.7.8" class="lamp">
-<circle class="lamp-off" cx="202.4" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="202.4" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="202.4" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.7.9" class="lamp">
 <circle class="lamp-off" cx="202.4" cy="246" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
 <circle cx="202.4" cy="246" r="14.7" fill="url(#g-lamp-glow)"/>
 <circle cx="202.4" cy="246" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
+<g id="lamp:acc.1.d.7.1" class="lamp">
+<circle class="lamp-off" cx="202.4" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="202.4" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="202.4" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.7.2" class="lamp">
+<circle class="lamp-off" cx="202.4" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="202.4" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="202.4" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.7.3" class="lamp">
+<circle class="lamp-off" cx="202.4" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="202.4" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="202.4" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.7.4" class="lamp">
+<circle class="lamp-off" cx="202.4" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="202.4" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="202.4" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.7.5" class="lamp">
+<circle class="lamp-off" cx="202.4" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="202.4" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="202.4" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.7.6" class="lamp">
+<circle class="lamp-off" cx="202.4" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="202.4" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="202.4" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.7.7" class="lamp">
+<circle class="lamp-off" cx="202.4" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="202.4" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="202.4" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.7.8" class="lamp">
+<circle class="lamp-off" cx="202.4" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="202.4" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="202.4" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.7.9" class="lamp">
+<circle class="lamp-off" cx="202.4" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="202.4" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="202.4" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
 <g id="lamp:acc.1.d.8.0" class="lamp">
-<circle class="lamp-off" cx="224.8" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="224.8" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="224.8" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.8.1" class="lamp">
-<circle class="lamp-off" cx="224.8" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="224.8" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="224.8" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.8.2" class="lamp">
-<circle class="lamp-off" cx="224.8" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="224.8" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="224.8" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.8.3" class="lamp">
-<circle class="lamp-off" cx="224.8" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="224.8" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="224.8" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.8.4" class="lamp">
-<circle class="lamp-off" cx="224.8" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="224.8" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="224.8" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.8.5" class="lamp">
-<circle class="lamp-off" cx="224.8" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="224.8" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="224.8" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.8.6" class="lamp">
-<circle class="lamp-off" cx="224.8" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="224.8" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="224.8" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.8.7" class="lamp">
-<circle class="lamp-off" cx="224.8" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="224.8" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="224.8" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.8.8" class="lamp">
-<circle class="lamp-off" cx="224.8" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="224.8" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="224.8" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.8.9" class="lamp">
 <circle class="lamp-off" cx="224.8" cy="246" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
 <circle cx="224.8" cy="246" r="14.7" fill="url(#g-lamp-glow)"/>
 <circle cx="224.8" cy="246" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
+<g id="lamp:acc.1.d.8.1" class="lamp">
+<circle class="lamp-off" cx="224.8" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="224.8" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="224.8" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.8.2" class="lamp">
+<circle class="lamp-off" cx="224.8" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="224.8" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="224.8" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.8.3" class="lamp">
+<circle class="lamp-off" cx="224.8" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="224.8" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="224.8" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.8.4" class="lamp">
+<circle class="lamp-off" cx="224.8" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="224.8" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="224.8" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.8.5" class="lamp">
+<circle class="lamp-off" cx="224.8" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="224.8" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="224.8" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.8.6" class="lamp">
+<circle class="lamp-off" cx="224.8" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="224.8" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="224.8" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.8.7" class="lamp">
+<circle class="lamp-off" cx="224.8" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="224.8" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="224.8" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.8.8" class="lamp">
+<circle class="lamp-off" cx="224.8" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="224.8" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="224.8" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.8.9" class="lamp">
+<circle class="lamp-off" cx="224.8" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="224.8" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="224.8" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
 <g id="lamp:acc.1.d.9.0" class="lamp">
-<circle class="lamp-off" cx="247.2" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="247.2" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="247.2" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.9.1" class="lamp">
-<circle class="lamp-off" cx="247.2" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="247.2" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="247.2" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.9.2" class="lamp">
-<circle class="lamp-off" cx="247.2" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="247.2" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="247.2" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.9.3" class="lamp">
-<circle class="lamp-off" cx="247.2" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="247.2" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="247.2" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.9.4" class="lamp">
-<circle class="lamp-off" cx="247.2" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="247.2" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="247.2" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.9.5" class="lamp">
-<circle class="lamp-off" cx="247.2" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="247.2" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="247.2" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.9.6" class="lamp">
-<circle class="lamp-off" cx="247.2" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="247.2" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="247.2" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.9.7" class="lamp">
-<circle class="lamp-off" cx="247.2" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="247.2" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="247.2" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.9.8" class="lamp">
-<circle class="lamp-off" cx="247.2" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="247.2" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="247.2" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.9.9" class="lamp">
 <circle class="lamp-off" cx="247.2" cy="246" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
 <circle cx="247.2" cy="246" r="14.7" fill="url(#g-lamp-glow)"/>
 <circle cx="247.2" cy="246" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
-<g id="lamp:acc.1.d.10.0" class="lamp">
-<circle class="lamp-off" cx="269.6" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g id="lamp:acc.1.d.9.1" class="lamp">
+<circle class="lamp-off" cx="247.2" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
-<circle cx="269.6" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="269.6" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
+<circle cx="247.2" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="247.2" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.9.2" class="lamp">
+<circle class="lamp-off" cx="247.2" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="247.2" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="247.2" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.9.3" class="lamp">
+<circle class="lamp-off" cx="247.2" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="247.2" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="247.2" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.9.4" class="lamp">
+<circle class="lamp-off" cx="247.2" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="247.2" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="247.2" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.9.5" class="lamp">
+<circle class="lamp-off" cx="247.2" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="247.2" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="247.2" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.9.6" class="lamp">
+<circle class="lamp-off" cx="247.2" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="247.2" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="247.2" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.9.7" class="lamp">
+<circle class="lamp-off" cx="247.2" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="247.2" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="247.2" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.9.8" class="lamp">
+<circle class="lamp-off" cx="247.2" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="247.2" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="247.2" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.9.9" class="lamp">
+<circle class="lamp-off" cx="247.2" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="247.2" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="247.2" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.10.0" class="lamp">
+<circle class="lamp-off" cx="269.6" cy="246" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="269.6" cy="246" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="269.6" cy="246" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
 <g id="lamp:acc.1.d.10.1" class="lamp">
-<circle class="lamp-off" cx="269.6" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="269.6" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="269.6" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.10.2" class="lamp">
-<circle class="lamp-off" cx="269.6" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="269.6" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="269.6" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.10.3" class="lamp">
-<circle class="lamp-off" cx="269.6" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="269.6" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="269.6" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.10.4" class="lamp">
-<circle class="lamp-off" cx="269.6" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="269.6" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="269.6" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.10.5" class="lamp">
-<circle class="lamp-off" cx="269.6" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="269.6" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="269.6" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.10.6" class="lamp">
-<circle class="lamp-off" cx="269.6" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="269.6" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="269.6" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.10.7" class="lamp">
-<circle class="lamp-off" cx="269.6" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
-<g class="lamp-lit">
-<circle cx="269.6" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="269.6" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
-</g>
-</g>
-<g id="lamp:acc.1.d.10.8" class="lamp">
 <circle class="lamp-off" cx="269.6" cy="230" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
 <circle cx="269.6" cy="230" r="14.7" fill="url(#g-lamp-glow)"/>
 <circle cx="269.6" cy="230" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
-<g id="lamp:acc.1.d.10.9" class="lamp">
-<circle class="lamp-off" cx="269.6" cy="246" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g id="lamp:acc.1.d.10.2" class="lamp">
+<circle class="lamp-off" cx="269.6" cy="214" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
 <g class="lamp-lit">
-<circle cx="269.6" cy="246" r="14.7" fill="url(#g-lamp-glow)"/>
-<circle cx="269.6" cy="246" r="7.1" fill="url(#g-lamp-core)"/>
+<circle cx="269.6" cy="214" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="269.6" cy="214" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.10.3" class="lamp">
+<circle class="lamp-off" cx="269.6" cy="198" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="269.6" cy="198" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="269.6" cy="198" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.10.4" class="lamp">
+<circle class="lamp-off" cx="269.6" cy="182" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="269.6" cy="182" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="269.6" cy="182" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.10.5" class="lamp">
+<circle class="lamp-off" cx="269.6" cy="166" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="269.6" cy="166" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="269.6" cy="166" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.10.6" class="lamp">
+<circle class="lamp-off" cx="269.6" cy="150" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="269.6" cy="150" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="269.6" cy="150" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.10.7" class="lamp">
+<circle class="lamp-off" cx="269.6" cy="134" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="269.6" cy="134" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="269.6" cy="134" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.10.8" class="lamp">
+<circle class="lamp-off" cx="269.6" cy="118" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="269.6" cy="118" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="269.6" cy="118" r="7.1" fill="url(#g-lamp-core)"/>
+</g>
+</g>
+<g id="lamp:acc.1.d.10.9" class="lamp">
+<circle class="lamp-off" cx="269.6" cy="102" r="7" fill="url(#g-lamp-off)" stroke="#6A5436" stroke-opacity=".7" stroke-width="1"/>
+<g class="lamp-lit">
+<circle cx="269.6" cy="102" r="14.7" fill="url(#g-lamp-glow)"/>
+<circle cx="269.6" cy="102" r="7.1" fill="url(#g-lamp-core)"/>
 </g>
 </g>
 <text x="40" y="272" font-family="Atkinson Hyperlegible, sans-serif" font-size="8" font-weight="400" fill="#8A8E96" text-anchor="middle">CY</text>

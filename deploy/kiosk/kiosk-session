@@ -10,29 +10,53 @@
 #   X dies        -> startx returns, the login shell exits, agetty respawns it.
 #   Bridge dies   -> systemd restarts it (Restart=always); the page shows S10
 #                    and reconnects on its own.
+#
+# Original UI switch (docs/original-ui-switch.md 5.1): the bridge writes a
+# one-line request into $UI_DIR/mode (tmpfs, 2770 eniac:eniac-kiosk). A
+# watcher beside Chromium sees a fresh one within 1 s, paints the root
+# window dark and closes the Chromium this loop started; the loop then runs
+# the original-ui supervisor (Brian L. Stuart's Tk front end + our Back to
+# kiosk button) instead of Chromium for one turn, records how it ended in
+# $UI_DIR/last, removes the request and starts Chromium again (S1). No
+# process of another user is ever signalled, and nothing survives a reboot.
 set -u
 
 HERE="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 FLAGS_FILE="$HERE/../chromium/flags"
-ENV_FILE=/etc/eniac-touch-kiosk/session.env
+ENV_FILE="${KIOSK_ENV_FILE:-/etc/eniac-touch-kiosk/session.env}"
+# Test seams (tests/deploy/test-ui-switch.sh): the switch directory, the
+# supervisor and the browser can be pointed elsewhere.
+UI_DIR="${KIOSK_UI_DIR:-/run/eniac-touch-kiosk-ui}"
+ORIGINAL_UI="${KIOSK_ORIGINAL_UI:-$HERE/original-ui}"
+PLATE='#0E0F11'   # the root window between Chromium and Stuart's window (UX 7.12.2)
 
 # Optional site overrides (root-owned, written by the installer as a
 # commented template): KIOSK_URL, KIOSK_TOUCH_DEVICE, KIOSK_OUTPUT.
-KIOSK_URL="http://127.0.0.1:8740/"
+KIOSK_URL="${KIOSK_URL:-http://127.0.0.1:8740/}"
 KIOSK_TOUCH_DEVICE=""
 KIOSK_OUTPUT=""
 # shellcheck disable=SC1090
 [ -r "$ENV_FILE" ] && . "$ENV_FILE"
 
-log() { logger -t eniac-touch-kiosk-session -- "$*" 2>/dev/null || echo "$*" >&2; }
+log() {
+  if [ "${KIOSK_LOG:-}" = stderr ]; then echo "kiosk-session: $*" >&2; return; fi
+  logger -t eniac-touch-kiosk-session -- "$*" 2>/dev/null || echo "$*" >&2
+}
 
 # --- display: no blanking, no DPMS, no cursor ------------------------------
 # The X server is also started with -s 0 -dpms -nocursor (see .bash_profile).
 xset s off; xset s noblank; xset -dpms
+# A dark root window: nothing white flashes between Chromium and the
+# original UI, or while Chromium restarts.
+xsetroot -solid "$PLATE" 2>/dev/null
 command -v unclutter >/dev/null && unclutter -idle 0.1 -root &
 # A minimal window manager so Chromium's kiosk window is sized and focused
-# predictably (the reference recipe runs openbox; there is no desktop).
-command -v openbox >/dev/null && openbox &
+# predictably (the reference recipe runs openbox; there is no desktop). Our
+# config has no title bars, menus or key bindings, so nothing in Stuart's
+# window can be closed or minimised by touch (ADR-OUI-10).
+if command -v openbox >/dev/null; then
+  if [ -r "$HERE/openbox-rc.xml" ]; then openbox --config-file "$HERE/openbox-rc.xml" & else openbox & fi
+fi
 
 # --- touch: landscape panel, no rotation ------------------------------------
 # With one monitor libinput maps the digitizer to the whole screen already.
@@ -50,10 +74,12 @@ fi
 # Never the snap: snap Chromium can't use a profile outside ~/snap and is
 # refreshed (killed) by snapd on its own schedule. The installer installs a
 # .deb (xtradeb PPA on Ubuntu, the distro package on Debian / Pi OS).
-BROWSER=""
-for b in /usr/bin/chromium /usr/lib/chromium/chromium /usr/bin/chromium-browser; do
-  if [ -x "$b" ] && [[ "$(readlink -f "$b")" != /snap/* ]] && ! grep -q '/snap/' "$b" 2>/dev/null; then BROWSER="$b"; break; fi
-done
+BROWSER="${KIOSK_BROWSER:-}"
+if [ -z "$BROWSER" ]; then
+  for b in /usr/bin/chromium /usr/lib/chromium/chromium /usr/bin/chromium-browser; do
+    if [ -x "$b" ] && [[ "$(readlink -f "$b")" != /snap/* ]] && ! grep -q '/snap/' "$b" 2>/dev/null; then BROWSER="$b"; break; fi
+  done
+fi
 
 mapfile -t FLAGS < <(sed -e 's/#.*//' -e 's/[[:space:]]*$//' -e '/^$/d' "$FLAGS_FILE" 2>/dev/null)
 
@@ -65,8 +91,143 @@ bridge_up() { (exec 3<>"/dev/tcp/$BHOST/$BPORT") 2>/dev/null; }
 
 PROFILE_ROOT="${XDG_RUNTIME_DIR:-/tmp/eniac-touch-kiosk-$(id -u)}"
 PROFILE="$PROFILE_ROOT/eniac-chromium"
+SWITCH_FLAG="$PROFILE_ROOT/.ui-switch"
+
+# --- original UI switch (docs/original-ui-switch.md 4, 5.1) ------------------
+# read_request: parse $UI_DIR/mode into REQ_*; 1 if there is none. A file
+# that breaks the format rules is logged and deleted (and also returns 1).
+read_request() {
+  REQ_MODE="" REQ_ID="" REQ_AT="" REQ_IDLE="" REQ_WARN="" REQ_TTL="" REQ_DOOR=""
+  local line="" f k v n=0 bad=0
+  [ -f "$UI_DIR/mode" ] || return 1
+  IFS= read -r line < "$UI_DIR/mode" 2>/dev/null || [ -n "$line" ] || bad=1
+  set -f
+  for f in $line; do
+    k="${f%%=*}"; v="${f#*=}"; n=$((n + 1))
+    [ "$k" != "$f" ] || { bad=1; continue; }
+    case "$k" in
+      mode) REQ_MODE="$v" ;; id) REQ_ID="$v" ;; at) REQ_AT="$v" ;; idleS) REQ_IDLE="$v" ;;
+      warnS) REQ_WARN="$v" ;; ttlS) REQ_TTL="$v" ;; door) REQ_DOOR="$v" ;; *) bad=1 ;;
+    esac
+  done
+  set +f
+  [ "$n" -eq 7 ] || bad=1
+  [[ "$REQ_MODE" =~ ^(tour|interactive)$ ]] || bad=1
+  [[ "$REQ_ID" =~ ^[0-9a-f]{8}$ ]] || bad=1
+  [[ "$REQ_AT" =~ ^[0-9]{1,12}$ ]] || bad=1
+  if [[ "$REQ_IDLE" =~ ^[0-9]{2,4}$ ]] && [[ "$REQ_WARN" =~ ^[0-9]{1,3}$ ]] && [[ "$REQ_TTL" =~ ^[0-9]{1,2}$ ]]; then
+    if [ "$REQ_IDLE" -lt 60 ] || [ "$REQ_IDLE" -gt 7200 ] || [ "$REQ_WARN" -gt 120 ] || [ "$REQ_WARN" -ge "$REQ_IDLE" ] \
+       || [ "$REQ_TTL" -lt 1 ] || [ "$REQ_TTL" -gt 60 ]; then bad=1; fi
+  else
+    bad=1
+  fi
+  [[ "$REQ_DOOR" =~ ^(visitor|staff|remote)$ ]] || bad=1
+  if [ "$bad" = 1 ]; then
+    log "ui: malformed request removed: ${line:0:120}"
+    rm -f "$UI_DIR/mode"
+    return 1
+  fi
+  return 0
+}
+
+# request_fresh: the session acts only on requests younger than ttlS, so one
+# it never saw (X was down) can never fire later (ADR-OUI-3).
+request_age() { echo $(( $(date +%s) - REQ_AT )); }
+request_fresh() { local age; age="$(request_age)"; [ "$age" -ge 0 ] && [ "$age" -le "$REQ_TTL" ]; }
+
+# watch_chromium <pid>: beside Chromium, every 1 s. On a fresh request: dark
+# root window, mark the switch, close OUR Chromium (TERM, 5 s, KILL).
+watch_chromium() {
+  local cpid="$1"
+  while kill -0 "$cpid" 2>/dev/null; do
+    sleep 1
+    read_request || continue
+    if ! request_fresh; then
+      log "ui: stale request $REQ_ID ignored (age $(request_age)s)"
+      rm -f "$UI_DIR/mode"
+      continue
+    fi
+    log "ui: $REQ_MODE requested ($REQ_ID, door $REQ_DOOR); closing Chromium"
+    xsetroot -solid "$PLATE" 2>/dev/null
+    : > "$SWITCH_FLAG"
+    kill -TERM "$cpid" 2>/dev/null
+    for _ in 1 2 3 4 5; do kill -0 "$cpid" 2>/dev/null || break; sleep 1; done
+    kill -KILL "$cpid" 2>/dev/null
+    return 0
+  done
+}
+
+# watch_withdrawal <pid> <id>: `eniac-touch-kiosk original-ui off` deletes
+# the request (or a new one replaces it): close the original UI.
+watch_withdrawal() {
+  local opid="$1" id="$2" line cur
+  while kill -0 "$opid" 2>/dev/null; do
+    sleep 1
+    cur=""
+    if IFS= read -r line < "$UI_DIR/mode" 2>/dev/null && [[ " $line " =~ \ id=([0-9a-f]{8})\  ]]; then cur="${BASH_REMATCH[1]}"; fi
+    if [ "$cur" != "$id" ]; then
+      log "ui: request withdrawn ($id); closing the original UI"
+      kill -TERM "$opid" 2>/dev/null
+      return 0
+    fi
+  done
+}
+
+write_ui_file() { # <name> <line>
+  printf '%s\n' "$2" > "$UI_DIR/$1.tmp" && mv -f "$UI_DIR/$1.tmp" "$UI_DIR/$1"
+}
+
+# run_original_ui: one turn of the loop with Stuart's front end instead of
+# Chromium. Whatever happens, the request is removed afterwards, so the
+# loop can never repeat it, and Chromium comes back.
+run_original_ui() {
+  local started rc opid wpid cause dur
+  started="$(date +%s)"
+  write_ui_file active "mode=$REQ_MODE id=$REQ_ID since=$started"
+  log "ui: starting original UI ($REQ_MODE, $REQ_ID, idle ${REQ_IDLE}s)"
+  # setsid execs in place (we are not a group leader), so pgid == pid: the
+  # whole group (core, eniactk, both wish) is killed below in one go.
+  setsid "$ORIGINAL_UI" --mode "$REQ_MODE" --idle-s "$REQ_IDLE" --warn-s "$REQ_WARN" \
+    > >(logger -t eniac-touch-kiosk-original-ui 2>/dev/null || cat >&2) 2>&1 &
+  opid=$!
+  printf '%s\n' "$opid" > "$UI_DIR/session.pgid"
+  watch_withdrawal "$opid" "$REQ_ID" & wpid=$!
+  wait "$opid"; rc=$?
+  kill "$wpid" 2>/dev/null; wait "$wpid" 2>/dev/null
+  kill -TERM -- "-$opid" 2>/dev/null; sleep 1; kill -KILL -- "-$opid" 2>/dev/null
+  rm -f "$UI_DIR/session.pgid"
+  case "$rc" in 0) cause=tap ;; 10) cause=idle ;; 143|137) cause=remote ;; *) cause=failed ;; esac
+  dur=$(( $(date +%s) - started ))
+  write_ui_file last "mode=$REQ_MODE door=$REQ_DOOR id=$REQ_ID cause=$cause durS=$dur"
+  rm -f "$UI_DIR/mode" "$UI_DIR/active"
+  xsetroot -solid "$PLATE" 2>/dev/null
+  log "ui: original UI ended ($cause, rc $rc, ${dur}s); back to the kiosk"
+}
+
+# A new X session never has the original UI on screen: clear what a session
+# that died during it left behind (its processes, the markers, the request).
+if [ -d "$UI_DIR" ]; then
+  if [ -r "$UI_DIR/session.pgid" ]; then
+    read -r oldpg < "$UI_DIR/session.pgid" 2>/dev/null
+    if [[ "${oldpg:-}" =~ ^[0-9]+$ ]] && [ "$oldpg" -gt 1 ]; then
+      log "ui: ending the original UI left by the previous session (pgid $oldpg)"
+      kill -TERM -- "-$oldpg" 2>/dev/null; sleep 1; kill -KILL -- "-$oldpg" 2>/dev/null
+    fi
+  fi
+  [ -e "$UI_DIR/active" ] && log "ui: clearing the active marker of the previous session"
+  rm -f "$UI_DIR/session.pgid" "$UI_DIR/active" "$UI_DIR/mode" "$UI_DIR/active.tmp" "$UI_DIR/last.tmp"
+fi
 
 while true; do
+  # A fresh request: the original UI instead of Chromium for this turn.
+  if read_request; then
+    if request_fresh; then
+      run_original_ui
+      continue
+    fi
+    log "ui: stale request $REQ_ID ignored (age $(request_age)s)"
+    rm -f "$UI_DIR/mode"
+  fi
   if [ -z "$BROWSER" ]; then
     log "ERROR: no non-snap Chromium found (looked in /usr/bin/chromium, /usr/lib/chromium). Re-run the installer."
     sleep 30; continue
@@ -81,9 +242,19 @@ while true; do
   # Fresh profile on every start (tmpfs under /run/user): no crash bubble,
   # no restore-session prompt, no profile growth (NFR-05).
   rm -rf -- "$PROFILE"; mkdir -p "$PROFILE_ROOT"; mkdir -m 0700 "$PROFILE"
+  rm -f "$SWITCH_FLAG"
   log "starting $BROWSER at $KIOSK_URL"
-  "$BROWSER" "${FLAGS[@]}" --user-data-dir="$PROFILE" --kiosk --app="$KIOSK_URL" 2>&1 \
-    | logger -t eniac-touch-kiosk-chromium 2>/dev/null
-  log "chromium exited (status ${PIPESTATUS[0]}); restarting in 3 s"
+  # In the background, so the watcher knows its pid; output to the journal.
+  "$BROWSER" "${FLAGS[@]}" --user-data-dir="$PROFILE" --kiosk --app="$KIOSK_URL" \
+    > >(logger -t eniac-touch-kiosk-chromium 2>/dev/null || cat >/dev/null) 2>&1 &
+  CPID=$!
+  watch_chromium "$CPID" & WPID=$!
+  wait "$CPID"; rc=$?
+  kill "$WPID" 2>/dev/null; wait "$WPID" 2>/dev/null
+  if [ -e "$SWITCH_FLAG" ]; then
+    rm -f "$SWITCH_FLAG"
+    continue   # closed for the original UI: no 3 s pause
+  fi
+  log "chromium exited (status $rc); restarting in 3 s"
   sleep 3
 done

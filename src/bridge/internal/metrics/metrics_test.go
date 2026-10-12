@@ -221,16 +221,17 @@ func TestTruncatedLastLineSkipped(t *testing.T) {
 
 func TestMonthlyFilesAndRetention(t *testing.T) {
 	dir := t.TempDir()
-	os.MkdirAll(filepath.Join(dir, "metrics"), 0o755)
-	for _, m := range []string{"2025-01", "2025-08", "2025-09"} {
-		os.WriteFile(filepath.Join(dir, "metrics", m+".jsonl"), []byte("{}\n"), 0o644)
-	}
 	now := time.Date(2026, 10, 3, 12, 0, 0, 0, time.UTC)
+	// Open prunes with the real clock, so the files are written after it
+	// (otherwise the test depends on today's date).
 	w, err := Open(dir, 400, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer w.Close()
+	for _, m := range []string{"2025-01", "2025-08", "2025-09"} {
+		os.WriteFile(filepath.Join(dir, "metrics", m+".jsonl"), []byte("{}\n"), 0o644)
+	}
 	w.SetClock(func() time.Time { return now })
 	w.Prune()
 	left, _ := filepath.Glob(filepath.Join(dir, "metrics", "*.jsonl"))
@@ -251,5 +252,35 @@ func TestMonthlyFilesAndRetention(t *testing.T) {
 		if _, err := os.Stat(filepath.Join(dir, "metrics", m)); err != nil {
 			t.Errorf("missing %s", m)
 		}
+	}
+}
+
+// The Original UI switch and the admin API (docs/original-ui-switch.md
+// 6.5) are bridge events: the UI can't send them, and a PIN can never be
+// a field.
+func TestOriginalUIAndAdminEvents(t *testing.T) {
+	w, dir := open(t)
+	w.Bridge("original_ui_enter", "", map[string]any{"door": "visitor", "mode": "tour"})
+	w.Bridge("original_ui_exit", "", map[string]any{"door": "visitor", "mode": "tour", "cause": "idle", "durS": 301})
+	w.Bridge("admin_login", "", map[string]any{"ok": false, "locked": true})
+	w.Bridge("admin_action", "", map[string]any{"action": "restart-core"})
+	w.Bridge("admin_login", "", map[string]any{"ok": true, "pin": "123456"}) // never recorded
+	w.Bridge("session_end", "s1", map[string]any{"durS": 20, "reason": "original_ui"})
+	for _, ev := range []string{"original_ui_enter", "original_ui_exit", "admin_login", "admin_action"} {
+		if err := w.UI(protocol.Metric{Ev: ev}, ""); !errors.Is(err, ErrNotAllowed) {
+			t.Errorf("%s from the UI accepted (%v)", ev, err)
+		}
+	}
+	w.SessionEnd()
+	recs, _ := Read(dir)
+	var evs []string
+	for _, r := range recs {
+		evs = append(evs, r["ev"].(string))
+		if _, ok := r["pin"]; ok {
+			t.Fatal("a pin was recorded")
+		}
+	}
+	if strings.Join(evs, ",") != "original_ui_enter,original_ui_exit,admin_login,admin_action,session_end" {
+		t.Fatalf("%v", evs)
 	}
 }

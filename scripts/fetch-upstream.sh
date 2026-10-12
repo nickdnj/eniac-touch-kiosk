@@ -2,6 +2,9 @@
 # Fetch, verify and patch the pinned upstream simulator into build/upstream,
 # then build the core for the host (darwin-arm64) and both kiosk targets:
 # linux-arm64 (Pi 5) and linux-amd64 (x86 mini PC, e.g. Dell OptiPlex).
+# Brian L. Stuart's Tk front end, vis/eniactk.go, is built from the same
+# patched export for the same targets (build/<os>-<arch>/eniactk): the
+# Original UI switch runs it on our core (docs/original-ui-switch.md 7.1).
 #
 #   scripts/fetch-upstream.sh            fetch + verify + patch + build all cores
 #   scripts/fetch-upstream.sh --no-build fetch + verify + patch only
@@ -108,7 +111,7 @@ done < "$PATCHES/series"
 
 # 4. Provenance, shipped with releases and shown on the admin screen.
 cat > "$STAGE/.provenance.json" <<EOF
-{"url":"$URL","commit":"$COMMIT","tree":"$TREE","gotoolchain":"$TOOLCHAIN","patches":[${APPLIED_JSON}],"builtAt":"$(date -u +%Y-%m-%dT%H:%M:%SZ)"}
+{"url":"$URL","commit":"$COMMIT","tree":"$TREE","gotoolchain":"$TOOLCHAIN","patches":[${APPLIED_JSON}],"originalUi":{"eniactk":"vis/eniactk.go"},"builtAt":"$(date -u +%Y-%m-%dT%H:%M:%SZ)"}
 EOF
 if [ -d "$BUILD/upstream" ]; then rm -rf -- "$BUILD/upstream"; fi
 mv "$STAGE" "$BUILD/upstream"
@@ -129,9 +132,20 @@ build_core() { # <srcroot> <goos> <goarch> <out>
      go build -trimpath -o "$out" ./src) || die "core build failed for $goos/$goarch"
   log "built $out"
 }
+# eniactk: one file of standard-library Go, static like the core (O3).
+build_eniactk() { # <srcroot> <goos> <goarch> <out>
+  local src="$1" goos="$2" goarch="$3" out="$4"
+  mkdir -p "$(dirname "$out")"
+  (cd "$src" && CGO_ENABLED=0 GOTOOLCHAIN="$TOOLCHAIN" GOFLAGS=-mod=mod GOOS="$goos" GOARCH="$goarch" \
+     go build -trimpath -o "$out" ./vis/eniactk.go) || die "eniactk build failed for $goos/$goarch"
+  log "built $out"
+}
 build_core "$BUILD/upstream" darwin arm64 "$BUILD/darwin-arm64/eniac-core"
 build_core "$BUILD/upstream" linux arm64 "$BUILD/linux-arm64/eniac-core"
 build_core "$BUILD/upstream" linux amd64 "$BUILD/linux-amd64/eniac-core"
+build_eniactk "$BUILD/upstream" darwin arm64 "$BUILD/darwin-arm64/eniactk"
+build_eniactk "$BUILD/upstream" linux arm64 "$BUILD/linux-arm64/eniactk"
+build_eniactk "$BUILD/upstream" linux amd64 "$BUILD/linux-amd64/eniactk"
 if [ "$DO_UNPATCHED" = 1 ]; then
   HOSTOS="$(GOTOOLCHAIN="$TOOLCHAIN" go env GOHOSTOS)"; HOSTARCH="$(GOTOOLCHAIN="$TOOLCHAIN" go env GOHOSTARCH)"
   build_core "$BUILD/upstream-unpatched" "$HOSTOS" "$HOSTARCH" "$BUILD/unpatched/eniac-core"

@@ -29,6 +29,7 @@ import (
 	"eniac-kiosk/bridge/internal/recovery"
 	"eniac-kiosk/bridge/internal/server"
 	"eniac-kiosk/bridge/internal/status"
+	"eniac-kiosk/bridge/internal/uiswitch"
 )
 
 // Recorder receives metrics events (internal/metrics implements it).
@@ -56,6 +57,8 @@ type Options struct {
 	Metrics  Recorder
 	VlinkExe string // the binary implementing `vlink` (os.Executable())
 	Log      *slog.Logger
+	// Switch is the Original UI switch (nil: not available, "disabled").
+	Switch *uiswitch.Switcher
 
 	Tick        time.Duration // frame tick, default 33 ms
 	OrphanAfter time.Duration // reap a session this long after the last client left, default 30 s
@@ -214,14 +217,17 @@ func (m *Manager) startProbe(ctx context.Context) (*core.Core, error) {
 // ---------------------------------------------------------------------------
 // server.Handler
 
-// Hello is the first message to every client.
+// Hello is the first message to every client. A page connecting after the
+// original UI ran also records how it ended (original_ui_exit).
 func (m *Manager) Hello() protocol.Hello {
+	m.consumeOriginalUIExit()
 	cfg := m.o.Config
 	tz := cfg.Admin.TapZone
 	return protocol.Hello{T: "hello", Protocol: protocol.Version, Build: buildinfo.Build(),
 		Config: protocol.HelloConfig{
-			Idle:  protocol.IdleConfig{SetupS: cfg.Idle.SetupS, RunS: cfg.Idle.RunS, CountdownS: cfg.Idle.CountdownS, ExploreS: cfg.Idle.ExploreS},
-			Admin: protocol.AdminConfig{TapZone: protocol.TapZone{Corner: tz.Corner, WidthPx: tz.WidthPx, HeightPx: tz.HeightPx, Taps: tz.Taps}},
+			Idle:       protocol.IdleConfig{SetupS: cfg.Idle.SetupS, RunS: cfg.Idle.RunS, CountdownS: cfg.Idle.CountdownS, ExploreS: cfg.Idle.ExploreS},
+			Admin:      protocol.AdminConfig{TapZone: protocol.TapZone{Corner: tz.Corner, WidthPx: tz.WidthPx, HeightPx: tz.HeightPx, Taps: tz.Taps}},
+			OriginalUI: m.originalUIConfig(),
 		},
 		Health: m.healthNow()}
 }
@@ -292,6 +298,8 @@ func (m *Manager) Handle(ctx context.Context, c *server.Client, msg any) []any {
 		return m.attractStart(x)
 	case protocol.AttractStop:
 		return m.attractStop(x)
+	case protocol.OriginalUI:
+		return m.originalUI(x)
 	case protocol.StartMission:
 		if x.Mode == protocol.ModeAttract {
 			return errMsg(x.ID, protocol.ErrNotAllowed, "attract runs through attract_start")
@@ -920,6 +928,7 @@ func (m *Manager) Healthz() protocol.Healthz {
 			h.Core.UptimeS = int64(c.Uptime().Seconds())
 		}
 	}
+	h.OriginalUI = m.healthzOriginalUI()
 	h.Kiosk.ClientConnected = m.hub.Count() > 0
 	if lp := m.hub.LastPing(); !lp.IsZero() {
 		ago := int64(time.Since(lp).Seconds())
