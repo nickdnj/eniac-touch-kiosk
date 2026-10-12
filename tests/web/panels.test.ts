@@ -139,3 +139,13 @@ test("M2 run-view lamps are at least 12 px; MP workbench decades at least 8 px",
   assert.ok(radius("master-programmer.svg", "lamp:mp.s.7.2") * 2 >= 12);
   assert.ok(radius("master-programmer.svg", "lamp:mp.dec.3.4") * 2 >= 8);
 });
+
+test("accumulator lamp grids run 0 at the bottom and 9 at the top, in every drawing (Stuart and Crawford, 2026-10-11)", () => {
+  for (const f of ["accumulator-1.svg", "accumulator-2.svg", "accumulator-compact-1.svg", "accumulator-run-1.svg", "accumulator-run-2.svg"]) {
+    const y = new Map<number, number>();
+    const svg = readFileSync(join(dir, f), "utf8");
+    for (const m of svg.matchAll(/id="lamp:acc\.\d+\.d\.1\.(\d)"[^>]*>\s*<circle[^>]*cy="([\d.]+)"/g)) y.set(Number(m[1]), Number(m[2]));
+    assert.equal(y.size, 10, `${f}: ten lamps in the first digit column`);
+    for (let d = 0; d < 9; d++) assert.ok(y.get(d + 1)! < y.get(d)!, `${f}: digit ${d + 1} is above digit ${d}`);
+  }
+});
