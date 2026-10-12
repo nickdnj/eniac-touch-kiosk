@@ -281,7 +281,7 @@ What we copy from the photos: near-black charcoal panels (#1B1D21), a darker cab
 - Lit lamp: amber-orange #FFB000 core, a 2x-radius soft glow, and **a bigger dot** (1.4x) so brightness is not the only difference.
 - Unlit lamp: dark ring #3A2E1E with a faint amber outline, still visible so the grid reads as 10 x 10.
 - Size: lamp dots are at least 12 px (NFR-06): 14 px in the Workbench thumbnails (26 px column pitch, 16 px row pitch), 26 px in the run view (grid 10 columns at 52 px, 10 rows at 38 px, matching upstream's 49 x 38 ratio).
-- Row labels 0 to 9 down the left edge (0 at the top, as on the real machine). Sign lamp and repeat lamp labelled in 24 px chips.
+- Row labels 0 to 9 up the left edge: **0 at the bottom, 9 at the top** (corrected 2026-10-12 after Stuart and Crawford's review; an earlier draft had 0 at the top, which was wrong. Stuart's `eniactk` draws digit v at y = 149 + v x 38 with y pointing up. The P and M sign lamps sit level with rows 0 and 1). Sign lamp and repeat lamp labelled in 24 px chips.
 - Decay: a lamp takes about 80 ms to fade, like real neon persistence. It also prevents strobing at Full speed.
 - The **helper readout** above each lamp grid is IBM Plex Mono 72 px, white on black, labelled "helper readout" in 24 px. It is computed from the lamps, never separate data.
 
