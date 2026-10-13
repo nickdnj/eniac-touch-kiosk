@@ -268,6 +268,36 @@
         "set related video to eZE-r3WcyVI in YouTube Studio for both Shorts (not in the API)",
         "2026-10-12: Nick cannot set 'Related video' in Studio; YouTube account is in identity verification (face scan), ~24 h. Retry after verification clears. Shorts descriptions already link the v6 long cut."
       ]
+    },
+    "panels": {
+      "status": "draft, not uploaded",
+      "date": "2026-10-12",
+      "brief": "New 9:16 short, not cut from the long form: full panels (portrait) as the point of interest, close-ups tell the story. Existing narration only.",
+      "file": "output/short-panels.mp4",
+      "duration": "32.5",
+      "format": "1080x1920, 30 fps",
+      "loudness": "about -16 LUFS (target -14, not yet raised)",
+      "footage": "live kiosk simulator (eniac-touch-kiosk main 62ef8d7), virtual camera over the Explore panorama, clean (no UI, captions or badges)",
+      "voice": [
+        "short-30s-v2/Q",
+        "kiosk-lines-v6/explore-04",
+        "explore-05",
+        "explore-06 (1.38-4.76 s only)",
+        "explore-07",
+        "explore-08",
+        "short-30s-v2/C2"
+      ],
+      "spoken_eniac": false,
+      "new_voice_line": "C2: 'Come try it at Info Age, home of the Vintage Computer Federation.' (Nick 2, same settings; original C kept)",
+      "music": "Hot Swing (stand-in), ducked under voice",
+      "end_card": "Come try it / Vintage Computer Federation / InfoAge Science and History Museums / Wall, NJ - Wed, Sat & Sun 12 to 5",
+      "assembly": "scripts/shorts-panels/ (rec.mjs, camlib.mjs, build.sh); recorder ran in a throwaway worktree of the kiosk repo",
+      "previous_cut": "output/short-panels-v1-vfcd.mp4 (closing line without InfoAge)",
+      "open_items": [
+        "Nick to review; confirm 'home of the Vintage Computer Federation' wording",
+        "raise loudness toward -14 LUFS",
+        "not uploaded; run youtube-whoami.py before any upload"
+      ]
     }
   },
   "v6_review": {

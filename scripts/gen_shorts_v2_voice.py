@@ -17,7 +17,8 @@ PD_TAG=f"dict:{PD_ID}:{PD_VER}" if PD_ID else "inline:"+json.dumps(ALIASES,sort_
 SETTINGS={"stability":0.5,"similarity_boost":0.75,"style":0.4,"speed":1.12,"use_speaker_boost":True}
 OUT=f"{ROOT}/assets/audio/short-30s-v2"
 TXT={"Q":"Could you program a computer from nineteen forty-six?","Y":"Yes. With your fingertip.",
-     "C":"Come try it, at the Vintage Computer Federation."}
+     "C":"Come try it, at the Vintage Computer Federation.",
+     "C2":"Come try it at Info Age, home of the Vintage Computer Federation."}
 def text_of(i): return TXT[i.split("-")[0]]
 def gen(spec):
     i,_,s=spec.partition(":"); seed=int(s) if s else None
