@@ -45,7 +45,7 @@ export interface Source extends Block {
 }
 
 export interface HonorPage extends Block {
-  id: "stuart" | "programmers" | "builders" | "exhibit";
+  id: "stuart" | "programmers" | "builders" | "exhibit" | "idea";
   /** The tab label. */
   tab: string;
   /** The page title (32 px caps over the lead). */
@@ -75,6 +75,8 @@ export const HONOR = {
     // fact-check B18: the Goldstines did not build ENIAC; "project team" covers everyone on this page.
     { id: "builders", tab: "The project team", title: "The project team" },
     { id: "exhibit", tab: "This exhibit", title: "This exhibit" },
+    // Draft (2026-10-15): the Signal Corps radar job and the Army's firing tables as two real problems with one bottleneck. docs/camp-evans-eniac-research.md
+    { id: "idea", tab: "The idea", title: "Where the idea came from" },
   ] as HonorPage[],
 
   // ---------------------------------------------------------------- page 1
@@ -161,6 +163,24 @@ export const HONOR = {
     type: "Type: Atkinson Hyperlegible and IBM Plex Mono (SIL Open Font License).",
     welcome: "Know more of this story, or spot a mistake? Please tell a docent. We would love to hear it.",
     qr: { label: "Vintage Computer Federation", url: "https://vcfed.org/", print: "vcfed.org" } as Link,
+  },
+
+  // ---------------------------------------------------------------- page 5 (draft)
+  idea: {
+    lead: "Before ENIAC, John Mauchly led a team of human computers on a classified radar-antenna job. It came from the Signal Corps’s radar laboratories in New Jersey, a Monmouth County network that included Camp Evans.",
+    fcLead: "Mauchly, Smithsonian Computer Oral History (Tropp, 10 Jan 1973), pp. 15-20, 33-34: Brainerd negotiated a classified contract 'with the Signal Corps in New Jersey' for radar radiation patterns; Mauchly did the numerical integration by desk calculator. The transcript never names Camp Evans (nor does the 6 Feb session); that the client was a laboratory at Camp Evans is InfoAge's inference. Nick chose this wording 2026-10-15 (docs/camp-evans-eniac-research.md). 'Human computers': the Moore School's hired computers (Mauchly p. 69).",
+    left: {
+      kicker: "The Signal Corps job",
+      line: "How does a radar dish send its signal? Solve the equations by hand, one tiny piece at a time.",
+      fc: "Mauchly pp. 15-16: numerical integration of the electromagnetic equations over the reflector, piece by piece, on desk calculators.",
+    },
+    right: {
+      kicker: "The Army’s job",
+      line: "Where does a shell land? Work out its flight by hand, step by step, for every firing table.",
+      fc: "Mauchly p. 20: step-by-step integration on Friden desk calculators; about two weeks per trajectory; about a hundred women computing in 1943 and still falling behind.",
+    },
+    foot: "At the same school, two real problems with the same mathematics and the same bottleneck. They showed what a faster machine would be for.",
+    fcFoot: "Mauchly p. 20: the slow hand calculation on the Signal Corps project, and the Ballistics Research Laboratory's firing-table backlog, are the two pressures he describes as pushing him toward an electronic computer. 'At the same school': the women computing firing tables worked 'around that place' (p. 20); the Philadelphia group was at the Moore School.",
   },
 
   // ---------------------------------------------------------------- attract plate (UX 14.2.1)
