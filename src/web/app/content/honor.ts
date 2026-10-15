@@ -180,6 +180,8 @@ export const HONOR = {
       fc: "Mauchly p. 20: step-by-step integration on Friden desk calculators; about two weeks per trajectory; about a hundred women computing in 1943 and still falling behind.",
     },
     foot: "At the same school, two real problems with the same mathematics and the same bottleneck. They showed what a faster machine would be for.",
+    /** A footnote, small: what the source says and what is not independently verified (Nick, 2026-10-15). */
+    note: "Mauchly’s own account says only “the Signal Corps in New Jersey”. That Camp Evans was part of it has not been independently verified.",
     fcFoot: "Mauchly p. 20: the slow hand calculation on the Signal Corps project, and the Ballistics Research Laboratory's firing-table backlog, are the two pressures he describes as pushing him toward an electronic computer. 'At the same school': the women computing firing tables worked 'around that place' (p. 20); the Philadelphia group was at the Moore School.",
   },
 

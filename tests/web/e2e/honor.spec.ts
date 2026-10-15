@@ -132,6 +132,7 @@ test("all five pages render (no review gate) and each fits one screen; tabs are 
   await expect(page.locator(".page-idea")).toContainText("Signal Corps");
   await expect(page.locator(".page-idea")).toContainText("Camp Evans");
   await expect(page.locator(".page-idea .idea-card")).toHaveCount(2);
+  await expect(page.locator(".page-idea .idea-note")).toContainText("not been independently verified");
   await fitsOneScreen(page);
   await expect(page.locator(".honor-next")).toBeHidden();
 

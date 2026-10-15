@@ -101,6 +101,7 @@ function pageIdea(): HTMLElement {
       h("div", { class: "idea-card" }, h("div", { class: "idea-kicker" }, i.right.kicker), h("p", { class: "body" }, i.right.line)),
     ),
     h("p", { class: "lead strong foot" }, i.foot),
+    h("p", { class: "body small idea-note" }, i.note),
   );
 }
 
