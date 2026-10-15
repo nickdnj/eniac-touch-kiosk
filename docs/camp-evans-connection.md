@@ -25,7 +25,7 @@ Smithsonian, Computer Oral History Collection, John W. Mauchly interviewed by He
 | What the article claims | What the transcript says | Page |
 |---|---|---|
 | A Signal Corps contract needed antenna-pattern calculations | Confirmed. Grist Brainerd arranged a contract "with the Signal Corps in New Jersey" to study a parabolic reflector with a dipole at its focus. Classified at the time. The method was numerical integration. | 15 |
-| Moore School had almost no calculators; Mauchly borrowed machines | Confirmed. The school had one desk calculator; he got Ursinus's Monroe, and the school got one more through a priority request. (The article's "10-12 machines borrowed from Wharton" is from a passage I did not locate in this transcript; it may be in the 6 February session or a third part.) | 18 |
+| Moore School had almost no calculators; Mauchly borrowed machines | Confirmed. The school had one desk calculator; he got Ursinus's Monroe, the school got one more through a priority request, and Wharton's Statistical Laboratory, two blocks away, had about 10 or 12 desk calculators that they borrowed as many of as they could. | 18 |
 | The project ran over time and the Signal Corps only wanted results | Confirmed. It overran the promised period; the sponsor was content with the results and the school got a follow-on. | 19-20 |
 | Mauchly was "impelled" toward an electronic computer by the slog | Confirmed in his words: he says he was "impelled, you might say, to come back to that subject" each time he was fed up with the hand calculations on the Signal Corps project. | 20 |
 | Camp Evans specifically | **Not in the transcript.** The word does not appear in either transcript. | none |
@@ -58,5 +58,5 @@ Add "Camp Evans" only after a source names it. Do not write "Camp Evans inspired
 1. Ask Evan Koblentz (author of the article) what his basis is for naming Camp Evans; he may have the contract record. Doug can route the question.
 2. Look for the contract itself: Signal Corps contract files for the Moore School 1941-42, or Penn archives (the University Archives holds Moore School records).
 3. Check Nancy Stern, *From ENIAC to UNIVAC* (already in the museum's reference list), for the Signal Corps contract and its sponsoring laboratory.
-4. Read the third part of the Mauchly series for the Wharton borrowing the article mentions.
+4. Read the third part of the Mauchly series (the article cites a three-part series; only two transcripts are linked) for anything that names the sponsoring laboratory.
 5. If the Wescoff link holds, it is a strong honor-roll sentence: one of the first programmers began on the radar-antenna calculations.
