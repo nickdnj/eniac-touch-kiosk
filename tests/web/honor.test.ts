@@ -8,8 +8,8 @@ import { HONOR, shown } from "../../src/web/app/content/honor.ts";
 
 const words = (s: string) => s.trim().split(/\s+/).length;
 
-test("four pages, in the spec's order, none held", () => {
-  assert.deepEqual(HONOR.pages.map((p) => p.id), ["stuart", "programmers", "builders", "exhibit"]);
+test("five pages, in the spec's order (the idea page is a draft at the end), none held", () => {
+  assert.deepEqual(HONOR.pages.map((p) => p.id), ["stuart", "programmers", "builders", "exhibit", "idea"]);
   assert.ok(HONOR.pages.every(shown));
 });
 

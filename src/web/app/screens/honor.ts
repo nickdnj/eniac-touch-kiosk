@@ -88,11 +88,29 @@ function pageExhibit(): HTMLElement {
   return h("div", { class: "honor-page page-exhibit" }, left, right);
 }
 
+function pageIdea(): HTMLElement {
+  const i = HONOR.idea;
+  return h(
+    "div",
+    { class: "honor-page page-idea" },
+    h("p", { class: "lead" }, i.lead),
+    h(
+      "div",
+      { class: "idea-pair" },
+      h("div", { class: "idea-card" }, h("div", { class: "idea-kicker" }, i.left.kicker), h("p", { class: "body" }, i.left.line)),
+      h("div", { class: "idea-card" }, h("div", { class: "idea-kicker" }, i.right.kicker), h("p", { class: "body" }, i.right.line)),
+    ),
+    h("p", { class: "lead strong foot" }, i.foot),
+    h("p", { class: "body small idea-note" }, i.note),
+  );
+}
+
 const BUILD: Record<string, () => HTMLElement> = {
   stuart: pageStuart,
   programmers: pageProgrammers,
   builders: pageBuilders,
   exhibit: pageExhibit,
+  idea: pageIdea,
 };
 
 export function honorScreen(app: App, view: View): Screen {

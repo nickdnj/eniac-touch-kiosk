@@ -105,7 +105,8 @@
 .honor .header .title { font-size: 44px; }
 .honor-tabs { position: absolute; left: 80px; top: 112px; width: 1760px; height: 96px; display: flex; gap: 16px; }
 .honor-tab {
-  width: 428px;
+  flex: 1 1 0;
+  width: auto;
   min-height: 96px;
   height: 96px;
   padding: 0 16px;
@@ -217,3 +218,12 @@
 
 /* Page 4: the font credit sits under the mission sources. */
 .honor-page .type-credit { margin-top: 24px; }
+
+/* Page 5 (draft): the idea. Two real jobs, one bottleneck. */
+.page-idea .lead { max-width: 1500px; }
+.page-idea .idea-pair { position: absolute; left: 0; top: 200px; width: 1760px; display: flex; gap: 40px; }
+.page-idea .idea-card { flex: 1 1 0; min-height: 190px; padding: 28px 40px; border: 2px solid #4a4e57; border-radius: 14px; background: rgba(0, 0, 0, 0.28); }
+.page-idea .idea-kicker { font-size: 24px; line-height: 32px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.page-idea .idea-card .body { font-size: 30px; line-height: 42px; color: var(--card); }
+.page-idea .foot { position: absolute; left: 0; top: 500px; max-width: 1500px; }
+.page-idea .idea-note { position: absolute; left: 0; top: 612px; max-width: 1500px; color: var(--muted); }

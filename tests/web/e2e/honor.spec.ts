@@ -78,7 +78,7 @@ test("picker button opens S11 on Brian L. Stuart's page: plate, credit, three of
   await expect(page.locator("#footer")).toHaveText("ENIAC designed by J. Presper Eckert and John W. Mauchly · Simulator by Brian L. Stuart, Drexel University");
 });
 
-test("all four pages render (no review gate) and each fits one screen; tabs are 96 px", async ({ page }) => {
+test("all five pages render (no review gate) and each fits one screen; tabs are 96 px", async ({ page }) => {
   await toHonor(page);
   for (let n = 1; n <= 4; n++) {
     const b = (await tab(page, n).boundingBox())!;
@@ -125,11 +125,20 @@ test("all four pages render (no review gate) and each fits one screen; tabs are 
   await expect(page.locator(".page-exhibit")).toContainText("February 15, 1946");
   await expect(page.locator(".page-exhibit")).toContainText("Vintage Computer Federation");
   await fitsOneScreen(page);
+  await expect(page.locator(".honor-next")).toHaveText("Next: The idea ›");
+
+  // Page 5 (draft): the idea. One screen; the last page has no Next.
+  await tap(page, tab(page, 5));
+  await expect(page.locator(".page-idea")).toContainText("Signal Corps");
+  await expect(page.locator(".page-idea")).toContainText("Camp Evans");
+  await expect(page.locator(".page-idea .idea-card")).toHaveCount(2);
+  await expect(page.locator(".page-idea .idea-note")).toContainText("not been independently verified");
+  await fitsOneScreen(page);
   await expect(page.locator(".honor-next")).toBeHidden();
 
   // Every page view is a metric (UX 14.6.4).
   const views = (await sent(page)).filter((m) => m.t === "metric" && m.ev === "honor_page_view").map((m) => m.n);
-  expect(views).toEqual([1, 2, 3, 4]);
+  expect(views).toEqual([1, 2, 3, 4, 5]);
 });
 
 test("Next walks the pages in order; Back returns to the picker", async ({ page }) => {
