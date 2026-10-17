@@ -315,6 +315,16 @@ else
   mv "$REL.tmp" "$REL"
 fi
 
+# --- display-restart rule (tests/deploy/test-upgrade-display.sh extracts this) ---
+# The running kiosk-session / Chromium / original-ui loop were started from the
+# release `current` pointed at then, and the prune below deletes that folder.
+# So after an upgrade (a different release replaced a real one) a live X session
+# must be restarted, or e.g. the Original room tour dies with "No such file".
+needs_display_restart() {  # $1 = old `current` link, $2 = new release dir name
+  [ -n "$1" ] && [ "$1" != "releases/$2" ] && pgrep -u "$KIOSK_USER" -x Xorg >/dev/null 2>&1
+}
+# --- end display-restart rule ---
+
 # Atomic symlink swap; the release we replace becomes `previous`.
 old="$(readlink "$PREFIX/current" 2>/dev/null || true)"
 if [ -n "$old" ] && [ "$old" != "releases/$VER" ] && [ -d "$PREFIX/$old" ]; then
@@ -423,6 +433,10 @@ if [ "$SYSTEMD" = 1 ] && [ "$DO_START" = 1 ]; then
   systemctl is-active --quiet "$UNIT" || die "$UNIT failed to start: journalctl -u $UNIT -n 50"
   log "selftest (Squares, headless, beside the running bridge)"
   "$WRAPPER" selftest || die "selftest failed; see above"
+  if needs_display_restart "$old" "$VER"; then
+    log "upgrade: restarting the display so X, Chromium and the original UI run the new release"
+    "$WRAPPER" restart-display
+  fi
 elif [ "$SYSTEMD" = 1 ]; then
   systemctl daemon-reload
   log "--no-start: nothing enabled. Later: sudo systemctl enable --now $UNIT"
@@ -439,7 +453,7 @@ install: done. ENIAC touch kiosk $VER ($RARCH) is installed.
   Manifest:                  $MANIFEST
 
 Next:
-  1. sudo reboot   (the console comes up straight into the exhibit)
+  1. sudo reboot   (a first install only: an upgrade already restarted the display)
   2. BIOS, if not done yet: "AC Recovery" / "Restore on AC Power Loss" -> POWER ON.
      No script can set this; without it the exhibit stays dark after an outage.
   3. Pull the plug at the wall, plug back in, hands off: it must come back alone.
