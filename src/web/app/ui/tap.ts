@@ -28,6 +28,8 @@ export interface DispatcherOptions {
   onActivity?: () => void;
   /** Called for a tap that hit no data-tap element (neutral). */
   onEmpty?: (p: TapPoint) => void;
+  /** Called when a finger goes down on an enabled button (feedback sound). */
+  onPress?: () => void;
 }
 
 /** A finger that travels further than this (app px) is a swipe, not a tap. */
@@ -63,7 +65,10 @@ export function installTapDispatcher(root: HTMLElement, o: DispatcherOptions): v
       downAt = o.toApp(e.clientX, e.clientY);
       o.onActivity?.();
       downEl = findTap(e.target as Element);
-      if (downEl && !isDisabled(downEl)) downEl.classList.add("pressed");
+      if (downEl && !isDisabled(downEl)) {
+        downEl.classList.add("pressed");
+        o.onPress?.();
+      }
     },
     { capture: true, passive: false },
   );

@@ -14,6 +14,7 @@ import { fetchMission, fetchMissions } from "./net/api.ts";
 import { Mirror } from "./state/machine.ts";
 import { IdleTimer, type IdleMode } from "./idle.ts";
 import { installGuards } from "./ui/guards.ts";
+import { playClick } from "./ui/sound.ts";
 import { installTapDispatcher, onTap, type TapPoint } from "./ui/tap.ts";
 import { h, clear, svgFromString } from "./ui/dom.ts";
 import { confirm, dismissConfirms } from "./ui/overlays.ts";
@@ -227,6 +228,7 @@ export class App {
         this.idle.touch();
         this.staff?.touched();
       },
+      onPress: () => playClick(),
     });
     // The staff gesture counts every first-finger touch-down: inside the
     // corner it counts, anywhere else it resets. The first tap still asks

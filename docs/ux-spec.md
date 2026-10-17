@@ -1864,7 +1864,7 @@ Lamp states are smoothed (80 ms decay) so no element flashes more than 3 times p
 | Reading | Grade 4 to 5 body copy, at most 40 words, 28 px. Headlines in sentence case. No idioms. |
 | Timing | No step has a time limit. The idle warning gives 15 s and any touch dismisses it. "Tell me more" pauses idle. |
 | Screen readers | Out of scope for v1 (Q9); the DOM is still ordered logically with proper roles so it can be added later. |
-| Sound | None in v1 (Q8). Feedback is visual only. |
+| Sound | A soft synthesized tick on every enabled button press (Nick, 2026-10-17; `app/ui/sound.ts`). No other sound. Silent if the box has no audio output. |
 
 ---
 
