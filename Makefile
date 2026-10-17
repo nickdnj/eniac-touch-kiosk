@@ -19,7 +19,7 @@ ARCH ?= arm64
 KIOSK_ARCHES := arm64 amd64
 
 .PHONY: help upstream upstream-unpatched bridge bridge-linux bridge-dev web release release-all dev e2e e2e-mock test test-go vet tsc test-web \
-        test-upstream test-realcore fuzz protogen missions-check selftest goldens test-install-container test-ui-switch \
+        test-upstream test-realcore fuzz protogen missions-check selftest goldens test-install-container test-ui-switch test-upgrade-display \
         install-stick test-stick test-stick-vm
 
 help:
@@ -84,11 +84,15 @@ dev: $(HOSTCORE) bridge-dev
 	build/dev/eniac-bridge serve --dev --config deploy/config/config.dev.yaml
 
 ## test                go test + vet + tsc + node --test + mission check + the session's UI-switch loop (the PR gate)
-test: $(HOSTCORE) vet test-go tsc test-web missions-check test-ui-switch
+test: $(HOSTCORE) vet test-go tsc test-web missions-check test-ui-switch test-upgrade-display
 
 ## test-ui-switch      kiosk-session's Original UI loop with stubs, no X (bash 4 + setsid; on a Mac it uses docker)
 test-ui-switch:
 	tests/deploy/test-ui-switch.sh
+
+## test-upgrade-display  install.sh restarts a live display after an upgrade (no X, no root)
+test-upgrade-display:
+	tests/deploy/test-upgrade-display.sh
 
 test-go:
 	cd $(BRIDGE) && go test ./...
