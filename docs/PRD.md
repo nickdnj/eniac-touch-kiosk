@@ -390,7 +390,7 @@ M3-lite is a **supervised preview** on the museum's own screen. It is **not** th
 | Q5 | Where does the code live long-term: Nick's GitHub, or a VCF-controlled org? Public or private? | Private repo, with the museum owner granted access at handoff. It goes public only after R1. | Nick / Doug / Stuart |
 | Q6 | Idle timeouts (FR-32) | 90 s in setup and on the menu, **120 s in Explore ENIAC**, 3 min while running, 15 s "Still there?" countdown | Nick |
 | Q7 | Operating hours: power on and off with the museum lights, or always on? | Always on, with a nightly 03:00 restart | Museum staff |
-| Q8 | Sound (relay clicks, card punch)? | No sound in v1 | Nick / Doug |
+| Q8 | Sound (relay clicks, card punch)? | Button tick only (2026-10-17, Nick); no other sound | Nick / Doug |
 | Q9 | Languages other than English, and screen-reader/audio description? | English only. Visual accessibility per UX-09 only. | Doug |
 | Q10 | Credit wording, and should the ENIAC programmers (such as the six women who programmed it) be credited on the About screen? *(0.4: **decided yes**, by Nick: the honor roll, FR-44. What remains is Doug's approval of the names, their format and each role, Q17.)* | The names in FR-44; roles as one short line each; approved blocks only (FR-46). | Doug |
 | Q11 | If Stuart declines permission for the `images/` photographs, is original artwork acceptable? | Yes. Plan for original artwork if needed. | Nick |
