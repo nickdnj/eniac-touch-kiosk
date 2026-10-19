@@ -1,0 +1,190 @@
+# Mission 4: Difference (a table of numbers by the Method of Differences).
+# DRAFT 2026-10-19. Architecture 5.9 (schema 1, plus the M1 `content:` block and
+# the M2 card pane). Source program and tutorial: Brian L. Stuart, "Polynomial
+# Tables on the ENIAC" and difference.e, sent to Nick 2026-10-19 (docs/difference-mission.md).
+#
+# The program tabulates f(x) = x^3 - 20x^2 - 70x + 600 by adding differences,
+# the way Babbage's Difference Engine did. Accumulator 17 holds f(x), 18 the
+# first difference, 19 the second, 20 the third (a constant, 6). Each row:
+# punch a card, then add 18 to 17, 19 to 18 and 20 to 19.
+#
+# Needs difference.e in the runtime programs/ directory. It is NOT in Stuart's
+# repo at ad9a7a7 yet (open decision D1 in docs/difference-mission.md), so until
+# it is, `mission check` reports this mission unavailable on a clean checkout.
+# [FC] tags are kept in `review.factCheck` (never shown); they must clear the
+# fact-check gate (#35, test plan 12) and Doug Crawford's copy approval first.
+schema: 1
+id: difference
+title: "Difference"
+order: 4
+summary: "Make ENIAC build a table, the way Babbage planned."
+minutes: 4
+program: difference.e
+programSha256: "321b085b5a53d73220e36de657bae95301f9e8080971383fab9b3b9ad82cfa8a"
+includes: {}
+ordered: true
+
+steps:
+  - id: k1-six
+    line: "s c.k1 6"
+    expect: { switch: c.k1, value: "6" }
+    choices: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    text:
+      headline: "Dial in the number 6"
+      body: "This table uses a trick: the last step in the chain never changes. Here it is always 6. Tap the glowing dial on the Constant Transmitter and choose 6."
+      more: "For this polynomial, the third difference is the same constant, 6, all the way down the table. ENIAC keeps adding it. The other numbers in the chain change on every row."
+      done: "Now the steady number, 6, is ready."
+      hints:
+        wrongValue: "We need a 6 here."
+        wrongSwitch: "That is a different dial. Try the glowing one."
+      review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.1" }
+
+  - id: a18-to-trunk1
+    line: "p a18.A 1"
+    expect: { from: a18.A, to: "1" }
+    text:
+      headline: "Send the first difference out"
+      body: "Accumulator 18 holds how fast the table is changing. Tap its A output, a data connector. Then tap Trunk 1. Now that number can travel."
+      more: "The table is built from differences: how much each value grows or shrinks from the one before. Babbage's Difference Engine did this with gears. ENIAC does it with accumulators."
+      done: "The first difference is on Trunk 1."
+      hints:
+        wrongFrom: "We want the A output of Accumulator 18, not S."
+        wrongTo: "Choose Trunk 1."
+        byTarget:
+          a18.S: "S sends the opposite. We want A."
+      review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.1-2" }
+
+  - id: trunk1-to-a17
+    line: "p 1 a17.alpha"
+    expect: { from: "1", to: a17.α }
+    text:
+      headline: "Add it to the table value"
+      body: "Accumulator 17 holds the table value itself, f of x. Tap Trunk 1. Then tap the alpha input on Accumulator 17. Every row, it will add the difference."
+      more: "Adding the difference to the value gives the next row of the table. No multiplying is needed. That was the point of the Method of Differences: a table made by adding alone."
+      done: "Now each row adds the difference to the table value."
+      hints:
+        wrongTo: "Look for the alpha input on Accumulator 17."
+        wrongKind: "That one takes control signals, not numbers. Use a data connector."
+      review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.1,4" }
+
+  - id: punch-value
+    line: "s pr.9 P"
+    expect: { switch: pr.9, value: "P" }
+    choices: ["P", "0"]
+    text:
+      headline: "Punch the table value"
+      body: "Each row ends with a punched card. The printer has a switch for each group of columns. Tap the glowing switch 9 and choose P, for punch."
+      more: "The card punch worked in groups of 5 columns, so a 10-digit number takes two groups. This program punches the table value, the differences and the row number on each card."
+      done: "Now each row's table value goes on a card."
+      hints:
+        wrongValue: "Blank leaves the number off. Choose P."
+        wrongSwitch: "That switch is for another part of the card. Try the glowing one."
+      review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.2" }
+
+  - id: a20-loop
+    line: "p a20.5o 1-5"
+    expect: { from: a20.5o, to: 1-5 }
+    text:
+      headline: "Close the loop"
+      body: "When the last accumulator finishes adding, it sends a done signal. Tap the 5-out jack on Accumulator 20. Then tap program trunk 1-5. That starts the next row."
+      more: "A loop is when the end of a job starts the job again. This one runs 100 times. A counter in the Master Programmer, set to 100, makes ENIAC stop."
+      done: "The end of each row now starts the next row."
+      button: "Finish wiring"
+      hints:
+        wrongFrom: "Look for the 5 out jack on Accumulator 20."
+        wrongTo: "Try program trunk 1-5."
+      review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.3-4" }
+
+withheld: []                     # difference.e has no b or f lines
+
+run:
+  buttons: [init]
+  watch: ["17", "18", "19", "20"]
+  idle: { quietMs: auto }        # busy until row 100; the UI never waits for idle
+  initOnce: true                 # one INIT starts the whole table; a second would disturb it
+  speeds:
+    # stallMs values are placeholders until timed on the Pi 5 (open item T1 in
+    # docs/difference-mission.md). Full is punch-bound: a card about every 0.6 s.
+    slow: { rate: 100, stallMs: 30000 }
+    full: { rate: 0, stallMs: 20000 }
+  defaultSpeed: slow
+  cards:
+    window: [41, 60]             # printer fields 9-12: f(x), then the first difference
+    value: [8, 9]                # f(x): cols 41-50, ten digits, negative once x reaches 5
+    style: stack
+    keep: 20
+
+checkpoints:
+  - { id: first-card, when: { punchCount: { gte: 1 } } }
+  - { id: goes-negative, when: { punchCount: { gte: 6 } } }     # f(5) = -125
+  - { id: twenty, when: { punchCount: { gte: 20 } } }
+  - { id: last, when: { punchCount: { gte: 100 } } }
+result: twenty
+
+selftest:                        # rule 8: INIT, then the first five rows
+  inits: 1
+  until: { punchCount: { gte: 5 } }
+  cards:
+    - { index: 8, values: ["00000", "00000", "00000", "00000", "00000"] }
+    - { index: 9, values: ["00600", "00511", "00388", "00237", "00064"] }   # 600, 511, 388, 237, 64
+
+content:
+  briefing:                      # S3, step 0a
+    headline: "A table, made by adding"
+    body: "Before computers, people made tables of numbers by hand. It was slow, and mistakes crept in. Charles Babbage designed a machine to build such tables using only addition. ENIAC can do the same."
+    more: "For parents: the Method of Differences builds a table of a polynomial by repeatedly adding differences, with no multiplying. Babbage's Difference Engine was designed around it. Brian Stuart wrote this ENIAC program as a teaching example."
+    buttons: ["Let's go"]
+    review: { factCheck: [more, body], source: "Stuart, Polynomial Tables on the ENIAC, p.1" }
+  plan:                          # step 0b
+    headline: "Here is the trick"
+    body: "Four accumulators form a chain. The last never changes. Each row, every one adds the next one down, and the top one is the table. ENIAC punches a card, then adds, again and again."
+    math: "f = 600   change = -89   next change = -34   steady = 6"
+    more: "The numbers are 600, -89, -34 and 6. They come from the first row of a small table worked out by hand. The table is for f(x) = x cubed, minus 20 x squared, minus 70 x, plus 600."
+    buttons: ["Next step", "Skip setup"]
+    review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.1-2" }
+  rest:                          # S5
+    headline: "The rest is done for you"
+    body: "The starting numbers have to be loaded, and shifter cables slide the big ones into place. We will place the rest now: the loading cables, the loop and the counter wiring."
+    buttons: ["Continue"]
+    review: { factCheck: [body], source: "Stuart, Polynomial Tables on the ENIAC, p.2-4" }
+  run:                           # S6
+    before: { headline: "Press INIT", sub: "INIT is the Initiating Pulse, ENIAC's GO button." }
+    presses:
+      - press: 1
+        headline: "Watch the chain"
+        captions:
+          - { text: "ENIAC punches a card, then adds down the chain.", trigger: { run: busy } }
+          - { text: "The first card is the starting value, 600.", trigger: { punchCount: { gte: 1 } } }
+          - { text: "Each row is smaller. The table is going downhill.", trigger: { punchCount: { gte: 3 } } }
+          - { text: "Now it dips below zero. Those are negative numbers.", trigger: { punchCount: { gte: 6 } } }
+    extras:
+      afterPress: 1
+      afterCards: 5
+      headline: "The table grows"
+      showResult: "Show me what happened"
+      skipToAnswer: "Skip to the answer"
+      hint: "Want it faster? Try Full."
+      stopAt: twenty
+    cards:
+      title: "Punched cards"
+      label: "Row {n}: {v}"
+      count: "Rows: {n}"
+      latest: "Latest: {v}"
+      empty: "No cards yet."
+    review: { source: "draft" }
+  result:                        # S7
+    headline: "ENIAC built the table!"
+    body: "Every card is one row of the table. ENIAC made all of them by adding. It never multiplied. This is the same trick Babbage planned for his Difference Engine."
+    takeaway: "A whole table, from nothing but adding."
+    takeawaySub: "Same machine, different cables, a fourth job."
+    more: "The last card of a 100-row run shows the first row again, because the counter has already reset by the time the printer looks. It is a quirk of the program, not a mistake in the table."
+    live:
+      waiting: "ENIAC is building the table: {n} rows so far"
+      pending: "ENIAC is still working: {n} rows so far."
+      done: "ENIAC has built all 100 rows."
+      doneAt: last
+    buttons: ["Menu", "Try again"]
+    review: { factCheck: [body, more], source: "Stuart, Polynomial Tables on the ENIAC, last paragraph" }
+
+credits:
+  - "Brian L. Stuart, programs/difference.e and the tutorial \"Polynomial Tables on the ENIAC\"."
