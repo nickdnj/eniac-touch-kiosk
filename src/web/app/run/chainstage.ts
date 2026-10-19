@@ -5,12 +5,25 @@
 // Primes stage. Every number and lamp is real (state/frame/punch), never a timer.
 
 import type { App } from "../app.ts";
+import type { AccState } from "../protocol.ts";
 import { accumulatorCompact } from "../panels/art.ts";
 import { h, svgFromString } from "../ui/dom.ts";
 import { LampRenderer } from "../lamps/render.ts";
 import { StackPane } from "./cardpane.ts";
 import { fmt } from "./cards.ts";
 import type { RunStage } from "./stackstage.ts";
+
+/**
+ * An accumulator's value for a readout, or null while it is mid-addition. The
+ * real machine adds digit by digit, so between pulses its digits are not a
+ * number (they pass through states like 4444444411); a program lamp or a carry
+ * lamp lit means that is happening. The lamps always show the truth; the big
+ * number waits for the settled value, as a person reading it would.
+ */
+export function settledValue(a: Pick<AccState, "value" | "prog" | "carry"> | undefined): number | null {
+  if (!a || typeof a.value !== "number") return null;
+  return a.prog.includes("1") || a.carry.includes("1") ? null : a.value;
+}
 
 export function chainStage(app: App, reduceMotion: boolean): RunStage {
   const chain = app.mission!.content.run.chain!;
@@ -34,8 +47,9 @@ export function chainStage(app: App, reduceMotion: boolean): RunStage {
 
   function refresh(): void {
     for (const [n, ro] of readouts) {
-      const v = app.mirror.machine?.acc?.[n]?.value;
-      ro.textContent = typeof v === "number" ? fmt(v) : "–";
+      const v = settledValue(app.mirror.machine?.acc?.[n]);
+      if (v !== null) ro.textContent = fmt(v); // mid-addition: keep the last settled number
+      else if (!ro.textContent) ro.textContent = "–";
     }
   }
 
