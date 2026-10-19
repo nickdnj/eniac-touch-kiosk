@@ -133,6 +133,24 @@ export function jack(id: string, x: number, y: number, r: number, label?: string
   return out;
 }
 
+/**
+ * A data connector: a rectangular multi-terminal socket (12 terminals in two rows), as on the real
+ * machine. Program (control) connectors stay round (`jack`, two terminals). Same id scheme and
+ * geometry contract as `jack`, so hit-testing and cables treat both alike.
+ */
+export function dataJack(id: string, x: number, y: number, r: number, label?: string, labelSize = 10): string {
+  const w = r * 2.7, h = r * 1.9;
+  let out = `<g id="${esc(id)}" class="jack data-jack">`;
+  out += `<rect x="${n1(x - w / 2 - 2)}" y="${n1(y - h / 2 - 2)}" width="${n1(w + 4)}" height="${n1(h + 4)}" rx="3" fill="#BDB28C" stroke="#8a8062" stroke-width="1"/>`;
+  out += `<rect x="${n1(x - w / 2)}" y="${n1(y - h / 2)}" width="${n1(w)}" height="${n1(h)}" rx="2" fill="url(#g-socket)" stroke="#2c271c" stroke-width="1.2"/>`;
+  for (let i = 0; i < 6; i++) for (let k = 0; k < 2; k++) {
+    out += `<circle cx="${n1(x - w / 2 + (w * (i + 0.5)) / 6)}" cy="${n1(y + (k ? 1 : -1) * h * 0.22)}" r="${n1(r * 0.13)}" fill="#6a6554" opacity=".8"/>`;
+  }
+  out += `</g>`;
+  if (label) out += text(x, y + h / 2 + 2 + labelSize + 2, label, { size: labelSize, fill: C.ink });
+  return out;
+}
+
 export function dialAngle(positions: string[], value: string): number {
   const i = Math.max(0, positions.indexOf(value));
   if (positions.length <= 1) return 0;
@@ -259,18 +277,20 @@ export function accumulatorPanel(n: number, standalone = false): Panel {
   GREEK.forEach((l, i) => {
     const id = `jack:${a}.${l}`;
     const x = 34 + i * 34;
-    b += jack(id, x, 532, 10, l, 13);
+    b += dataJack(id, x, 532, 10, l, 13);
     g.jacks[id] = { x, y: 532, r: 10 };
   });
   (["A", "S"] as const).forEach((l, i) => {
     const id = `jack:${a}.${l}`;
     const x = 222 + i * 42;
-    b += jack(id, x, 532, 11, l, 13);
+    b += dataJack(id, x, 532, 11, l, 13);
     g.jacks[id] = { x, y: 532, r: 11 };
   });
+  b += text(102, 514, "DATA IN", { size: 8, fill: C.ink, ls: 1 });
+  b += text(243, 514, "DATA OUT", { size: 8, fill: C.ink, ls: 1 });
   b += `<path d="M24 568H276" stroke="#a89d78" stroke-width="1"/>`;
-  b += text(24, 584, "PROGRAM IN", { size: 9, anchor: "start", fill: C.ink, ls: 1 });
-  b += text(24, 632, "PROGRAM OUT", { size: 9, anchor: "start", fill: C.ink, ls: 1 });
+  b += text(24, 584, "CONTROL (PROGRAM) IN", { size: 9, anchor: "start", fill: C.ink, ls: 1 });
+  b += text(24, 632, "CONTROL (PROGRAM) OUT", { size: 9, anchor: "start", fill: C.ink, ls: 1 });
   for (let p = 1; p <= 12; p++) {
     const x = 30 + (p - 1) * 21.8;
     const id = `jack:${a}.${p}i`;
@@ -327,7 +347,7 @@ export function constantPanel(standalone = false): Panel {
 
   // Jacks: output and program inputs.
   b += jackBlock(12, 504, W - 24, 164);
-  b += text(24, 524, "PROGRAM IN", { size: 9, anchor: "start", fill: C.ink, ls: 1 });
+  b += text(24, 524, "CONTROL (PROGRAM) IN", { size: 9, anchor: "start", fill: C.ink, ls: 1 });
   for (let p = 1; p <= 30; p++) {
     const r = Math.floor((p - 1) / 10), c = (p - 1) % 10;
     const id = `jack:c.${p}i`;
@@ -569,7 +589,7 @@ export function masterProgrammerPanel(standalone = false): Panel {
   for (let D = 0; D < 20; D++) {
     for (let V = 0; V <= 9; V++) {
       const id = `lamp:mp.dec.${D}.${V}`;
-      b += lamp(id, 30 + D * 12.8, 302 + V * 9.4, 4);
+      b += lamp(id, 30 + D * 12.8, 302 + (9 - V) * 9.4, 4); // digit 0 at the bottom, 9 at the top, as on the real machine
       g.lamps.push(id);
     }
   }
