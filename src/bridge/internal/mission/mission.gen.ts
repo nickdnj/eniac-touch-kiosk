@@ -378,6 +378,25 @@ export interface RunContent {
   cards?: CardsCopy;
   plot?: PlotCopy;
   note?: string; // one line under the readouts ("ENIAC does a lot of arithmetic for every hop.")
+  chain?: ChainSpec; // card missions: the run stage shows these accumulators, live, beside the cards
+}
+/**
+ * ChainSpec is the run stage for a card mission that works on a few named
+ * accumulators (Difference): each row shows the accumulator's live value and
+ * its lamps, top to bottom in the order given. Missions without it get the
+ * stage their card style names.
+ */
+export interface ChainSpec {
+  title: string;
+  rows: ChainRow[];
+}
+/**
+ * ChainRow is one accumulator in a ChainSpec.
+ */
+export interface ChainRow {
+  acc: string; // "1".."20"
+  name: string; // what it holds, in the mission's words
+  sub?: string;
 }
 /**
  * RailPrompt is the rail headline with an optional sub-line.

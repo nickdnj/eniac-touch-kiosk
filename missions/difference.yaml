@@ -102,8 +102,9 @@ run:
   idle: { quietMs: auto }        # busy until row 100; the UI never waits for idle
   initOnce: true                 # one INIT starts the whole table; a second would disturb it
   speeds:
-    # stallMs values are placeholders until timed on the Pi 5 (open item T1 in
-    # docs/difference-mission.md). Full is punch-bound: a card about every 0.6 s.
+    # Measured 2026-10-19 on the dev Mac (real core): Slow (rate 100) is about 1.2 s a row, so 100 rows
+    # take about 2 minutes; Full is punch-bound at about 0.6 s a row. stallMs (no card for this long while
+    # busy = E-CORE-DOWN/stall) is generous. Re-time on the Pi 5 / OptiPlex before the floor (docs/difference-mission.md T1).
     slow: { rate: 100, stallMs: 30000 }
     full: { rate: 0, stallMs: 20000 }
   defaultSpeed: slow
@@ -147,6 +148,13 @@ content:
     buttons: ["Continue"]
     review: { factCheck: [body], source: "Stuart email 2026-10-19, tutorial, p.2-4" }
   run:                           # S6
+    chain:                       # the run stage: these accumulators, live, top to bottom
+      title: "The chain"
+      rows:
+        - { acc: "17", name: "Table value", sub: "f(x), Accumulator 17" }
+        - { acc: "18", name: "First difference", sub: "Accumulator 18" }
+        - { acc: "19", name: "Second difference", sub: "Accumulator 19" }
+        - { acc: "20", name: "Third difference", sub: "Accumulator 20, steady" }
     before: { headline: "Press INIT", sub: "INIT is the Initiating Pulse, ENIAC's GO button." }
     presses:
       - press: 1

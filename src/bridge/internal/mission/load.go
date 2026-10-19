@@ -754,6 +754,19 @@ func (m *Mission) validateCopy() {
 			m.fail("content.read: headline and initLocked are required")
 		}
 	}
+	if ch := c.Run.Chain; ch != nil {
+		if ch.Title == "" || len(ch.Rows) == 0 || len(ch.Rows) > 4 {
+			m.fail("content.run.chain: a title and 1 to 4 rows are required")
+		}
+		for _, r := range ch.Rows {
+			if n, err := strconv.Atoi(r.Acc); err != nil || n < 1 || n > 20 {
+				m.fail("content.run.chain: acc %q must be 1 to 20", r.Acc)
+			}
+			if r.Name == "" || words(r.Name) > 6 || words(r.Sub) > 8 || strings.Contains(r.Name+r.Sub, "[FC") {
+				m.fail("content.run.chain: row %q needs a short name (max 6 words) and sub (max 8), no [FC]", r.Acc)
+			}
+		}
+	}
 	if f := m.File.Finale; f != nil {
 		if f.Words == "" {
 			m.fail("finale: words is required")

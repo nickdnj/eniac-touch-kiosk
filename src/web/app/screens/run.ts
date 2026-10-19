@@ -17,6 +17,7 @@ import { button, confirm } from "../ui/overlays.ts";
 import { RAIL, STAGE } from "../stage/layout.ts";
 import { stackStage, type RunStage } from "../run/stackstage.ts";
 import { filmStage } from "../run/filmstage.ts";
+import { chainStage } from "../run/chainstage.ts";
 import { roomView } from "../run/roomview.ts";
 import { COPY } from "../copy.ts";
 
@@ -96,7 +97,12 @@ function runScreen(app: App, hooks: RunHooks): Screen {
   stage.style.left = `${STAGE.x}px`;
   stage.style.top = `${STAGE.y}px`;
   const cardStyle = mission.run.cards?.style;
-  const cardStage: RunStage | null = cardStyle && RUN_STAGES[cardStyle] ? RUN_STAGES[cardStyle](app, reduceMotion()) : null;
+  // A mission that names accumulators (content.run.chain) gets the chain stage; otherwise its card style picks one.
+  const cardStage: RunStage | null = mission.content.run.chain
+    ? chainStage(app, reduceMotion())
+    : cardStyle && RUN_STAGES[cardStyle]
+      ? RUN_STAGES[cardStyle](app, reduceMotion())
+      : null;
   const extrasAt = run.extras.afterCards ?? 0; // card missions: extras with the Nth card
   const readouts: Record<string, HTMLElement> = {};
   const grids = h("div", { class: "grids" });

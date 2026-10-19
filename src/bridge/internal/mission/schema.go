@@ -261,7 +261,24 @@ type RunContent struct {
 	Cards   *CardsCopy  `yaml:"cards,omitempty" json:"cards,omitempty"`
 	Plot    *PlotCopy   `yaml:"plot,omitempty" json:"plot,omitempty"`
 	Note    string      `yaml:"note,omitempty" json:"note,omitempty"` // one line under the readouts ("ENIAC does a lot of arithmetic for every hop.")
+	Chain   *ChainSpec  `yaml:"chain,omitempty" json:"chain,omitempty"` // card missions: the run stage shows these accumulators, live, beside the cards
 	Review  Review      `yaml:"review,omitempty" json:"-"`
+}
+
+// ChainSpec is the run stage for a card mission that works on a few named
+// accumulators (Difference): each row shows the accumulator's live value and
+// its lamps, top to bottom in the order given. Missions without it get the
+// stage their card style names.
+type ChainSpec struct {
+	Title string     `yaml:"title" json:"title"`
+	Rows  []ChainRow `yaml:"rows" json:"rows"`
+}
+
+// ChainRow is one accumulator in a ChainSpec.
+type ChainRow struct {
+	Acc  string `yaml:"acc" json:"acc"`   // "1".."20"
+	Name string `yaml:"name" json:"name"` // what it holds, in the mission's words
+	Sub  string `yaml:"sub,omitempty" json:"sub,omitempty"`
 }
 
 // RailPrompt is the rail headline with an optional sub-line.
