@@ -119,7 +119,7 @@ test("all five pages render (no review gate) and each fits one screen; tabs are 
   await fitsOneScreen(page);
 
   await tap(page, tab(page, 4));
-  await expect(page.locator(".page-exhibit .src-what")).toHaveText(["Squares", "Primes", "Shell’s path"]);
+  await expect(page.locator(".page-exhibit .src-what")).toHaveText(["Squares", "Primes", "Shell’s path", "Difference"]);
   await expect(page.locator(".page-exhibit")).toContainText("D. H. Lehmer");
   await expect(page.locator(".page-exhibit")).toContainText("Liesbeth De Mol and Maarten Bullynck");
   await expect(page.locator(".page-exhibit")).toContainText("February 15, 1946");
