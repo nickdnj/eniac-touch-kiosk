@@ -10,9 +10,8 @@ import { unitOf, termId } from "../mission/ids.ts";
 import { Workbench, workbenchPlan } from "../stage/workbench.ts";
 import { StepWindows } from "../stage/windows.ts";
 import { roomPlanSvg, unitsForPlan } from "../stage/roomplan.ts";
-import { TileFigure } from "../stage/tiles.ts";
-import { CheckersFigure, SharingFigure, type Figure } from "../stage/primesfig.ts";
-import { DotsFigure, HopFigure } from "../stage/trajfig.ts";
+import type { Figure } from "../stage/primesfig.ts";
+import { briefingFigureFor, planFigureFor } from "../missions/registry.ts";
 import { PICKER, RAIL, STAGE } from "../stage/layout.ts";
 import { LampRenderer } from "../lamps/render.ts";
 import { h, s, svgFromString, wait } from "../ui/dom.ts";
@@ -256,19 +255,13 @@ export function missionScreen(app: App, view: View): Screen {
     setMain(p.buttons?.[0] ?? COPY.rail.next, "filled");
   }
 
-  /** The briefing figure for this mission (UX 8.1.4 tiles, 8.2.3 sharing evenly), or null for the room plan. */
+  /** The briefing figure for this mission (missions/registry.ts), or null for the room plan. */
   function briefingFigure(): Figure | null {
-    if (mission.id === "squares") return TileFigure.briefing();
-    if (mission.id === "primes") return new SharingFigure(reduceMotion());
-    if (mission.id === "trajectory") return new DotsFigure(reduceMotion());
-    return null;
+    return briefingFigureFor(mission.id, reduceMotion());
   }
 
   function planFigure(math: string): Figure | null {
-    if (mission.id === "squares") return TileFigure.plan(math, reduceMotion());
-    if (mission.id === "primes") return new CheckersFigure(math, reduceMotion());
-    if (mission.id === "trajectory") return new HopFigure(math, reduceMotion());
-    return null;
+    return planFigureFor(mission.id, math, reduceMotion());
   }
 
   /** Shows a figure: looping, or finished at once with reduced motion. */

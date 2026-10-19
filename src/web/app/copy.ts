@@ -22,6 +22,10 @@ export const COPY = {
     then: "then",
     order: "Suggested order",
     orderLine: (orders: number[]) => orders.join(", then "),
+    /** More missions than fit: the pager under the cards. */
+    showing: (first: number, last: number, of: number) => `Missions ${first} to ${last} of ${of}`,
+    earlier: "Earlier",
+    more: "More missions",
     about: (min: number) => `About ${min} min`,
     wire: (n: number, read = false) => `You wire ${n} steps${read ? " and read a card" : ""}`,
   },

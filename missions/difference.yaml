@@ -36,7 +36,7 @@ steps:
       hints:
         wrongValue: "We need a 6 here."
         wrongSwitch: "That is a different dial. Try the glowing one."
-      review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.1" }
+      review: { factCheck: [more], source: "Stuart email 2026-10-19, tutorial, p.1" }
 
   - id: a18-to-trunk1
     line: "p a18.A 1"
@@ -44,14 +44,14 @@ steps:
     text:
       headline: "Send the first difference out"
       body: "Accumulator 18 holds how fast the table is changing. Tap its A output, a data connector. Then tap Trunk 1. Now that number can travel."
-      more: "The table is built from differences: how much each value grows or shrinks from the one before. Babbage's Difference Engine did this with gears. ENIAC does it with accumulators."
+      more: "The table is built from differences: how much each value grows or shrinks from the one before. Babbage designed his Difference Engine to automate this kind of table. ENIAC does it with accumulators."
       done: "The first difference is on Trunk 1."
       hints:
         wrongFrom: "We want the A output of Accumulator 18, not S."
         wrongTo: "Choose Trunk 1."
         byTarget:
           a18.S: "S sends the opposite. We want A."
-      review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.1-2" }
+      review: { factCheck: [more], source: "Stuart email 2026-10-19, tutorial, p.1-2" }
 
   - id: trunk1-to-a17
     line: "p 1 a17.alpha"
@@ -64,7 +64,7 @@ steps:
       hints:
         wrongTo: "Look for the alpha input on Accumulator 17."
         wrongKind: "That one takes control signals, not numbers. Use a data connector."
-      review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.1,4" }
+      review: { factCheck: [more], source: "Stuart email 2026-10-19, tutorial, p.1,4" }
 
   - id: punch-value
     line: "s pr.9 P"
@@ -78,7 +78,7 @@ steps:
       hints:
         wrongValue: "Blank leaves the number off. Choose P."
         wrongSwitch: "That switch is for another part of the card. Try the glowing one."
-      review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.2" }
+      review: { factCheck: [more], source: "Stuart email 2026-10-19, tutorial, p.2" }
 
   - id: a20-loop
     line: "p a20.5o 1-5"
@@ -92,7 +92,7 @@ steps:
       hints:
         wrongFrom: "Look for the 5 out jack on Accumulator 20."
         wrongTo: "Try program trunk 1-5."
-      review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.3-4" }
+      review: { factCheck: [more], source: "Stuart email 2026-10-19, tutorial, p.3-4" }
 
 withheld: []                     # difference.e has no b or f lines
 
@@ -130,22 +130,22 @@ selftest:                        # rule 8: INIT, then the first five rows
 content:
   briefing:                      # S3, step 0a
     headline: "A table, made by adding"
-    body: "Before computers, people made tables of numbers by hand. It was slow, and mistakes crept in. Charles Babbage designed a machine to build such tables using only addition. ENIAC can do the same."
+    body: "Before computers, people made tables of numbers by hand. Charles Babbage designed a machine to build such tables automatically, using only addition. ENIAC can do the same."
     more: "For parents: the Method of Differences builds a table of a polynomial by repeatedly adding differences, with no multiplying. Babbage's Difference Engine was designed around it. Brian Stuart wrote this ENIAC program as a teaching example."
     buttons: ["Let's go"]
-    review: { factCheck: [more, body], source: "Stuart, Polynomial Tables on the ENIAC, p.1" }
+    review: { factCheck: [more, body], source: "Stuart email 2026-10-19, tutorial, p.1" }
   plan:                          # step 0b
     headline: "Here is the trick"
     body: "Four accumulators form a chain. The last never changes. Each row, every one adds the next one down, and the top one is the table. ENIAC punches a card, then adds, again and again."
     math: "f = 600   change = -89   next change = -34   steady = 6"
-    more: "The numbers are 600, -89, -34 and 6. They come from the first row of a small table worked out by hand. The table is for f(x) = x cubed, minus 20 x squared, minus 70 x, plus 600."
+    more: "The numbers are 600, -89, -34 and 6. They come from the top diagonal of a small table worked out by hand. The table is for f(x) = x cubed, minus 20 x squared, minus 70 x, plus 600."
     buttons: ["Next step", "Skip setup"]
-    review: { factCheck: [more], source: "Stuart, Polynomial Tables on the ENIAC, p.1-2" }
+    review: { factCheck: [more], source: "Stuart email 2026-10-19, tutorial, p.1-2" }
   rest:                          # S5
     headline: "The rest is done for you"
-    body: "The starting numbers have to be loaded, and shifter cables slide the big ones into place. We will place the rest now: the loading cables, the loop and the counter wiring."
+    body: "The starting numbers have to be loaded, and shifter adapters slide the big ones into place. We will place the rest now: the loading cables, the loop and the counter wiring."
     buttons: ["Continue"]
-    review: { factCheck: [body], source: "Stuart, Polynomial Tables on the ENIAC, p.2-4" }
+    review: { factCheck: [body], source: "Stuart email 2026-10-19, tutorial, p.2-4" }
   run:                           # S6
     before: { headline: "Press INIT", sub: "INIT is the Initiating Pulse, ENIAC's GO button." }
     presses:
@@ -182,8 +182,8 @@ content:
       pending: "ENIAC is still working: {n} rows so far."
       done: "ENIAC has built all 100 rows."
       doneAt: last
-    buttons: ["Menu", "Try again"]
-    review: { factCheck: [body, more], source: "Stuart, Polynomial Tables on the ENIAC, last paragraph" }
+    buttons: ["Next", "Try again", "Menu"]
+    review: { factCheck: [body, more], source: "Stuart email 2026-10-19, tutorial, last paragraph" }
 
 finale:                          # S8 beat 1 (UX 14.5.3): the sentence for this mission
   figure: "ENIAC built {cards} rows of a table, by adding alone."

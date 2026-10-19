@@ -1,4 +1,4 @@
-// S8 Finale (UX 14.5, PRD FR-45): the payoff after all three missions.
+// S8 Finale (UX 14.5, PRD FR-45): the payoff after all the missions.
 // Five beats, at most 85 s, skippable at any moment:
 //   F1 "You programmed ENIAC." with this visit's real results;
 //   F2 the panorama with every unit the visitor used ringed (needs the room:
