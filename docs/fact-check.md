@@ -230,6 +230,7 @@ Two limits to keep in mind. Every historical claim about Babbage rests on Stuart
 | G11 | The end of each row (accumulator 20) starts the next, which punches a card first | loop step | **Correct** | `difference.e` (`p a20.5o 1-5`, `p 1-5 i.Pi`) |
 | G12 | The last card of a 100-row run shows the first row, because the counter has already reset | result "more" | **Correct** (Stuart's own note) | [BLS-T] last paragraph |
 | G13 | "Make ENIAC build a table, the way Babbage planned" (picker) and the honor-roll line that the method is what Babbage's engine "was designed around" | picker, honor roll | **Correct as attributed to Stuart; Babbage part unchecked** | [BLS-T] p.1 |
+| G14 | On the real ENIAC, data connectors are rectangular with 12 terminals; control (program) connectors are round with two terminals | video, panel art (PR #76) | **Correct** (Stuart, about the real machine; the kiosk draws them that way) | Stuart's email, 2026-10-19 (his note on the video at 5:02) |
 
 Sources are listed with the others at the end.
 
