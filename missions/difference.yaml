@@ -8,9 +8,8 @@
 # first difference, 19 the second, 20 the third (a constant, 6). Each row:
 # punch a card, then add 18 to 17, 19 to 18 and 20 to 19.
 #
-# Needs difference.e in the runtime programs/ directory. It is NOT in Stuart's
-# repo at ad9a7a7 yet (open decision D1 in docs/difference-mission.md), so until
-# it is, `mission check` reports this mission unavailable on a clean checkout.
+# difference.e is Stuart's file, shipped from missions/programs/ with his permission
+# (NOTICE.md); scripts/fetch-upstream.sh copies it next to his own programs.
 # [FC] tags are kept in `review.factCheck` (never shown); they must clear the
 # fact-check gate (#35, test plan 12) and Doug Crawford's copy approval first.
 schema: 1

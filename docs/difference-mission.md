@@ -26,8 +26,8 @@ Everything else (35 cables and 76 switches, including the shifter adapters and t
 
 | Id | Item | Owner |
 |---|---|---|
-| D1 | **Where does `difference.e` live?** Missions read the program from the upstream `programs/` directory and nothing from upstream is committed (PRD R1). It is not in Stuart's repo at ad9a7a7. Ask him to commit it (and the tutorial) upstream, or get his written OK to ship it from `missions/programs/`. Until then the mission is unavailable on a clean checkout. This draft pins the file's sha256. | Nick |
-| D2 | Permission to use his tutorial text and to credit him as author of the mission. | Nick |
+| D1 | ~~Where does `difference.e` live?~~ **Resolved 2026-10-19:** Stuart gave permission to ship it (relayed by Nick). It is `missions/programs/difference.e`, copied into `build/upstream/programs/` by `fetch-upstream.sh` (never over an upstream file of the same name; identical is fine, different aborts) and listed in `.provenance.json` as `addedFiles`. The tutorial PDF is not shipped. | done |
+| D2 | Permission to use his tutorial text (the program has his OK; the PDF does not ship) and to credit him as author of the mission. | Nick |
 | D3 | Mission order. Drafted as 4th, after Trajectory. Trajectory's result button still says "Finish". | Nick |
 | T1 | Time slow and full speed on the Pi 5 and set `stallMs`. Placeholders now. | |
 | U1 | UI: picker art, mission figures (`screens/mission.ts`), finale beats, honor roll (`content/honor.ts`) and the "three missions" copy all assume three missions. | |
