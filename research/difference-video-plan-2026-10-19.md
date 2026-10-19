@@ -91,3 +91,10 @@ Nothing below may be spoken until it is in `research/fact-check.md` with a sourc
 | V-D3 | Name Stuart as author of the mission program in the video? | Yes, once, near the end, with the tutorial title. Needs his OK (kiosk D2). |
 | V-D4 | Publish timing: before or after the main video is cleared by Stuart's second pass? | After, so the same fixes are in both. |
 | V-D5 | Length: 3 to 4 min as proposed, or shorter? | Start with 3 to 4; Jeff's guidance favours the Shorts for reach. |
+
+## 9. Nick's instructions, 2026-10-19 (later)
+
+- **Publish plan:** when everything is built, upload **unlisted** to YouTube and tell Nick the links. Both videos: the new Difference video (with its Shorts if made) **and** a re-cut of the main video with Stuart's fixes (data vs control connectors, master programmer decades, `eniacfp` graphics at about 2:13).
+- **Listening gate:** Nick chose to upload without waiting for his listening pass on the ENIAC/init reel. The reel is still generated and sent with the links, and the upload is reported as **not gate-checked**. This overrides section 5's gate for the unlisted link only; VCF and InfoAge publication stays gated on Stuart's review.
+- **Before any upload:** run `youtube-whoami.py` (the token can drift to the wrong channel). Unlisted, Nick's channel (@nickdnj).
+- **Environment blockers found on the Mac this was planned from (user `nickdemarco`):** `AgentArchitect/scripts/youtube-whoami.py` is not present, no `ELEVENLABS_API_KEY` in `~/.zshrc`, and no YouTube credentials located. The pipeline needs the machine where those live (the `nickd` setup), or those three things copied here.
