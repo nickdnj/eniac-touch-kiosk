@@ -6,13 +6,14 @@
 // buttons 120x120, independent of the drawn size.
 
 import type { MissionStep, SwitchStep } from "../protocol.ts";
-import { dial, jack, panelFace, jackBlock, ACC_RP, DIGITS, PR_FIELD, text, C } from "../panels/art.ts";
+import { dial, dataJack, jack, panelFace, jackBlock, ACC_RP, DIGITS, PR_FIELD, text, C } from "../panels/art.ts";
 import { setDial } from "../panels/load.ts";
 import { h, s, svgFromString, wait } from "../ui/dom.ts";
 import { play } from "../ui/anim.ts";
 import { onTap } from "../ui/tap.ts";
 import { squareAt, type HitRect } from "../mission/hit.ts";
 import { stepTargets } from "../mission/runner.ts";
+import { kindOf } from "../mission/ids.ts";
 import { choiceLabel, dialClusterFor, jackClusterFor, plainLabel, type JackCluster } from "./clusters.ts";
 import { DIAL_HIT, JACK_HIT, PICKER, WIN_LEFT, WIN_RIGHT, WIN_SWITCH } from "./layout.ts";
 import { COPY } from "../copy.ts";
@@ -104,7 +105,8 @@ export class StepWindows {
     body += jackBlock(24, top, box.w - 48, bottom - top);
     cluster.jacks.forEach((j, k) => {
       const p = pos[k];
-      body += jack(j.id, p.x, p.y, JACK_R);
+      // Data connectors are rectangular multi-terminal sockets, control (program) ones round, as on the real machine.
+      body += j.id.startsWith("jack:") && kindOf(j.id) === "data" ? dataJack(j.id, p.x, p.y, JACK_R) : jack(j.id, p.x, p.y, JACK_R);
       body += text(p.x, p.y + JACK_R * 1.35 + 44, j.label, { size: 24, fill: C.ink, weight: 700 });
       this.placed.set(j.id, { id: j.id, x: box.x + p.x, y: box.y + p.y, win: i });
       this.targets.push(squareAt(j.id, box.x + p.x, box.y + p.y, JACK_HIT));
