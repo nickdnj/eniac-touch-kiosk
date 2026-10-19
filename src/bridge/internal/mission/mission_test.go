@@ -290,14 +290,14 @@ func TestPrimesValid(t *testing.T) {
 	}
 }
 
-// requires: without patch 0002 sieve.e punches nothing (spike S3), so the
+// requires: without patch 0003 the Trajectory numbers can come out low (spike S2), so the
 // mission must be unavailable rather than fail on the floor.
-func TestPrimesRequiresPatch(t *testing.T) {
+func TestTrajectoryRequiresPatch(t *testing.T) {
 	dir, up := paths(t)
 	old := Patches
 	defer func() { Patches = old }()
-	Patches = func(string) ([]string, error) { return []string{"0001-mult-stage-format"}, nil }
-	expectUnavailable(t, Load(filepath.Join(dir, "primes.yaml"), up), "requires upstream patch 0002-ft-repeat-default")
+	Patches = func(string) ([]string, error) { return nil, nil }
+	expectUnavailable(t, Load(filepath.Join(dir, "trajectory.yaml"), up), "requires upstream patch 0003-acc-1pp-race")
 }
 
 func primesVariant(t *testing.T, from, to string) *Mission {
