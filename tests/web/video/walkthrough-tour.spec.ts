@@ -195,7 +195,7 @@ test("ENIAC touch kiosk: the whole tour", async ({ page }) => {
   await primesAndTrajectoryQuickly(page);
   await cutTo(page);
   await capAt(page, 1350, 330); // clear of the result's buttons
-  await cap(page, "All three missions done: Finish");
+  await cap(page, "Every mission done: Finish");
   await pause(page, 1500);
   await cap(page, null);
 
