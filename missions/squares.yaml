@@ -193,5 +193,9 @@ content:
     buttons: ["Next: Primes", "Try again", "Menu"]
     review: { factCheck: [more], source: "ux-spec 8.1.4 S7" }
 
+finale:                          # S8 beat 1 (UX 14.5.3): the sentence for this mission
+  figure: "You counted up to {n} x {n} = {square}."
+  words: "ENIAC counted in squares."
+
 credits:
   - "Brian L. Stuart, programs/sq.e and doc/example.tex"

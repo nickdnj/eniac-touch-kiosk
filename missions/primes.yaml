@@ -179,5 +179,9 @@ content:
     buttons: ["Next: Trajectory", "Try again", "Menu"]
     review: { factCheck: [more], source: "ux-spec 8.2.5 S7" }
 
+finale:                          # S8 beat 1 (UX 14.5.3): the sentence for this mission
+  figure: "{cards} cards punched. The last prime was {last}."
+  words: "ENIAC hunted for prime numbers."
+
 credits:
   - "Brian L. Stuart, programs/sieve.e. After D. H. Lehmer's July 1946 runs, as reconstructed by L. De Mol and M. Bullynck."

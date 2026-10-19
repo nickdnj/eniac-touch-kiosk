@@ -21,22 +21,7 @@ export const FINALE = {
     then: "In 1946, setting up a job like this could take people a day or more.",
     you: (m: number) => `You did it in about ${m} minutes.`,
     fc: "UX 14.8 #17, fact-check B4: 'could take people a day or more' (Clippinger 1948: 'a day'; Kempf 1961: weeks incl. checking). {m} is this visit's real time, shown only from 3 to 30 minutes.",
-    /** One sentence per mission, from its real figure; `words` when the figure was never seen (UX 14.5.3). */
-    missions: {
-      squares: {
-        figure: (n: string, sq: string) => `You counted up to ${n} x ${n} = ${sq}.`,
-        words: "ENIAC counted in squares.",
-      },
-      primes: {
-        figure: (cards: string, last: string | null) => (last ? `${cards} cards punched. The last prime was ${last}.` : `${cards} cards punched.`),
-        words: "ENIAC hunted for prime numbers.",
-      },
-      trajectory: {
-        figure: (hops: string) => `A shell's flight, in ${hops} hops.`,
-        words: "ENIAC worked out a shell's flight.",
-      },
-    },
-    /** A mission this table does not know: its title and that it ran. */
+    /** Each mission's sentence lives in its YAML `finale:` block (bridge /api/missions); a mission without one gets this. */
     otherWords: "You ran it on ENIAC.",
     /** Hand-placed steps only ("Do it for me" and skipped steps are not counted); the caller omits it at 0 and 0. */
     hand: (cables: number, switches: number) => {

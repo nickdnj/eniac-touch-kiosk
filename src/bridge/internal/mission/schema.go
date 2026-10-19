@@ -28,8 +28,21 @@ type File struct {
 	Checkpoints   []machine.Checkpoint  `yaml:"checkpoints"`
 	Result        string                `yaml:"result"`
 	Content       Content               `yaml:"content"`
+	Finale        *FinaleCopy           `yaml:"finale,omitempty"`
 	Selftest      *Selftest             `yaml:"selftest"`
 	Credits       []string              `yaml:"credits"`
+}
+
+// FinaleCopy is this mission's sentence on the finale's first beat (UX 14.5.3),
+// so a new mission needs no change to the web UI. `figure` is shown when this
+// visit produced real numbers; `words` otherwise. Placeholders: {n} {square}
+// (Squares), {cards} {last} (card missions), {hops} (plotted flights). A
+// sentence of `figure` whose placeholders were not all seen is left out; if
+// none remain, `words` is shown (never a guess).
+type FinaleCopy struct {
+	Words  string `yaml:"words" json:"words"`
+	Figure string `yaml:"figure,omitempty" json:"figure,omitempty"`
+	Review Review `yaml:"review,omitempty" json:"-"`
 }
 
 // StepSpec is one visitor-performed .e line.

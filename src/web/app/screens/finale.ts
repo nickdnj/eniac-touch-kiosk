@@ -55,7 +55,7 @@ export function openFinale(app: App, beat: Beat = 1): void {
 export function finaleScreen(app: App, view: View): Screen {
   const reduced = reduceMotion();
   const first = ((view.beat ?? 1) as Beat) || 1;
-  const missions: MissionInfo[] = (app.missions ?? []).filter((m) => m.available).map((m) => ({ id: m.id, order: m.order, title: m.title }));
+  const missions: MissionInfo[] = (app.missions ?? []).filter((m) => m.available).map((m) => ({ id: m.id, order: m.order, title: m.title, finale: m.finale }));
   const summary = app.visit.summary();
   if (!missions.length) for (const [i, id] of summary.done.entries()) missions.push({ id, order: i + 1, title: id });
 

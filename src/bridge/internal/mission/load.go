@@ -50,6 +50,12 @@ const (
 	MaxBodyWords     = 40
 	MaxMoreWords     = 120
 	MaxHeadlineChars = 60
+	MaxFinaleWords   = 25
+)
+
+var (
+	finaleVarRe = regexp.MustCompile(`\{(\w+)\}`)
+	finaleVars  = map[string]bool{"n": true, "square": true, "cards": true, "last": true, "hops": true}
 )
 
 // LoadDir loads every missions/*.yaml. Missions that fail validation are
@@ -746,6 +752,21 @@ func (m *Mission) validateCopy() {
 		check("content.read", c.Read.Before.Headline, c.Read.Before.Sub, "", false)
 		if c.Read.InitLocked == "" || c.Read.Headline == "" {
 			m.fail("content.read: headline and initLocked are required")
+		}
+	}
+	if f := m.File.Finale; f != nil {
+		if f.Words == "" {
+			m.fail("finale: words is required")
+		}
+		for _, x := range []string{f.Words, f.Figure} {
+			if words(x) > MaxFinaleWords || strings.Contains(x, "[FC") {
+				m.fail("finale: %q is too long (max %d words) or carries an [FC] marker", x, MaxFinaleWords)
+			}
+		}
+		for _, v := range finaleVarRe.FindAllStringSubmatch(f.Figure, -1) {
+			if !finaleVars[v[1]] {
+				m.fail("finale: unknown placeholder {%s} (known: n, square, cards, last, hops)", v[1])
+			}
 		}
 	}
 	for _, x := range []string{c.Run.Note, c.Run.Before.Sub} {

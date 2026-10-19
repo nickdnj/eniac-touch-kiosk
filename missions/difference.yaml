@@ -185,5 +185,9 @@ content:
     buttons: ["Menu", "Try again"]
     review: { factCheck: [body, more], source: "Stuart, Polynomial Tables on the ENIAC, last paragraph" }
 
+finale:                          # S8 beat 1 (UX 14.5.3): the sentence for this mission
+  figure: "ENIAC built {cards} rows of a table, by adding alone."
+  words: "ENIAC built a table by adding."
+
 credits:
   - "Brian L. Stuart, programs/difference.e and the tutorial \"Polynomial Tables on the ENIAC\"."
