@@ -72,6 +72,13 @@ export const COPY = {
     plus: (n: number) => `+${n}`,
     again: "↻ Again",
   },
+  // Difference plan figure (stage/diffig.ts): the table built by adding.
+  difference: {
+    heads: ["Row", "Table value", "Change", "Next change", "Steady"],
+    start: (r: readonly number[]) => `Start: ${r[0]}, ${r[1]}, ${r[2]}, ${r[3]}`,
+    add: (f: number, d: number, next: number) => `${f} + (${d}) = ${next}`,
+    only: "Only adding. No multiplying.",
+  },
   run: {
     init: "INIT",
     initSub: "Initiating Pulse: the GO button",

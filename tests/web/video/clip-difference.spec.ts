@@ -41,7 +41,7 @@ test("clip: Difference mission (clean footage)", async ({ page }) => {
   await tapSlow(page, mainBtn(page));
   await expect(page.locator(".step-card h2")).toHaveText("Here is the trick");
   beat("plan");
-  await pause(page, 11_000);
+  await pause(page, 15_500); // the figure builds five rows by adding, then holds
   await tapSlow(page, mainBtn(page));
 
   await expect(page.locator(".step-card h2")).toHaveText("Dial in the number 6");

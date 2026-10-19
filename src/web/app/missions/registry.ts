@@ -11,6 +11,7 @@ import type { Figure } from "../stage/primesfig.ts";
 import { CheckersFigure, SharingFigure } from "../stage/primesfig.ts";
 import { TileFigure } from "../stage/tiles.ts";
 import { DotsFigure, HopFigure } from "../stage/trajfig.ts";
+import { DifferenceFigure } from "../stage/diffig.ts";
 
 export interface MissionArt {
   /** The picker card picture: SVG elements for a 480 x 200 canvas on the panel colour. */
@@ -75,6 +76,7 @@ const ART: Record<string, MissionArt> = {
       b += `<rect x="150" y="164" width="30" height="20" rx="4" fill="none" stroke="${CREAM}" stroke-width="2" stroke-dasharray="4 4"/></g>`;
       return b;
     },
+    plan: (_math, reduce) => new DifferenceFigure(reduce),
   },
 };
 
