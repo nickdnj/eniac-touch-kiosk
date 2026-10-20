@@ -86,6 +86,8 @@ export const COPY = {
     start: (r: readonly number[]) => `Start: ${r[0]}, ${r[1]}, ${r[2]}, ${r[3]}`,
     add: (f: number, d: number, next: number) => `${f} + ${d < 0 ? `(${d})` : d} = ${next}`,
     only: "Only adding. No multiplying.",
+    cubeIs: "A cube: a number times itself, and again.",
+    cube: (n: number) => `${n} × ${n} × ${n} = ${n ** 3} little blocks`,
     briefStart: "Start with 0.",
     briefAdd: "Add the change. The change changes too.",
     change: (d: number) => (d < 0 ? `${d}` : `+${d}`),

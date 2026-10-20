@@ -40,7 +40,7 @@ test("clip: Difference mission, cubes and Your turn (clean footage)", async ({ p
 
   await expect(page.locator(".step-card h2")).toHaveText("A table, made by adding");
   beat("briefing");
-  await pause(page, 15_000); // the bars build row by row and hold
+  await pause(page, 21_000); // the blocks build (2x2x2, 3x3x3), then the bars build row by row and hold
   await tapSlow(page, mainBtn(page));
   await expect(page.locator(".step-card h2")).toHaveText("Here is the trick");
   beat("plan");

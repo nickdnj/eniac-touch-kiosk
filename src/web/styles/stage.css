@@ -102,6 +102,14 @@
 .diff-cell.on { opacity: 1; }
 .diff-caption { font-family: var(--font-mono); }
 /* Difference briefing figure: bars either side of a zero line. */
+.diffb-stage { position: relative; width: 1200px; height: 386px; }
+.diffb-stage > .diffb-plot { transition: opacity 500ms; }
+.diffb-plot.hidden { opacity: 0; }
+.diffb-blocks { position: absolute; left: 0; top: 0; width: 1200px; height: 386px; transition: opacity 400ms; }
+.diffb-blocks.hidden { opacity: 0; }
+.diffb-block { opacity: 0; transform: translateY(-22px); transition: opacity 300ms, transform 300ms; }
+.diffb-block.on { opacity: 1; transform: none; }
+.diffb.still .diffb-block { opacity: 1; transform: none; }
 .diffb-plot { position: relative; width: 1200px; display: flex; flex-direction: column; gap: 10px; }
 .diffb-row { position: relative; display: flex; align-items: center; height: 56px; opacity: 0.1; transition: opacity 400ms; }
 .diffb-row.on { opacity: 1; }

@@ -98,9 +98,51 @@ export class DifferenceFigure implements Figure {
 }
 
 
+const SVGNS = "http://www.w3.org/2000/svg";
+const FACES = ["#8fd0f2", "#3c8fc0", "#2a6a94"]; // top, right, left: the data-cable blue, lit from above
+
+/** An n x n x n stack of little blocks as an isometric drawing. Cubes are in painter's order (bottom up, back to front), so showing them in array order builds the block up. */
+export function blockCube(n: number, unit: number, cx: number, cy: number): { svg: SVGSVGElement; blocks: SVGGElement[] } {
+  const svg = document.createElementNS(SVGNS, "svg");
+  svg.setAttribute("viewBox", "0 0 1200 386");
+  svg.setAttribute("class", "diffb-blocks");
+  svg.setAttribute("aria-hidden", "true");
+  const P = (x: number, y: number, z: number) => `${cx + (x - y) * unit * 0.866},${cy + (x + y) * unit * 0.5 - z * unit}`;
+  const face = (g: SVGGElement, pts: string[], fill: string) => {
+    const e = document.createElementNS(SVGNS, "polygon");
+    e.setAttribute("points", pts.join(" "));
+    e.setAttribute("fill", fill);
+    e.setAttribute("stroke", "#101215");
+    e.setAttribute("stroke-width", "3");
+    e.setAttribute("stroke-linejoin", "round");
+    g.appendChild(e);
+  };
+  const blocks: SVGGElement[] = [];
+  for (let z = 0; z < n; z++)
+    for (let d = 0; d <= 2 * (n - 1); d++)
+      for (let x = 0; x < n; x++) {
+        const y = d - x;
+        if (y < 0 || y >= n) continue;
+        const g = document.createElementNS(SVGNS, "g");
+        face(g, [P(x, y, z + 1), P(x + 1, y, z + 1), P(x + 1, y + 1, z + 1), P(x, y + 1, z + 1)], FACES[0]);
+        face(g, [P(x + 1, y, z), P(x + 1, y + 1, z), P(x + 1, y + 1, z + 1), P(x + 1, y, z + 1)], FACES[1]);
+        face(g, [P(x, y + 1, z), P(x + 1, y + 1, z), P(x + 1, y + 1, z + 1), P(x, y + 1, z + 1)], FACES[2]);
+        g.setAttribute("class", "diffb-block");
+        svg.appendChild(g);
+        blocks.push(g);
+      }
+  return { svg, blocks };
+}
+
+const BLOCK_STEP_MS = 210;       // one little block of the 2 x 2 x 2 appears
+const BLOCK_STEP3_MS = 85;       // ... and of the 3 x 3 x 3
+const CUBE2_AT = 600;
+const CUBE3_AT = CUBE2_AT + 8 * BLOCK_STEP_MS + 2400;
+const BARS_AT = CUBE3_AT + 27 * BLOCK_STEP3_MS + 2800;
+
 const BARS = 6;
 const BAR_MS = 1500;
-const BAR_LOOP_MS = 1200 + BARS * BAR_MS + 3500;
+const BAR_LOOP_MS = BARS_AT + 1200 + BARS * BAR_MS + 3500;
 const SCALE = 2.4; // px per unit of f(x): 125 -> 300 px, 8 -> 19 px
 
 /**
@@ -113,6 +155,9 @@ export class DifferenceBriefFigure implements Figure {
   readonly el: HTMLElement;
   private bars: HTMLElement[] = [];
   private caption: HTMLElement;
+  private plot: HTMLElement;
+  private cube2: { svg: SVGSVGElement; blocks: SVGGElement[] };
+  private cube3: { svg: SVGSVGElement; blocks: SVGGElement[] };
   private timers: ReturnType<typeof setTimeout>[] = [];
   private data = differenceTable(BARS);
 
@@ -132,8 +177,13 @@ export class DifferenceBriefFigure implements Figure {
       this.bars.push(row);
       plot.append(row);
     });
+    this.plot = plot;
+    this.cube2 = blockCube(2, 88, 600, 193);
+    this.cube3 = blockCube(3, 58, 600, 193);
+    const stage = h("div", { class: "diffb-stage" }, plot);
+    stage.append(this.cube2.svg as unknown as Node, this.cube3.svg as unknown as Node);
     this.caption = h("div", { class: "tiles-caption diff-caption", "aria-live": "polite" });
-    const kids: HTMLElement[] = [plot, this.caption];
+    const kids: HTMLElement[] = [stage, this.caption];
     if (!reduceMotion) kids.push(button(COPY.tiles.again, "light outline tiles-again", () => this.play()));
     this.el = h("div", { class: "tiles diff-fig diffb", "data-figure": "difference-briefing" }, ...kids);
   }
@@ -142,20 +192,42 @@ export class DifferenceBriefFigure implements Figure {
     this.clear();
     this.el.classList.remove("still");
     for (const r of this.bars) r.classList.remove("on");
+    for (const g of [...this.cube2.blocks, ...this.cube3.blocks]) g.classList.remove("on");
+    this.plot.classList.add("hidden");
+    this.cube2.svg.classList.remove("hidden");
+    this.cube3.svg.classList.add("hidden");
     const D = COPY.difference;
+    const at = (ms: number, fn: () => void) => this.timers.push(setTimeout(fn, ms));
     this.caption.textContent = "";
-    this.bars.forEach((r, i) => this.timers.push(setTimeout(() => {
+    // A cube, as blocks: 2 x 2 x 2, then 3 x 3 x 3.
+    at(CUBE2_AT - 300, () => (this.caption.textContent = D.cubeIs));
+    this.cube2.blocks.forEach((g, i) => at(CUBE2_AT + i * BLOCK_STEP_MS, () => g.classList.add("on")));
+    at(CUBE2_AT + 8 * BLOCK_STEP_MS, () => (this.caption.textContent = D.cube(2)));
+    at(CUBE3_AT - 400, () => this.cube2.svg.classList.add("hidden"));
+    at(CUBE3_AT, () => {
+      this.cube3.svg.classList.remove("hidden");
+      this.caption.textContent = D.cubeIs;
+    });
+    this.cube3.blocks.forEach((g, i) => at(CUBE3_AT + i * BLOCK_STEP3_MS, () => g.classList.add("on")));
+    at(CUBE3_AT + 27 * BLOCK_STEP3_MS, () => (this.caption.textContent = D.cube(3)));
+    // Then the table of cubes, by adding.
+    at(BARS_AT - 400, () => this.cube3.svg.classList.add("hidden"));
+    at(BARS_AT, () => this.plot.classList.remove("hidden"));
+    this.bars.forEach((r, i) => at(BARS_AT + 1200 + i * BAR_MS, () => {
       r.classList.add("on");
       this.caption.textContent = i === 0 ? D.briefStart : D.briefAdd;
-    }, 1200 + i * BAR_MS)));
-    this.timers.push(setTimeout(() => (this.caption.textContent = D.only), 1200 + BARS * BAR_MS));
-    this.timers.push(setTimeout(() => this.play(), BAR_LOOP_MS));
+    }));
+    at(BARS_AT + 1200 + BARS * BAR_MS, () => (this.caption.textContent = D.only));
+    at(BAR_LOOP_MS, () => this.play());
   }
 
   /** Reduced motion: every bar at once. */
   showFinal(): void {
     this.clear();
     this.el.classList.add("still");
+    this.plot.classList.remove("hidden");
+    this.cube2.svg.classList.add("hidden");
+    this.cube3.svg.classList.add("hidden");
     for (const r of this.bars) r.classList.add("on");
     this.caption.textContent = COPY.difference.only;
   }

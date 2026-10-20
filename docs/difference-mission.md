@@ -50,3 +50,7 @@ Everything else (35 cables and 76 switches, including the shifter adapters and t
 ## Kiosk change that came with it
 
 `econfig/catalog.go` now accepts the letter `O` as "off" for printer field switches. Stuart's file writes `s pr.13 O`; the core treats anything but P as off, so it is an alias for `0`.
+
+## What a cube is (briefing)
+
+The briefing starts by defining a cube for visitors who have not met the word: a number times itself, and again (2 × 2 × 2 = 8). The briefing figure builds a 2 × 2 × 2 block of 8 little blocks, then a 3 × 3 × 3 block of 27, then goes on to the table of cubes built by adding (`stage/diffig.ts`, `blockCube`). A cube is a number to the third power (not the fourth). Reduced motion skips the blocks; the body copy carries the definition.
