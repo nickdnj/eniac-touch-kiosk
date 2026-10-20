@@ -37,7 +37,7 @@ From the transfer bundle (`eniac-transfer-2026-10-20.zip`, AirDrop it):
 
 - `difference-clean-raw.mp4` and `difference-beats.json` go in `eniac-kiosk-youtube/assets/video/difference-2026-10-19/`. (They can also be regenerated in 2 minutes: `cd eniac-touch-kiosk/src/web && npx playwright test -c ../../tests/web/video/playwright.config.ts clip-difference`, then convert `build/video/out/clip-difference*/video.webm` with ffmpeg as in the spec header, and copy `build/video/difference-beats.json`.)
 - `ENIAC-Difference-mission-review.mp4` is the review cut (system voice). Watch it first.
-- `difference.pdf` is Stuart's tutorial. Do not commit it or post it; his permission covers `difference.e` only.
+- `difference.pdf` is Stuart's tutorial "Polynomial Tables on the ENIAC". It is not private (Nick, 2026-10-20) and is already in this repo at `research/sources/stuart-polynomial-tables/` with page PNGs, because the video shows its hand-worked table as "the why". The kiosk repo is public, so it is NOT committed there.
 - `claude-memory-eniac-kiosk-difference-mission.md` is the saved memory from the old Mac. Tell the new session to read it, or copy it into that machine's Claude project memory.
 
 Rebuild the review cut any time (macOS voice): `cd eniac-touch-kiosk/src/web && node ~/Workspaces/eniac-kiosk-youtube/scripts/difference_cards.mjs ~/Workspaces/eniac-kiosk-youtube/output/build/difference-review`, then `python3 ~/Workspaces/eniac-kiosk-youtube/scripts/build_difference_review.py`.
