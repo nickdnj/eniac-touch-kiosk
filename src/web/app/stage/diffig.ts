@@ -136,7 +136,9 @@ export function blockCube(n: number, unit: number, cx: number, cy: number): { sv
 
 const BLOCK_STEP_MS = 210;       // one little block of the 2 x 2 x 2 appears
 const BLOCK_STEP3_MS = 85;       // ... and of the 3 x 3 x 3
-const CUBE2_AT = 600;
+const HAND_AT = 500;             // the problem: tables made by hand
+const BABBAGE_AT = HAND_AT + 5600;  // the idea: a machine that only adds
+const CUBE2_AT = BABBAGE_AT + 5600; // what we will build: cubes, as blocks
 const CUBE3_AT = CUBE2_AT + 8 * BLOCK_STEP_MS + 2400;
 const BARS_AT = CUBE3_AT + 27 * BLOCK_STEP3_MS + 2800;
 
@@ -156,6 +158,8 @@ export class DifferenceBriefFigure implements Figure {
   private bars: HTMLElement[] = [];
   private caption: HTMLElement;
   private plot: HTMLElement;
+  private hand: HTMLElement;
+  private engine: HTMLElement;
   private cube2: { svg: SVGSVGElement; blocks: SVGGElement[] };
   private cube3: { svg: SVGSVGElement; blocks: SVGGElement[] };
   private timers: ReturnType<typeof setTimeout>[] = [];
@@ -180,7 +184,15 @@ export class DifferenceBriefFigure implements Figure {
     this.plot = plot;
     this.cube2 = blockCube(2, 88, 600, 193);
     this.cube3 = blockCube(3, 58, 600, 193);
-    const stage = h("div", { class: "diffb-stage" }, plot);
+    const squares = [1, 4, 9, 16, 25, 36, 94, 64, 81]; // 7 x 7 = 49 copied as 94: a slip, the kind a hand-made table has
+    this.hand = h("div", { class: "diffb-hand hidden" }, h("div", { class: "diffb-paper" },
+      h("div", { class: "diffb-paper-title" }, D.handTitle),
+      ...squares.map((v, i) => h("div", { class: `diffb-paper-row${i === 6 ? " slip" : ""}` }, h("span", {}, String(i + 1)), h("span", {}, String(v))))));
+    this.engine = h("div", { class: "diffb-engine hidden" }, ...[[0, 8, 3], [7, 1, 9], [2, 5, 6], [4, 4, 0]].flatMap((col, i) => [
+      h("div", { class: "diffb-wheels" }, ...col.map((d) => h("div", { class: "diffb-wheel" }, String(d)))),
+      ...(i < 3 ? [h("div", { class: "diffb-plus" }, "+")] : []),
+    ]));
+    const stage = h("div", { class: "diffb-stage" }, plot, this.hand, this.engine);
     stage.append(this.cube2.svg as unknown as Node, this.cube3.svg as unknown as Node);
     this.caption = h("div", { class: "tiles-caption diff-caption", "aria-live": "polite" });
     const kids: HTMLElement[] = [stage, this.caption];
@@ -194,12 +206,28 @@ export class DifferenceBriefFigure implements Figure {
     for (const r of this.bars) r.classList.remove("on");
     for (const g of [...this.cube2.blocks, ...this.cube3.blocks]) g.classList.remove("on");
     this.plot.classList.add("hidden");
-    this.cube2.svg.classList.remove("hidden");
+    this.cube2.svg.classList.add("hidden");
     this.cube3.svg.classList.add("hidden");
+    this.hand.classList.add("hidden");
+    this.engine.classList.add("hidden");
+    this.hand.classList.remove("slipped");
     const D = COPY.difference;
     const at = (ms: number, fn: () => void) => this.timers.push(setTimeout(fn, ms));
     this.caption.textContent = "";
-    // A cube, as blocks: 2 x 2 x 2, then 3 x 3 x 3.
+    // The problem, then the idea: tables made by hand have mistakes; Babbage planned a machine that only adds.
+    at(HAND_AT, () => {
+      this.hand.classList.remove("hidden");
+      this.caption.textContent = D.hand;
+    });
+    at(HAND_AT + 2600, () => this.hand.classList.add("slipped"));
+    at(BABBAGE_AT - 400, () => this.hand.classList.add("hidden"));
+    at(BABBAGE_AT, () => {
+      this.engine.classList.remove("hidden");
+      this.caption.textContent = D.babbage;
+    });
+    at(CUBE2_AT - 400, () => this.engine.classList.add("hidden"));
+    at(CUBE2_AT - 300, () => this.cube2.svg.classList.remove("hidden"));
+    // What we will build: a table of cubes. A cube, as blocks: 2 x 2 x 2, then 3 x 3 x 3.
     at(CUBE2_AT - 300, () => (this.caption.textContent = D.cubeIs));
     this.cube2.blocks.forEach((g, i) => at(CUBE2_AT + i * BLOCK_STEP_MS, () => g.classList.add("on")));
     at(CUBE2_AT + 8 * BLOCK_STEP_MS, () => (this.caption.textContent = D.cube(2)));
@@ -226,6 +254,8 @@ export class DifferenceBriefFigure implements Figure {
     this.clear();
     this.el.classList.add("still");
     this.plot.classList.remove("hidden");
+    this.hand.classList.add("hidden");
+    this.engine.classList.add("hidden");
     this.cube2.svg.classList.add("hidden");
     this.cube3.svg.classList.add("hidden");
     for (const r of this.bars) r.classList.add("on");

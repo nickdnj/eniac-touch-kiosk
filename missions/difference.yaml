@@ -135,7 +135,7 @@ selftest:                        # rule 8: INIT, then the first five rows
 content:
   briefing:                      # S3, step 0a
     headline: "A table, made by adding"
-    body: "A cube is a number times itself, and again: 2 × 2 × 2 = 8. By hand, tables of cubes had mistakes. Charles Babbage planned a machine to build them by only adding. ENIAC can do the same."
+    body: "People once made number tables by hand, with mistakes. In the 1820s Charles Babbage planned a machine to build them by only adding. A cube is a number times itself, and again. ENIAC will build a table of cubes."
     more: "For parents: Charles Babbage was an English mathematician. In the 1820s he began designing a machine of gears, the Difference Engine, to make tables of numbers without mistakes. It used the Method of Differences: adding down a chain of columns, with no multiplying. In 1991 the Science Museum in London finished one built from his plans, and it works. Brian Stuart's ENIAC tutorial shows the same trick."
     buttons: ["Let's go"]
     review: { factCheck: [more, body], source: "Stuart email 2026-10-19, tutorial, p.1" }
