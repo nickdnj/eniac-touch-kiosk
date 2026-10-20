@@ -37,7 +37,7 @@ test("clip: Difference mission (clean footage)", async ({ page }) => {
 
   await expect(page.locator(".step-card h2")).toHaveText("A table, made by adding");
   beat("briefing");
-  await pause(page, 9000);
+  await pause(page, 15_000); // the bars build row by row, cross zero, then hold
   await tapSlow(page, mainBtn(page));
   await expect(page.locator(".step-card h2")).toHaveText("Here is the trick");
   beat("plan");
