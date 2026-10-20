@@ -48,3 +48,7 @@ Brian, thank you for the careful look and for the tutorial. Done on our side: th
 **Not done, in case you ask:** voice-over in your voice, final render, any upload, Doug Crawford's copy approval of the Difference text, Pi/OptiPlex timing of the run speeds, a museum-grade source for the Babbage claims (they rest on Brian's tutorial), a custom briefing animation for Difference (the plan animation is done).
 
 **Gmail note:** the Oct 18 thread with Brian now shows three messages; the third is not visible to me (drafts are hidden from my tool), so it may be a draft reply someone started. I did not read or touch it.
+
+---
+
+**Status note (Nick, 2026-10-20):** still in development. A prototype is being tested on the floor at the museum, and none of this work is on it. So: keep everything on branches and draft PRs; the merge order above is a plan for when Nick decides, not a recommendation to merge now. The pin bump (#77) also changes the build toolchain to Go 1.27.2 and retires two patches, which is exactly the kind of change to hold until the floor prototype's feedback is in.
