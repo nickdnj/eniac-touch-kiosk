@@ -18,7 +18,7 @@ def dur(p): return float(subprocess.check_output(["ffprobe","-v","error","-show_
 SCENES = [
  ("s01", "raw", B["first card"]+1.4, B["first card"]+5.4, "A whole table of numbers, built with nothing but adding."),
  ("s02", "title", 0, 0, "This is Mission 4 on the new Ennie-ack touch screen at the Vintage Computer Federation museum."),
- ("s03", "raw", B["picker page 2: Difference"], B["plan"]-0.1, "Before computers, people made tables of numbers by hand. Charles Babbage designed a machine to build such tables automatically, using only addition. Ennie-ack can do the same."),
+ ("s03", "raw", B["briefing"]-1.5, B["plan"]-0.1, "Before computers, people made tables of numbers by hand. Charles Babbage designed a machine to build such tables automatically, using only addition. Ennie-ack can do the same. Watch the bars: each one is the one above plus a change, and the change changes too, until the table drops below zero."),
  ("s03b", "tutorial", 0, 0, "To start, work out a small table by hand. The numbers along the top diagonal are all Ennie-ack needs: six hundred, minus eighty-nine, minus thirty-four, and six."),
  ("s04", "raw", B["plan"], B["step 1: dial the 6"]-0.1, "Here is the trick. Four accumulators form a chain. The last one never changes. Each row, every accumulator adds the one below it, and the top one is the table."),
  ("s05", "raw", B["step 1: dial the 6"], B["step 2: first difference onto trunk 1"]-0.1, "Step one. Dial in a six. In this table, the last number in the chain is always six."),
