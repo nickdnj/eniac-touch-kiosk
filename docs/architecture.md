@@ -667,6 +667,15 @@ content:
 - **Tooling:** `eniac-bridge mission compile FILE` prints the compiled mission exactly as `GET /api/missions/{id}` serves it; the UI's mock fixtures (`tests/web/mock/missions/*.json`) are generated with it.
 - **Jack grammar:** the initiating unit's jacks are case-insensitive in the first letter, like `initplug` (`i.Pi` = `i.pi`, canonical lower case); master programmer jacks are `p.<X>i|di|cdi|<1-6>o` with X in A..K without I, and `p.<1-20>di`; function tables `f<U>.<1-11>i|o, arg, A, B, C, NC`; multiplier `m.<1-24>i|o` and its data terminals; adapters `ad.<kind>.<n>.<param>`.
 
+#### 5.9.7 N missions (2026-10-19)
+
+The web UI no longer names a mission outside `src/web/app/missions/registry.ts` (picker card picture, S3 briefing and plan animations; a mission without an entry gets a numbered card and the room plan). Everything else a new mission needs is in its YAML:
+
+- `finale: { words, figure }`: its sentence on the finale's first beat. `figure` is a template over the visit's real numbers (`{n} {square}` Squares, `{cards} {last}` card missions, `{hops}` plotted flights); a sentence whose numbers were not seen is dropped, and `words` shows instead. Served in `/api/missions` (`Summary.finale`). Lint: at most 25 words, known placeholders, no `[FC]`.
+- `content.run.chain: { title, rows: [{acc, name, sub}] }` (1 to 4 rows): the run stage shows those accumulators, live, beside the punched cards (`app/run/chainstage.ts`). Without it a card mission gets the stage its `run.cards.style` names (`stack` is Primes, `film` is Trajectory). The big numbers wait for a settled accumulator (no program or carry lamp lit); the lamps always show the truth.
+- Programs we ship ourselves go in `missions/programs/*.e` (with the author's permission, see `NOTICE.md`); `scripts/fetch-upstream.sh` copies them next to the pinned programs after the tree check and patches, never over a differing upstream file, and lists them as `addedFiles` in `.provenance.json`.
+- The picker shows three cards at a time and pages (Earlier / More missions) beyond three; it opens on the page with the next mission to do.
+
 ### 5.10 Attract session (live attract, PRD FR-30, FR-34 to FR-36, FR-51)
 
 `session/attract.go`. The attract loop flies the configured mission's program (`attract.mission`, default `trajectory`: `trajdemo.e` with `drag.e`) with the same machinery as a visitor mission, one flight per core:
