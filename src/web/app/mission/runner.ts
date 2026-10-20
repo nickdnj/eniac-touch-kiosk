@@ -49,6 +49,14 @@ export class Runner {
   phase: Phase;
   wrong = 0;
   private lastTap = -Infinity;
+  /**
+   * Your turn: the id of the one step whose value the visitor may choose
+   * freely, and what they chose. The caller passes a copy of the mission for
+   * this, because choosing rewrites that step's value (so the dial, the
+   * workbench and the bridge all agree on the visitor's number).
+   */
+  freeStep: string | null = null;
+  chosen: string | null = null;
   private now: () => number;
 
   constructor(mission: CompiledMission, now: () => number, applied: string[] = []) {
@@ -142,7 +150,9 @@ export class Runner {
   }
 
   private applyMsg(assisted: boolean): ClientMsg {
-    return { t: "apply_step", step: this.step!.id, assisted };
+    const id = this.step!.id;
+    if (!assisted && this.freeStep === id && this.chosen !== null) return { t: "apply_step", step: id, assisted, value: this.chosen };
+    return { t: "apply_step", step: id, assisted };
   }
 
   /**
@@ -186,6 +196,13 @@ export class Runner {
     const s = this.step!;
     if (s.kind !== "switch" || this.phase !== "pick") return { feedback: { kind: "neutral" }, send: [] };
     this.lastTap = this.now();
+    if (this.freeStep === s.id && (s.choices ?? []).includes(value)) {
+      // Your turn: any of the choices is right. The step now carries the visitor's number.
+      this.chosen = value;
+      (s as { value?: string }).value = value;
+      this.phase = "pending";
+      return { feedback: { kind: "ok", id: switchId(s.switch), assisted: false }, send: [this.applyMsg(false)] };
+    }
     if (value === s.value) {
       this.phase = "pending";
       return { feedback: { kind: "ok", id: switchId(s.switch), assisted: false }, send: [this.applyMsg(false)] };

@@ -197,6 +197,45 @@ type Content struct {
 	Read     *ReadContent `yaml:"read,omitempty" json:"read,omitempty"`
 	Run      RunContent   `yaml:"run" json:"run"`
 	Result   Card         `yaml:"result" json:"result"`
+	// YourTurn is the optional challenge after the result: predict the next row
+	// from the visitor's own cards, then dial a different number into one step
+	// and run the machine again (Difference). Nil for missions without it.
+	YourTurn *YourTurn `yaml:"yourTurn,omitempty" json:"yourTurn,omitempty"`
+}
+
+// YourTurn is the "Your turn" copy and the one step the visitor may set freely.
+type YourTurn struct {
+	Step    string      `yaml:"step" json:"step"`     // id of a switch step; the visitor may pick any of its choices
+	Button  string      `yaml:"button" json:"button"` // the result screen's button
+	Predict PredictCopy `yaml:"predict" json:"predict"`
+	Dial    StepText    `yaml:"dial" json:"dial"` // replaces the step's text while the visitor chooses
+	Compare CompareCopy `yaml:"compare" json:"compare"`
+	Review  Review      `yaml:"review,omitempty" json:"-"`
+}
+
+// PredictCopy is the guess-the-next-row screen. {row} is the row asked for, {v} its real value, {from} the
+// value above it and {d} the change added to it; every number comes from the visitor's own punched cards.
+type PredictCopy struct {
+	Headline string `yaml:"headline" json:"headline"`
+	Body     string `yaml:"body" json:"body"`
+	Ask      string `yaml:"ask" json:"ask"`
+	Right    string `yaml:"right" json:"right"`
+	Wrong    string `yaml:"wrong" json:"wrong"`
+	Go       string `yaml:"go" json:"go"`   // the button that moves on to the dial
+	Show     int    `yaml:"show" json:"show"` // how many of the first rows to show before asking for the next (2 to 12)
+	// Change lists the card fields (5-character fields, as run.cards.value) that hold the change added to the
+	// table value on that card, so the UI can show it beside each row.
+	Change []int `yaml:"change" json:"change"`
+}
+
+// CompareCopy is the result of the second run: the first table beside the visitor's own.
+type CompareCopy struct {
+	Headline string `yaml:"headline" json:"headline"`
+	Body     string `yaml:"body" json:"body"` // {n} is the number the visitor chose, {first} the original
+	First    string `yaml:"first" json:"first"`
+	Yours    string `yaml:"yours" json:"yours"`
+	Same     string `yaml:"same" json:"same"`   // shown when the visitor picked the original number
+	Button   string `yaml:"button" json:"button"` // another try
 }
 
 // ReadContent is the READ beat before INIT (Trajectory, UX 8.3.5).

@@ -310,6 +310,51 @@ export interface Content {
   read?: ReadContent;
   run: RunContent;
   result: Card;
+  /**
+   * YourTurn is the optional challenge after the result: predict the next row
+   * from the visitor's own cards, then dial a different number into one step
+   * and run the machine again (Difference). Nil for missions without it.
+   */
+  yourTurn?: YourTurn;
+}
+/**
+ * YourTurn is the "Your turn" copy and the one step the visitor may set freely.
+ */
+export interface YourTurn {
+  step: string; // id of a switch step; the visitor may pick any of its choices
+  button: string; // the result screen's button
+  predict: PredictCopy;
+  dial: StepText; // replaces the step's text while the visitor chooses
+  compare: CompareCopy;
+}
+/**
+ * PredictCopy is the guess-the-next-row screen. {row} is the row asked for, {v} its real value, {from} the
+ * value above it and {d} the change added to it; every number comes from the visitor's own punched cards.
+ */
+export interface PredictCopy {
+  headline: string;
+  body: string;
+  ask: string;
+  right: string;
+  wrong: string;
+  go: string; // the button that moves on to the dial
+  show: number /* int */; // how many of the first rows to show before asking for the next (2 to 12)
+  /**
+   * Change lists the card fields (5-character fields, as run.cards.value) that hold the change added to the
+   * table value on that card, so the UI can show it beside each row.
+   */
+  change: number /* int */[];
+}
+/**
+ * CompareCopy is the result of the second run: the first table beside the visitor's own.
+ */
+export interface CompareCopy {
+  headline: string;
+  body: string; // {n} is the number the visitor chose, {first} the original
+  first: string;
+  yours: string;
+  same: string; // shown when the visitor picked the original number
+  button: string; // another try
 }
 /**
  * ReadContent is the READ beat before INIT (Trajectory, UX 8.3.5).

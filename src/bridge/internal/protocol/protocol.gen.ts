@@ -383,6 +383,11 @@ export interface ApplyStep {
   id?: number /* int64 */;
   step: string;
   assisted: boolean;
+  /**
+   * Value is a chosen setting for the one step a mission lets the visitor set
+   * freely (Your turn). Empty means the step's own value.
+   */
+  value?: string;
 }
 export interface SkipSetup {
   t: 'skip_setup';

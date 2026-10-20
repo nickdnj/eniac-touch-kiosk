@@ -5,18 +5,20 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { differenceTable, DIFF_START } from "../../src/web/app/stage/diffig.ts";
 
-test("the table is built by adding down the chain, and matches Stuart's tutorial and the real core", () => {
+test("the table is built by adding down the chain: the cubes, only climbing", () => {
   assert.deepEqual(differenceTable(5), [
-    [600, -89, -34, 6],
-    [511, -123, -28, 6],
-    [388, -151, -22, 6],
-    [237, -173, -16, 6],
-    [64, -189, -10, 6],
+    [0, 1, 6, 6],
+    [1, 7, 12, 6],
+    [8, 19, 18, 6],
+    [27, 37, 24, 6],
+    [64, 61, 30, 6],
   ]);
 });
 
-test("every f is the cubic f(x) = x^3 - 20x^2 - 70x + 600", () => {
-  const f = (x: number) => x ** 3 - 20 * x ** 2 - 70 * x + 600;
-  differenceTable(12).forEach((r, x) => assert.equal(r[0], f(x), `x=${x}`));
-  assert.deepEqual([...DIFF_START], [600, -89, -34, 6]);
+test("every f is x cubed, every change is positive, and the start matches the mission's program", () => {
+  differenceTable(12).forEach((r, x) => {
+    assert.equal(r[0], x ** 3, `x=${x}`);
+    assert.ok(r[1] > 0 && r[2] > 0 && r[3] > 0, `x=${x}: every change is positive, so every step is an addition`);
+  });
+  assert.deepEqual([...DIFF_START], [0, 1, 6, 6]);
 });

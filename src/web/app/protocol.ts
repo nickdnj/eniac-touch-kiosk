@@ -97,6 +97,7 @@ export type Caption = M.Caption;
 export type PressCopy = M.PressCopy;
 export type RunContent = M.RunContent;
 export type Content = M.Content;
+export type YourTurn = M.YourTurn;
 export type MissionCompiled = M.Compiled;
 
 // =====================================================================

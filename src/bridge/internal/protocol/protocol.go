@@ -285,6 +285,9 @@ type ApplyStep struct {
 	ID       *int64 `json:"id,omitempty"`
 	Step     string `json:"step"`
 	Assisted bool   `json:"assisted"`
+	// Value is a chosen setting for the one step a mission lets the visitor set
+	// freely (Your turn). Empty means the step's own value.
+	Value string `json:"value,omitempty"`
 }
 
 type SkipSetup struct {

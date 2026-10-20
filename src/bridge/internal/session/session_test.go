@@ -563,3 +563,42 @@ func TestTrajectoryReadThenInit(t *testing.T) {
 	cl.send(`{"t":"button","b":"init","id":9}`)
 	cl.wait(3*time.Second, "second INIT refused", func(m map[string]any) bool { return m["t"] == "error" && m["re"] == 9.0 })
 }
+
+// Your turn: the one free step takes a chosen value; nothing else does, and only real choices.
+func TestYourTurnChosenValue(t *testing.T) {
+	r := newRig(t, nil)
+	cl := r.connect()
+	errFor := func(id int64) map[string]any {
+		return cl.wait(3*time.Second, fmt.Sprintf("error re=%d", id), func(m map[string]any) bool {
+			return m["t"] == "error" && m["re"] == float64(id)
+		})
+	}
+	cl.send(`{"t":"start_mission","mission":"difference","mode":"visitor"}`)
+	cl.wait(10*time.Second, "session setup", is("session", "state", "setup"))
+	if m := errFor(cl.send(`{"t":"apply_step","step":"k1-six","value":"x"}`)); m["code"] != "NOT_ALLOWED" {
+		t.Fatalf("value outside the choices: %v", m)
+	}
+	if m := errFor(cl.send(`{"t":"apply_step","step":"k1-six","value":"10"}`)); m["code"] != "NOT_ALLOWED" {
+		t.Fatalf("value outside the choices: %v", m)
+	}
+	cl.send(`{"t":"apply_step","step":"k1-six","value":"2"}`)
+	cl.wait(3*time.Second, "step_applied", is("step_applied", "step", "k1-six"))
+	// A value on any other step is refused (it would let the visitor rewrite the program).
+	if m := errFor(cl.send(`{"t":"apply_step","step":"punch-value","value":"0"}`)); m["code"] != "NOT_ALLOWED" {
+		t.Fatalf("value on a fixed step: %v", m)
+	}
+	cl.send(`{"t":"skip_setup"}`)
+	cl.wait(10*time.Second, "setup_complete", is("setup_complete", "skipped", "4"))
+	var chosen, canonical int
+	for _, w := range r.wl.all() {
+		switch w {
+		case "s c.k1 2":
+			chosen++
+		case "s c.k1 6":
+			canonical++
+		}
+	}
+	if chosen != 1 || canonical != 0 {
+		t.Fatalf("core saw the chosen number %d times and the preset 6 %d times", chosen, canonical)
+	}
+}

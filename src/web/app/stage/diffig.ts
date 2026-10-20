@@ -1,7 +1,7 @@
 // S3b plan figure for the Difference mission: the table built by adding. Each
 // row's numbers come from the row above by adding the difference below them,
 // which is what the four accumulators do. The numbers are computed here from
-// the starting values (600, -89, -34, 6), the same ones the mission's program
+// the starting values (0, 1, 6, 6), the same ones the mission's program
 // loads, so the figure cannot drift from them.
 
 import { h } from "../ui/dom.ts";
@@ -9,8 +9,8 @@ import { button } from "../ui/overlays.ts";
 import { COPY } from "../copy.ts";
 import type { Figure } from "./primesfig.ts";
 
-/** f(x) = x^3 - 20x^2 - 70x + 600 by the Method of Differences: f, change, next change, steady. */
-export const DIFF_START = [600, -89, -34, 6] as const;
+/** The cubes, f(x) = x^3, by the Method of Differences: f, change, next change, steady. (Stuart's own table starts 600, -89, -34, 6 and goes below zero; cubes only climb.) */
+export const DIFF_START = [0, 1, 6, 6] as const;
 
 /** `n` rows of the table, each from the one before by adding down the chain (f += d1, d1 += d2, d2 += d3). */
 export function differenceTable(n: number): number[][] {
@@ -98,16 +98,16 @@ export class DifferenceFigure implements Figure {
 }
 
 
-const BARS = 8;
+const BARS = 6;
 const BAR_MS = 1500;
 const BAR_LOOP_MS = 1200 + BARS * BAR_MS + 3500;
-const SCALE = 0.62; // px per unit of f(x): 600 -> 372 px, -527 -> 327 px
+const SCALE = 2.4; // px per unit of f(x): 125 -> 300 px, 8 -> 19 px
 
 /**
- * S3 briefing figure: the table's values as bars either side of a zero line,
- * each one built from the one above by adding a change that itself changes.
- * The bars shrink, cross zero and grow the other way (f goes negative at row
- * 5). Numbers from differenceTable(), so they are the program's.
+ * S3 briefing figure: the table's values as bars, each one built from the
+ * one above by adding a change that itself grows. The bars climb faster and
+ * faster (the cubes: 0, 1, 8, 27, 64, 125). Numbers from differenceTable(),
+ * so they are the program's.
  */
 export class DifferenceBriefFigure implements Figure {
   readonly el: HTMLElement;
@@ -146,7 +146,7 @@ export class DifferenceBriefFigure implements Figure {
     this.caption.textContent = "";
     this.bars.forEach((r, i) => this.timers.push(setTimeout(() => {
       r.classList.add("on");
-      this.caption.textContent = i === 0 ? D.briefStart : this.data[i][0] < 0 && this.data[i - 1][0] >= 0 ? D.briefNegative : D.briefAdd;
+      this.caption.textContent = i === 0 ? D.briefStart : D.briefAdd;
     }, 1200 + i * BAR_MS)));
     this.timers.push(setTimeout(() => (this.caption.textContent = D.only), 1200 + BARS * BAR_MS));
     this.timers.push(setTimeout(() => this.play(), BAR_LOOP_MS));

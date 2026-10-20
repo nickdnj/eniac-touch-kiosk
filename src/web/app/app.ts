@@ -2,6 +2,7 @@
 // Decides which screen shows. Error states (S10) take precedence over the
 // visitor flow, and recovery always returns to the start screen (FR-51).
 
+import type { YourTurnState } from "./yourturn/logic.ts";
 import type {
   ClientMsg,
   CompiledMission,
@@ -26,20 +27,20 @@ import { TapCounter, inZone } from "./admin/tapcount.ts";
 import { StaffLayer } from "./screens/admin.ts";
 import type { SwitchingOpen } from "./screens/switching.ts";
 
-export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor" | "explore" | "glossary" | "tubes" | "finale" | "switching";
+export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "yourturn" | "error" | "honor" | "explore" | "glossary" | "tubes" | "finale" | "switching";
 
 /**
  * Views that show the Home button (beside the wordmark, top left): every
  * visitor screen except S1 and the picker itself. Home goes to the picker.
  */
-export const HOME_VIEWS = new Set<ViewName>(["mission", "run", "result", "explore", "glossary", "tubes", "honor", "finale"]);
+export const HOME_VIEWS = new Set<ViewName>(["mission", "run", "result", "yourturn", "explore", "glossary", "tubes", "honor", "finale"]);
 
 /** Views that keep a running attract session (S1, Explore with its glossary, honor and tubes links, and the finale's F2 room). */
 const ATTRACT_KEEPS = new Set<string>(["start", "explore", "glossary", "honor", "tubes", "finale"]);
 export interface View {
   name: ViewName;
-  /** Where a new session lands: the briefing, or straight to step 1 (retry). */
-  entry?: "briefing" | "step1";
+  /** Where a new session lands: the briefing, straight to step 1 (retry), or Your turn (choose a number, then run). */
+  entry?: "briefing" | "step1" | "yourturn";
   /** S11: the page to open (1 to 4). */
   page?: number;
   /** S8 Finale: the beat to open (1 to 5; 5 when coming back from Explore or S16). */
@@ -118,6 +119,8 @@ export class App {
   };
   missions: MissionSummary[] | null = null;
   mission: CompiledMission | null = null;
+  /** Your turn: the first table (from the first run's cards) and the number the visitor chose. Null outside Your turn. */
+  yourTurn: YourTurnState | null = null;
   view: View = { name: "boot" };
   /** Notebook tape for the current session (built from run.settled only). */
   tape: TapeRow[] = [];
@@ -442,8 +445,12 @@ export class App {
   }
 
   /** Start (or restart) a mission with a fresh core (ADR-002). */
-  async startMission(id: string, entry: "briefing" | "step1"): Promise<void> {
+  async startMission(id: string, entry: "briefing" | "step1" | "yourturn"): Promise<void> {
+    // Your turn keeps the first table across the restart; every other start clears it.
+    const keep = entry === "yourturn" ? this.yourTurn : null;
     this.resetVisitor();
+    this.yourTurn = keep;
+    if (this.yourTurn) this.yourTurn.steady = null;
     this.visit.begin();
     this.cards = new CardLog(null);
     this.expectingSession = true;
@@ -471,6 +478,7 @@ export class App {
 
   /** Clean slate for the next visitor (FR-33). */
   resetVisitor(): void {
+    this.yourTurn = null;
     this.tape = [];
     this.checkpoints.clear();
     this.answerAt = null;

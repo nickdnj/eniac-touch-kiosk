@@ -19,6 +19,10 @@ This kiosk is built on the **ENIAC simulator by Brian L. Stuart**
   permission (confirmed by Nick DeMarco, 2026-10-19). If he adds it to his
   repository, the build checks the two are identical and ours can be deleted.
   The tutorial itself is not included here.
+- **`missions/programs/difference-cubes.e`** is a copy of that configuration with only the four starting
+  numbers (and their signs) changed, so the table is the cubes 0, 1, 8, 27 ... instead of his 600, -89, ...
+  Every cable and every other switch is his. The Difference mission loads this one; his original sits beside
+  it. Same permission and the same note apply.
 - **Photographs and images** in his `images/` directory are used in the
   Original-UI mode of the museum's release with his permission (2026-10-07).
   They are not in this repository. Do not assume the right to redistribute

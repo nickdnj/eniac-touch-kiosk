@@ -73,14 +73,21 @@ export const COPY = {
     again: "↻ Again",
   },
   // Difference plan figure (stage/diffig.ts): the table built by adding.
+  // Your turn (Difference): labels only; the questions and answers are the mission's own copy.
+  yourTurn: {
+    back: "‹ Back",
+    row: "Row",
+    value: "Table value",
+    change: "Change",
+    notReady: "ENIAC has not punched enough rows yet. Go back and let it run a little longer.",
+  },
   difference: {
     heads: ["Row", "Table value", "Change", "Next change", "Steady"],
     start: (r: readonly number[]) => `Start: ${r[0]}, ${r[1]}, ${r[2]}, ${r[3]}`,
-    add: (f: number, d: number, next: number) => `${f} + (${d}) = ${next}`,
+    add: (f: number, d: number, next: number) => `${f} + ${d < 0 ? `(${d})` : d} = ${next}`,
     only: "Only adding. No multiplying.",
-    briefStart: "Start with 600.",
+    briefStart: "Start with 0.",
     briefAdd: "Add the change. The change changes too.",
-    briefNegative: "Now it goes below zero.",
     change: (d: number) => (d < 0 ? `${d}` : `+${d}`),
   },
   run: {

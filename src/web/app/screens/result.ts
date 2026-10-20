@@ -17,10 +17,14 @@ import { button, tellMore } from "../ui/overlays.ts";
 import { BarsPane, StackPane } from "../run/cardpane.ts";
 import { ArcPlot } from "../run/filmstage.ts";
 import { fillCard } from "../run/cards.ts";
+import { compare, question, readRows } from "../yourturn/logic.ts";
 import { COPY } from "../copy.ts";
 import { HONOR } from "../content/honor.ts";
 import { openHonor } from "./honor.ts";
 import { EXPLORE } from "../explore/content.ts";
+
+/** How many rows of the two tables sit side by side (Your turn). */
+const COMPARE_ROWS = 8;
 
 function reduceMotion(): boolean {
   return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -36,6 +40,10 @@ export function resultScreen(app: App): Screen {
   const allDone = available.length > 0 && !next;
   const cardMission = !!mission.run.cards;
   const live = r.live;
+  // Your turn (Difference): after the first run, a button; after the visitor's own run, the two tables side by side.
+  const yt = mission.content.yourTurn;
+  const second = !!yt && app.yourTurn?.steady != null;
+  const ytRows = () => readRows(app.cards.cards, mission.run.cards?.value ?? [], yt?.predict.change ?? []);
 
   // ------------------------------------------------------------------ left
   let left!: HTMLElement;
@@ -78,10 +86,22 @@ export function resultScreen(app: App): Screen {
       ? button(`${HONOR.resultLink.text} ›`, "link honor-link", () => openHonor(app, HONOR.resultLink.page, { name: "result" }))
       : null,
   );
-  const right = h("div", { class: "result-right" }, waiting, answer);
+  // Your turn: the headline and body change after the visitor's own run; a table shows how the two runs differ.
+  const answerHead = answer.querySelector("h2") as HTMLElement;
+  const answerBody = answer.querySelector("p") as HTMLElement;
+  const compareBox = h("div", { class: "yt-compare hidden", role: "table" });
+  const yourTurnBtn = yt && !second ? button(`${yt.button} ›`, "yt-btn hidden", () => app.show({ name: "yourturn" })) : null;
+  if (yt && second) answer.querySelector(".takeaway")?.classList.add("hidden");
+  if (yt) answer.append(compareBox);
+  if (yourTurnBtn) answer.append(yourTurnBtn);
+  const right = h("div", { class: `result-right${yt && second ? " yt-second" : ""}` }, waiting, answer);
 
   // ------------------------------------------------------------------ actions
-  const tryAgain = button(labels[1] ?? COPY.result.tryAgain, "try-again", () => void app.startMission(mission.id, "step1"));
+  // After the visitor's own run, "Try again" becomes "Try another number" (another run of Your turn).
+  const tryAgain =
+    yt && second
+      ? button(yt.compare.button, "try-again", () => void app.startMission(mission.id, "yourturn"))
+      : button(labels[1] ?? COPY.result.tryAgain, "try-again", () => void app.startMission(mission.id, "step1"));
   const menu = () => {
     app.endSession("menu");
     app.show({ name: "picker" });
@@ -132,6 +152,31 @@ export function resultScreen(app: App): Screen {
     pane?.update();
     bars?.update();
     arc?.update();
+    refreshYourTurn();
+  }
+
+  /** The Your turn button and the comparison, from the visitor's real cards only. */
+  function refreshYourTurn(): void {
+    if (!yt) return;
+    const rows = ytRows();
+    if (!second) {
+      // Offer it only once the real cards can support the question (never a made-up row).
+      yourTurnBtn?.classList.toggle("hidden", !app.checkpoints.has(mission.result) || !question(rows, yt.predict.show));
+      return;
+    }
+    const first = app.yourTurn!.first;
+    const steady = app.yourTurn!.steady!;
+    const cmp = compare(first, rows, COMPARE_ROWS);
+    const same = steady === app.yourTurn!.firstSteady && cmp.identical;
+    answerHead.textContent = yt.compare.headline;
+    answerBody.textContent = fillCard(same ? yt.compare.same : yt.compare.body, { n: steady, k: cmp.matching });
+    compareBox.classList.remove("hidden");
+    compareBox.replaceChildren(
+      h("div", { class: "yt-chead" }, h("div", { class: "yt-n" }, COPY.yourTurn.row), h("div", {}, yt.compare.first), h("div", {}, yt.compare.yours)),
+      ...cmp.rows.map((r) =>
+        h("div", { class: `yt-crow${r.differs ? " differs" : ""}` }, h("div", { class: "yt-n" }, String(r.n)), h("div", {}, String(r.first)), h("div", {}, r.yours === null ? "…" : String(r.yours))),
+      ),
+    );
   }
 
   return {

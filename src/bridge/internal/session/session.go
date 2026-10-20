@@ -463,8 +463,14 @@ func (s *sess) remaining() int { return len(s.m.StepIDs()) - len(s.applied) }
 
 // sendStep writes one step line and records it. It faults the session on
 // any core error (the config must never diverge silently).
-func (m *Manager) sendStep(s *sess, id string) error {
+func (m *Manager) sendStep(s *sess, id, value string) error {
 	text, _ := s.m.StepText(id)
+	if value != "" {
+		var err error
+		if text, err = s.m.FreeStepText(id, value); err != nil {
+			return err
+		}
+	}
 	cmd, err := core.StepLine(text)
 	if err != nil {
 		return err
@@ -497,7 +503,12 @@ func (m *Manager) applyStep(x protocol.ApplyStep) []any {
 	if s.m.File.Ordered && s.nextStep() != x.Step {
 		return errMsg(x.ID, protocol.ErrNotAllowed, "step %s is out of order (next is %s)", x.Step, s.nextStep())
 	}
-	if err := m.sendStep(s, x.Step); err != nil {
+	if x.Value != "" {
+		if _, err := s.m.FreeStepText(x.Step, x.Value); err != nil {
+			return errMsg(x.ID, protocol.ErrNotAllowed, "%v", err)
+		}
+	}
+	if err := m.sendStep(s, x.Step, x.Value); err != nil {
 		return nil // the fault path reports it (health + session failed)
 	}
 	m.hub.Broadcast(protocol.StepApplied{T: "step_applied", Re: x.ID, Step: x.Step, Assisted: x.Assisted, Remaining: s.remaining()})
@@ -519,7 +530,7 @@ func (m *Manager) skipSetup(x protocol.SkipSetup) []any {
 		if s.done[id] {
 			continue
 		}
-		if err := m.sendStep(s, id); err != nil {
+		if err := m.sendStep(s, id, ""); err != nil {
 			return nil
 		}
 		n++

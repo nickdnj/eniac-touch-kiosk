@@ -485,3 +485,56 @@ func TestChainLint(t *testing.T) {
 		}
 	}
 }
+
+func TestYourTurnValid(t *testing.T) {
+	dir, up := paths(t)
+	m := Load(filepath.Join(dir, "difference.yaml"), up)
+	if !m.Available {
+		t.Fatalf("difference unavailable: %v", m.Errors)
+	}
+	if m.FreeStepID() != "k1-six" {
+		t.Fatalf("free step %q", m.FreeStepID())
+	}
+	if y := m.Compiled().Content.YourTurn; y == nil || y.Step != "k1-six" || y.Predict.Show != 4 {
+		t.Fatalf("yourTurn %+v", y)
+	}
+	// Only the free step takes a value, and only one of its choices; the line keeps its own shape.
+	if got, err := m.FreeStepText("k1-six", "2"); err != nil || got != "s c.k1 2" {
+		t.Fatalf("FreeStepText = %q, %v", got, err)
+	}
+	for _, bad := range []struct{ id, v string }{{"k1-six", "x"}, {"k1-six", "10"}, {"k1-six", ""}, {"a18-to-trunk1", "2"}, {"nope", "2"}} {
+		if got, err := m.FreeStepText(bad.id, bad.v); err == nil {
+			t.Errorf("FreeStepText(%q, %q) = %q, want an error", bad.id, bad.v, got)
+		}
+	}
+	// A mission without Your turn has no free step.
+	sq := loadSquares(t)
+	if sq.FreeStepID() != "" {
+		t.Fatalf("squares has a free step %q", sq.FreeStepID())
+	}
+	if _, err := sq.FreeStepText("j1-one", "1"); err == nil {
+		t.Fatal("squares accepted a chosen value")
+	}
+}
+
+func TestYourTurnLint(t *testing.T) {
+	dir, up := paths(t)
+	for name, mut := range map[string]func(*YourTurn){
+		"unknown step":  func(y *YourTurn) { y.Step = "nope" },
+		"plug step":     func(y *YourTurn) { y.Step = "a18-to-trunk1" },
+		"not first":     func(y *YourTurn) { y.Step = "punch-value" },
+		"show too low":  func(y *YourTurn) { y.Predict.Show = 1 },
+		"show too high": func(y *YourTurn) { y.Predict.Show = 13 },
+		"no change":     func(y *YourTurn) { y.Predict.Change = nil },
+		"empty button":  func(y *YourTurn) { y.Button = "" },
+		"empty dial":    func(y *YourTurn) { y.Dial.Headline = "" },
+	} {
+		m := Load(filepath.Join(dir, "difference.yaml"), up)
+		mut(m.File.Content.YourTurn)
+		m.Errors = nil
+		m.checkYourTurn()
+		if len(m.Errors) == 0 {
+			t.Errorf("%s: want a lint error", name)
+		}
+	}
+}

@@ -176,6 +176,7 @@ func Load(path, upstream string) *Mission {
 	m.checkMultiset()
 	m.checkOverlap()
 	m.validateRun()
+	m.checkYourTurn()
 	m.validateCopy()
 	if len(m.Errors) == 0 {
 		m.compiled = m.compile()
@@ -375,6 +376,83 @@ func (m *Mission) resolveSteps() {
 	ids := append([]string(nil), m.stepOrder...)
 	sort.SliceStable(ids, func(i, j int) bool { return m.stepLine[ids[i]].Num < m.stepLine[ids[j]].Num })
 	m.fileOrder = ids
+}
+
+// checkYourTurn: the free step exists, is a switch step with at least two choices, and the copy can run.
+func (m *Mission) checkYourTurn() {
+	y := m.File.Content.YourTurn
+	if y == nil {
+		return
+	}
+	l, ok := m.stepLine[y.Step]
+	if !ok {
+		m.fail("yourTurn.step %q is not a step of this mission", y.Step)
+		return
+	}
+	if l.Sw == nil {
+		m.fail("yourTurn.step %q must be a switch step", y.Step)
+		return
+	}
+	if len(m.stepChoices(y.Step)) < 2 {
+		m.fail("yourTurn.step %q needs at least two choices", y.Step)
+	}
+	if y.Predict.Show < 2 || y.Predict.Show > 12 {
+		m.fail("yourTurn.predict.show must be 2 to 12, got %d", y.Predict.Show)
+	}
+	if m.File.Run.Cards == nil {
+		m.fail("yourTurn needs run.cards: the prediction is made from the visitor's real cards")
+	}
+	if len(y.Predict.Change) == 0 {
+		m.fail("yourTurn.predict.change must name the card fields that hold the change")
+	}
+	if m.File.Ordered && len(m.stepOrder) > 0 && m.stepOrder[0] != y.Step {
+		m.fail("yourTurn.step %q must be the first step of an ordered mission", y.Step)
+	}
+	for name, v := range map[string]string{"button": y.Button, "predict.headline": y.Predict.Headline, "predict.ask": y.Predict.Ask,
+		"predict.right": y.Predict.Right, "predict.wrong": y.Predict.Wrong, "predict.go": y.Predict.Go,
+		"dial.headline": y.Dial.Headline, "dial.body": y.Dial.Body, "compare.headline": y.Compare.Headline,
+		"compare.first": y.Compare.First, "compare.yours": y.Compare.Yours} {
+		if strings.TrimSpace(v) == "" {
+			m.fail("yourTurn.%s is empty", name)
+		}
+	}
+}
+
+func (m *Mission) stepChoices(id string) []string {
+	for _, s := range m.File.Steps {
+		if s.ID == id {
+			return s.Choices
+		}
+	}
+	return nil
+}
+
+// FreeStepID is the step the visitor may set to any of its choices in Your turn, or "".
+func (m *Mission) FreeStepID() string {
+	if y := m.File.Content.YourTurn; y != nil {
+		return y.Step
+	}
+	return ""
+}
+
+// FreeStepText is the step's command with its value replaced by `value`. Only the
+// Your-turn step takes a value, and only one of its choices.
+func (m *Mission) FreeStepText(id, value string) (string, error) {
+	if id == "" || id != m.FreeStepID() {
+		return "", fmt.Errorf("step %q does not take a chosen value", id)
+	}
+	ok := false
+	for _, c := range m.stepChoices(id) {
+		if c == value {
+			ok = true
+		}
+	}
+	if !ok {
+		return "", fmt.Errorf("value %q is not one of the choices for step %q", value, id)
+	}
+	f := strings.Fields(m.stepLine[id].Text)
+	f[len(f)-1] = value
+	return strings.Join(f, " "), nil
 }
 
 func (m *Mission) checkExpect(s StepSpec, l econfig.Line) {

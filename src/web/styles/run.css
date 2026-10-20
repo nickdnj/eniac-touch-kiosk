@@ -240,3 +240,36 @@
 .run.room-view .run-stage { visibility: hidden; pointer-events: none; }
 .run-room-note { position: absolute; left: 24px; top: 952px; width: 1360px; height: 64px; display: flex; align-items: center; gap: 14px; font-size: 26px; font-weight: 700; color: var(--card); }
 .run-room-dot { width: 18px; height: 18px; border-radius: 50%; background: var(--lamp-on); box-shadow: 0 0 10px var(--lamp-on); flex: none; }
+
+/* Your turn (Difference): guess the next row, then compare your table with the first. */
+.yourturn .yt-left { position: absolute; left: 64px; top: 128px; width: 896px; height: 772px; box-sizing: border-box; padding: 32px 48px; background: #0d0f12; border-radius: var(--radius-card); }
+.yt-table { display: flex; flex-direction: column; gap: 6px; font-family: var(--font-mono); }
+.yt-head, .yt-row { display: grid; grid-template-columns: 140px 1fr 1fr; align-items: center; }
+.yt-head { color: var(--muted); font-size: 26px; line-height: 40px; padding-bottom: 8px; border-bottom: 2px solid #2a2d33; margin-bottom: 8px; }
+.yt-row { font-size: 52px; line-height: 76px; color: var(--card); }
+.yt-n { color: var(--muted); }
+.yt-v, .yt-d { text-align: right; padding-right: 48px; }
+.yt-head .yt-v, .yt-head .yt-d { padding-right: 48px; }
+.yt-ask-row .yt-v { color: var(--lamp-on); }
+.yt-ask-row .yt-v.revealed { color: var(--lamp-on); font-weight: 700; }
+.yt-right { position: absolute; left: 1000px; top: 128px; width: 856px; }
+.yt-right .screen-title { margin: 0 0 20px; }
+.yt-body { font-size: 28px; line-height: 40px; margin: 0 0 28px; }
+.yt-ask { font-size: 38px; line-height: 48px; font-weight: 700; margin: 0 0 24px; color: var(--card); }
+.yt-options { display: flex; gap: 24px; }
+.yt-option { flex: 1; min-height: 120px; font-size: 48px; font-family: var(--font-mono); background: var(--card); color: var(--ink); justify-content: center; }
+.yt-option.locked { pointer-events: none; }
+.yt-option.right { background: var(--lamp-on); color: var(--ink); }
+.yt-option.wrong { opacity: 0.4; }
+.yt-feedback { margin: 32px 0 0; font-size: 30px; line-height: 42px; color: var(--card); }
+.yt-feedback.is-right { color: var(--lamp-on); }
+.yt-feedback.hidden, .yt-go.hidden { display: none; }
+.yt-actions .yt-go { width: 720px; background: var(--card); color: var(--ink); }
+.yt-compare { margin: 4px 0 20px; font-family: var(--font-mono); }
+.yt-chead, .yt-crow { display: grid; grid-template-columns: 90px 1fr 1fr; font-size: 28px; line-height: 38px; }
+.yt-chead { color: var(--muted); font-size: 22px; border-bottom: 2px solid #2a2d33; margin-bottom: 4px; }
+.yt-crow { color: var(--card); }
+.yt-crow.differs div:last-child { color: var(--lamp-on); font-weight: 700; }
+.yt-compare.hidden, .yt-btn.hidden { display: none; }
+.result-right .yt-btn { min-height: 80px; width: 520px; margin-top: 8px; background: transparent; color: var(--card); border-color: var(--card); }
+.result-right.yt-second .more-btn, .result-right.yt-second .explore-btn { display: none; }
