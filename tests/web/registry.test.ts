@@ -22,5 +22,4 @@ test("a mission with no art gets a generic card showing its number", () => {
 test("a mission with no animations falls back (null) instead of throwing", () => {
   assert.equal(briefingFigureFor("some-future-mission", false), null);
   assert.equal(planFigureFor("some-future-mission", "x", false), null);
-  assert.equal(briefingFigureFor("difference", false), null);
 });

@@ -96,3 +96,76 @@ export class DifferenceFigure implements Figure {
     this.clear();
   }
 }
+
+
+const BARS = 8;
+const BAR_MS = 1500;
+const BAR_LOOP_MS = 1200 + BARS * BAR_MS + 3500;
+const SCALE = 0.62; // px per unit of f(x): 600 -> 372 px, -527 -> 327 px
+
+/**
+ * S3 briefing figure: the table's values as bars either side of a zero line,
+ * each one built from the one above by adding a change that itself changes.
+ * The bars shrink, cross zero and grow the other way (f goes negative at row
+ * 5). Numbers from differenceTable(), so they are the program's.
+ */
+export class DifferenceBriefFigure implements Figure {
+  readonly el: HTMLElement;
+  private bars: HTMLElement[] = [];
+  private caption: HTMLElement;
+  private timers: ReturnType<typeof setTimeout>[] = [];
+  private data = differenceTable(BARS);
+
+  constructor(reduceMotion: boolean) {
+    const D = COPY.difference;
+    const plot = h("div", { class: "diffb-plot" }, h("div", { class: "diffb-zero" }));
+    this.data.forEach(([f, d1], i) => {
+      const w = Math.round(Math.abs(f) * SCALE);
+      const fill = h("div", { class: `diffb-fill ${f < 0 ? "neg" : "pos"}` });
+      fill.style.width = `${w}px`;
+      const val = h("span", { class: "diffb-val" }, num(f));
+      if (f < 0) val.style.right = `${580 + w + 10}px`;
+      else val.style.left = `${420 + w + 10}px`;
+      const add = i === 0 ? null : h("span", { class: "diffb-add" }, D.change(this.data[i - 1][1]));
+      const row = h("div", { class: "diffb-row" }, h("span", { class: "diffb-x" }, String(i)), h("div", { class: "diffb-lane" }, fill, val), add);
+      void d1;
+      this.bars.push(row);
+      plot.append(row);
+    });
+    this.caption = h("div", { class: "tiles-caption diff-caption", "aria-live": "polite" });
+    const kids: HTMLElement[] = [plot, this.caption];
+    if (!reduceMotion) kids.push(button(COPY.tiles.again, "light outline tiles-again", () => this.play()));
+    this.el = h("div", { class: "tiles diff-fig diffb", "data-figure": "difference-briefing" }, ...kids);
+  }
+
+  play(): void {
+    this.clear();
+    this.el.classList.remove("still");
+    for (const r of this.bars) r.classList.remove("on");
+    const D = COPY.difference;
+    this.caption.textContent = "";
+    this.bars.forEach((r, i) => this.timers.push(setTimeout(() => {
+      r.classList.add("on");
+      this.caption.textContent = i === 0 ? D.briefStart : this.data[i][0] < 0 && this.data[i - 1][0] >= 0 ? D.briefNegative : D.briefAdd;
+    }, 1200 + i * BAR_MS)));
+    this.timers.push(setTimeout(() => (this.caption.textContent = D.only), 1200 + BARS * BAR_MS));
+    this.timers.push(setTimeout(() => this.play(), BAR_LOOP_MS));
+  }
+
+  /** Reduced motion: every bar at once. */
+  showFinal(): void {
+    this.clear();
+    this.el.classList.add("still");
+    for (const r of this.bars) r.classList.add("on");
+    this.caption.textContent = COPY.difference.only;
+  }
+
+  stop(): void {
+    this.clear();
+  }
+
+  private clear(): void {
+    for (const t of this.timers) clearTimeout(t);
+    this.timers = [];
+  }
+}

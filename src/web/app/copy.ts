@@ -78,6 +78,10 @@ export const COPY = {
     start: (r: readonly number[]) => `Start: ${r[0]}, ${r[1]}, ${r[2]}, ${r[3]}`,
     add: (f: number, d: number, next: number) => `${f} + (${d}) = ${next}`,
     only: "Only adding. No multiplying.",
+    briefStart: "Start with 600.",
+    briefAdd: "Add the change. The change changes too.",
+    briefNegative: "Now it goes below zero.",
+    change: (d: number) => (d < 0 ? `${d}` : `+${d}`),
   },
   run: {
     init: "INIT",

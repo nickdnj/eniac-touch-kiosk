@@ -30,7 +30,7 @@ Everything else (35 cables and 76 switches, including the shifter adapters and t
 | D2 | Permission to use his tutorial text (the program has his OK; the PDF does not ship) and to credit him as author of the mission. | Nick |
 | D3 | Mission order. Drafted as 4th, after Trajectory. Trajectory's result button still says "Finish". | Nick |
 | T1 | Slow is about 1.2 s a row and Full about 0.6 s on the dev Mac (2026-10-19). Re-time on the Pi 5 and OptiPlex and confirm `stallMs`. | |
-| U1 | **Done** (PR #79): per-mission art in `missions/registry.ts`, finale sentences in the YAML, paged picker, honor roll. The run stage is configured by `content.run.chain` (accumulators 17 to 20 here). Still open: Difference has no custom briefing/plan animation (it shows the room plan and a math line). | |
+| U1 | **Done** (PR #79): per-mission art in `missions/registry.ts`, finale sentences in the YAML, paged picker, honor roll. The run stage is configured by `content.run.chain` (accumulators 17 to 20 here). Still open: Difference has its own briefing (bars crossing zero) and plan (the table built by adding) animations. | |
 | F1 | Fact-check every `factCheck` field and get Doug Crawford's copy approval (#35). | |
 | V1 | New video segment. | |
 
