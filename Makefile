@@ -79,6 +79,11 @@ e2e: $(HOSTCORE) src/web/node_modules
 e2e-mock: src/web/node_modules
 	cd src/web && npx playwright install chromium && npm run e2e
 
+## dev-original        like dev, plus the Original UI switch: the Explore tile starts Brian's Tk window on this Mac (needs Tk 8.6 wish)
+dev-original: $(HOSTCORE) bridge-dev
+	scripts/dev-original-ui-session.sh & \
+	trap 'kill $$! 2>/dev/null' EXIT; build/dev/eniac-bridge serve --dev --config deploy/config/config.dev-original.yaml
+
 ## dev                 run the bridge in --dev against the real darwin core (http://localhost:8740)
 dev: $(HOSTCORE) bridge-dev
 	build/dev/eniac-bridge serve --dev --config deploy/config/config.dev.yaml
