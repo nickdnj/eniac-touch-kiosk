@@ -61,3 +61,43 @@ func TestGunnerySweep(t *testing.T) {
 		})
 	}
 }
+
+// TestFiringTableMatchesCore flies the quick rows of Battleship's firing table on the real core and
+// checks the table's range (within 2 ft) and time of flight (within 0.1 s). GUNNERY_TABLE_SECS raises the
+// flight-time ceiling (default 7 s) to check more of the table.
+func TestFiringTableMatchesCore(t *testing.T) {
+	ceiling := 7.0
+	if v := os.Getenv("GUNNERY_TABLE_SECS"); v != "" {
+		fmt.Sscan(v, &ceiling)
+	}
+	r0 := newRig(t, nil)
+	m, ok := r0.reg.Get("battleship")
+	if !ok || !m.Available {
+		t.Skip("battleship is not available")
+	}
+	for _, row := range m.File.Content.Game.Table {
+		if row.Secs > ceiling {
+			continue
+		}
+		t.Run(row.Gun+"/"+row.Elevation, func(t *testing.T) {
+			cards := flyShot(t, "battleship", row.Gun, row.Elevation)
+			n := len(cards)
+			num := func(c []any, i, j int) float64 {
+				var v float64
+				fmt.Sscan(fmt.Sprint(c[i], c[j]), &v)
+				return v
+			}
+			pa, pu := num(cards[n-2], 10, 11), num(cards[n-2], 14, 15)
+			la, lu := num(cards[n-1], 10, 11), num(cards[n-1], 14, 15)
+			f := pu / (pu - lu)
+			feet := (pa + f*(la-pa)) / 10000
+			secs := float64(n-1) + f
+			if d := feet - float64(row.Feet); d > 2 || d < -2 {
+				t.Errorf("range %.1f ft, table says %d", feet, row.Feet)
+			}
+			if d := secs - row.Secs; d > 0.1 || d < -0.1 {
+				t.Errorf("flight %.2f s, table says %.1f", secs, row.Secs)
+			}
+		})
+	}
+}

@@ -215,6 +215,7 @@ export const COPY = {
   },
   // Staff screens (UX 7.11, 7.12.2; docs/original-ui-switch.md 6.7). No
   // keyboard anywhere: the PIN is entered on the S12 pad.
+  docentChip: "DOCENT MODE · tap to end",
   admin: {
     pin: {
       title: "Staff PIN",
@@ -250,6 +251,10 @@ export const COPY = {
       original: "Original UI",
       originalNote: "Brian L. Stuart's own screen for the simulator.",
       notInstalled: "Not installed on this box.",
+      docent: "Docent mode",
+      docentNote: "For a tour: no visitor timeout, and the firing table shows on the Gunnery and Battleship aim screens. Ends after 15 quiet minutes.",
+      docentOn: "Turn on",
+      docentOff: "Turn off",
       return: "Return to kiosk",
       confirmTitle: "Switch to the original screen?",
       confirmBody: 'The kiosk will close for now. Tap "Back to kiosk" in the top-left corner to bring it back.',

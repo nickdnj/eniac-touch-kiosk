@@ -126,8 +126,42 @@ export interface Game {
   aim: AimCopy;
   board: BoardCopy;
   tour: TourStop[];
+  /**
+   * Table is the firing table: where each gun at each elevation lands and how long it flies, as worked out on
+   * the real core. A docent shows it; a visitor tries the game without it.
+   */
+  table?: TableRow[];
+  firing?: FiringCopy;
   blurb: string; // the picker card\'s meta line
   build: BuildCopy;
+}
+/**
+ * TableRow is one line of the firing table: a gun at an elevation lands Feet from the gun after Secs seconds.
+ */
+export interface TableRow {
+  gun: string;
+  elevation: string;
+  feet: number /* int */;
+  secs: number /* float64 */;
+}
+/**
+ * FiringCopy is the firing table page's text. {label} {n} (a gun and its speed), {name} {feet} (the target),
+ * {gun} {angle} {miss} (the nearest entry).
+ */
+export interface FiringCopy {
+  button: string;
+  title: string;
+  sub: string;
+  note: string;
+  gun: string;
+  angle: string;
+  range: string;
+  time: string;
+  target: string;
+  near: string;
+  none?: string; // shown when no gun on the page can hit the target
+  use: string;
+  close: string;
 }
 /**
  * TourStop is one stop of the walk through the room after the shot is aimed: the

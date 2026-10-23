@@ -99,6 +99,45 @@ content:
       - { id: t6, feet: 15550, name: "Enemy cruiser", hit: 300 }
       - { id: t7, feet: 19700, name: "Enemy battleship", hit: 400 }
       - { id: t8, feet: 24500, name: "Enemy battleship", hit: 400 }
+    table:                       # worked out on the real core through the bridge, 2026-10-22/23 (docs/gunnery-mission.md); seconds are the interpolated landing time
+      - { gun: g1, elevation: e5, feet: 1888, secs: 3.2 }
+      - { gun: g1, elevation: e10, feet: 3709, secs: 6.4 }
+      - { gun: g1, elevation: e15, feet: 5377, secs: 9.5 }
+      - { gun: g1, elevation: e20, feet: 6844, secs: 12.6 }
+      - { gun: g2, elevation: e5, feet: 2971, secs: 4.0 }
+      - { gun: g2, elevation: e10, feet: 5753, secs: 8.0 }
+      - { gun: g2, elevation: e15, feet: 8254, secs: 11.9 }
+      - { gun: g2, elevation: e20, feet: 10435, secs: 15.6 }
+      - { gun: g3, elevation: e5, feet: 4234, secs: 4.8 }
+      - { gun: g3, elevation: e10, feet: 8170, secs: 9.6 }
+      - { gun: g3, elevation: e15, feet: 11694, secs: 14.2 }
+      - { gun: g3, elevation: e20, feet: 14721, secs: 18.7 }
+      - { gun: g4, elevation: e5, feet: 5705, secs: 5.6 }
+      - { gun: g4, elevation: e10, feet: 10954, secs: 11.1 }
+      - { gun: g4, elevation: e15, feet: 15550, secs: 16.5 }
+      - { gun: g4, elevation: e20, feet: 19472, secs: 21.6 }
+      - { gun: g5, elevation: e5, feet: 7380, secs: 6.4 }
+      - { gun: g5, elevation: e10, feet: 13996, secs: 12.6 }
+      - { gun: g5, elevation: e15, feet: 19721, secs: 18.7 }
+      - { gun: g5, elevation: e20, feet: 24532, secs: 24.4 }
+      - { gun: g6, elevation: e5, feet: 8604, secs: 6.9 }
+      - { gun: g6, elevation: e10, feet: 16124, secs: 13.6 }
+      - { gun: g6, elevation: e15, feet: 22592, secs: 20.1 }
+      - { gun: g6, elevation: e20, feet: 27966, secs: 26.2 }
+    firing:
+      button: "Firing table"
+      title: "FIRING TABLE"
+      sub: "Worked out on this ENIAC simulator"
+      note: "Brian Stuart's recreation of the 1946 shell program. Not an Army table."
+      gun: "{label}  ·  {n} ft/s"
+      angle: "Angle"
+      range: "Range (ft)"
+      time: "Flight (s)"
+      target: "Your target: {name}, {feet} ft"
+      near: "Nearest: {gun} at {angle} degrees, {miss} ft from the target."
+      none: "None of these guns can hit it. Try another ship."
+      use: "Use this shot"
+      close: "Close"
     score: { max: 1000, hitFeet: 250, zeroFeet: 5000 }
     blurb: "Pick a ship and a gun. Sink the enemy. A game."
     tour:

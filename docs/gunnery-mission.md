@@ -99,3 +99,12 @@ Naming: the mission is called Battleship at Nick's request. "Battleship" is a Ha
 ## Filming a chosen target (dev hook, 2026-10-23)
 
 In `make dev` only (the dev server defines `__DEV__`; a release build never has it), `http://localhost:8740/?target=14000` fixes the game's target: pass a distance in feet or a target id (`t5`) from the mission's `targets`. Without it the target is random each round. The same switch also turns on `?mission=<id>` (start a mission straight away), which was off in `make dev` before.
+
+
+## Docent mode and the firing table (2026-10-23)
+
+The kiosk is a docent's slide deck as well as a visitor's game. **Docent mode** (staff screen, behind the PIN: five taps on the wordmark, then "Docent mode: Turn on") does two things: the visitor idle timeout is off (a docent talking is not "still there?"), and the **Firing table** button appears on the Gunnery and Battleship aim screens. An amber "DOCENT MODE - tap to end" chip sits in the footer; it also ends by itself after 15 minutes without a touch, so a forgotten docent mode does not leave the table showing to visitors all day. Visitors never see the button: they try the game without the table.
+
+The table page (`game/firingtable.ts`) is a typed page on cream paper: for each gun of the chosen ship (every gun when none is chosen, or in Gunnery), the angle, range in feet and time of flight in seconds, "worked out on this ENIAC simulator", with the line nearest the target marked and selected. If none of the shown guns can hit the target, it says so and points at another ship. "Use this shot" sets the gun, angle and ship on the aim screen, so a docent can say "a gunner would read it like this", tap it, fire, and then ask the visitor to try one without the table. The numbers are the measured sweeps in the mission file (`content.game.table`); `TestFiringTableMatchesCore` (real core, `go test -tags realcore -run TestFiringTableMatchesCore`) re-flies the quick rows and checks them to 2 ft and 0.1 s (`GUNNERY_TABLE_SECS=30` checks them all, about 10 minutes). It is labelled as a recreation: Brian Stuart's drag table, not an Army table.
+
+Not built: speaker notes or "talk track" cards for each screen, and a way to show all six guns on one table page (open each ship's table instead).

@@ -15,6 +15,7 @@ import { newRound, zones } from "../game/logic.ts";
 import { drawFlag, drawShip, drawZones, outerFeet } from "../game/zones.ts";
 import { gunIcon, shipIcon, warship, type Warship } from "../game/warship.ts";
 import { fetchScores } from "../net/api.ts";
+import { firingTable } from "../game/firingtable.ts";
 
 const W = 800;
 const H = 360;
@@ -171,7 +172,29 @@ export function aimScreen(app: App): Screen {
     lock.classList.add("busy");
     app.send({ t: "aim", charge, elevation });
   });
-  const actions = h("div", { class: "result-actions aim-actions" }, lock);
+  // The firing table: a docent's page (docent mode only); a visitor tries the game without it.
+  const tableBtn =
+    app.docent && game.table?.length
+      ? button(game.firing?.button ?? "Firing table", "aim-table", () => {
+          const page = firingTable({
+            game,
+            target: round.target,
+            name: round.name,
+            hit: round.hit,
+            ship,
+            onClose: () => page.remove(),
+            onUse: (gun, elev) => {
+              ship = game.ships?.find((sh) => sh.guns.includes(gun))?.id ?? ship;
+              charge = gun;
+              elevation = elev;
+              refresh();
+              page.remove();
+            },
+          });
+          el.append(page);
+        })
+      : null;
+  const actions = h("div", { class: "result-actions aim-actions" }, ...(tableBtn ? [tableBtn] : []), lock);
   showGuns();
 
   const el = h("div", { class: "screen aim" }, header, left, right, actions);

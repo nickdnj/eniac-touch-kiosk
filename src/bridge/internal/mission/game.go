@@ -26,9 +26,39 @@ type Game struct {
 	Aim        AimCopy     `yaml:"aim" json:"aim"`
 	Board      BoardCopy   `yaml:"board" json:"board"`
 	Tour       []TourStop  `yaml:"tour" json:"tour"`
-	Blurb      string      `yaml:"blurb" json:"blurb"` // the picker card\'s meta line
-	Build      BuildCopy   `yaml:"build" json:"build"`
-	Review     Review      `yaml:"review,omitempty" json:"-"`
+	// Table is the firing table: where each gun at each elevation lands and how long it flies, as worked out on
+	// the real core. A docent shows it; a visitor tries the game without it.
+	Table  []TableRow `yaml:"table,omitempty" json:"table,omitempty"`
+	Firing FiringCopy `yaml:"firing,omitempty" json:"firing,omitempty"`
+	Blurb  string     `yaml:"blurb" json:"blurb"` // the picker card\'s meta line
+	Build  BuildCopy  `yaml:"build" json:"build"`
+	Review Review     `yaml:"review,omitempty" json:"-"`
+}
+
+// TableRow is one line of the firing table: a gun at an elevation lands Feet from the gun after Secs seconds.
+type TableRow struct {
+	Gun       string  `yaml:"gun" json:"gun"`
+	Elevation string  `yaml:"elevation" json:"elevation"`
+	Feet      int     `yaml:"feet" json:"feet"`
+	Secs      float64 `yaml:"secs" json:"secs"`
+}
+
+// FiringCopy is the firing table page's text. {label} {n} (a gun and its speed), {name} {feet} (the target),
+// {gun} {angle} {miss} (the nearest entry).
+type FiringCopy struct {
+	Button string `yaml:"button" json:"button"`
+	Title  string `yaml:"title" json:"title"`
+	Sub    string `yaml:"sub" json:"sub"`
+	Note   string `yaml:"note" json:"note"`
+	Gun    string `yaml:"gun" json:"gun"`
+	Angle  string `yaml:"angle" json:"angle"`
+	Range  string `yaml:"range" json:"range"`
+	Time   string `yaml:"time" json:"time"`
+	Target string `yaml:"target" json:"target"`
+	Near   string `yaml:"near" json:"near"`
+	None   string `yaml:"none,omitempty" json:"none,omitempty"` // shown when no gun on the page can hit the target
+	Use    string `yaml:"use" json:"use"`
+	Close  string `yaml:"close" json:"close"`
 }
 
 // TourStop is one stop of the walk through the room after the shot is aimed: the
@@ -250,6 +280,23 @@ func (m *Mission) checkGame() {
 		if strings.TrimSpace(c) == "" {
 			m.fail("game.build copy has an empty field")
 			break
+		}
+	}
+	if len(g.Table) > 0 {
+		have := map[string]bool{}
+		for _, r := range g.Table {
+			k := r.Gun + "/" + r.Elevation
+			if !seen["c"+r.Gun] || !seen["e"+r.Elevation] || have[k] || r.Feet <= 0 || r.Secs <= 0 {
+				m.fail("game.table: bad or repeated row %s", k)
+				break
+			}
+			have[k] = true
+		}
+		for _, c := range []string{g.Firing.Button, g.Firing.Title, g.Firing.Gun, g.Firing.Angle, g.Firing.Range, g.Firing.Time, g.Firing.Use, g.Firing.Close} {
+			if strings.TrimSpace(c) == "" {
+				m.fail("game.firing copy has an empty field")
+				break
+			}
 		}
 	}
 	if len(g.Board.Ranks) == 0 {

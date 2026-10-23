@@ -154,6 +154,10 @@ export class App {
   private attractDown = false;
   /** A mission the bridge listed failed to load (E-MISSION until the next hello). */
   missionBroken = false;
+  /** Docent mode (switched on from the staff screen): no visitor timeout, and the firing table is on the game aim screens. */
+  docent = false;
+  private docentChip: HTMLElement | null = null;
+  private docentT: ReturnType<typeof setTimeout> | null = null;
   scale = 1;
   private offset = { x: 0, y: 0 };
   private screen: Screen | null = null;
@@ -193,7 +197,10 @@ export class App {
     const adminZone = h("div", { id: "admin-zone", "aria-hidden": "true" }, COPY.wordmark);
     onTap(adminZone, () => void this.startOver());
     this.adminZone = adminZone;
+    this.docentChip = h("div", { id: "docent-chip", class: "hidden", role: "button" }, COPY.docentChip);
+    onTap(this.docentChip, () => this.setDocent(false));
     root.append(
+      this.docentChip,
       this.screenHost,
       this.homeBtn,
       this.overlay,
@@ -245,6 +252,7 @@ export class App {
       "pointerdown",
       (e) => {
         if (!e.isPrimary) return;
+        this.docentTouch();
         if (this.tapCounter.down(inZone(this.toApp(e.clientX, e.clientY), this.config.admin.tapZone), this.now()) && !this.staff) this.openStaff();
       },
       { capture: true },
@@ -254,6 +262,22 @@ export class App {
     fit();
     this.show({ name: "boot" });
     this.link.start();
+  }
+
+  /** Turns docent mode on or off. It also ends by itself after 15 minutes without a touch (a docent who walks away). */
+  setDocent(on: boolean): void {
+    this.docent = on;
+    this.idle.setDocent(on);
+    this.docentChip?.classList.toggle("hidden", !on);
+    if (this.docentT) clearTimeout(this.docentT);
+    this.docentT = null;
+    this.docentTouch();
+  }
+
+  private docentTouch(): void {
+    if (!this.docent) return;
+    if (this.docentT) clearTimeout(this.docentT);
+    this.docentT = setTimeout(() => this.setDocent(false), 15 * 60 * 1000);
   }
 
   fit(): void {
