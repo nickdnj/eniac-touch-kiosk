@@ -45,7 +45,7 @@ Brian, thank you for the careful look and for the tutorial. Done on our side: th
 | 3 | Brian: author credit, tutorial wording, and the reply | Send the drafted reply (in the section above) once you have watched the video. It asks both questions. I have not sent anything. |
 | 4 | Main-video re-cut | Re-record the clips from kiosk PR #80's branch (specs already run four missions), then re-voice. Not started. |
 
-**Not done, in case you ask:** voice-over in your voice, final render, any upload, Doug Crawford's copy approval of the Difference text, Pi/OptiPlex timing of the run speeds, a museum-grade source for the Babbage claims (they rest on Brian's tutorial), a custom briefing animation for Difference (the plan animation is done).
+**Not done, in case you ask:** voice-over in your voice, final render, any upload, Doug Crawford's review of the Difference text (by design this comes after the first build: we send him the draft and video, caveated as not yet fact-checked), Pi/OptiPlex timing of the run speeds, a museum-grade source for the Babbage claims (they rest on Brian's tutorial), a custom briefing animation for Difference (the plan animation is done).
 
 **Gmail note:** the Oct 18 thread with Brian now shows three messages; the third is not visible to me (drafts are hidden from my tool), so it may be a draft reply someone started. I did not read or touch it.
 
