@@ -7,8 +7,8 @@ import { s } from "../ui/dom.ts";
 import { zones } from "./logic.ts";
 
 /** The farthest ground any zone of this target reaches. */
-export function outerFeet(game: Game, target: number): number {
-  return zones(game, target)[0].hi;
+export function outerFeet(game: Game, target: number, hitFeet?: number): number {
+  return zones(game, target, hitFeet)[0].hi;
 }
 
 /**
@@ -16,8 +16,8 @@ export function outerFeet(game: Game, target: number): number {
  * up through the plot, and the points under the strip). `X` maps feet from the
  * gun to a pixel; `gy` is the ground line, `top` the top of the plot.
  */
-export function drawZones(parent: SVGElement, game: Game, target: number, X: (feet: number) => number, gy: number, top: number, labelY: number): void {
-  const Z = zones(game, target);
+export function drawZones(parent: SVGElement, game: Game, target: number, X: (feet: number) => number, gy: number, top: number, labelY: number, hitFeet?: number): void {
+  const Z = zones(game, target, hitFeet);
   for (const z of Z) {
     let x0 = X(z.lo);
     let x1 = X(z.hi);
@@ -46,6 +46,22 @@ export function drawFlag(parent: SVGElement, x: number, gy: number, label: strin
     s("line", { x1: x, y1: gy, x2: x, y2: gy - 92, class: "flag-pole" }),
     s("path", { d: `M${x} ${gy - 92} L${x + 52} ${gy - 72} L${x} ${gy - 52}Z`, class: "flag-cloth" }),
     s("text", { x: x + 6, y: gy - 100, class: "flag-text" }, label),
+  );
+  parent.append(g);
+}
+
+/** The enemy ship, afloat at x with its keel on the waterline gy (Battleship's target). */
+export function drawShip(parent: SVGElement, x: number, gy: number, label: string): void {
+  const g = s("g", { class: "enemy-ship" });
+  g.append(
+    s("path", { d: `M${x - 84} ${gy - 20}H${x + 84}L${x + 62} ${gy + 2}H${x - 70}Z`, class: "ship-hull" }),
+    s("rect", { x: x - 38, y: gy - 46, width: 76, height: 26, rx: 3, class: "ship-deck" }),
+    s("rect", { x: x - 14, y: gy - 70, width: 30, height: 24, rx: 3, class: "ship-deck" }),
+    s("rect", { x: x - 30, y: gy - 64, width: 10, height: 18, class: "ship-funnel" }),
+    s("rect", { x: x + 22, y: gy - 64, width: 10, height: 18, class: "ship-funnel" }),
+    s("line", { x1: x + 2, y1: gy - 70, x2: x + 2, y2: gy - 98, class: "ship-mast" }),
+    s("path", { d: `M${x + 2} ${gy - 98}L${x + 30} ${gy - 90}L${x + 2} ${gy - 82}Z`, class: "ship-flag" }),
+    s("text", { x: x - 84, y: gy - 108, class: "flag-text" }, label),
   );
   parent.append(g);
 }

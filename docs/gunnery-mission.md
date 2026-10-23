@@ -70,3 +70,23 @@ Hops are in brackets; a hop is about 1.5 s of wall time. The game uses the first
 | G2 | The reconstructed drag table is Stuart's own; do not put "what a real 105 would do" ranges on screen (see `docs/trajectory-history.md` 5.3). | Content |
 | G3 | Staff button to clear the score list. | Dev |
 | G4 | Names are three letters picked with arrows. No profanity filter is needed for that, but a wall of "AAA" is likely. | Nick |
+
+
+## Battleship (mission 6, 2026-10-23)
+
+The same game and the same program with a navy dress (`missions/battleship.yaml`, `content.game.kind: ship`). The visitor picks a **ship** (Destroyer, Cruiser, Battleship), then one of the **two guns that ship carries**, then an elevation. The target is a named enemy ship; a bigger hull has a bigger hit radius (`targets[].hit`). Ranks, copy and art are naval (`stage/battleshipfig.ts`: the old board-game commercial look, with the ten-by-ten grid, grey warships, a starburst and a "SUNK!" stamp). Its scores are kept separately (`scores/battleship.json`).
+
+Guns (speeds in ft/s, from the range measured for Gunnery; not real naval figures): Destroyer: Light 600, Quick 750. Cruiser: Medium 900, Long 1,050. Battleship: Heavy 1,200, Big 1,300. Elevations 5, 10, 15, 20 degrees. Ground crossings in feet (hops), measured on the real core through the bridge (`GUNNERY_MISSION=battleship GUNNERY_SWEEP=... go test -tags realcore -run TestGunnerySweep`):
+
+| Gun | 5° | 10° | 15° | 20° |
+|---|---|---|---|---|
+| Light 600 | 1,888 | 3,709 | 5,377 | 6,844 |
+| Quick 750 | 2,971 (5) | 5,753 (9) | 8,254 (12) | 10,435 (16) |
+| Medium 900 | 4,234 | 8,170 | 11,694 | 14,721 |
+| Long 1,050 | 5,705 (6) | 10,954 (12) | 15,550 (17) | 19,472 (22) |
+| Heavy 1,200 | 7,380 | 13,996 | 19,721 | 24,532 |
+| Big 1,300 | 8,604 (7) | 16,124 (14) | 22,592 (21) | 27,966 (27) |
+
+The Big gun at 20 degrees flies 27 hops, about 40 seconds, the longest in the game. The eight targets are 3,700 / 5,400 (patrol boats, radius 150), 8,200 / 10,950 (destroyers, 200), 14,000 / 15,550 (cruisers, 300), 19,700 / 24,500 (battleships, 400).
+
+Naming: the mission is called Battleship at Nick's request. "Battleship" is a Hasbro trademark and the TV catchphrase is theirs, so the copy uses its own words ("Ship sunk!"). Worth a different title if this ever leaves the museum floor.

@@ -150,3 +150,16 @@
 @keyframes gf-chase { 0% { opacity: 1; } 50% { opacity: 0.22; } }
 @keyframes gf-wave { from { transform: skewY(-4deg) scaleX(1); } to { transform: skewY(4deg) scaleX(0.92); } }
 @media (prefers-reduced-motion: reduce) { .gf-bulb, .gf-wave { animation: none; } }
+
+/* Battleship: the ship choice, the enemy ship and its water. */
+.aim-ship { flex: 1; min-height: 88px; font-size: 34px; font-weight: 700; }
+.aim-pick-ship { font-size: 26px; line-height: 40px; color: var(--muted); padding: 24px 0; }
+.ship-hull { fill: #8A93A0; stroke: var(--ink); stroke-width: 4; stroke-linejoin: round; }
+.ship-deck { fill: #B7BEC8; stroke: var(--ink); stroke-width: 4; }
+.ship-funnel { fill: var(--wrong); stroke: var(--ink); stroke-width: 3; }
+.ship-mast { stroke: var(--card); stroke-width: 4; }
+.ship-flag { fill: #E8452C; stroke: #fff; stroke-width: 2; }
+.bs-title { font-size: 152px; letter-spacing: 8px; stroke-width: 6px; paint-order: stroke; }
+.bs-coord { font-size: 26px; font-family: var(--font-mono); font-weight: 700; }
+.bs-stamp { font-size: 70px; letter-spacing: 6px; }
+.gf-who-first { font-size: 34px; letter-spacing: 4px; }

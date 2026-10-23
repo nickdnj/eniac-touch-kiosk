@@ -19,7 +19,7 @@ import { cardValue, fieldText, fillCard, fmt, type CardLog, type Dot } from "./c
 import type { RunStage } from "./stackstage.ts";
 import { COPY } from "../copy.ts";
 import { FEET, judge, shotSpeeds } from "../game/logic.ts";
-import { drawBurst, drawFlag, drawZones, outerFeet } from "../game/zones.ts";
+import { drawBurst, drawFlag, drawShip, drawZones, outerFeet } from "../game/zones.ts";
 import type { Game } from "../../../bridge/internal/mission/mission.gen.ts";
 
 /** How long a tapped film-strip card stays large before the newest returns. */
@@ -138,10 +138,12 @@ export class ArcPlot {
     this.layer.replaceChildren();
     const G = this.game;
     const tgt = G && this.app.game ? this.app.game.target : null;
+    const hitFt = this.app.game?.hit ?? G?.score.hitFeet;
+    const label = this.app.game?.name || G?.board.flag || "";
     if (!dots.length && tgt === null) return;
     const pw = this.w - this.pad.l - this.pad.r, ph = this.ht - this.pad.t - this.pad.b;
     // The flag and its zones are always in view: the plot is at least as wide as the farthest zone.
-    this.scale = plotScale(dots, pw, ph, this.scale, G && tgt !== null ? outerFeet(G, tgt) * FEET * 1.04 : 0);
+    this.scale = plotScale(dots, pw, ph, this.scale, G && tgt !== null ? outerFeet(G, tgt, hitFt) * FEET * 1.04 : 0);
     const X = (x: number) => this.pad.l + (x / this.scale!.xMax) * pw;
     const Y = (y: number) => this.ht - this.pad.b - (y / this.scale!.yMax) * ph;
     this.chip.classList.toggle("hidden", this.scale.stretch < 1.2);
@@ -149,13 +151,14 @@ export class ArcPlot {
     const gy = this.ht - this.pad.b;
     const FX = (feet: number) => X(feet * FEET);
     if (G && tgt !== null) {
-      drawZones(this.layer, G, tgt, FX, gy, this.pad.t, gy + 24);
-      drawFlag(this.layer, FX(tgt), gy, G.board.flag);
+      drawZones(this.layer, G, tgt, FX, gy, this.pad.t, gy + 24, hitFt);
+      if (G.kind === "ship") drawShip(this.layer, FX(tgt), gy, label);
+      else drawFlag(this.layer, FX(tgt), gy, label);
     }
     this.hud?.classList.toggle("hidden", !!cross);
     if (this.hud && G && tgt !== null) {
       const here = dots.length ? Math.round(dots[dots.length - 1].x / FEET) : 0;
-      this.hud.textContent = `${G.board.flag}: ${tgt.toLocaleString("en-US")} ft   ·   ${here.toLocaleString("en-US")} ft`;
+      this.hud.textContent = `${label}: ${tgt.toLocaleString("en-US")} ft   ·   ${here.toLocaleString("en-US")} ft`;
     }
     if (!dots.length) return;
     // The path: from the cannon through every dot (above ground), then to the crossing.
@@ -184,7 +187,7 @@ export class ArcPlot {
       if (G && tgt !== null) {
         // Where it landed against the flag: a line along the ground, how far off, and the points.
         const landed = Math.round(cross.x / FEET);
-        const res = judge(G, tgt, landed);
+        const res = judge(G, tgt, landed, hitFt);
         const lx = X(cross.x), fx = FX(tgt);
         this.layer.append(s("circle", { cx: lx, cy: Y(0), r: 16, class: "land-pulse" }));
         if (Math.abs(lx - fx) > 14) this.layer.append(s("path", { d: `M${lx} ${gy - 34}H${fx}M${lx} ${gy - 42}V${gy - 26}M${fx} ${gy - 42}V${gy - 26}`, class: "miss-line" }));

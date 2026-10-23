@@ -170,7 +170,7 @@ export function resultScreen(app: App): Screen {
     const landed = landingFeet(app.cards.crossing());
     if (landed === null || !app.game) return;
     if (!scored) {
-      scored = judge(game, app.game.target, landed);
+      scored = judge(game, app.game.target, landed, app.game.hit);
       void fetchScores(mission.id).then((b) => {
         board = b;
         renderGame();

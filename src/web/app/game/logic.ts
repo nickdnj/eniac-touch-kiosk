@@ -10,13 +10,19 @@ const FEET_SCALE = 10000;
 /** One visitor's round: the target they were given and the shot they chose. */
 export interface GameRound {
   target: number;
+  /** This target's hit radius in feet (a big hull is easier to hit than a small one). */
+  hit: number;
+  /** What is there, when the mission names it ("Enemy cruiser"); "" for a plain flag. */
+  name: string;
+  /** The visitor's own ship, when the mission has ships (Battleship). */
+  ship: string | null;
   charge: string | null;
   elevation: string | null;
 }
 
 export function newRound(game: Game, rnd: () => number = Math.random): GameRound {
   const t = game.targets[Math.min(game.targets.length - 1, Math.floor(rnd() * game.targets.length))];
-  return { target: t.feet, charge: null, elevation: null };
+  return { target: t.feet, hit: t.hit || game.score.hitFeet, name: t.name ?? "", ship: null, charge: null, elevation: null };
 }
 
 /** Where the shell landed, in whole feet, from the cards' crossing; null before the landing. */
@@ -33,11 +39,11 @@ export interface Result {
 }
 
 /** A miss of hitFeet or less scores the maximum; the score falls in a straight line to 0 at zeroFeet. */
-export function judge(game: Game, target: number, landed: number): Result {
+export function judge(game: Game, target: number, landed: number, hitFeet: number = game.score.hitFeet): Result {
   const rule = game.score;
   const miss = Math.abs(landed - target);
-  const hit = miss <= rule.hitFeet;
-  const score = hit ? rule.max : Math.max(0, Math.round(rule.max * (1 - (miss - rule.hitFeet) / (rule.zeroFeet - rule.hitFeet))));
+  const hit = miss <= hitFeet;
+  const score = hit ? rule.max : Math.max(0, Math.round(rule.max * (1 - (miss - hitFeet) / (rule.zeroFeet - hitFeet))));
   return { landed, miss, side: hit ? "hit" : landed < target ? "short" : "long", hit, score };
 }
 
@@ -83,20 +89,20 @@ export interface Zone {
 }
 
 /** The miss at which the straight-line score falls to `points`. */
-function missFor(game: Game, points: number): number {
+function missFor(game: Game, points: number, hitFeet: number): number {
   const r = game.score;
-  return r.hitFeet + (1 - points / r.max) * (r.zeroFeet - r.hitFeet);
+  return hitFeet + (1 - points / r.max) * (r.zeroFeet - hitFeet);
 }
 
 /** The score zones around a target, outermost first (draw them in this order). Never reaches below the gun. */
-export function zones(game: Game, target: number): Zone[] {
+export function zones(game: Game, target: number, hitFeet: number = game.score.hitFeet): Zone[] {
   const r = game.score;
   const spec: [number, number, Zone["cls"], string][] = [
-    [missFor(game, 0), 0, "red", "1+"],
-    [missFor(game, r.max * 0.25), r.max * 0.25, "orange", `${r.max * 0.25}+`],
-    [missFor(game, r.max * 0.5), r.max * 0.5, "yellow", `${r.max * 0.5}+`],
-    [missFor(game, r.max * 0.75), r.max * 0.75, "green", `${r.max * 0.75}+`],
-    [r.hitFeet, r.max, "gold", `${r.max}`],
+    [missFor(game, 0, hitFeet), 0, "red", "1+"],
+    [missFor(game, r.max * 0.25, hitFeet), r.max * 0.25, "orange", `${r.max * 0.25}+`],
+    [missFor(game, r.max * 0.5, hitFeet), r.max * 0.5, "yellow", `${r.max * 0.5}+`],
+    [missFor(game, r.max * 0.75, hitFeet), r.max * 0.75, "green", `${r.max * 0.75}+`],
+    [hitFeet, r.max, "gold", `${r.max}`],
   ];
   return spec.map(([m, points, cls, label]) => ({ lo: Math.max(0, target - m), hi: target + m, points, label, cls }));
 }

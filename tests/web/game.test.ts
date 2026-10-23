@@ -63,3 +63,21 @@ test("ranks and places", () => {
   assert.equal(placeOn(list, 700), 2);
   assert.equal(placeOn(list, 50), 5);
 });
+
+test("a target with its own hit radius is judged and zoned by it", () => {
+  // A big hull (400 ft) is hit from 350 ft away; the default radius (300) would miss.
+  assert.equal(judge(game, 12000, 12350, 400).hit, true);
+  assert.equal(judge(game, 12000, 12350).hit, false);
+  const z = zones(game, 12000, 400);
+  assert.equal(z[4].lo, 11600);
+  assert.equal(z[4].hi, 12400);
+  // The score line starts at the target's own radius, so the zone edges still match it.
+  const edge = z[2].hi - 12000;
+  assert.equal(judge(game, 12000, 12000 + edge, 400).score, 500);
+});
+
+test("a new round carries the target's name and radius", () => {
+  const g = { ...(game as object), targets: [{ id: "t1", feet: 8000, name: "Enemy cruiser", hit: 350 }] } as never;
+  const r = newRound(g, () => 0);
+  assert.deepEqual([r.target, r.hit, r.name, r.ship], [8000, 350, "Enemy cruiser", null]);
+});

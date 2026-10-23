@@ -12,6 +12,7 @@ import { CheckersFigure, SharingFigure } from "../stage/primesfig.ts";
 import { TileFigure } from "../stage/tiles.ts";
 import { DotsFigure, HopFigure } from "../stage/trajfig.ts";
 import { DifferenceBriefFigure, DifferenceFigure } from "../stage/diffig.ts";
+import { BattleshipPlanFigure, BattleshipTitleFigure, battleshipPicker } from "../stage/battleshipfig.ts";
 import { GunneryPlanFigure, GunneryTitleFigure, gunneryPicker } from "../stage/gunneryfig.ts";
 
 export interface MissionArt {
@@ -85,6 +86,12 @@ const ART: Record<string, MissionArt> = {
     picker: gunneryPicker,
     briefing: (reduce) => new GunneryTitleFigure(reduce),
     plan: (math, reduce) => new GunneryPlanFigure(math, reduce),
+  },
+  battleship: {
+    // The old board-game commercial: navy room, ocean grid, grey warships, a starburst (stage/battleshipfig.ts).
+    picker: battleshipPicker,
+    briefing: (reduce) => new BattleshipTitleFigure(reduce),
+    plan: (math, reduce) => new BattleshipPlanFigure(math, reduce),
   },
 };
 

@@ -14,6 +14,11 @@ import (
 // and ENIAC flies the shell for real. The score is worked out by the UI from
 // the visitor's own punched cards.
 type Game struct {
+	// Kind is how the target is drawn: "flag" (Gunnery, the default) or "ship" (Battleship).
+	Kind string `yaml:"kind,omitempty" json:"kind,omitempty"`
+	// Ships, when present, are the visitor's own ships: each carries some of the charges (its guns), so choosing
+	// a ship narrows the guns. Without them every charge is on offer.
+	Ships      []Ship      `yaml:"ships,omitempty" json:"ships,omitempty"`
 	Charges    []Charge    `yaml:"charges" json:"charges"`
 	Elevations []Elevation `yaml:"elevations" json:"elevations"`
 	Targets    []Target    `yaml:"targets" json:"targets"`
@@ -60,10 +65,20 @@ type Elevation struct {
 	Deg float64 `yaml:"deg" json:"deg"`
 }
 
-// Target is a distance the visitor may be asked to hit, in feet.
+// Ship is one of the visitor's ships and the charges (guns) it carries.
+type Ship struct {
+	ID    string   `yaml:"id" json:"id"`
+	Label string   `yaml:"label" json:"label"`
+	Guns  []string `yaml:"guns" json:"guns"`
+}
+
+// Target is a distance the visitor may be asked to hit, in feet. Name says what is there ("Enemy cruiser"),
+// and Hit, when set, is this target's own hit radius in feet (a big hull is easier to hit than a small one).
 type Target struct {
 	ID   string `yaml:"id" json:"id"`
 	Feet int    `yaml:"feet" json:"feet"`
+	Name string `yaml:"name,omitempty" json:"name,omitempty"`
+	Hit  int    `yaml:"hit,omitempty" json:"hit,omitempty"`
 }
 
 // ScoreRule: a miss of HitFeet or less scores Max; the score falls in a straight line to 0 at ZeroFeet.
@@ -79,6 +94,9 @@ type AimCopy struct {
 	Body     string `yaml:"body" json:"body"`
 	Target   string `yaml:"target" json:"target"`
 	Charge   string `yaml:"charge" json:"charge"`
+	Ship     string `yaml:"ship,omitempty" json:"ship,omitempty"`         // heading of the ship choice (Battleship)
+	ShipBy   string `yaml:"shipBy,omitempty" json:"shipBy,omitempty"`     // its hint
+	PickShip string `yaml:"pickShip,omitempty" json:"pickShip,omitempty"` // shown in the gun row until a ship is chosen
 	ChargeBy string `yaml:"chargeBy" json:"chargeBy"`
 	Elev     string `yaml:"elev" json:"elev"`
 	ElevBy   string `yaml:"elevBy" json:"elevBy"`
@@ -185,8 +203,22 @@ func (m *Mission) checkGame() {
 		seen["e"+e.ID] = true
 	}
 	for _, t := range g.Targets {
-		if t.Feet < 1000 || t.Feet > 200000 {
+		if t.Feet < 1000 || t.Feet > 200000 || t.Hit < 0 || t.Hit >= g.Score.ZeroFeet {
 			m.fail("game.targets: %q out of range", t.ID)
+		}
+	}
+	if g.Kind != "" && g.Kind != "flag" && g.Kind != "ship" {
+		m.fail("game.kind must be flag or ship, got %q", g.Kind)
+	}
+	for _, sh := range g.Ships {
+		if !idRe.MatchString(sh.ID) || strings.TrimSpace(sh.Label) == "" || len(sh.Guns) == 0 {
+			m.fail("game.ships: %q needs an id, a label and guns", sh.ID)
+			continue
+		}
+		for _, id := range sh.Guns {
+			if !seen["c"+id] {
+				m.fail("game.ships: %q carries an unknown gun %q", sh.ID, id)
+			}
 		}
 	}
 	if g.Score.Max <= 0 || g.Score.HitFeet < 0 || g.Score.ZeroFeet <= g.Score.HitFeet {

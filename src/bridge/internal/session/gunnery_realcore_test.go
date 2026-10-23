@@ -11,11 +11,11 @@ import (
 )
 
 // flyShot flies one Gunnery shot on the real core and returns the punched cards' fields.
-func flyShot(t *testing.T, charge, elev string) [][]any {
+func flyShot(t *testing.T, mission, charge, elev string) [][]any {
 	r := newRig(t, nil)
 	cl := r.connect()
 	cl.wait(3*time.Second, "state", is("state"))
-	cl.send(`{"t":"start_mission","mission":"gunnery","mode":"visitor"}`)
+	cl.send(`{"t":"start_mission","mission":"%s","mode":"visitor"}`, mission)
 	cl.wait(10*time.Second, "session setup", is("session", "state", "setup"))
 	cl.send(`{"t":"aim","charge":"%s","elevation":"%s"}`, charge, elev)
 	cl.wait(10*time.Second, "aimed", is("aimed"))
@@ -48,7 +48,11 @@ func TestGunnerySweep(t *testing.T) {
 		ce := strings.Split(s, "/")
 		t.Run(s, func(t *testing.T) {
 			t0 := time.Now()
-			cards := flyShot(t, ce[0], ce[1])
+			mission := os.Getenv("GUNNERY_MISSION")
+			if mission == "" {
+				mission = "gunnery"
+			}
+			cards := flyShot(t, mission, ce[0], ce[1])
 			n := len(cards)
 			f := cards[n-1]
 			g := cards[n-2]

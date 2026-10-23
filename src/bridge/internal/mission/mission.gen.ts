@@ -110,6 +110,15 @@ export interface Summary {
  * the visitor's own punched cards.
  */
 export interface Game {
+  /**
+   * Kind is how the target is drawn: "flag" (Gunnery, the default) or "ship" (Battleship).
+   */
+  kind?: string;
+  /**
+   * Ships, when present, are the visitor's own ships: each carries some of the charges (its guns), so choosing
+   * a ship narrows the guns. Without them every charge is on offer.
+   */
+  ships?: Ship[];
   charges: Charge[];
   elevations: Elevation[];
   targets: Target[];
@@ -159,11 +168,22 @@ export interface Elevation {
   deg: number /* float64 */;
 }
 /**
- * Target is a distance the visitor may be asked to hit, in feet.
+ * Ship is one of the visitor's ships and the charges (guns) it carries.
+ */
+export interface Ship {
+  id: string;
+  label: string;
+  guns: string[];
+}
+/**
+ * Target is a distance the visitor may be asked to hit, in feet. Name says what is there ("Enemy cruiser"),
+ * and Hit, when set, is this target's own hit radius in feet (a big hull is easier to hit than a small one).
  */
 export interface Target {
   id: string;
   feet: number /* int */;
+  name?: string;
+  hit?: number /* int */;
 }
 /**
  * ScoreRule: a miss of HitFeet or less scores Max; the score falls in a straight line to 0 at ZeroFeet.
@@ -181,6 +201,9 @@ export interface AimCopy {
   body: string;
   target: string;
   charge: string;
+  ship?: string; // heading of the ship choice (Battleship)
+  shipBy?: string; // its hint
+  pickShip?: string; // shown in the gun row until a ship is chosen
   chargeBy: string;
   elev: string;
   elevBy: string;
