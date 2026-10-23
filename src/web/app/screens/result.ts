@@ -19,6 +19,7 @@ import { ArcPlot } from "../run/filmstage.ts";
 import { fillCard } from "../run/cards.ts";
 import { compare, question, readRows } from "../yourturn/logic.ts";
 import { fetchScores, postScore } from "../net/api.ts";
+import { namePad } from "../game/namepad.ts";
 import { judge, landingFeet, placeOn, rankFor, type Board, type Result, type ScoreEntry } from "../game/logic.ts";
 import { COPY } from "../copy.ts";
 import { HONOR } from "../content/honor.ts";
@@ -96,6 +97,8 @@ export function resultScreen(app: App): Screen {
     answer.querySelector(".takeaway")?.classList.add("hidden");
     answer.querySelectorAll(".more-btn, .explore-btn, .honor-link").forEach((b) => b.classList.add("hidden"));
   }
+  // The name pad: a full-screen keyboard, opened by "Save my score".
+  let pad: ReturnType<typeof namePad> | null = null;
   // Your turn: the headline and body change after the visitor's own run; a table shows how the two runs differ.
   const answerHead = answer.querySelector("h2") as HTMLElement;
   const answerBody = answer.querySelector("p") as HTMLElement;
@@ -145,8 +148,7 @@ export function resultScreen(app: App): Screen {
   let saved = false;
   let counted = false;
   let board: Board | null = null;
-  const letters = [0, 0, 0]; // A..Z for each of three initials
-  const initials = () => letters.map((n) => String.fromCharCode(65 + n)).join("");
+  let myName = ""; // the name typed on the pad, once saved
 
   function listFor(title: string, rows: ScoreEntry[], mine: string | null): HTMLElement {
     const box = h("div", { class: "game-list" }, h("h3", {}, title));
@@ -191,41 +193,47 @@ export function resultScreen(app: App): Screen {
     if (board) children.push(h("p", { class: "game-place" }, fillCard(b.rankToday, { n: placeOn(board.today, scored.score) })));
     children.push(h("p", { class: "game-visit" }, `${fillCard(b.shots, { n: app.gameVisit.shots })}   ·   ${fillCard(b.best, { n: app.gameVisit.best })}`));
     if (!saved) {
-      const pick = h("div", { class: "game-name" }, h("span", { class: "lbl" }, b.nameAsk));
-      letters.forEach((_, i) => {
-        const ch = h("div", { class: "ch" }, String.fromCharCode(65 + letters[i]));
-        const step = (d: number) => {
-          letters[i] = (letters[i] + d + 26) % 26;
-          ch.textContent = String.fromCharCode(65 + letters[i]);
-        };
-        pick.append(h("div", { class: "game-letter" }, button("▲", "arrow", () => step(1)), ch, button("▼", "arrow", () => step(-1))));
-      });
-      pick.append(
-        button(b.save, "game-save", () => {
-          if (saved || !scored || !app.game) return;
-          saved = true;
-          pick.classList.add("hidden");
-          void postScore(mission.id, {
-            name: initials(),
-            score: scored.score,
-            missFeet: scored.miss,
-            target: app.game.target,
-            charge: app.game.charge ?? "c0",
-            elevation: app.game.elevation ?? "e0",
-          }).then((nb) => {
-            board = nb ?? board;
-            renderGame();
-          });
-        }),
+      children.push(
+        h("div", { class: "game-name" }, button(b.save, "game-save", () => pad?.open())),
       );
-      children.push(pick);
     }
     if (board) {
-      const mineAt = saved ? board.all.concat(board.today).find((e) => e.name === initials() && e.score === scored!.score)?.at ?? null : null;
+      const mineAt = saved ? board.all.concat(board.today).find((e) => e.name === myName && e.score === scored!.score)?.at ?? null : null;
       children.push(h("div", { class: "game-board" }, h("div", { class: "game-cols" }, listFor(`${b.top}: ${b.today}`, board.today, mineAt), listFor(`${b.top}: ${b.allTime}`, board.all, mineAt))));
     }
     gameBox.replaceChildren(...children);
     gameBox.classList.remove("hidden");
+  }
+
+  if (game) {
+    const b = game.board;
+    pad = namePad({
+      ask: b.nameAsk,
+      save: b.nameSave,
+      skip: b.nameSkip,
+      onSkip: () => pad?.close(),
+      onSave: (name) => {
+        if (saved || !scored || !app.game) return;
+        pad!.busy(true);
+        void postScore(mission.id, {
+          name,
+          score: scored.score,
+          missFeet: scored.miss,
+          target: app.game.target,
+          charge: app.game.charge ?? "c0",
+          elevation: app.game.elevation ?? "e0",
+        }).then((nb) => {
+          if (nb === "name") return pad!.message(b.nameBad);
+          if (!nb) return pad!.message(b.nameFail);
+          saved = true;
+          myName = name;
+          board = nb;
+          pad!.close();
+          renderGame();
+        });
+      },
+    });
+    el.append(pad.el);
   }
 
   let idleMode: "run" | "setup" = cardMission && live?.doneAt && !app.checkpoints.has(live.doneAt) ? "run" : "setup";

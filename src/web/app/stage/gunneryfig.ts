@@ -122,6 +122,11 @@ export async function fillBest(svg: SVGSVGElement, mission: string): Promise<voi
   });
   best.textContent = "";
   who.textContent = top.name;
+  // Up to eight letters share the plate with the right-hand line: squeeze the long ones to fit.
+  if (top.name.length > 5) {
+    who.setAttribute("textLength", String(Math.min(top.name.length * 44, 330)));
+    who.setAttribute("lengthAdjust", "spacingAndGlyphs");
+  }
 }
 
 export class GunneryTitleFigure implements Figure {

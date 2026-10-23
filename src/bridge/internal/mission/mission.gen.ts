@@ -228,6 +228,10 @@ export interface BoardCopy {
   top: string; // heading
   empty: string; // no scores yet
   nameAsk: string; // initials prompt
+  nameSave: string; // the pad\'s save key
+  nameSkip: string; // the pad\'s way out
+  nameBad: string; // a name the board will not carry
+  nameFail: string; // the score could not be saved
   save: string;
   ranks: Rank[];
   beat: string; // aim screen: {n} the best score today

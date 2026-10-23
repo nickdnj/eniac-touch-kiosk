@@ -39,6 +39,10 @@ The mission YAML carries a `game` block (charges, elevations, targets, score rul
 - The aim screen shows "Score to beat today: N" once someone has scored today.
 - All of this text is in `content.game` in `missions/gunnery.yaml`.
 
+## Entering a name (2026-10-23)
+
+Touchscreen, so no little arrows: "Save my score" opens a full-screen letter keyboard (QWERTY, space, delete) with the name shown in slots as it grows (`game/namepad.ts`). Up to **8 characters** (letters and spaces; the longest that fits the title plate and the lists; three initials is the arcade tradition, but nothing needs it). The bridge refuses names it will not carry (a short built-in list in `scores/blocked.go`, matching with look-alike digits turned back into letters, whole-name for short words and inside-the-name for long ones, so "CLASS" and "PASS" are fine) and the pad says "Pick a different name." Staff can add more words, one per line, to `blocked-names.txt` in the state directory (read when the bridge starts). It is a first line of defence, not a promise: look at the board now and then. The classic trade-off applies: a name that happens to contain a long blocked word is refused.
+
 ## Scores
 
 `internal/scores`: one JSON file per mission under the state directory (`/var/lib/eniac-kiosk/scores/gunnery.json` on the kiosk). `GET /api/scores/{mission}` returns `{today, all}` (top 10 each). `POST` (same-origin only) takes `{name, score, missFeet, target, charge, elevation}`; the name is 1 to 8 of letters, digits, space, dot, dash. At most 200 entries are kept. To clear the board, delete that file. A staff "clear scores" button in the admin screen is not built.

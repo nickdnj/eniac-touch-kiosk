@@ -175,3 +175,27 @@
 .aim-charge.chosen .ship-barrel { fill: var(--ink); }
 .aim-charge .ship-turret { fill: #5B6370; stroke: var(--card); }
 .aim-charge.chosen .ship-turret { stroke: var(--ink); }
+
+/* The name pad: a full-screen letter keyboard for the score board (game/namepad.ts). */
+.namepad { position: absolute; inset: 0; z-index: 60; background: rgba(10, 11, 13, 0.96); display: flex; align-items: center; justify-content: center; }
+.namepad.hidden { display: none; }
+.np-panel { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.np-ask { margin: 0 0 4px; font-size: 54px; line-height: 64px; color: var(--lamp-on); }
+.np-name { display: flex; gap: 10px; margin-bottom: 14px; }
+.np-slot { width: 96px; height: 120px; border-bottom: 8px solid var(--muted); font-family: var(--font-mono); font-size: 84px; line-height: 112px; font-weight: 700; text-align: center; color: var(--card); }
+.np-slot.on { border-bottom-color: var(--lamp-on); }
+.np-row { display: flex; gap: 12px; }
+.np-key { width: 120px; min-height: 110px; padding: 0; font-family: var(--font-mono); font-size: 56px; font-weight: 700; background: var(--card); color: var(--ink); border: 0; justify-content: center; }
+.np-key.pressed { background: var(--lamp-on); }
+.np-del { width: 180px; background: transparent; color: var(--card); border: 4px solid var(--card); }
+.np-space { width: 560px; font-size: 32px; letter-spacing: 6px; }
+.np-msg { min-height: 40px; margin: 4px 0 0; font-size: 30px; line-height: 40px; color: var(--wrong); }
+.np-actions { display: flex; gap: 24px; }
+.np-actions .btn { min-height: 96px; width: 360px; }
+.np-skip { background: transparent; color: var(--card); border: 4px solid var(--card); justify-content: center; }
+.np-save.busy { opacity: 0.6; }
+.game-name { margin-top: 4px; }
+.result-right.game .game-save { min-height: 72px; width: 100%; font-size: 30px; justify-content: center; }
+.game-row { grid-template-columns: 40px 1fr 90px; }
+.game-row span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: pre; }
+.np-actions .np-save { background: var(--lamp-on); color: var(--ink); border-color: var(--lamp-on); justify-content: center; font-weight: 700; }

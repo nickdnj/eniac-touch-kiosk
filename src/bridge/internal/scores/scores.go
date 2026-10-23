@@ -44,14 +44,15 @@ var (
 
 // Store is the file-backed list.
 type Store struct {
-	dir string
-	now func() time.Time
-	mu  sync.Mutex
+	dir   string
+	now   func() time.Time
+	mu    sync.Mutex
+	extra []string // staff's extra blocked words (blocked-names.txt)
 }
 
 // New keeps lists in dir/scores (created on first write).
 func New(stateDir string) *Store {
-	return &Store{dir: filepath.Join(stateDir, "scores"), now: time.Now}
+	return &Store{dir: filepath.Join(stateDir, "scores"), now: time.Now, extra: loadBlocked(stateDir)}
 }
 
 func (s *Store) path(mission string) string { return filepath.Join(s.dir, mission+".json") }
@@ -99,7 +100,7 @@ func (s *Store) Board(mission string) Board {
 // Add validates and stores one round, returning the new board.
 func (s *Store) Add(mission string, e Entry) (Board, bool) {
 	e.Name = strings.TrimSpace(e.Name)
-	if !idRe.MatchString(mission) || !nameRe.MatchString(e.Name) || e.Score < 0 || e.Score > 100000 ||
+	if !idRe.MatchString(mission) || !nameRe.MatchString(e.Name) || s.Blocked(e.Name) || e.Score < 0 || e.Score > 100000 ||
 		e.MissFeet < 0 || e.Target < 0 || !idRe.MatchString(e.Charge) || !idRe.MatchString(e.Elevation) {
 		return Board{}, false
 	}
@@ -148,6 +149,11 @@ func (s *Store) Handler(originOK func(origin string) bool) http.Handler {
 		r.Body = http.MaxBytesReader(w, r.Body, 4096)
 		if err := json.NewDecoder(r.Body).Decode(&e); err != nil {
 			reply(w, http.StatusBadRequest, map[string]string{"error": "bad score"})
+			return
+		}
+		if nameRe.MatchString(strings.TrimSpace(e.Name)) && s.Blocked(e.Name) {
+			// A name the board will not carry: the page asks for another (not a server fault).
+			reply(w, http.StatusUnprocessableEntity, map[string]string{"error": "name"})
 			return
 		}
 		b, ok := s.Add(r.PathValue("mission"), e)

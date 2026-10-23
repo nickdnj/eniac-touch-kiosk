@@ -64,8 +64,8 @@ export async function fetchScores(mission: string): Promise<Board | null> {
   }
 }
 
-/** Saves a finished round; returns the new lists, or null when the bridge refused or did not answer. */
-export async function postScore(mission: string, entry: Omit<ScoreEntry, "at">): Promise<Board | null> {
+/** Saves a finished round; returns the new lists, "name" when the bridge will not carry that name, or null when it failed. */
+export async function postScore(mission: string, entry: Omit<ScoreEntry, "at">): Promise<Board | "name" | null> {
   try {
     const r = await fetch(`/api/scores/${encodeURIComponent(mission)}`, {
       method: "POST",
@@ -73,6 +73,7 @@ export async function postScore(mission: string, entry: Omit<ScoreEntry, "at">):
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(entry),
     });
+    if (r.status === 422) return "name";
     return r.ok ? ((await r.json()) as Board) : null;
   } catch {
     return null;

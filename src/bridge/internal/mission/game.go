@@ -111,15 +111,19 @@ type AimCopy struct {
 
 // BoardCopy is the result screen's scoring and top-scores text.
 type BoardCopy struct {
-	Landed    string `yaml:"landed" json:"landed"`   // {feet}
-	Hit       string `yaml:"hit" json:"hit"`         // direct hit
-	Miss      string `yaml:"miss" json:"miss"`       // {feet}, {side}
-	Short     string `yaml:"short" json:"short"`     // the shell fell short
-	Long      string `yaml:"long" json:"long"`       // the shell flew past
-	Score     string `yaml:"score" json:"score"`     // {n}
-	Top       string `yaml:"top" json:"top"`         // heading
-	Empty     string `yaml:"empty" json:"empty"`     // no scores yet
-	NameAsk   string `yaml:"nameAsk" json:"nameAsk"` // initials prompt
+	Landed    string `yaml:"landed" json:"landed"`     // {feet}
+	Hit       string `yaml:"hit" json:"hit"`           // direct hit
+	Miss      string `yaml:"miss" json:"miss"`         // {feet}, {side}
+	Short     string `yaml:"short" json:"short"`       // the shell fell short
+	Long      string `yaml:"long" json:"long"`         // the shell flew past
+	Score     string `yaml:"score" json:"score"`       // {n}
+	Top       string `yaml:"top" json:"top"`           // heading
+	Empty     string `yaml:"empty" json:"empty"`       // no scores yet
+	NameAsk   string `yaml:"nameAsk" json:"nameAsk"`   // initials prompt
+	NameSave  string `yaml:"nameSave" json:"nameSave"` // the pad\'s save key
+	NameSkip  string `yaml:"nameSkip" json:"nameSkip"` // the pad\'s way out
+	NameBad   string `yaml:"nameBad" json:"nameBad"`   // a name the board will not carry
+	NameFail  string `yaml:"nameFail" json:"nameFail"` // the score could not be saved
 	Save      string `yaml:"save" json:"save"`
 	Ranks     []Rank `yaml:"ranks" json:"ranks"`
 	Beat      string `yaml:"beat" json:"beat"`           // aim screen: {n} the best score today

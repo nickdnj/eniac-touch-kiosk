@@ -1,6 +1,8 @@
 package scores
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -43,5 +45,39 @@ func TestBadEntriesRefused(t *testing.T) {
 	}
 	if _, ok := s.Add("../etc", Entry{Name: "OK", Score: 1, Charge: "c1", Elevation: "e5"}); ok {
 		t.Error("bad mission id accepted")
+	}
+}
+
+func TestBlockedNames(t *testing.T) {
+	s := New(t.TempDir())
+	for _, bad := range []string{"ASS", "f u c k", "SH1T", "xXfuckXx", "NAZI", "$EX"} {
+		if !s.Blocked(bad) {
+			t.Errorf("%q was let through", bad)
+		}
+	}
+	for _, ok := range []string{"CLASS", "PASS", "NICK", "ASSAD", "ANNA L", "Dana", "R2D2"} {
+		if s.Blocked(ok) {
+			t.Errorf("%q was blocked", ok)
+		}
+	}
+}
+
+func TestStaffBlockedFile(t *testing.T) {
+	dir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(dir, "blocked-names.txt"), []byte("Gizmo\nzz\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	s := New(dir)
+	if !s.Blocked("gizmo") || !s.Blocked("MR GIZMO") {
+		t.Error("a staff word was not blocked")
+	}
+	if s.Blocked("ZZTOP") {
+		t.Error("a two-letter staff word should only block the whole name")
+	}
+	if !s.Blocked("ZZ") {
+		t.Error("the whole name ZZ should be blocked")
+	}
+	if _, ok := s.Add("gunnery", Entry{Name: "GIZMO", Score: 5, Charge: "c1", Elevation: "e5"}); ok {
+		t.Error("Add took a blocked name")
 	}
 }

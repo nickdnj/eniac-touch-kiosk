@@ -162,7 +162,11 @@ content:
       today: "Today"
       allTime: "All time"
       empty: "No scores yet. Yours could be first."
-      nameAsk: "Your initials"
+      nameAsk: "Type your name"
+      nameSave: "Save"
+      nameSkip: "Not now"
+      nameBad: "Pick a different name."
+      nameFail: "Could not save. Try again."
       save: "Save my score"
       again: "Fire again"
       ranks:
