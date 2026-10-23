@@ -96,6 +96,7 @@ export interface Summary {
   available: boolean;
   reason?: string;
   finale?: FinaleCopy;
+  blurb?: string; // picker: replaces "You wire N steps" (a game has no wiring)
 }
 
 //////////
@@ -116,6 +117,7 @@ export interface Game {
   aim: AimCopy;
   board: BoardCopy;
   tour: TourStop[];
+  blurb: string; // the picker card\'s meta line
   build: BuildCopy;
 }
 /**

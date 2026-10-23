@@ -128,3 +128,25 @@
 .build-buttons .build-next { background: var(--card); color: var(--ink); border-color: var(--card); }
 .build-skip { color: var(--card); text-decoration: underline; justify-content: flex-start; min-height: 56px; }
 .build-rail .btn.build-skip { color: var(--card); opacity: 1; text-decoration: underline; font-size: 26px; min-height: 64px; margin-top: 8px; background: transparent; border: 0; justify-content: center; width: 100%; }
+
+/* Gunnery's front of house: a 1946 shooting-gallery backglass (stage/gunneryfig.ts). */
+.gunnery-title { position: absolute; inset: 0; }
+.gunnery-title-art { display: block; width: 1360px; height: 904px; }
+.gunnery-title-art text { font-family: var(--font-ui); font-weight: 800; }
+.gf-title { font-size: 168px; letter-spacing: 14px; }
+.gf-kicker { font-size: 34px; letter-spacing: 8px; }
+.gf-ribbon { font-size: 36px; letter-spacing: 3px; }
+.gf-pop { font-size: 76px; font-family: var(--font-mono); paint-order: stroke; stroke-width: 10px; }
+.gf-label { font-size: 28px; letter-spacing: 4px; }
+.gf-small { font-size: 24px; letter-spacing: 3px; font-weight: 700; }
+.gf-digits { font-size: 40px; font-family: var(--font-mono); }
+.gf-who { font-size: 56px; letter-spacing: 8px; }
+.gf-tick { font-size: 30px; font-family: var(--font-mono); }
+.gf-bulb-a { animation: gf-chase 1s steps(1, end) infinite; }
+.gf-bulb-b { animation: gf-chase 1s steps(1, end) infinite; animation-delay: -0.5s; }
+.gf-wave { transform-box: fill-box; transform-origin: left center; animation: gf-wave 1.6s ease-in-out infinite alternate; }
+.gf-needle { transition: transform 900ms ease-out; }
+.gunnery-title.still .gf-bulb, .gunnery-title.still .gf-wave { animation: none; }
+@keyframes gf-chase { 0% { opacity: 1; } 50% { opacity: 0.22; } }
+@keyframes gf-wave { from { transform: skewY(-4deg) scaleX(1); } to { transform: skewY(4deg) scaleX(0.92); } }
+@media (prefers-reduced-motion: reduce) { .gf-bulb, .gf-wave { animation: none; } }

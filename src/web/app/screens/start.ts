@@ -106,7 +106,8 @@ function missionCard(app: App, m: MissionSummary, armed: () => boolean, chip: st
   const done = app.done.has(m.id);
   const reads = (m.buttons ?? []).includes("read");
   const steps = h("div", { class: "mc-meta mc-steps" });
-  if (typeof m.steps === "number" && m.steps > 0) steps.textContent = COPY.picker.wire(m.steps, reads);
+  if (m.blurb) steps.textContent = m.blurb;
+  else if (typeof m.steps === "number" && m.steps > 0) steps.textContent = COPY.picker.wire(m.steps, reads);
   else
     fetchMission(m.id)
       .then((c) => (steps.textContent = COPY.picker.wire(c.steps.length, reads)))

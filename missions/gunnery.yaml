@@ -94,6 +94,7 @@ content:
       - { id: t7, feet: 19700 }
       - { id: t8, feet: 24500 }
     score: { max: 1000, hitFeet: 250, zeroFeet: 5000 }
+    blurb: "Aim, fire, and score. A game."
     tour:                        # the walk through the room after the shot is aimed; from and to are room ids (web/app/explore/room.ts)
       - from: init
         to: init

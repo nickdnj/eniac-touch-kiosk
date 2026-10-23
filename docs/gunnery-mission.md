@@ -3,6 +3,16 @@
 **Date:** 2026-10-22. **Status:** Draft, built overnight. The mission loads, the shot dials in, flights run on the real core, the score and the top lists work. Not yet seen on a screen by Nick; nothing fact-checked beyond what is below.
 **Idea (Nick, 2026-10-22):** turn Trajectory into a game. The visitor is given a target, chooses how to set up the gun, ENIAC flies the shell for real, and we score how close it landed. A top list of the day and of all time.
 
+## The look (2026-10-23)
+
+A 1946 fairground shooting gallery, in pinball-backglass colours (navy, cream, cherry red, mustard), all flat SVG, in `stage/gunneryfig.ts`:
+
+- **Title screen** (the briefing): a marquee with chasing bulbs reading "GUNNERY" (with "ENIAC · 1946" above and a mustard ribbon "Can ENIAC hit the flag?"), a striped awning over a little gallery, a field gun lobbing a dotted shell at the flag on a loop, a burst and "+1000" when it lands, the score zones as bands on the counter, and a plate showing **today's best score** and its initials (or "BE THE FIRST").
+- **Plan screen:** two gauge dials, CHARGE and ELEVATION, with "= one flight for ENIAC".
+- **Picker card:** a small marquee, gun, dotted arc and flag; its meta line says "Aim, fire, and score. A game." instead of "You wire N steps" (`game.blurb`).
+
+The motion (chasing bulbs, waving flag, shell and burst) is switched off for reduced motion.
+
 ## How a round goes (updated 2026-10-23: no manual wiring)
 
 After the gun is locked in, the bridge places every cable and switch (the visitor does not wire anything; it was not the game). The kiosk then walks the visitor through the room (`screens/build.ts`): the 40-panel panorama pans to eight stops (Initiating Unit, Master Programmer, Accumulators 4 and 6, Multiplier, Function Table 2, Accumulators 15 to 20, Constant Transmitter, Card Reader and Punch), ringing only the units the program really uses, with a line on why each is there. The visitor moves it along with Next and Back (it never advances by itself), and a link underneath, "Skip to the gun", goes straight to the run screen. Then "Go to the gun" opens the run screen for READ and INIT. The stops and all the text are in `content.game.tour` and `content.game.build`.

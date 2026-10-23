@@ -21,6 +21,7 @@ type Game struct {
 	Aim        AimCopy     `yaml:"aim" json:"aim"`
 	Board      BoardCopy   `yaml:"board" json:"board"`
 	Tour       []TourStop  `yaml:"tour" json:"tour"`
+	Blurb      string      `yaml:"blurb" json:"blurb"` // the picker card\'s meta line
 	Build      BuildCopy   `yaml:"build" json:"build"`
 	Review     Review      `yaml:"review,omitempty" json:"-"`
 }
