@@ -9,6 +9,7 @@ import { runScreenFactory } from "./screens/run.ts";
 import { autopressControls } from "./run/controls.ts";
 import { resultScreen } from "./screens/result.ts";
 import { yourTurnScreen } from "./screens/yourturn.ts";
+import { aimScreen } from "./screens/aim.ts";
 import { pickerScreen, startScreen, wakingScreen } from "./screens/start.ts";
 import { installStillThere } from "./screens/still.ts";
 import { errorScreen } from "./screens/error.ts";
@@ -33,6 +34,7 @@ const screens: Record<string, ScreenFactory> = {
   run: runScreenFactory({ extras: autopressControls }),
   result: resultScreen,
   yourturn: yourTurnScreen,
+  aim: aimScreen,
   honor: honorScreen,
   finale: finaleScreen,
   switching: switchingScreen,

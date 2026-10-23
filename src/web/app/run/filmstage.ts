@@ -18,6 +18,7 @@ import { cardSvg } from "./cardart.ts";
 import { cardValue, fieldText, fillCard, fmt, type CardLog, type Dot } from "./cards.ts";
 import type { RunStage } from "./stackstage.ts";
 import { COPY } from "../copy.ts";
+import { shotSpeeds } from "../game/logic.ts";
 
 /** How long a tapped film-strip card stays large before the newest returns. */
 export const FILM_HOLD_MS = 10_000;
@@ -193,13 +194,25 @@ class FilmStrip {
 /** The card reader with the real input card, until the first card is punched. */
 function readerArt(app: App): HTMLElement {
   const rc = app.mission!.readCard;
-  const card = rc ? (svgFromString(cardSvg(rc.text, { w: 840, h: 150, first: 1, last: 70, cls: "input-card" })) as unknown as HTMLElement) : h("div", {});
-  const nums = rc ? readCardNumbers(rc.text) : [];
+  // Gunnery: the launch speeds come from the dials, not from card fields F and G, so those two are not shown as card numbers.
+  const game = app.mission!.content.game;
+  const shot = game && app.game?.charge && app.game.elevation ? shotSpeeds(game, app.game.charge, app.game.elevation) : null;
+  const card = rc ? (svgFromString(cardSvg(rc.text, { w: 840, h: 150, first: 1, last: game ? 50 : 70, cls: "input-card" })) as unknown as HTMLElement) : h("div", {});
+  const nums = rc ? readCardNumbers(game ? rc.text.slice(0, 50) : rc.text) : [];
   return h(
     "div",
     { class: "reader-art" },
     h("div", { class: "reader-hopper" }, h("div", { class: "pane-title" }, COPY.traj.reader), card),
     nums.length ? h("div", { class: "reader-nums" }, h("span", { class: "pane-title" }, COPY.traj.onTheCard), ...nums.map((v) => h("span", { class: "reader-num" }, v))) : null,
+    game && shot
+      ? h(
+          "div",
+          { class: "reader-nums" },
+          h("span", { class: "pane-title" }, game.aim.dialled),
+          h("span", { class: "reader-num" }, fillCard(game.aim.across, { n: fmt(Math.round(shot.across)) })),
+          h("span", { class: "reader-num" }, fillCard(game.aim.up, { n: fmt(Math.round(shot.up)) })),
+        )
+      : null,
   );
 }
 

@@ -1,0 +1,57 @@
+/* Gunnery: the aim screen and the score board on the result screen. 1920x1080 stage. */
+.aim .aim-left { position: absolute; left: 64px; top: 128px; width: 896px; height: 772px; padding: 32px 48px; background: #0d0f12; border-radius: var(--radius-card); }
+.aim-target { font-size: 44px; line-height: 56px; font-weight: 700; color: var(--lamp-on); margin-bottom: 24px; }
+.aim-range { width: 800px; height: 360px; display: block; }
+.aim-ground { stroke: var(--card); stroke-width: 3; }
+.aim-tick { stroke: var(--muted); stroke-width: 2; }
+.aim-tick-text { fill: var(--muted); font-size: 20px; font-family: var(--font-mono); }
+.aim-pole { stroke: var(--card); stroke-width: 4; }
+.aim-flag { fill: var(--wrong); }
+.aim-barrel { fill: var(--jack-block); }
+.aim-wheel { fill: #3a3d44; stroke: var(--jack-block); stroke-width: 3; }
+.aim-gun { transition: transform 180ms ease-out; }
+.aim-unit { font-size: 24px; color: var(--muted); text-align: center; margin-top: 6px; }
+.aim-right { position: absolute; left: 1000px; top: 128px; width: 856px; }
+.aim-right .screen-title { margin: 0 0 12px; }
+.aim-body { margin: 0 0 20px; font-size: 28px; line-height: 38px; }
+.aim-label { margin: 8px 0 8px; font-size: 26px; font-weight: 700; color: var(--card); }
+.aim-hint { margin: 8px 0 12px; font-size: 24px; line-height: 32px; color: var(--muted); }
+.aim-row { display: flex; gap: 16px; }
+.aim-row-wrap { flex-wrap: wrap; }
+.aim-choice { background: transparent; color: var(--card); border: 3px solid var(--card); justify-content: center; flex-direction: column; }
+.aim-choice.chosen { background: var(--lamp-on); color: var(--ink); border-color: var(--lamp-on); }
+.aim-charge { flex: 1; min-height: 132px; }
+.aim-charge .aim-big { font-size: 38px; line-height: 44px; font-weight: 700; }
+.aim-charge .aim-small { font-size: 22px; line-height: 28px; }
+.aim-elev { width: 106px; min-height: 100px; font-size: 38px; font-family: var(--font-mono); }
+.aim-feedback { min-height: 40px; margin: 8px 0 0; font-size: 28px; color: var(--wrong); }
+.aim-actions .aim-lock { width: 720px; }
+.aim-lock.busy { opacity: 0.6; }
+
+/* The score panel on the result screen. */
+.game-score { margin: 8px 0 16px; padding: 20px 24px; background: #0d0f12; border-radius: var(--radius-card); }
+.game-landed { font-size: 28px; line-height: 38px; margin: 0; color: var(--card); }
+.game-verdict { font-size: 40px; line-height: 52px; font-weight: 700; margin: 4px 0; color: var(--lamp-on); }
+.game-points { font-size: 56px; line-height: 64px; font-weight: 700; font-family: var(--font-mono); color: var(--card); margin: 0; }
+.game-name { display: flex; align-items: center; gap: 16px; margin-top: 12px; }
+.game-name .lbl { font-size: 24px; color: var(--muted); }
+.game-letter { display: flex; flex-direction: column; align-items: center; }
+.game-letter .arrow { width: 72px; min-height: 52px; font-size: 32px; background: transparent; color: var(--card); border: 2px solid var(--muted); justify-content: center; }
+.game-letter .ch { font-size: 56px; line-height: 64px; font-family: var(--font-mono); font-weight: 700; color: var(--lamp-on); }
+.game-save { min-height: 80px; padding: 0 28px; background: var(--card); color: var(--ink); }
+.game-save.hidden, .game-name.hidden { display: none; }
+.game-board { margin-top: 12px; }
+.game-board h3 { margin: 0 0 6px; font-size: 26px; color: var(--muted); font-weight: 700; }
+.game-row { display: grid; grid-template-columns: 56px 1fr 120px 110px; font-family: var(--font-mono); font-size: 26px; line-height: 36px; color: var(--card); }
+.game-row.mine { color: var(--lamp-on); font-weight: 700; }
+.game-row .n { color: var(--muted); }
+.game-row .pts { text-align: right; }
+.game-empty { font-size: 24px; color: var(--muted); margin: 0; }
+.game-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.game-row { grid-template-columns: 40px 1fr 90px; }
+.result-right .game-score p { margin: 0; }
+.result-right .game-score .game-empty { font-size: 22px; line-height: 30px; }
+.game-score { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+.game-name .lbl { width: 120px; line-height: 28px; }
+.game-letter .arrow { min-height: 44px; }
+.game-letter .ch { line-height: 56px; }

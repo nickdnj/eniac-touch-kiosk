@@ -201,6 +201,8 @@ type Content struct {
 	// from the visitor's own cards, then dial a different number into one step
 	// and run the machine again (Difference). Nil for missions without it.
 	YourTurn *YourTurn `yaml:"yourTurn,omitempty" json:"yourTurn,omitempty"`
+	// Game makes the mission a target game: the visitor aims, ENIAC flies, the UI scores (Gunnery).
+	Game *Game `yaml:"game,omitempty" json:"game,omitempty"`
 }
 
 // YourTurn is the "Your turn" copy and the one step the visitor may set freely.

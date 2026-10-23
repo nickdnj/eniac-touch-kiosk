@@ -1,0 +1,204 @@
+# Mission 5: Gunnery. A target game on the real Trajectory machine. The visitor aims the gun
+# (a charge and an elevation), places two cables, presses READ and INIT, and ENIAC flies the
+# shell. The score is the distance between where the shell landed and the flag, read from the
+# visitor's own punched cards. missions/programs/gunnery.e is trajdemo.e with the launch speeds
+# read from the Constant Transmitter's dials, which the bridge sets from the aim.
+schema: 1
+id: gunnery
+title: "Gunnery"
+order: 5
+summary: "Aim the gun. Can ENIAC hit the flag?"
+minutes: 3
+program: gunnery.e
+programSha256: "358efd90da2763112e2755fb20bfd1afe743d2d2beeaca2399e4911a7e3ab8b7"
+includes: { drag.e: "66d42fed31297875080da7cf30780fff03d70d43c09aaa4e957adaa02abf194e" }
+assets: { demo.card: "86ae09c103ba0af54b982cb5be78fb7707014397067801da3c9c68036bc1b4d8" }   # the file holds the same card twice; the first is read
+requires: [0003-acc-1pp-race]    # without it the "up" numbers can come out a few units low (spike S2)
+ordered: true
+
+steps:
+  - id: reader-done-to-1-2
+    line: "p i.Ro 1-2"
+    expect: { from: i.Ro, to: 1-2 }
+    text:
+      headline: "Tell ENIAC the card was read"
+      body: "ENIAC takes in numbers from punched cards. When the reader finishes, it sends a signal. Tap the reader OUT jack on the Initiating Unit. Then tap program trunk 1-2."
+      more: "Cards were how numbers got into ENIAC. A card had 80 columns. The card in this mission holds seven numbers of up to 10 digits."
+      done: "Now the reader can tell the machine it is done."
+      hints:
+        wrongFrom: "That jack belongs to another job. We want the reader, OUT."
+        wrongTo: "Try program trunk 1-2."
+      review: { factCheck: [more], source: "ux-spec 8.3.5 step 1 ([I: 7 numbers, to be confirmed against proccard])" }
+
+  - id: trunk14-to-h
+    line: "p 1-4 p.Hi"
+    expect: { from: 1-4, to: p.Hi }
+    text:
+      headline: "Start the next hop"
+      body: "The 'keep going' signal must start another hop. The Master Programmer, ENIAC's conductor, runs the hops. Tap program trunk 1-4. Then tap the H jack on the Master Programmer."
+      more: "The Master Programmer had ten steppers, each counting stages and handing off to the next, a bit like a music box with pins. This one is the stepper for the hop loop."
+      done: "Hop after hop, ENIAC will fly the shell. Your cables made the loop!"
+      button: "Finish wiring"
+      hints:
+        wrongFrom: "Try program trunk 1-4."
+        wrongTo: "That jack is for a different stepper. Look for H."
+      review: { factCheck: [more], source: "ux-spec 8.3.5 step 5" }
+
+withheld:                        # the file's last three lines are b c, b r, b i
+  - { line: "b c", button: read } # sent first: prevents the all-zero first card (spike S2)
+  - { line: "b r", button: read }
+  - { line: "b i", button: init }
+
+run:
+  buttons: [read, init]
+  watch: ["15", "18", "20", "6", "4", "1"]   # hop, along, up, along speed, up speed; 1 holds the card's first number
+  idle: { quietMs: auto }
+  initOnce: true                 # a second INIT mid-flight corrupts the flight (spike S2)
+  initAfter: card-read           # INIT only once the card is in (Acc 1 = 97367)
+  freezeAt: landed               # s cy.op 1a on the landing card: nothing more is punched
+  speeds:
+    full: { rate: 0, stallMs: 10000 }   # Full only: a card every 1.43 s on the Mac (spike S2); no card for 10 s while busy = stall
+  defaultSpeed: full
+  cards:
+    window: [21, 80]             # hop 26-30, along 51-60, up 71-80
+    value: [5]
+    hop: [5]
+    style: film
+    keep: 20
+  plot: { x: [10, 11], y: [14, 15] }
+
+checkpoints:
+  - { id: card-read, when: { acc: "1", eq: 97367 } }
+  - { id: first-hop, when: { punchCount: { gte: 1 } } }
+  - { id: landed,    when: { punchField: { index: 14, startsWith: "-" } } }   # "up" turns negative: card 34
+result: landed
+
+content:
+  game:
+    charges:                     # measured on the real core 2026-10-22: every pair below flies 25 hops or fewer
+      - { id: c1, label: "Light", speed: 600 }
+      - { id: c2, label: "Medium", speed: 900 }
+      - { id: c3, label: "Heavy", speed: 1200 }
+    elevations:
+      - { id: e5, deg: 5 }
+      - { id: e10, deg: 10 }
+      - { id: e15, deg: 15 }
+      - { id: e20, deg: 20 }
+    targets:                     # the ground crossing of one shot on the grid each (docs/gunnery-mission.md), so a perfect round exists
+      - { id: t1, feet: 3700 }
+      - { id: t2, feet: 5400 }
+      - { id: t3, feet: 7400 }
+      - { id: t4, feet: 8200 }
+      - { id: t5, feet: 11700 }
+      - { id: t6, feet: 14000 }
+      - { id: t7, feet: 19700 }
+      - { id: t8, feet: 24500 }
+    score: { max: 1000, hitFeet: 250, zeroFeet: 5000 }
+    aim:
+      headline: "Aim the gun"
+      body: "Pick a charge and an elevation. ENIAC will fly the shell. Land it on the flag."
+      target: "Target: {feet} feet away"
+      charge: "Charge"
+      chargeBy: "More charge, faster shell."
+      elev: "Elevation"
+      elevBy: "Higher climbs steeper. It is not always farther."
+      speed: "{n} feet per second"
+      button: "Lock in my shot"
+      pick: "Pick a charge and an elevation first"
+      dialled: "Your shot, set on the dials"
+      across: "{n} ft/s along"
+      up: "{n} ft/s up"
+    board:
+      landed: "Your shell landed {feet} feet from the gun."
+      hit: "Direct hit!"
+      miss: "You missed by {feet} feet."
+      short: "It fell short."
+      long: "It flew past."
+      score: "Score: {n}"
+      top: "Top scores"
+      today: "Today"
+      allTime: "All time"
+      empty: "No scores yet. Yours could be first."
+      nameAsk: "Your initials"
+      save: "Save my score"
+      again: "Fire again"
+  briefing:                      # S3, step 0a
+    headline: "You are the gunner"
+    body: "ENIAC worked out where Army shells would land. Now you are the gunner. Pick how hard to fire and how high to aim, then let ENIAC fly the shell. Get as close to the flag as you can."
+    more: "ENIAC was built to work out firing tables for Army guns. It was shown to the public on February 15, 1946. Brian Stuart's program tries to recreate the demo from that day. ENIAC's women programmers set up the shell trajectory for that demo."
+    buttons: ["Let's go"]
+    review: { factCheck: [more], source: "ux-spec 8.3.5 0a ([FC: all four sentences; Doug to approve any names])" }
+  plan:                          # step 0b
+    headline: "Two choices, one flight"
+    body: "Your charge sets how fast the shell leaves the gun. Your elevation sets how steeply it climbs. ENIAC takes it from there, one second of flight at a time, and punches a card for every hop."
+    math: "charge + elevation = one flight"
+    more: "The air slows a fast shell a lot. ENIAC looks up how much in a table of numbers. Brian Stuart's note in the program says he tried to work that table out himself, so the table is his best attempt."
+    buttons: ["Next step", "Skip setup"]
+    review: { factCheck: [more], source: "ux-spec 8.3.5 0b" }
+  rest:                          # S5
+    headline: "The rest is done for you"
+    body: "Real ENIAC programmers placed hundreds of cables by hand. Setting up a new problem could take a day or more. You will place two of them. We place the rest."
+    buttons: ["Continue"]
+    review: { factCheck: [body], source: "ux-spec 8.3.5 S5" }
+  read:                          # the READ beat before INIT
+    before: { headline: "Press READ", sub: "READ pulls the card of numbers into ENIAC." }
+    headline: "Reading the card"
+    captions:
+      - { text: "The card goes through the reader.", trigger: { init: rdff } }
+      - { text: "The first number, 97,367, lands in Accumulator 1.", trigger: { acc: { acc: "1", eq: 97367 } } }
+      - { text: "The other numbers wait inside ENIAC. Now press INIT.", trigger: { run: idle } }
+    initLocked: "Read the card first"
+    review: { source: "ux-spec 8.3.5 S6 (READ pressed)" }
+  run:                           # S6
+    before: { headline: "Press INIT", sub: "INIT is the Initiating Pulse, ENIAC's GO button." }
+    presses:
+      - press: 1
+        headline: "Watch the dots"
+        captions:
+          - { text: "ENIAC starts the first hop.", trigger: { run: busy } }
+          - { text: "Card 1 is out. Its big numbers say how far along and how high up the shell is.", trigger: { punchCount: { gte: 1 } } }
+          - { text: "Every tiny step, the air slows the shell, and gravity pulls it down.", trigger: { punchCount: { gte: 3 } } }
+          - { text: "Highest point! From here the shell comes down.", trigger: { derived: apex } }
+          - { text: "Landed! The height dropped below zero.", trigger: { derived: landed } }
+    extras:
+      afterPress: 1
+      afterCards: 5              # Show me and Skip appear after hop 5
+      autoResultMs: 3000         # the result follows 3 s after the landing, or on tap
+      showResult: "Show me what happened"
+      skipToAnswer: "Skip to the answer"
+      stopAt: landed
+    done: { headline: "You did it!" }
+    note: "ENIAC does 50 tiny steps of arithmetic for every hop."
+    cards:
+      title: "Punched cards"
+      label: "Hop {v}"
+      count: "Cards: {n}"
+      empty: "The card punch is waiting."
+    plot:
+      x: "Along"
+      y: "Up"
+      dot: "Each dot is one card."
+      stretch: "Height stretched so you can see it."
+      apex: "Highest point"
+      landed: "Landed"
+      cross: "where the line between the last two dots crosses the ground"
+    review: { source: "ux-spec 8.3.5 S6 (v0.4: Full only, no units)" }
+  result:                        # S7
+    headline: "ENIAC flew your shell!"
+    body: "Each card was one second of the shell's flight. Joined up, the dots show where it went. ENIAC worked it out from your two choices and the cables you placed."
+    takeaway: "Numbers and cables made a flight path."
+    takeawaySub: "That is what programming ENIAC meant."
+    more: "The real ENIAC could work out a shell's path faster than the shell takes to fly. A person with a desk calculator needed many hours. Our simulator is slower, so you can watch every hop."
+    live:
+      waiting: "The shell is still flying: hop {n}"
+      done: "{n} hops, {n} cards"
+      doneAt: landed
+    buttons: ["Finish", "Try again", "Menu"]
+    review: { factCheck: [more], source: "ux-spec 8.3.5 S7 ([FC: both comparisons; to be checked with Doug])" }
+
+finale:                          # S8 beat 1 (UX 14.5.3): the sentence for this mission
+  figure: "A shell's flight, in {hops} hops."
+  words: "ENIAC worked out a shell's flight."
+
+credits:
+  - "Brian L. Stuart, programs/trajdemo.e and programs/drag.e"

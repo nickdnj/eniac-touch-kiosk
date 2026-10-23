@@ -3,6 +3,7 @@
 
 import type { AdminErrorBody, CompiledMission, MissionCompiled, MissionSummary } from "../protocol.ts";
 import { toView } from "../mission/view.ts";
+import type { Board, ScoreEntry } from "../game/logic.ts";
 
 export async function fetchMissions(): Promise<MissionSummary[]> {
   const r = await fetch("/api/missions", { cache: "no-store" });
@@ -51,4 +52,29 @@ export function adminLogout(token: string): Promise<AdminResult<object>> {
 /** restart-core (200) or original-ui (202, the request id). TOKEN: log in again. */
 export function adminAction(token: string, action: "restart-core" | "original-ui"): Promise<AdminResult<{ mode?: string; id?: string }>> {
   return adminPost(action, {}, token);
+}
+
+/** The high-score lists of a game mission (Gunnery), from the bridge; null when it cannot be reached. */
+export async function fetchScores(mission: string): Promise<Board | null> {
+  try {
+    const r = await fetch(`/api/scores/${encodeURIComponent(mission)}`, { cache: "no-store" });
+    return r.ok ? ((await r.json()) as Board) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Saves a finished round; returns the new lists, or null when the bridge refused or did not answer. */
+export async function postScore(mission: string, entry: Omit<ScoreEntry, "at">): Promise<Board | null> {
+  try {
+    const r = await fetch(`/api/scores/${encodeURIComponent(mission)}`, {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(entry),
+    });
+    return r.ok ? ((await r.json()) as Board) : null;
+  } catch {
+    return null;
+  }
 }

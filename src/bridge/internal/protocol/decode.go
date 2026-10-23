@@ -74,6 +74,12 @@ func Decode(b []byte) (any, *Error) {
 			return fail(re, "bad step id")
 		}
 		msg = m
+	case "aim":
+		var m Aim
+		if err = strict(&m); err == nil && (!idRe.MatchString(m.Charge) || !idRe.MatchString(m.Elevation)) {
+			return fail(re, "bad charge or elevation id")
+		}
+		msg = m
 	case "skip_setup":
 		var m SkipSetup
 		err = strict(&m)

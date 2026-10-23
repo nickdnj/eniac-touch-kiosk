@@ -14,6 +14,7 @@ import (
 	"eniac-kiosk/bridge/internal/config"
 	"eniac-kiosk/bridge/internal/mission"
 	"eniac-kiosk/bridge/internal/server"
+	"eniac-kiosk/bridge/internal/scores"
 	"eniac-kiosk/bridge/internal/session"
 	"eniac-kiosk/bridge/internal/uiswitch"
 )
@@ -84,7 +85,7 @@ func runServe(args []string) int {
 	adm := admin.New(admin.Options{PinFile: cfg.Admin.PinFile, TokenTTL: time.Duration(cfg.Admin.TokenTTLS) * time.Second,
 		Hooks: admin.Hooks{RestartCore: mgr.AdminRestartCore, OriginalUI: mgr.AdminOriginalUI}, Metrics: rec, Log: log})
 	if err := server.Run(ctx, server.Options{Config: cfg, Dev: *dev, Log: log, Missions: reg, Hub: hub,
-		Handler: mgr, Healthz: mgr.Healthz, Admin: adm}); err != nil {
+		Handler: mgr, Healthz: mgr.Healthz, Admin: adm, Scores: scores.New(cfg.Paths.State)}); err != nil {
 		log.Error("serve failed", "err", err)
 		return 1
 	}

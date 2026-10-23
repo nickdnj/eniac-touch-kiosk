@@ -238,7 +238,7 @@ export function missionScreen(app: App, view: View): Screen {
     setIdle();
     leader.replaceChildren();
     stopFigure();
-    skipBtn.classList.toggle("hidden", phase === "briefing" || phase === "rest" || yourTurnMode);
+    skipBtn.classList.toggle("hidden", phase === "briefing" || phase === "rest" || yourTurnMode || (!!content.game && phase === "plan"));
     exploreBtn.classList.toggle("hidden", phase !== "briefing");
     if (phase === "briefing") return renderBriefing();
     if (phase === "plan") return renderPlan();
@@ -423,6 +423,8 @@ export function missionScreen(app: App, view: View): Screen {
       return render();
     }
     if (phase === "plan") {
+      // Gunnery: the gun is aimed before the first cable (screens/aim.ts comes back to step 1).
+      if (content.game && !app.game?.charge) return app.show({ name: "aim" });
       phase = "step";
       return render();
     }
@@ -636,6 +638,11 @@ export function missionScreen(app: App, view: View): Screen {
     idle: "setup",
     home: () => void backToMissions(),
     mount: () => {
+      // Gunnery retry: a fresh session starts at step 1, but the gun still has to be aimed.
+      if (content.game && phase === "step" && !app.game?.charge) {
+        queueMicrotask(() => app.show({ name: "aim" }));
+        return;
+      }
       if (app.mirror.session && ["armed", "running", "result"].includes(app.mirror.session.state)) setupComplete = true;
       render();
       renderer.invalidate(null);

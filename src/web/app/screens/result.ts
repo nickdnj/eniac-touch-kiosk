@@ -18,6 +18,8 @@ import { BarsPane, StackPane } from "../run/cardpane.ts";
 import { ArcPlot } from "../run/filmstage.ts";
 import { fillCard } from "../run/cards.ts";
 import { compare, question, readRows } from "../yourturn/logic.ts";
+import { fetchScores, postScore } from "../net/api.ts";
+import { judge, landingFeet, type Board, type Result, type ScoreEntry } from "../game/logic.ts";
 import { COPY } from "../copy.ts";
 import { HONOR } from "../content/honor.ts";
 import { openHonor } from "./honor.ts";
@@ -86,6 +88,14 @@ export function resultScreen(app: App): Screen {
       ? button(`${HONOR.resultLink.text} ›`, "link honor-link", () => openHonor(app, HONOR.resultLink.page, { name: "result" }))
       : null,
   );
+  // Gunnery: the score, the initials and the top lists, from the visitor's own cards (below).
+  const game = mission.content.game;
+  const gameBox = h("div", { class: "game-score hidden" });
+  if (game) {
+    answer.append(gameBox);
+    answer.querySelector(".takeaway")?.classList.add("hidden");
+    answer.querySelectorAll(".more-btn, .explore-btn, .honor-link").forEach((b) => b.classList.add("hidden"));
+  }
   // Your turn: the headline and body change after the visitor's own run; a table shows how the two runs differ.
   const answerHead = answer.querySelector("h2") as HTMLElement;
   const answerBody = answer.querySelector("p") as HTMLElement;
@@ -101,7 +111,7 @@ export function resultScreen(app: App): Screen {
   const tryAgain =
     yt && second
       ? button(yt.compare.button, "try-again", () => void app.startMission(mission.id, "yourturn"))
-      : button(labels[1] ?? COPY.result.tryAgain, "try-again", () => void app.startMission(mission.id, "step1"));
+      : button(mission.content.game?.board.again ?? labels[1] ?? COPY.result.tryAgain, "try-again", () => void app.startMission(mission.id, "step1"));
   const menu = () => {
     app.endSession("menu");
     app.show({ name: "picker" });
@@ -130,6 +140,83 @@ export function resultScreen(app: App): Screen {
   const header = h("div", { class: "header" }, h("span", { class: "title" }, COPY.header.mission(mission.order, mission.title)));
   const el = h("div", { class: `screen result${cardMission ? " cards" : ""}` }, header, left, right, actions);
 
+  // ---- Gunnery scoring: worked out once, when the landing is on the cards.
+  let scored: Result | null = null;
+  let saved = false;
+  let board: Board | null = null;
+  const letters = [0, 0, 0]; // A..Z for each of three initials
+  const initials = () => letters.map((n) => String.fromCharCode(65 + n)).join("");
+
+  function listFor(title: string, rows: ScoreEntry[], mine: string | null): HTMLElement {
+    const box = h("div", { class: "game-list" }, h("h3", {}, title));
+    if (!rows.length) box.append(h("p", { class: "game-empty" }, game!.board.empty));
+    rows.slice(0, 3).forEach((e, i) =>
+      box.append(
+        h(
+          "div",
+          { class: `game-row${mine && e.at === mine ? " mine" : ""}` },
+          h("span", { class: "n" }, String(i + 1)),
+          h("span", {}, e.name),
+          h("span", { class: "pts" }, String(e.score)),
+        ),
+      ),
+    );
+    return box;
+  }
+
+  function renderGame(): void {
+    if (!game) return;
+    const landed = landingFeet(app.cards.crossing());
+    if (landed === null || !app.game) return;
+    if (!scored) {
+      scored = judge(game, app.game.target, landed);
+      void fetchScores(mission.id).then((b) => {
+        board = b;
+        renderGame();
+      });
+    }
+    const b = game.board;
+    answerHead.textContent = scored.hit ? b.hit : fillCard(b.miss, { feet: scored.miss.toLocaleString("en-US") });
+    answerBody.textContent = scored.hit ? fillCard(b.landed, { feet: landed.toLocaleString("en-US") }) : `${fillCard(b.landed, { feet: landed.toLocaleString("en-US") })} ${scored.side === "short" ? b.short : b.long}`;
+    const children: HTMLElement[] = [h("p", { class: "game-points" }, fillCard(b.score, { n: scored.score }))];
+    if (!saved) {
+      const pick = h("div", { class: "game-name" }, h("span", { class: "lbl" }, b.nameAsk));
+      letters.forEach((_, i) => {
+        const ch = h("div", { class: "ch" }, String.fromCharCode(65 + letters[i]));
+        const step = (d: number) => {
+          letters[i] = (letters[i] + d + 26) % 26;
+          ch.textContent = String.fromCharCode(65 + letters[i]);
+        };
+        pick.append(h("div", { class: "game-letter" }, button("▲", "arrow", () => step(1)), ch, button("▼", "arrow", () => step(-1))));
+      });
+      pick.append(
+        button(b.save, "game-save", () => {
+          if (saved || !scored || !app.game) return;
+          saved = true;
+          pick.classList.add("hidden");
+          void postScore(mission.id, {
+            name: initials(),
+            score: scored.score,
+            missFeet: scored.miss,
+            target: app.game.target,
+            charge: app.game.charge ?? "c0",
+            elevation: app.game.elevation ?? "e0",
+          }).then((nb) => {
+            board = nb ?? board;
+            renderGame();
+          });
+        }),
+      );
+      children.push(pick);
+    }
+    if (board) {
+      const mineAt = saved ? board.all.concat(board.today).find((e) => e.name === initials() && e.score === scored!.score)?.at ?? null : null;
+      children.push(h("div", { class: "game-board" }, h("div", { class: "game-cols" }, listFor(`${b.top}: ${b.today}`, board.today, mineAt), listFor(`${b.top}: ${b.allTime}`, board.all, mineAt))));
+    }
+    gameBox.replaceChildren(...children);
+    gameBox.classList.remove("hidden");
+  }
+
   let idleMode: "run" | "setup" = cardMission && live?.doneAt && !app.checkpoints.has(live.doneAt) ? "run" : "setup";
 
   /** The answer shows once the result checkpoint fired; until then a real count. */
@@ -153,6 +240,7 @@ export function resultScreen(app: App): Screen {
     bars?.update();
     arc?.update();
     refreshYourTurn();
+    if (reached) renderGame();
   }
 
   /** The Your turn button and the comparison, from the visitor's real cards only. */

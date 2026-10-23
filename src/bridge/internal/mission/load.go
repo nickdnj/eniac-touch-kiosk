@@ -177,6 +177,7 @@ func Load(path, upstream string) *Mission {
 	m.checkOverlap()
 	m.validateRun()
 	m.checkYourTurn()
+	m.checkGame()
 	m.validateCopy()
 	if len(m.Errors) == 0 {
 		m.compiled = m.compile()
