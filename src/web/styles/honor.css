@@ -184,6 +184,9 @@
 }
 .src-what { font-size: 32px; line-height: 40px; font-weight: 700; color: var(--card); }
 .src-from { font-size: 28px; line-height: 38px; color: #C9C2A8; }
+.sources.dense { gap: 12px; margin-top: 16px; }
+.sources.dense .src-what { font-size: 28px; line-height: 34px; }
+.sources.dense .src-from { font-size: 24px; line-height: 31px; }
 .page-exhibit .museum-card {
   position: absolute;
   left: 1120px;

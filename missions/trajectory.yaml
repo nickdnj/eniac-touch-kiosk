@@ -205,5 +205,9 @@ content:
     buttons: ["Finish", "Try again", "Menu"]
     review: { factCheck: [more], source: "ux-spec 8.3.5 S7 ([FC: both comparisons; to be checked with Doug])" }
 
+finale:                          # S8 beat 1 (UX 14.5.3): the sentence for this mission
+  figure: "A shell's flight, in {hops} hops."
+  words: "ENIAC worked out a shell's flight."
+
 credits:
   - "Brian L. Stuart, programs/trajdemo.e and programs/drag.e"

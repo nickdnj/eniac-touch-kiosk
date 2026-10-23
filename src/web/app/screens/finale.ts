@@ -1,4 +1,4 @@
-// S8 Finale (UX 14.5, PRD FR-45): the payoff after all three missions.
+// S8 Finale (UX 14.5, PRD FR-45): the payoff after all the missions.
 // Five beats, at most 85 s, skippable at any moment:
 //   F1 "You programmed ENIAC." with this visit's real results;
 //   F2 the panorama with every unit the visitor used ringed (needs the room:
@@ -55,7 +55,7 @@ export function openFinale(app: App, beat: Beat = 1): void {
 export function finaleScreen(app: App, view: View): Screen {
   const reduced = reduceMotion();
   const first = ((view.beat ?? 1) as Beat) || 1;
-  const missions: MissionInfo[] = (app.missions ?? []).filter((m) => m.available).map((m) => ({ id: m.id, order: m.order, title: m.title }));
+  const missions: MissionInfo[] = (app.missions ?? []).filter((m) => m.available).map((m) => ({ id: m.id, order: m.order, title: m.title, finale: m.finale }));
   const summary = app.visit.summary();
   if (!missions.length) for (const [i, id] of summary.done.entries()) missions.push({ id, order: i + 1, title: id });
 

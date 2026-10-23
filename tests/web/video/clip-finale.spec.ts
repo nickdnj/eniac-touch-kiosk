@@ -23,10 +23,10 @@ test("clip: finale", async ({ page }) => {
   await squaresQuickly(page);
   await primesAndTrajectoryQuickly(page);
   await cutTo(page);
-  await card(page, "<h1>The finale</h1><p>Finish all three missions, and the kiosk shows each visitor what they did, then thanks the people behind ENIAC.</p><small>ENIAC Touch Kiosk · recorded live on the real simulator</small>", 4000);
+  await card(page, "<h1>The finale</h1><p>Finish all the missions, and the kiosk shows each visitor what they did, then thanks the people behind ENIAC.</p><small>ENIAC Touch Kiosk · recorded live on the real simulator</small>", 4000);
 
   await capAt(page, 1350, 330); // clear of the result's buttons
-  await cap(page, "Mission 3 done: all three missions, so the button says Finish");
+  await cap(page, "Mission 4 done: every mission, so the button says Finish");
   await pause(page, 1500);
   await cap(page, null);
   await tapSlow(page, page.locator(".finish-btn"));

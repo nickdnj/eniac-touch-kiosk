@@ -5,15 +5,16 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { BEAT_MS, BeatSequencer, f1Content, f2Caption, panelsUsed, unitsUsed, type Beat } from "../../src/web/app/finale/beats.ts";
+import { BEAT_MS, BeatSequencer, f1Content, fillFigure, f2Caption, panelsUsed, unitsUsed, type Beat } from "../../src/web/app/finale/beats.ts";
 import { Visit, type VisitSummary } from "../../src/web/app/state/visit.ts";
 import { CardLog } from "../../src/web/app/run/cards.ts";
 import { FakeClock } from "./fakes.ts";
 
+// What /api/missions serves: each mission's `finale:` block from its YAML.
 const MISSIONS = [
-  { id: "trajectory", order: 3, title: "Trajectory" },
-  { id: "squares", order: 1, title: "Squares" },
-  { id: "primes", order: 2, title: "Primes" },
+  { id: "trajectory", order: 3, title: "Trajectory", finale: { figure: "A shell's flight, in {hops} hops.", words: "ENIAC worked out a shell's flight." } },
+  { id: "squares", order: 1, title: "Squares", finale: { figure: "You counted up to {n} x {n} = {square}.", words: "ENIAC counted in squares." } },
+  { id: "primes", order: 2, title: "Primes", finale: { figure: "{cards} cards punched. The last prime was {last}.", words: "ENIAC hunted for prime numbers." } },
 ];
 
 function seq(opts: { room?: boolean } = {}) {
@@ -188,6 +189,41 @@ test("F1 partial data: a figure never seen is not shown, only the mission's word
   );
   assert.equal(c.hand, null);
   for (const p of c.plates) assert.doesNotMatch(p.text, /\b0\b|undefined|NaN|null/);
+});
+
+test("F1 takes any number of missions, in order; a mission with no finale block still gets a plate", () => {
+  const more = [
+    ...MISSIONS,
+    { id: "difference", order: 4, title: "Difference", finale: { figure: "ENIAC built {cards} rows of a table, by adding alone.", words: "ENIAC built a table by adding." } },
+    { id: "future", order: 5, title: "Future" },
+  ];
+  const c = f1Content(
+    summary({
+      done: ["future", "difference", "squares"],
+      missions: {
+        squares: { id: "squares", reached: true, squares: { n: 3, square: 9 } },
+        difference: { id: "difference", reached: true, cards: { cards: 20, last: -125 } },
+        future: { id: "future", reached: true },
+      },
+    }),
+    more,
+  );
+  assert.deepEqual(
+    c.plates.map((p) => [p.id, p.text, p.figure]),
+    [
+      ["squares", "You counted up to 3 x 3 = 9.", true],
+      ["difference", "ENIAC built 20 rows of a table, by adding alone.", true],
+      ["future", "You ran it on ENIAC.", false],
+    ],
+  );
+});
+
+test("fillFigure drops a sentence whose numbers were not seen, and returns null when nothing is left", () => {
+  const t = "{cards} cards punched. The last prime was {last}.";
+  assert.equal(fillFigure(t, { cards: "5", last: "2,797" }), "5 cards punched. The last prime was 2,797.");
+  assert.equal(fillFigure(t, { cards: "5" }), "5 cards punched.");
+  assert.equal(fillFigure(t, {}), null);
+  assert.equal(fillFigure("Plain words.", {}), "Plain words.");
 });
 
 test("F1 minutes are shown only from 3 to 30", () => {

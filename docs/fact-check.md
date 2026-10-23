@@ -209,6 +209,31 @@ The source keys for this group are at the end of the Sources list. "Where" gives
 
 ---
 
+### G. Difference mission (added 2026-10-19)
+
+**Source for this whole group:** Brian L. Stuart's email to Nick of 2026-10-19 and the tutorial "Polynomial Tables on the ENIAC" that came with it (key **[BLS-T]**; page numbers are the tutorial's). Stuart wrote the simulator and `difference.e`. Nick's decision, 2026-10-19: his email is the fact-check for this mission. The program's output was also run on the pinned simulator and matches his table (600, 511, 388, 237, 64, -125, -324 ...).
+
+Two limits to keep in mind. Every historical claim about Babbage rests on Stuart's tutorial alone; none was checked against a museum or primary source. And nothing here says anyone ran a table like this on the real ENIAC in 1946: the tutorial presents it as a teaching program.
+
+| # | Claim (as written) | Where | Verdict | Source |
+|---|---|---|---|---|
+| G1 | People made tables of numbers by hand before computers | briefing | **Correct** (Stuart) | [BLS-T] p.1: Babbage's motivation was "automating the computation of mathematical tables in the manner that they had been done manually" |
+| G2 | Babbage designed a machine (the Difference Engine) to build such tables automatically, using only addition | briefing, step 2 | **Correct** (Stuart; Babbage not independently checked) | [BLS-T] p.1 |
+| G3 | The Method of Differences builds a table by repeatedly adding differences; no multiplying is needed | step 3, briefing "for parents" | **Correct** (Stuart; follows from his four-step procedure) | [BLS-T] p.1 |
+| G4 | The example is f(x) = x^3 - 20x^2 - 70x + 600; starting values 600, -89, -34 and 6 | plan | **Correct** (Stuart; verified by running the program) | [BLS-T] p.1 |
+| G5 | The third difference of a cubic is constant (here 6) | step 1 | **Correct** (Stuart; it is the third derivative, 6) | [BLS-T] p.1 |
+| G6 | The starting numbers come from the top diagonal of a small hand-worked table | plan "more" | **Correct** | [BLS-T] p.1 |
+| G7 | Accumulators 17 to 20 hold f(x) and the first, second and third differences | plan, run | **Correct** | [BLS-T] p.2 |
+| G8 | Shifter adapters put the two large starting values in the right place | "rest" | **Correct** | [BLS-T] p.3 |
+| G9 | The printer works in groups of 5 columns; this program punches f(x), the differences and the row number | step 4 | **Correct** (the 5-column groups are already F-checked for Trajectory) | [BLS-T] p.2 |
+| G10 | The Master Programmer's counter, with a limit of 100, makes the program stop after 100 rows | loop step | **Correct** | [BLS-T] p.3 |
+| G11 | The end of each row (accumulator 20) starts the next, which punches a card first | loop step | **Correct** | `difference.e` (`p a20.5o 1-5`, `p 1-5 i.Pi`) |
+| G12 | The last card of a 100-row run shows the first row, because the counter has already reset | result "more" | **Correct** (Stuart's own note) | [BLS-T] last paragraph |
+| G13 | "Make ENIAC build a table, the way Babbage planned" (picker) and the honor-roll line that the method is what Babbage's engine "was designed around" | picker, honor roll | **Correct as attributed to Stuart; Babbage part unchecked** | [BLS-T] p.1 |
+| G14 | On the real ENIAC, data connectors are rectangular with 12 terminals; control (program) connectors are round with two terminals | video, panel art (PR #76) | **Correct** (Stuart, about the real machine; the kiosk draws them that way) | Stuart's email, 2026-10-19 (his note on the video at 5:02) |
+
+Sources are listed with the others at the end.
+
 ## Sources
 
 Primary and contemporaneous
@@ -264,3 +289,4 @@ Added for group F (read 2026-10-03; see `docs/trajectory-history.md` §8 for how
 - **[BIWP]** *Ballisticians in War and Peace*, Vol. 1, 1914–1956, DTIC ADA300523: https://archive.org/details/DTIC_ADA300523
 - **[Goldstine72]** H. H. Goldstine, *The Computer from Pascal to von Neumann*, Princeton UP, 1972 (also listed above)
 - **[Wiki-M101]** Wikipedia, "M101 howitzer" (tertiary; used only to flag F22)
+- **[BLS-T]** Brian L. Stuart, "Polynomial Tables on the ENIAC" (tutorial PDF, `difference.pdf`), sent to Nick by email 2026-10-19 with `difference.e`. Not redistributed here; the program has his permission (NOTICE.md).

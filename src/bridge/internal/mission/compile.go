@@ -83,15 +83,16 @@ type ReadCard struct {
 
 // Summary is one entry of GET /api/missions.
 type Summary struct {
-	ID        string   `json:"id"`
-	Title     string   `json:"title"`
-	Order     int      `json:"order"`
-	Summary   string   `json:"summary"`
-	Minutes   int      `json:"minutes,omitempty"`
-	Steps     int      `json:"steps"`
-	Buttons   []string `json:"buttons"`
-	Available bool     `json:"available"`
-	Reason    string   `json:"reason,omitempty"`
+	ID        string      `json:"id"`
+	Title     string      `json:"title"`
+	Order     int         `json:"order"`
+	Summary   string      `json:"summary"`
+	Minutes   int         `json:"minutes,omitempty"`
+	Steps     int         `json:"steps"`
+	Buttons   []string    `json:"buttons"`
+	Available bool        `json:"available"`
+	Reason    string      `json:"reason,omitempty"`
+	Finale    *FinaleCopy `json:"finale,omitempty"`
 }
 
 func (m *Mission) compile() *Compiled {
@@ -234,5 +235,5 @@ func isNum(s string) bool {
 // SummaryOf returns the /api/missions entry for a mission.
 func SummaryOf(m *Mission) Summary {
 	return Summary{ID: m.File.ID, Title: m.File.Title, Order: m.File.Order, Summary: m.File.Summary,
-		Minutes: m.File.Minutes, Steps: len(m.File.Steps), Buttons: m.File.Run.Buttons, Available: m.Available, Reason: m.Reason}
+		Minutes: m.File.Minutes, Steps: len(m.File.Steps), Buttons: m.File.Run.Buttons, Available: m.Available, Reason: m.Reason, Finale: m.File.Finale}
 }

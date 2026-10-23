@@ -232,8 +232,6 @@ upstream.lock
     GOTOOLCHAIN=go1.26.<n>                  # upstream go.mod requires >= 1.26 (U8)
     RUNTIME_FILES=auto                      # derived from missions (4.3)
 patches/
-    0001-mult-stage-format.patch            # src/mult.go:66  "%2d " -> "%d "
-    0002-ft-repeat-default.patch            # src/ft.go ftunit(): rptsw defaults to 1 (U1)
     0003-acc-1pp-race.patch                 # src/accumulator.go: mutex for the 1PP correction vs accrecv
     series                                  # apply order (all three, in number order)
 ```
@@ -269,8 +267,8 @@ Each patch file starts with a mail-style header saying what it fixes and why. Th
 
 | Patch | File | Bug | Found / decided | Test that shows it | Upstream status |
 |---|---|---|---|---|---|
-| `0001-mult-stage-format` | `src/mult.go:66` | `multstat()` pads the stage with `%2d`, which crashes `eniactk` at `eniactk.go:785` | PRD R2, before M1 | golden `traj-unpatched-m` vs `traj-patched`; `test-fetch.sh` | Not yet reported (#34) |
-| `0002-ft-repeat-default` | `src/ft.go` `ftunit()` | Since `f611c7f` an unset FT repeat switch is 0, which no stage matches; `sieve.e` and `lehmer.e` run away (U1) | Spike S3 (#32), decision #36 | `sieve-canary` (`TestRealCoreSieveCanary`, `…Full`); fails in about 1.5 s without it | Not yet reported (#34) |
+| `0001-mult-stage-format` (**retired 2026-10-19**: Stuart changed `eniactk` to `strings.Fields`, 9da94de) | `src/mult.go:66` | `multstat()` pads the stage with `%2d`, which crashes `eniactk` at `eniactk.go:785` | PRD R2, before M1 | golden `traj-unpatched-m` vs `traj-patched`; `test-fetch.sh` | Not yet reported (#34) |
+| `0002-ft-repeat-default` (**retired 2026-10-19**: Stuart took the same fix, ad9a7a7) | `src/ft.go` `ftunit()` | Since `f611c7f` an unset FT repeat switch is 0, which no stage matches; `sieve.e` and `lehmer.e` run away (U1) | Spike S3 (#32), decision #36 | `sieve-canary` (`TestRealCoreSieveCanary`, `…Full`); fails in about 1.5 s without it | Not yet reported (#34) |
 | `0003-acc-1pp-race` | `src/accumulator.go` | `doonepp()` correction and `accrecv()` both increment `val[0]` from different goroutines; a lost increment makes trajdemo's cards differ run to run | Spike S2 (#31), under this policy | Race detector (`go build -race`, trajdemo); `TestRealCoreTrajdemoDeterministic` (weak: the race is environment dependent) | Not yet reported (#34) |
 
 **Considered and not patched:**
@@ -668,6 +666,15 @@ content:
 - **Metrics:** two UI events for the picker (UX 8.4): `mission_picked {m, n}` (n is the card's position) and `picker_next_used {m}`.
 - **Tooling:** `eniac-bridge mission compile FILE` prints the compiled mission exactly as `GET /api/missions/{id}` serves it; the UI's mock fixtures (`tests/web/mock/missions/*.json`) are generated with it.
 - **Jack grammar:** the initiating unit's jacks are case-insensitive in the first letter, like `initplug` (`i.Pi` = `i.pi`, canonical lower case); master programmer jacks are `p.<X>i|di|cdi|<1-6>o` with X in A..K without I, and `p.<1-20>di`; function tables `f<U>.<1-11>i|o, arg, A, B, C, NC`; multiplier `m.<1-24>i|o` and its data terminals; adapters `ad.<kind>.<n>.<param>`.
+
+#### 5.9.7 N missions (2026-10-19)
+
+The web UI no longer names a mission outside `src/web/app/missions/registry.ts` (picker card picture, S3 briefing and plan animations; a mission without an entry gets a numbered card and the room plan). Everything else a new mission needs is in its YAML:
+
+- `finale: { words, figure }`: its sentence on the finale's first beat. `figure` is a template over the visit's real numbers (`{n} {square}` Squares, `{cards} {last}` card missions, `{hops}` plotted flights); a sentence whose numbers were not seen is dropped, and `words` shows instead. Served in `/api/missions` (`Summary.finale`). Lint: at most 25 words, known placeholders, no `[FC]`.
+- `content.run.chain: { title, rows: [{acc, name, sub}] }` (1 to 4 rows): the run stage shows those accumulators, live, beside the punched cards (`app/run/chainstage.ts`). Without it a card mission gets the stage its `run.cards.style` names (`stack` is Primes, `film` is Trajectory). The big numbers wait for a settled accumulator (no program or carry lamp lit); the lamps always show the truth.
+- Programs we ship ourselves go in `missions/programs/*.e` (with the author's permission, see `NOTICE.md`); `scripts/fetch-upstream.sh` copies them next to the pinned programs after the tree check and patches, never over a differing upstream file, and lists them as `addedFiles` in `.provenance.json`.
+- The picker shows three cards at a time and pages (Earlier / More missions) beyond three; it opens on the page with the next mission to do.
 
 ### 5.10 Attract session (live attract, PRD FR-30, FR-34 to FR-36, FR-51)
 

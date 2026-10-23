@@ -67,11 +67,13 @@ function pageBuilders(): HTMLElement {
 
 function pageExhibit(): HTMLElement {
   const e = HONOR.exhibit;
+  const shownSources = e.sources.filter(shown);
+  // Past three missions the list tightens so the page still fits one screen.
   const sources = h(
     "div",
-    { class: "sources" },
+    { class: `sources${shownSources.length > 3 ? " dense" : ""}` },
     h("div", { class: "src-title" }, e.sourcesTitle),
-    ...e.sources.filter(shown).map((s, i) =>
+    ...shownSources.map((s, i) =>
       h("div", { class: "src" }, h("span", { class: "src-badge", "aria-hidden": "true" }, String(i + 1)), h("div", {}, h("div", { class: "src-what" }, s.what), h("div", { class: "src-from" }, s.from))),
     ),
   );

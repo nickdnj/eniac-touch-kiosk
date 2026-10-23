@@ -8,8 +8,8 @@ export const scene = (page: Page) => page.locator(".screen.attract");
 /** The attract flight's punched cards so far (S1 or Explore). */
 export const attractCards = (page: Page) => page.evaluate(() => (window as any).__eniac.attract.cards.count as number);
 
-/** From the Squares result (S7): Primes, then Trajectory, each with Skip and
- *  Skip to the answer, ending on Trajectory's result with Finish showing. */
+/** From the Squares result (S7): Primes, Trajectory, then Difference, each with Skip and
+ *  Skip to the answer, ending on Difference's result with Finish showing. */
 export async function primesAndTrajectoryQuickly(page: Page): Promise<void> {
   await expect(page.locator(".next-btn")).toHaveText("Next: Primes");
   await tapSlow(page, page.locator(".next-btn"));
@@ -37,6 +37,19 @@ export async function primesAndTrajectoryQuickly(page: Page): Promise<void> {
   await tap(page, page.locator(".init-btn"));
   await expect(view(page)).toHaveAttribute("data-view", "result", { timeout: 300_000 });
   await expect(page.locator(".live-line")).toHaveText(/\d+ hops, \d+ cards/, { timeout: 30_000 });
+  await expect(page.locator(".next-btn")).toHaveText("Next: Difference");
+
+  await tapSlow(page, page.locator(".next-btn"));
+  await expect(page.locator(".step-card h2")).toHaveText("A table, made by adding");
+  await tapSlow(page, mainBtn(page));
+  await tapSlow(page, mainBtn(page));
+  await tapSlow(page, page.locator(".rail .skip-btn"));
+  await expect(mainBtn(page)).toHaveText("Continue", { timeout: 30_000 });
+  await tapSlow(page, mainBtn(page));
+  await tap(page, page.locator(".init-btn"));
+  await expect(page.locator(".skip-answer-btn")).toBeVisible({ timeout: 60_000 });
+  await tapSlow(page, page.locator(".skip-answer-btn"));
+  await expect(page.locator(".result-answer h2")).toBeVisible({ timeout: 240_000 });
   await expect(page.locator(".finish-btn")).toHaveText("Finish");
 }
 

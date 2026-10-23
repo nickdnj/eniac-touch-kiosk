@@ -129,6 +129,19 @@
 .ft-strips { display: grid; grid-template-columns: repeat(2, 420px); gap: 8px 16px; }
 @media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
 
+/* Chain stage (content.run.chain): one row per named accumulator. */
+.chain-left { gap: 4px; }
+.chain-row { height: 140px; box-sizing: border-box; display: flex; align-items: center; gap: 20px; padding: 0 16px; background: #15181c; border: 2px solid #2c2f35; border-radius: 10px; }
+.chain-name { display: flex; flex-direction: column; width: 230px; }
+.chain-title { font-size: 30px; line-height: 34px; font-weight: 700; color: var(--card); }
+.chain-sub { font-size: 24px; line-height: 30px; color: #9AA0A8; }
+.chain-value {
+  flex: 1; height: 84px; padding: 0 20px; background: #000; color: #fff; border: 2px solid #34383f; border-radius: 8px;
+  font-family: var(--font-mono); font-weight: 500; font-size: 60px; line-height: 84px; text-align: right; white-space: nowrap; overflow: hidden;
+}
+.chain-row .panel { flex: none; height: 124px; width: auto; }
+.chain-plus { height: 28px; line-height: 28px; text-align: center; font-size: 32px; font-weight: 700; color: #9AA0A8; }
+
 /* Punched-cards pane, stack style (UX 8.2.5). */
 .stack-stage .card-pane { position: absolute; left: 880px; top: 8px; width: 480px; }
 .card-pane .pane-title { margin-bottom: 6px; }

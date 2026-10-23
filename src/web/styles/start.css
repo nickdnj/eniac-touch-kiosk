@@ -223,6 +223,12 @@
 .mc-start { width: 480px; align-self: center; }
 .mc-then { width: 64px; height: 640px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9AA0A8; font-size: 24px; }
 .mc-then .chev { font-size: 64px; line-height: 64px; color: var(--card); }
+/* S2 pager (more missions than fit): in the header row, right end, above the cards. */
+.pk-pager { position: absolute; right: 80px; top: 108px; display: flex; align-items: center; gap: 24px; }
+.pk-pager-note { font-size: 24px; line-height: 32px; color: #9AA0A8; }
+.pk-pager-btns { display: flex; gap: 16px; }
+.pk-pager-btns .btn { min-height: 64px; height: 64px; font-size: 28px; padding: 0 20px; }
+.pk-pager-btns .btn.disabled { opacity: 0.35; pointer-events: none; }
 .mc-order { position: absolute; right: 80px; top: 856px; text-align: right; font-size: 24px; line-height: 32px; color: #9AA0A8; display: flex; flex-direction: column; }
 
 .waking .waiting, .boot .waiting { height: 1032px; }

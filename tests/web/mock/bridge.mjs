@@ -13,6 +13,7 @@ import { randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parse as parseYaml } from "yaml";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const load = (id) => {
@@ -25,6 +26,8 @@ export const PRIMES = load("primes");
 export const TRAJECTORY = load("trajectory");
 /** One real first flight of trajdemo.e (recorded from the real core; test fixture). */
 export const FLIGHT = JSON.parse(readFileSync(join(here, "missions", "trajectory-flight.json"), "utf8")).cards;
+/** Each mission's `finale:` block, read from the real missions/<id>.yaml so the mock serves what the bridge does. */
+const finaleOf = (id) => parseYaml(readFileSync(join(here, "..", "..", "..", "missions", `${id}.yaml`), "utf8")).finale;
 export const MISSIONS = { squares: SQUARES, primes: PRIMES, trajectory: TRAJECTORY };
 /** The mission speed tables (rates), as in missions/*.yaml. */
 export const RATES = { squares: { slow: 13, full: 0 }, primes: { slow: 100, full: 0 }, trajectory: { full: 0 } };
@@ -145,6 +148,7 @@ export class MockBridge {
       order: m.order,
       summary: m.summary,
       ...(m.minutes ? { minutes: m.minutes } : {}),
+      finale: finaleOf(m.id),
       steps: m.steps.length,
       buttons: m.run.buttons,
       available: this.missionsAvailable,

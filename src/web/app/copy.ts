@@ -22,6 +22,10 @@ export const COPY = {
     then: "then",
     order: "Suggested order",
     orderLine: (orders: number[]) => orders.join(", then "),
+    /** More missions than fit: the pager under the cards. */
+    showing: (first: number, last: number, of: number) => `Missions ${first} to ${last} of ${of}`,
+    earlier: "Earlier",
+    more: "More missions",
     about: (min: number) => `About ${min} min`,
     wire: (n: number, read = false) => `You wire ${n} steps${read ? " and read a card" : ""}`,
   },
@@ -67,6 +71,17 @@ export const COPY = {
     square: (n: number) => `The square of ${n} is ${n * n}`,
     plus: (n: number) => `+${n}`,
     again: "↻ Again",
+  },
+  // Difference plan figure (stage/diffig.ts): the table built by adding.
+  difference: {
+    heads: ["Row", "Table value", "Change", "Next change", "Steady"],
+    start: (r: readonly number[]) => `Start: ${r[0]}, ${r[1]}, ${r[2]}, ${r[3]}`,
+    add: (f: number, d: number, next: number) => `${f} + (${d}) = ${next}`,
+    only: "Only adding. No multiplying.",
+    briefStart: "Start with 600.",
+    briefAdd: "Add the change. The change changes too.",
+    briefNegative: "Now it goes below zero.",
+    change: (d: number) => (d < 0 ? `${d}` : `+${d}`),
   },
   run: {
     init: "INIT",

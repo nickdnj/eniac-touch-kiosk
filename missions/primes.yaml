@@ -4,8 +4,8 @@
 # kept in `review.factCheck` (never shown); they must clear the fact-check
 # gate (#35, test plan 12) before the floor.
 #
-# sieve.e punches nothing without patches/0002-ft-repeat-default.patch
-# (spike S3), so the mission requires it and is unavailable without it.
+# sieve.e needed our patch 0002 (spike S3) until Stuart fixed the repeat-switch
+# default upstream (ad9a7a7, 2026-10-13); the pin now includes his fix.
 schema: 1
 id: primes
 title: "Primes"
@@ -15,7 +15,6 @@ minutes: 4
 program: sieve.e
 programSha256: "23f19a553e9601f56c213a53899495f4e4fd251d4bbaa1f12bcf0363d70d5c70"
 includes: {}
-requires: [0002-ft-repeat-default]
 ordered: true
 
 steps:
@@ -179,6 +178,10 @@ content:
       doneAt: last
     buttons: ["Next: Trajectory", "Try again", "Menu"]
     review: { factCheck: [more], source: "ux-spec 8.2.5 S7" }
+
+finale:                          # S8 beat 1 (UX 14.5.3): the sentence for this mission
+  figure: "{cards} cards punched. The last prime was {last}."
+  words: "ENIAC hunted for prime numbers."
 
 credits:
   - "Brian L. Stuart, programs/sieve.e. After D. H. Lehmer's July 1946 runs, as reconstructed by L. De Mol and M. Bullynck."

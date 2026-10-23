@@ -7,7 +7,7 @@
 // (state/visit.ts), which holds only numbers read from the bridge. A figure
 // that was never seen is not shown: the plate says the mission's words.
 
-import type { VisitSummary } from "../state/visit.ts";
+import type { MissionRecord, VisitSummary } from "../state/visit.ts";
 import { FINALE } from "../content/finale.ts";
 import { ROOM, missionTargets } from "../explore/room.ts";
 
@@ -109,6 +109,8 @@ export interface MissionInfo {
   id: string;
   order: number;
   title: string;
+  /** This mission's sentence, from its YAML `finale:` block (bridge /api/missions). */
+  finale?: { words: string; figure?: string };
 }
 
 export interface F1Plate {
@@ -132,22 +134,35 @@ export interface F1Content {
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 
-function plateText(id: string, s: VisitSummary): { text: string; figure: boolean } {
-  const r = s.missions[id];
-  const M = FINALE.f1.missions;
-  if (id === "squares") {
-    const q = r?.squares;
-    return q ? { text: M.squares.figure(fmt(q.n), fmt(q.square)), figure: true } : { text: M.squares.words, figure: false };
+/** The real numbers this visit produced for a mission, by placeholder name. Absent means never seen. */
+function figureVars(r: MissionRecord | undefined): Record<string, string> {
+  const v: Record<string, string> = {};
+  if (r?.squares) Object.assign(v, { n: fmt(r.squares.n), square: fmt(r.squares.square) });
+  if (r?.cards && r.cards.cards > 0) {
+    v.cards = fmt(r.cards.cards);
+    if (r.cards.last !== undefined) v.last = fmt(r.cards.last);
   }
-  if (id === "primes") {
-    const c = r?.cards;
-    return c && c.cards > 0 ? { text: M.primes.figure(fmt(c.cards), c.last !== undefined ? fmt(c.last) : null), figure: true } : { text: M.primes.words, figure: false };
-  }
-  if (id === "trajectory") {
-    const f = r?.flight;
-    return f && f.hops > 0 ? { text: M.trajectory.figure(fmt(f.hops)), figure: true } : { text: M.trajectory.words, figure: false };
-  }
-  return { text: FINALE.f1.otherWords, figure: false };
+  if (r?.flight && r.flight.hops > 0) v.hops = fmt(r.flight.hops);
+  return v;
+}
+
+/**
+ * A mission's `figure` template filled from the visit. A sentence whose
+ * placeholders were not all seen is dropped; null when nothing is left.
+ */
+export function fillFigure(template: string, vars: Record<string, string>): string | null {
+  const kept = template
+    .split(/(?<=[.!?])\s+/)
+    .filter((sentence) => [...sentence.matchAll(/\{(\w+)\}/g)].every((m) => m[1] in vars))
+    .map((sentence) => sentence.replace(/\{(\w+)\}/g, (_, k: string) => vars[k]));
+  return kept.length ? kept.join(" ") : null;
+}
+
+function plateText(m: MissionInfo, s: VisitSummary): { text: string; figure: boolean } {
+  const f = m.finale;
+  if (!f) return { text: FINALE.f1.otherWords, figure: false };
+  const filled = f.figure ? fillFigure(f.figure, figureVars(s.missions[m.id])) : null;
+  return filled ? { text: filled, figure: true } : { text: f.words, figure: false };
 }
 
 /** F1 from the visit summary: one plate per mission done, in mission order. */
@@ -158,7 +173,7 @@ export function f1Content(s: VisitSummary, missions: MissionInfo[]): F1Content {
   const plates = missions
     .filter((x) => done.has(x.id))
     .sort((a, b) => a.order - b.order)
-    .map((x) => ({ id: x.id, order: x.order, title: x.title, ...plateText(x.id, s) }));
+    .map((x) => ({ id: x.id, order: x.order, title: x.title, ...plateText(x, s) }));
   return {
     line: showM ? `${FINALE.f1.then} ${FINALE.f1.you(m)}` : FINALE.f1.then,
     minutes: showM ? m : null,

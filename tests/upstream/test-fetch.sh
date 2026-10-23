@@ -17,7 +17,7 @@ if [ $rc -ne 0 ] && grep -q 'TREE mismatch' <<<"$out" && [ ! -d "$SCRATCH/b1/ups
 
 # 2. Patch with broken context aborts, and leaves no half-patched tree.
 mkdir -p "$SCRATCH/patches"
-sed 's/^ func multstat() string {/ func multstat_broken() string {/' "$ROOT/patches/0001-mult-stage-format.patch" > "$SCRATCH/patches/0001-mult-stage-format.patch"
+sed 's/^ var units \[20\]accumulator/ var units_broken [20]accumulator/' "$ROOT/patches/0003-acc-1pp-race.patch" > "$SCRATCH/patches/0003-acc-1pp-race.patch"
 cp "$ROOT/patches/series" "$SCRATCH/patches/series"
 out="$(ENIAC_PATCHES_DIR="$SCRATCH/patches" ENIAC_BUILD_DIR="$SCRATCH/b2" "$ROOT/scripts/fetch-upstream.sh" --no-build 2>&1)"; rc=$?
 if [ $rc -ne 0 ] && grep -q 'does not apply cleanly' <<<"$out" && [ ! -d "$SCRATCH/b2/upstream" ]; then pass "broken patch aborts"; else bad "broken patch: rc=$rc out=$out"; fi

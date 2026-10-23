@@ -109,9 +109,28 @@ while IFS= read -r p || [ -n "$p" ]; do
   APPLIED_JSON="${APPLIED_JSON:+$APPLIED_JSON,}{\"name\":\"${p%.patch}\",\"file\":\"$p\",\"sha256\":\"$sha\"}"
 done < "$PATCHES/series"
 
+# 3b. Programs we ship ourselves (missions/programs/*.e, with their authors'
+# permission; see NOTICE.md). Added after the tree is verified and patched,
+# never over a file upstream already has: if upstream adds the same name later,
+# identical bytes are fine and different bytes abort, so we notice.
+ADDED_JSON=""
+for f in "$ROOT"/missions/programs/*.e; do
+  [ -e "$f" ] || continue
+  n="$(basename "$f")"
+  if [ -e "$STAGE/programs/$n" ]; then
+    cmp -s "$f" "$STAGE/programs/$n" || die "missions/programs/$n differs from upstream's programs/$n. Resolve it (drop ours, or rename)."
+    log "programs/$n is now upstream, identical to ours (drop missions/programs/$n)"
+    continue
+  fi
+  cp "$f" "$STAGE/programs/$n"
+  sha="$(shasum -a 256 "$f" | cut -d' ' -f1)"
+  log "added programs/$n ($sha)"
+  ADDED_JSON="${ADDED_JSON:+$ADDED_JSON,}{\"file\":\"programs/$n\",\"sha256\":\"$sha\"}"
+done
+
 # 4. Provenance, shipped with releases and shown on the admin screen.
 cat > "$STAGE/.provenance.json" <<EOF
-{"url":"$URL","commit":"$COMMIT","tree":"$TREE","gotoolchain":"$TOOLCHAIN","patches":[${APPLIED_JSON}],"originalUi":{"eniactk":"vis/eniactk.go"},"builtAt":"$(date -u +%Y-%m-%dT%H:%M:%SZ)"}
+{"url":"$URL","commit":"$COMMIT","tree":"$TREE","gotoolchain":"$TOOLCHAIN","patches":[${APPLIED_JSON}],"addedFiles":[${ADDED_JSON}],"originalUi":{"eniactk":"vis/eniactk.go"},"builtAt":"$(date -u +%Y-%m-%dT%H:%M:%SZ)"}
 EOF
 if [ -d "$BUILD/upstream" ]; then rm -rf -- "$BUILD/upstream"; fi
 mv "$STAGE" "$BUILD/upstream"

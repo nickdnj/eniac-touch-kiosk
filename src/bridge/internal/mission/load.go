@@ -50,6 +50,12 @@ const (
 	MaxBodyWords     = 40
 	MaxMoreWords     = 120
 	MaxHeadlineChars = 60
+	MaxFinaleWords   = 25
+)
+
+var (
+	finaleVarRe = regexp.MustCompile(`\{(\w+)\}`)
+	finaleVars  = map[string]bool{"n": true, "square": true, "cards": true, "last": true, "hops": true}
 )
 
 // LoadDir loads every missions/*.yaml. Missions that fail validation are
@@ -746,6 +752,34 @@ func (m *Mission) validateCopy() {
 		check("content.read", c.Read.Before.Headline, c.Read.Before.Sub, "", false)
 		if c.Read.InitLocked == "" || c.Read.Headline == "" {
 			m.fail("content.read: headline and initLocked are required")
+		}
+	}
+	if ch := c.Run.Chain; ch != nil {
+		if ch.Title == "" || len(ch.Rows) == 0 || len(ch.Rows) > 4 {
+			m.fail("content.run.chain: a title and 1 to 4 rows are required")
+		}
+		for _, r := range ch.Rows {
+			if n, err := strconv.Atoi(r.Acc); err != nil || n < 1 || n > 20 {
+				m.fail("content.run.chain: acc %q must be 1 to 20", r.Acc)
+			}
+			if r.Name == "" || words(r.Name) > 6 || words(r.Sub) > 8 || strings.Contains(r.Name+r.Sub, "[FC") {
+				m.fail("content.run.chain: row %q needs a short name (max 6 words) and sub (max 8), no [FC]", r.Acc)
+			}
+		}
+	}
+	if f := m.File.Finale; f != nil {
+		if f.Words == "" {
+			m.fail("finale: words is required")
+		}
+		for _, x := range []string{f.Words, f.Figure} {
+			if words(x) > MaxFinaleWords || strings.Contains(x, "[FC") {
+				m.fail("finale: %q is too long (max %d words) or carries an [FC] marker", x, MaxFinaleWords)
+			}
+		}
+		for _, v := range finaleVarRe.FindAllStringSubmatch(f.Figure, -1) {
+			if !finaleVars[v[1]] {
+				m.fail("finale: unknown placeholder {%s} (known: n, square, cards, last, hops)", v[1])
+			}
 		}
 	}
 	for _, x := range []string{c.Run.Note, c.Run.Before.Sub} {

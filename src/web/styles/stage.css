@@ -92,6 +92,28 @@
 .tile-label.row { color: var(--tile-row); }
 .tile-label.col { color: var(--tile-col); }
 .tile-label.corner { color: var(--tile-corner); }
+/* Difference plan figure (stage/diffig.ts): the table built by adding. */
+.diff-fig { gap: 36px; }
+.diff-table { display: grid; grid-template-columns: 120px repeat(4, 240px); gap: 10px 14px; }
+.diff-head { font-size: 26px; font-weight: 700; color: #9AA0A8; text-align: center; letter-spacing: 1px; text-transform: uppercase; }
+.diff-cell { height: 84px; line-height: 84px; text-align: right; padding: 0 20px; font-family: var(--font-mono); font-size: 54px; color: #fff; background: #000; border: 2px solid #34383f; border-radius: 8px; opacity: 0.12; transition: opacity 400ms; }
+.diff-cell.c0 { text-align: center; color: #9AA0A8; background: transparent; border-color: transparent; }
+.diff-cell.c1 { color: var(--lamp-on); }
+.diff-cell.on { opacity: 1; }
+.diff-caption { font-family: var(--font-mono); }
+/* Difference briefing figure: bars either side of a zero line. */
+.diffb-plot { position: relative; width: 1200px; display: flex; flex-direction: column; gap: 10px; }
+.diffb-row { position: relative; display: flex; align-items: center; height: 56px; opacity: 0.1; transition: opacity 400ms; }
+.diffb-row.on { opacity: 1; }
+.diffb-x { width: 56px; font-family: var(--font-mono); font-size: 32px; color: #9AA0A8; text-align: center; }
+.diffb-lane { position: relative; width: 1000px; height: 56px; }
+.diffb-zero { position: absolute; left: 476px; top: -6px; bottom: -6px; width: 2px; background: #34383f; }
+.diffb-fill { position: absolute; top: 6px; height: 44px; border-radius: 6px; }
+.diffb-fill.pos { left: 420px; background: var(--lamp-on); }
+.diffb-fill.neg { right: 580px; background: var(--share-left, #D55E00); }
+.diffb-val { position: absolute; top: 0; line-height: 56px; font-family: var(--font-mono); font-size: 34px; color: #fff; }
+.diffb-add { position: absolute; right: 0; font-family: var(--font-mono); font-size: 30px; color: #9AA0A8; }
+@media (prefers-reduced-motion: reduce) { .diff-cell { transition: none; } }
 .tiles-caption { min-height: 70px; font-size: 54px; font-weight: 700; color: var(--card); }
 .tiles-eq { display: flex; gap: 34px; font-family: var(--font-mono); font-size: 96px; line-height: 1; font-weight: 700; color: var(--tile-off); }
 .tiles-eq .term { transition: color 300ms; }

@@ -290,14 +290,14 @@ func TestPrimesValid(t *testing.T) {
 	}
 }
 
-// requires: without patch 0002 sieve.e punches nothing (spike S3), so the
+// requires: without patch 0003 the Trajectory numbers can come out low (spike S2), so the
 // mission must be unavailable rather than fail on the floor.
-func TestPrimesRequiresPatch(t *testing.T) {
+func TestTrajectoryRequiresPatch(t *testing.T) {
 	dir, up := paths(t)
 	old := Patches
 	defer func() { Patches = old }()
-	Patches = func(string) ([]string, error) { return []string{"0001-mult-stage-format"}, nil }
-	expectUnavailable(t, Load(filepath.Join(dir, "primes.yaml"), up), "requires upstream patch 0002-ft-repeat-default")
+	Patches = func(string) ([]string, error) { return nil, nil }
+	expectUnavailable(t, Load(filepath.Join(dir, "trajectory.yaml"), up), "requires upstream patch 0003-acc-1pp-race")
 }
 
 func primesVariant(t *testing.T, from, to string) *Mission {
@@ -446,4 +446,42 @@ func TestStallWindows(t *testing.T) {
 		}
 	}
 	expectUnavailable(t, primesVariant(t, `full: { rate: 0, stallMs: 20000 }`, `full: { rate: 0, stallMs: 500 }`), "stallMs must be 0 (off) or at least 2000")
+}
+
+// Difference (Stuart's difference.e, shipped from missions/programs/): loads, serves its
+// finale sentence and its run chain, and the lint rejects a bad chain.
+func TestDifferenceValid(t *testing.T) {
+	dir, up := paths(t)
+	m := Load(filepath.Join(dir, "difference.yaml"), up)
+	if !m.Available {
+		t.Fatalf("difference unavailable: %v", m.Errors)
+	}
+	c := m.Compiled()
+	if c.Counts != (Counts{PresetCables: 35, PresetSwitches: 76, StepCables: 3, StepSwitches: 2}) {
+		t.Fatalf("counts %+v", c.Counts)
+	}
+	ch := c.Content.Run.Chain
+	if ch == nil || len(ch.Rows) != 4 || ch.Rows[0].Acc != "17" || ch.Rows[3].Acc != "20" {
+		t.Fatalf("chain %+v", ch)
+	}
+	if f := SummaryOf(m).Finale; f == nil || f.Words == "" || f.Figure == "" {
+		t.Fatalf("finale %+v", f)
+	}
+}
+
+func TestChainLint(t *testing.T) {
+	dir, up := paths(t)
+	for name, mut := range map[string]func(*Mission){
+		"no rows":      func(m *Mission) { m.File.Content.Run.Chain.Rows = nil },
+		"bad acc":      func(m *Mission) { m.File.Content.Run.Chain.Rows[0].Acc = "21" },
+		"nameless row": func(m *Mission) { m.File.Content.Run.Chain.Rows[1].Name = "" },
+	} {
+		m := Load(filepath.Join(dir, "difference.yaml"), up)
+		mut(m)
+		m.Errors = nil
+		m.validateCopy()
+		if len(m.Errors) == 0 {
+			t.Errorf("%s: want a lint error", name)
+		}
+	}
 }

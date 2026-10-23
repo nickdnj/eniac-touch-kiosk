@@ -232,8 +232,12 @@ func printerSwitch(s Switch, sw string) Switch {
 	case "P", "p":
 		s.Canon = "P"
 	case "0":
+	case "O", "o":
+		// Stuart's difference.e spells "off" with the letter O (s pr.13 O).
+		// The core treats anything but P as off, so the letter is an alias for 0.
+		s.Canon = "0"
 	default:
-		s.Err = "printer field value " + s.Value + " not P or 0"
+		s.Err = "printer field value " + s.Value + " not P, O or 0"
 	}
 	return s
 }

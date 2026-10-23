@@ -1,4 +1,4 @@
-// S2 mission picker (UX 8.4: three missions, suggested order, START HERE /
+// S2 mission picker (UX 8.4: suggested order, paged past three missions, START HERE /
 // UP NEXT / Done) and S0 waking screens (issue #22; UX 3.1). S1 is the live
 // attract screen (screens/attract.ts, UX 14.2), re-exported here as
 // `startScreen`. No machine is drawn on S2 or S0 (no demo fallback).
@@ -14,12 +14,16 @@ import { HONOR } from "../content/honor.ts";
 import { openHonor } from "./honor.ts";
 import { EXPLORE } from "../explore/content.ts";
 import { FINALE } from "../content/finale.ts";
+import { pickerArtFor } from "../missions/registry.ts";
 
 /** Taps landing on S2 this soon after S1 are the same visitor's double tap (FR-31). */
 export const PICKER_ARM_MS = 600;
 
 /** S1 is the live attract screen (UX 14.2): screens/attract.ts. */
 export { attractScreen as startScreen } from "./attract.ts";
+
+/** Cards on screen at once: three fill the screen (UX 8.4). More missions page through them. */
+export const PICKER_PAGE = 3;
 
 export function pickerScreen(app: App): Screen {
   const armedAt = app.now() + PICKER_ARM_MS;
@@ -30,22 +34,44 @@ export function pickerScreen(app: App): Screen {
   // UP NEXT on the lowest-numbered card not done; no chip when all are done.
   const nextUp = list.find((m) => !app.done.has(m.id))?.id ?? null;
   const anyDone = list.some((m) => app.done.has(m.id));
-  list.forEach((m, i) => {
-    if (i > 0) cards.append(h("div", { class: "mc-then", "aria-hidden": "true" }, h("span", { class: "chev" }, "›"), h("span", {}, COPY.picker.then)));
-    cards.append(missionCard(app, m, armed, m.id === nextUp ? (anyDone ? COPY.picker.upNext : COPY.picker.startHere) : null));
-  });
-  if (!list.length) cards.append(h("div", { class: "waiting" }, h("span", { class: "spinner" }), COPY.waitingMachine));
+  // With more than PICKER_PAGE missions the cards page; it opens on the page that holds the next one to do.
+  const pages = Math.max(1, Math.ceil(list.length / PICKER_PAGE));
+  let page = Math.max(0, Math.floor(list.findIndex((m) => m.id === nextUp) / PICKER_PAGE));
+  const pager = h("div", { class: "pk-pager" });
+  function renderCards(): void {
+    cards.replaceChildren();
+    list.slice(page * PICKER_PAGE, (page + 1) * PICKER_PAGE).forEach((m, i) => {
+      if (i > 0) cards.append(h("div", { class: "mc-then", "aria-hidden": "true" }, h("span", { class: "chev" }, "›"), h("span", {}, COPY.picker.then)));
+      cards.append(missionCard(app, m, armed, m.id === nextUp ? (anyDone ? COPY.picker.upNext : COPY.picker.startHere) : null));
+    });
+    if (!list.length) cards.append(h("div", { class: "waiting" }, h("span", { class: "spinner" }), COPY.waitingMachine));
+    if (pages > 1) {
+      const first = page * PICKER_PAGE + 1;
+      const last = Math.min(list.length, (page + 1) * PICKER_PAGE);
+      pager.replaceChildren(
+        h("div", { class: "pk-pager-note" }, COPY.picker.showing(first, last, list.length)),
+        h(
+          "div",
+          { class: "pk-pager-btns" },
+          button(`‹ ${COPY.picker.earlier}`, `light outline${page === 0 ? " disabled" : ""}`, () => armed() && page > 0 && (page--, renderCards())),
+          button(`${COPY.picker.more} ›`, `primary light${page === pages - 1 ? " disabled" : ""}`, () => armed() && page < pages - 1 && (page++, renderCards())),
+        ),
+      );
+    }
+  }
+  renderCards();
   const el = h(
     "div",
     { class: "screen mission-picker" },
     h("div", { class: "header" }, h("span", { class: "screen-title" }, COPY.picker.title)),
+    pages > 1 ? pager : null,
     cards,
     // UX 14.5.1 / 14.9: once every mission is done, "See the finale" replaces the suggested order.
     list.length && !nextUp
       ? button(`${FINALE.pickerChip} ›`, "light pk-finale", () => armed() && app.show({ name: "finale", beat: 1 }))
       : list.length > 1
-        ? h("div", { class: "mc-order" }, h("span", {}, COPY.picker.order), h("span", {}, COPY.picker.orderLine(list.map((m) => m.order))))
-        : null,
+          ? h("div", { class: "mc-order" }, h("span", {}, COPY.picker.order), h("span", {}, COPY.picker.orderLine(list.map((m) => m.order))))
+          : null,
     exploreButton(app, armed),
     honorButton(app, armed),
   );
@@ -71,31 +97,9 @@ function exploreButton(app: App, armed: () => boolean): HTMLElement {
   return b;
 }
 
-/**
- * Static card art (UX 8.4): the tile floor from the missions, drawn in the
- * lamp colour on the panel colour with a cream outline. Not animated.
- */
-export function pickerArt(id: string): string {
-  const W = 480, H = 200;
-  const tile = (x: number, y: number, s = 30) => `<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="4" fill="#FFB000" stroke="#F4EFE3" stroke-width="2"/>`;
-  let b = `<rect x="0" y="0" width="${W}" height="${H}" rx="12" fill="#1B1D21"/>`;
-  if (id === "squares") {
-    for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) b += tile(186 + c * 38, 46 + r * 38);
-  } else if (id === "primes") {
-    // 12 as a 3 x 4 block (it shares evenly) beside 7 in a row with a star (prime).
-    for (let r = 0; r < 3; r++) for (let c = 0; c < 4; c++) b += tile(44 + c * 34, 50 + r * 34, 28);
-    for (let c = 0; c < 7; c++) b += tile(212 + c * 34, 118, 28);
-    b += `<path d="M427 64l8 16 18 3-13 12 3 18-16-9-16 9 3-18-13-12 18-3z" fill="#F4EFE3"/>`;
-  } else if (id === "trajectory") {
-    b += `<path d="M30 176H450" stroke="#9AA0A8" stroke-width="2" stroke-dasharray="6 6"/>`;
-    b += `<g transform="rotate(-35 54 166)"><rect x="40" y="156" width="54" height="16" rx="4" fill="#F4EFE3"/></g><circle cx="52" cy="172" r="12" fill="#1B1D21" stroke="#F4EFE3" stroke-width="3"/>`;
-    for (let i = 0; i < 8; i++) {
-      const t = (i + 1) / 9;
-      const x = 70 + t * 360, y = 176 - 4 * 130 * t * (1 - t) - 4;
-      b += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9" fill="#FFB000" stroke="#F4EFE3" stroke-width="2"/>`;
-    }
-  }
-  return `<svg xmlns="http://www.w3.org/2000/svg" class="mc-art" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true">${b}</svg>`;
+/** Static card art (UX 8.4): the mission's own picture from missions/registry.ts, or a generic numbered card. */
+export function pickerArt(id: string, order = 0): string {
+  return pickerArtFor(id, order);
 }
 
 function missionCard(app: App, m: MissionSummary, armed: () => boolean, chip: string | null): HTMLElement {
@@ -111,7 +115,7 @@ function missionCard(app: App, m: MissionSummary, armed: () => boolean, chip: st
   const card = h(
     "div",
     { class: `mission-card${done ? " done" : ""}`, "data-mission": m.id },
-    svgFromString(pickerArt(m.id)) as unknown as HTMLElement,
+    svgFromString(pickerArtFor(m.id, m.order)) as unknown as HTMLElement,
     h("span", { class: "mc-badge" }, String(m.order)),
     chip ? h("span", { class: "mc-here" }, h("span", { class: "mc-finger", "aria-hidden": "true" }, "☞"), chip) : null,
     done ? h("span", { class: "mc-done" }, h("span", { class: "mc-check", "aria-hidden": "true" }, "✓"), COPY.picker.done) : null,

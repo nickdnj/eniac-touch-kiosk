@@ -148,12 +148,13 @@ export const HONOR = {
 
   // ---------------------------------------------------------------- page 4
   exhibit: {
-    lead: "This exhibit runs on Brian Stuart’s simulator, on a screen of the Vintage Computer Federation at InfoAge. Our three missions come from real history.",
+    lead: "This exhibit runs on Brian Stuart’s simulator, on a screen of the Vintage Computer Federation at InfoAge. Our missions come from real history.",
     sourcesTitle: "Where the missions come from",
     sources: [
       { what: "Squares", from: "An example program by Brian L. Stuart, written for his simulator.", fc: "sq.e ships with the upstream simulator." },
       { what: "Primes", from: "Based on D. H. Lehmer’s run over the July 4 weekend of 1946, with Emma Lehmer. It used a sieve to find primes. Our program follows Liesbeth De Mol and Maarten Bullynck’s reconstruction.", fc: "fact-check C1, C8, C9: 'based on' his run; his goal was exponents of 2 modulo primes, and the sieve found the primes. Bullynck & De Mol, Archive for Mathematical Logic 49 (2010); De Mol & Bullynck, CiE 2008 (LNCS 5028). Emma Lehmer: DMB08 abstract." },
       { what: "Shell’s path", from: "Brian Stuart’s reconstruction of the shell trajectory from ENIAC’s unveiling, February 15, 1946.", fc: "fact-check B6, B7: the upstream program is Stuart's working reconstruction of the Feb 15 one." },
+      { what: "Difference", from: "Brian L. Stuart’s program from his tutorial “Polynomial Tables on the ENIAC”. It builds a table by adding differences, the method Babbage’s Difference Engine was designed around.", fc: "Stuart's tutorial, p. 1 (Babbage's motivation; the Method of Differences). Needs a second, museum-grade source for the Babbage claim before the floor (video plan section 6)." },
     ] as Source[],
     museumTitle: "The museum",
     museum: "Vintage Computer Federation, at the InfoAge Science and History Museums, Wall, New Jersey.",
