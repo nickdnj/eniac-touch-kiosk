@@ -133,7 +133,7 @@ content:
       count: "{n} of {total}"
       next: "Next"
       back: "Back"
-      skip: "Skip the tour"
+      skip: "Skip to the gun"
       go: "Go to the gun"
     aim:
       headline: "Aim the gun"

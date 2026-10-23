@@ -127,3 +127,4 @@
 .build-skip { margin-top: 12px; }
 .build-buttons .build-next { background: var(--card); color: var(--ink); border-color: var(--card); }
 .build-skip { color: var(--card); text-decoration: underline; justify-content: flex-start; min-height: 56px; }
+.build-rail .btn.build-skip { color: var(--card); opacity: 1; text-decoration: underline; font-size: 26px; min-height: 64px; margin-top: 8px; background: transparent; border: 0; justify-content: center; width: 100%; }

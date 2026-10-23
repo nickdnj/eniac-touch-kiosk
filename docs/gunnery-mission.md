@@ -5,7 +5,7 @@
 
 ## How a round goes (updated 2026-10-23: no manual wiring)
 
-After the gun is locked in, the bridge places every cable and switch (the visitor does not wire anything; it was not the game). The kiosk then walks the visitor through the room (`screens/build.ts`): the 40-panel panorama pans to eight stops (Initiating Unit, Master Programmer, Accumulators 4 and 6, Multiplier, Function Table 2, Accumulators 15 to 20, Constant Transmitter, Card Reader and Punch), ringing only the units the program really uses, with a line on why each is there. It moves on every 5 seconds; Next, Back and Skip the tour are always there. Then "Go to the gun" opens the run screen for READ and INIT. The stops and all the text are in `content.game.tour` and `content.game.build`.
+After the gun is locked in, the bridge places every cable and switch (the visitor does not wire anything; it was not the game). The kiosk then walks the visitor through the room (`screens/build.ts`): the 40-panel panorama pans to eight stops (Initiating Unit, Master Programmer, Accumulators 4 and 6, Multiplier, Function Table 2, Accumulators 15 to 20, Constant Transmitter, Card Reader and Punch), ringing only the units the program really uses, with a line on why each is there. The visitor moves it along with Next and Back (it never advances by itself), and a link underneath, "Skip to the gun", goes straight to the run screen. Then "Go to the gun" opens the run screen for READ and INIT. The stops and all the text are in `content.game.tour` and `content.game.build`.
 
 The text below describes the first version, in which the visitor placed two cables; steps 3 onward are unchanged except that step 3 no longer exists.
 

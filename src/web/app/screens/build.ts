@@ -3,7 +3,7 @@
 // wiring is not the game), so this screen shows what the mission uses instead:
 // the whole room on its 40 panels, panned to one unit after another with a
 // plain line on why it is there. The lamps are the visitor's own session.
-// The tour moves on by itself; Next, Back and Skip are always there.
+// The visitor moves it along: Next and Back, and a link underneath to skip to the gun.
 
 import type { App, Screen } from "../app.ts";
 import { h } from "../ui/dom.ts";
@@ -12,9 +12,6 @@ import { Panorama } from "../explore/panorama.ts";
 import { ROOM, centreOn, missionTargets, unitById } from "../explore/room.ts";
 import { COPY } from "../copy.ts";
 import { fillCard, fmt } from "../run/cards.ts";
-
-/** How long each stop stays before the tour moves on by itself. */
-const STOP_MS = 5000;
 
 function reduceMotion(): boolean {
   return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -35,8 +32,8 @@ export function buildScreen(app: App): Screen {
   const title = h("h3", { class: "build-stop-title" });
   const text = h("p", { class: "build-stop-text" });
   const count = h("div", { class: "build-count" });
-  const back = button(copy.back, "outline build-back", () => go(i - 1, true));
-  const next = button(copy.next, "primary main build-next", () => (i >= tour.length - 1 ? finish() : go(i + 1, true)));
+  const back = button(copy.back, "outline build-back", () => go(i - 1));
+  const next = button(copy.next, "primary main build-next", () => (i >= tour.length - 1 ? finish() : go(i + 1)));
   const skip = button(copy.skip, "link build-skip", () => finish());
   const rail = h(
     "div",
@@ -51,15 +48,14 @@ export function buildScreen(app: App): Screen {
   const el = h("div", { class: "screen build" }, header, room, rail);
 
   let i = 0;
-  let timer: ReturnType<typeof setTimeout> | null = null;
   let gone = false;
 
   function finish(): void {
     app.show({ name: "run" });
   }
 
-  /** Looks at stop k: pans there, rings its units, says why it is used, and starts the clock for the next. */
-  function go(k: number, manual = false, instant = false): void {
+  /** Looks at stop k: pans there, rings its units and says why it is used. */
+  function go(k: number, instant = false): void {
     if (k < 0 || k >= tour.length || gone) return;
     i = k;
     const stop = tour[k];
@@ -76,9 +72,6 @@ export function buildScreen(app: App): Screen {
     count.textContent = fillCard(copy.count, { n: k + 1, total: tour.length });
     next.textContent = k >= tour.length - 1 ? copy.go : copy.next;
     back.classList.toggle("hidden", k === 0);
-    if (timer) clearTimeout(timer);
-    timer = k >= tour.length - 1 ? null : setTimeout(() => go(k + 1), STOP_MS);
-    void manual;
   }
 
   return {
@@ -86,11 +79,10 @@ export function buildScreen(app: App): Screen {
     idle: "setup",
     mount: () => {
       pano.mount();
-      go(0, false, true);
+      go(0, true);
     },
     unmount: () => {
       gone = true;
-      if (timer) clearTimeout(timer);
       pano.dispose();
     },
     onMachine: (units) => pano.invalidate(units),
