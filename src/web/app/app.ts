@@ -633,6 +633,9 @@ export class App {
     this.show({ name: "tubes", tubes: open });
   }
 
+  /** Dev builds only: `?target=<feet or id>` fixes the game target (to film a chosen shot). Null in a production build. */
+  readonly devTarget: string | null = DEV ? new URLSearchParams(location.search).get("target") : null;
+
   private devAutostart(): void {
     const id = new URLSearchParams(location.search).get("mission");
     if (id) this.startMission(id, "briefing");

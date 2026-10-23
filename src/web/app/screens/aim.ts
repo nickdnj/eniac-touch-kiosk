@@ -25,7 +25,8 @@ export function aimScreen(app: App): Screen {
   const mission = app.mission!;
   const game = mission.content.game!;
   const copy = game.aim;
-  const round = (app.game ??= newRound(game));
+  const forced = app.devTarget ? game.targets.find((t) => String(t.feet) === app.devTarget || t.id === app.devTarget) : undefined;
+  const round = (app.game ??= newRound(game, Math.random, forced));
   let ship = round.ship;
   let charge = round.charge;
   let elevation = round.elevation;

@@ -99,7 +99,7 @@ content:
       - from: init
         to: init
         title: "Initiating Unit"
-        text: "The GO button. INIT starts the flight, and it tells ENIAC when the card has been read."
+        text: "The initiating pulse button, which Stuart's simulator labels INIT, starts the flight. This unit also tells ENIAC when the card has been read."
       - from: mp
         to: mp
         title: "Master Programmer"
@@ -198,7 +198,7 @@ content:
     review: { factCheck: [more], source: "ux-spec 8.3.5 0b" }
   rest:                          # S5
     headline: "The rest is done for you"
-    body: "Real ENIAC programmers placed hundreds of cables by hand. Setting up a new problem could take a day or more. You will place two of them. We place the rest."
+    body: "Real ENIAC programmers placed hundreds of cables by hand. Setting up a new problem could take a day or more. We place every cable and switch for you."
     buttons: ["Continue"]
     review: { factCheck: [body], source: "ux-spec 8.3.5 S5" }
   read:                          # the READ beat before INIT
@@ -211,7 +211,7 @@ content:
     initLocked: "Read the card first"
     review: { source: "ux-spec 8.3.5 S6 (READ pressed)" }
   run:                           # S6
-    before: { headline: "Press INIT", sub: "INIT is the Initiating Pulse, ENIAC's GO button." }
+    before: { headline: "Press INIT", sub: "INIT sends the initiating pulse, ENIAC's go signal." }
     presses:
       - press: 1
         headline: "Watch the dots"
@@ -249,7 +249,7 @@ content:
     body: "Each card was one second of the shell's flight. Joined up, the dots show where it went. ENIAC worked it out from your two choices and the cables you placed."
     takeaway: "Numbers and cables made a flight path."
     takeawaySub: "That is what programming ENIAC meant."
-    more: "The real ENIAC could work out a shell's path faster than the shell takes to fly. A person with a desk calculator needed many hours. Our simulator is slower, so you can watch every hop."
+    more: "ENIAC punched a card for every hop. Here you can watch each one arrive, and join the dots into the shell\'s path."
     live:
       waiting: "The shell is still flying: hop {n}"
       done: "{n} hops, {n} cards"

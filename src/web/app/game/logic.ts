@@ -20,8 +20,8 @@ export interface GameRound {
   elevation: string | null;
 }
 
-export function newRound(game: Game, rnd: () => number = Math.random): GameRound {
-  const t = game.targets[Math.min(game.targets.length - 1, Math.floor(rnd() * game.targets.length))];
+export function newRound(game: Game, rnd: () => number = Math.random, forced?: Game["targets"][number]): GameRound {
+  const t = forced ?? game.targets[Math.min(game.targets.length - 1, Math.floor(rnd() * game.targets.length))];
   return { target: t.feet, hit: t.hit || game.score.hitFeet, name: t.name ?? "", ship: null, charge: null, elevation: null };
 }
 

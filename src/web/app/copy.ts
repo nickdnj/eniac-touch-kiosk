@@ -97,7 +97,7 @@ export const COPY = {
   },
   run: {
     init: "INIT",
-    initSub: "Initiating Pulse: the GO button",
+    initSub: "Initiating pulse: ENIAC's go signal",
     clear: "CLEAR",
     clearSub: "Count from 0 again",
     slow: "Slow",

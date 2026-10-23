@@ -81,3 +81,9 @@ test("a new round carries the target's name and radius", () => {
   const r = newRound(g, () => 0);
   assert.deepEqual([r.target, r.hit, r.name, r.ship], [8000, 350, "Enemy cruiser", null]);
 });
+
+test("a forced target (the dev hook) is used instead of a random one", () => {
+  const g = { ...(game as object), targets: [{ id: "t1", feet: 8000 }, { id: "t2", feet: 9000, name: "Enemy", hit: 200 }] } as never;
+  const r = newRound(g, () => 0, { id: "t2", feet: 9000, name: "Enemy", hit: 200 });
+  assert.deepEqual([r.target, r.hit, r.name], [9000, 200, "Enemy"]);
+});

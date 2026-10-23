@@ -94,3 +94,8 @@ Guns (speeds in ft/s, from the range measured for Gunnery; not real naval figure
 The Big gun at 20 degrees flies 27 hops, about 40 seconds, the longest in the game. The eight targets are 3,700 / 5,400 (patrol boats, radius 150), 8,200 / 10,950 (destroyers, 200), 14,000 / 15,550 (cruisers, 300), 19,700 / 24,500 (battleships, 400).
 
 Naming: the mission is called Battleship at Nick's request. "Battleship" is a Hasbro trademark and the TV catchphrase is theirs, so the copy uses its own words ("Ship sunk!"). Worth a different title if this ever leaves the museum floor.
+
+
+## Filming a chosen target (dev hook, 2026-10-23)
+
+In `make dev` only (the dev server defines `__DEV__`; a release build never has it), `http://localhost:8740/?target=14000` fixes the game's target: pass a distance in feet or a target id (`t5`) from the mission's `targets`. Without it the target is random each round. The same switch also turns on `?mission=<id>` (start a mission straight away), which was off in `make dev` before.
