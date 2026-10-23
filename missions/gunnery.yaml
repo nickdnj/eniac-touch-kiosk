@@ -94,6 +94,47 @@ content:
       - { id: t7, feet: 19700 }
       - { id: t8, feet: 24500 }
     score: { max: 1000, hitFeet: 250, zeroFeet: 5000 }
+    tour:                        # the walk through the room after the shot is aimed; from and to are room ids (web/app/explore/room.ts)
+      - from: init
+        to: init
+        title: "Initiating Unit"
+        text: "The GO button. INIT starts the flight, and it tells ENIAC when the card has been read."
+      - from: mp
+        to: mp
+        title: "Master Programmer"
+        text: "ENIAC's conductor. It runs 50 tiny steps for every hop, then asks: is the shell still in the air?"
+      - from: a4
+        to: a6
+        title: "Accumulators 4 and 6"
+        text: "They hold the shell's speed: up in Accumulator 4, along in Accumulator 6. The air slows both, and gravity pulls the up speed down."
+      - from: mult
+        to: mult
+        title: "High-Speed Multiplier"
+        text: "It squares the shell's speed. The answer picks a number from the air table."
+      - from: ft2
+        to: ft2
+        title: "Function Table 2"
+        text: "The air table: 100 numbers for how hard the air slows the shell at each speed."
+      - from: a15
+        to: a20
+        title: "Accumulators 15 to 20"
+        text: "More numbers on the move: the hop in Accumulator 15, how far along in 18, how high up in 20. Watch their lamps once the shell is flying."
+      - from: ct
+        to: ct
+        title: "Constant Transmitter"
+        text: "Your two choices are dialled in here: how fast the shell goes along the ground, and how fast it goes up."
+      - from: pr
+        to: pr
+        title: "Card Reader and Punch"
+        text: "It reads the card of constants. Then it punches a card for every hop. Each card is one dot on your arc."
+    build:
+      headline: "ENIAC is setting itself up"
+      intro: "Your shot is dialled in. ENIAC has placed {cables} cables and {switches} switches. Here is what it uses."
+      count: "{n} of {total}"
+      next: "Next"
+      back: "Back"
+      skip: "Skip the tour"
+      go: "Go to the gun"
     aim:
       headline: "Aim the gun"
       body: "Pick a charge and an elevation. ENIAC will fly the shell. Land it on the flag."

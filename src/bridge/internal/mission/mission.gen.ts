@@ -115,6 +115,31 @@ export interface Game {
   score: ScoreRule;
   aim: AimCopy;
   board: BoardCopy;
+  tour: TourStop[];
+  build: BuildCopy;
+}
+/**
+ * TourStop is one stop of the walk through the room after the shot is aimed: the
+ * unit (or run of units, From to To, by room id) to look at, and why it is used.
+ */
+export interface TourStop {
+  from: string;
+  to: string;
+  title: string;
+  text: string;
+}
+/**
+ * BuildCopy is the walk-the-room screen's text. {cables} and {switches} are the program's totals,
+ * {n} and {total} the stop.
+ */
+export interface BuildCopy {
+  headline: string;
+  intro: string;
+  count: string;
+  next: string;
+  back: string;
+  skip: string;
+  go: string;
 }
 /**
  * Charge is a powder charge: the speed the shell leaves the gun, in feet per second.

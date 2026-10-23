@@ -3,7 +3,11 @@
 **Date:** 2026-10-22. **Status:** Draft, built overnight. The mission loads, the shot dials in, flights run on the real core, the score and the top lists work. Not yet seen on a screen by Nick; nothing fact-checked beyond what is below.
 **Idea (Nick, 2026-10-22):** turn Trajectory into a game. The visitor is given a target, chooses how to set up the gun, ENIAC flies the shell for real, and we score how close it landed. A top list of the day and of all time.
 
-## How a round goes
+## How a round goes (updated 2026-10-23: no manual wiring)
+
+After the gun is locked in, the bridge places every cable and switch (the visitor does not wire anything; it was not the game). The kiosk then walks the visitor through the room (`screens/build.ts`): the 40-panel panorama pans to eight stops (Initiating Unit, Master Programmer, Accumulators 4 and 6, Multiplier, Function Table 2, Accumulators 15 to 20, Constant Transmitter, Card Reader and Punch), ringing only the units the program really uses, with a line on why each is there. It moves on every 5 seconds; Next, Back and Skip the tour are always there. Then "Go to the gun" opens the run screen for READ and INIT. The stops and all the text are in `content.game.tour` and `content.game.build`.
+
+The text below describes the first version, in which the visitor placed two cables; steps 3 onward are unchanged except that step 3 no longer exists.
 
 1. **Briefing and plan** (short, in the usual mission screens).
 2. **Aim the gun** (`screens/aim.ts`). A flag stands on a range ruler at a random target distance. The visitor picks a **charge** (how fast the shell leaves the gun) and an **elevation** (the angle). The small gun on the ruler tips as they choose. Nothing shows where the shell will land.

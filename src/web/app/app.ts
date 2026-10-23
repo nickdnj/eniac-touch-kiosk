@@ -28,13 +28,13 @@ import { TapCounter, inZone } from "./admin/tapcount.ts";
 import { StaffLayer } from "./screens/admin.ts";
 import type { SwitchingOpen } from "./screens/switching.ts";
 
-export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "yourturn" | "aim" | "error" | "honor" | "explore" | "glossary" | "tubes" | "finale" | "switching";
+export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "yourturn" | "aim" | "build" | "error" | "honor" | "explore" | "glossary" | "tubes" | "finale" | "switching";
 
 /**
  * Views that show the Home button (beside the wordmark, top left): every
  * visitor screen except S1 and the picker itself. Home goes to the picker.
  */
-export const HOME_VIEWS = new Set<ViewName>(["mission", "run", "result", "yourturn", "aim", "explore", "glossary", "tubes", "honor", "finale"]);
+export const HOME_VIEWS = new Set<ViewName>(["mission", "run", "result", "yourturn", "aim", "build", "explore", "glossary", "tubes", "honor", "finale"]);
 
 /** Views that keep a running attract session (S1, Explore with its glossary, honor and tubes links, and the finale's F2 room). */
 const ATTRACT_KEEPS = new Set<string>(["start", "explore", "glossary", "honor", "tubes", "finale"]);
@@ -443,7 +443,7 @@ export class App {
       return;
     }
     // The bridge ended the session under us (reaped, or ended elsewhere).
-    if (!s && !this.expectingSession && ["mission", "run", "result", "aim"].includes(this.view.name) && !this.errorCode) {
+    if (!s && !this.expectingSession && ["mission", "run", "result", "aim", "build"].includes(this.view.name) && !this.errorCode) {
       this.resetVisitor();
       this.show({ name: "start" });
     }

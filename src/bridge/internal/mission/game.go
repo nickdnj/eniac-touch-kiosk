@@ -20,7 +20,30 @@ type Game struct {
 	Score      ScoreRule   `yaml:"score" json:"score"`
 	Aim        AimCopy     `yaml:"aim" json:"aim"`
 	Board      BoardCopy   `yaml:"board" json:"board"`
+	Tour       []TourStop  `yaml:"tour" json:"tour"`
+	Build      BuildCopy   `yaml:"build" json:"build"`
 	Review     Review      `yaml:"review,omitempty" json:"-"`
+}
+
+// TourStop is one stop of the walk through the room after the shot is aimed: the
+// unit (or run of units, From to To, by room id) to look at, and why it is used.
+type TourStop struct {
+	From  string `yaml:"from" json:"from"`
+	To    string `yaml:"to" json:"to"`
+	Title string `yaml:"title" json:"title"`
+	Text  string `yaml:"text" json:"text"`
+}
+
+// BuildCopy is the walk-the-room screen's text. {cables} and {switches} are the program's totals,
+// {n} and {total} the stop.
+type BuildCopy struct {
+	Headline string `yaml:"headline" json:"headline"`
+	Intro    string `yaml:"intro" json:"intro"`
+	Count    string `yaml:"count" json:"count"`
+	Next     string `yaml:"next" json:"next"`
+	Back     string `yaml:"back" json:"back"`
+	Skip     string `yaml:"skip" json:"skip"`
+	Go       string `yaml:"go" json:"go"`
 }
 
 // Charge is a powder charge: the speed the shell leaves the gun, in feet per second.
@@ -174,6 +197,21 @@ func (m *Mission) checkGame() {
 	for _, s := range []string{g.Aim.Headline, g.Aim.Body, g.Aim.Button, g.Aim.Dialled, g.Aim.Across, g.Aim.Up, g.Board.Top, g.Board.Score, g.Board.Again} {
 		if strings.TrimSpace(s) == "" {
 			m.fail("game copy has an empty field")
+			break
+		}
+	}
+	if len(g.Tour) == 0 {
+		m.fail("game.tour needs at least one stop")
+	}
+	for _, t := range g.Tour {
+		if t.From == "" || t.To == "" || strings.TrimSpace(t.Title) == "" || strings.TrimSpace(t.Text) == "" {
+			m.fail("game.tour: every stop needs from, to, title and text")
+			break
+		}
+	}
+	for _, c := range []string{g.Build.Headline, g.Build.Intro, g.Build.Next, g.Build.Go, g.Build.Count} {
+		if strings.TrimSpace(c) == "" {
+			m.fail("game.build copy has an empty field")
 			break
 		}
 	}

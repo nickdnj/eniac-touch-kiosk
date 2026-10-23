@@ -124,7 +124,10 @@ export function aimScreen(app: App): Screen {
     el,
     idle: "setup",
     onMessage: (m: ServerMsg) => {
-      if (m.t === "aimed" && sent) app.show({ name: "mission", entry: "step1" });
+      // The wiring is not the game: once the gun is aimed the bridge places every cable and switch,
+      // then the walk through the room (screens/build.ts) shows what ENIAC uses.
+      if (m.t === "aimed" && sent) app.send({ t: "skip_setup" });
+      else if (m.t === "setup_complete" && sent) app.show({ name: "build" });
       else if (m.t === "error" && sent) {
         sent = false;
         round.charge = null;
