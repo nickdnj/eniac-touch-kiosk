@@ -152,7 +152,15 @@
 @media (prefers-reduced-motion: reduce) { .gf-bulb, .gf-wave { animation: none; } }
 
 /* Battleship: the ship choice, the enemy ship and its water. */
-.aim-ship { flex: 1; min-height: 88px; font-size: 34px; font-weight: 700; }
+.aim-ship { flex: 1; min-height: 140px; }
+.aim-ship .aim-big { font-size: 28px; line-height: 34px; font-weight: 700; }
+.aim-ship .ship-icon { display: block; }
+.aim-charge .gun-icon { display: block; margin-bottom: 2px; }
+.aim-choice.chosen .ship-hull { fill: #5B6370; }
+.ship-turret { fill: #B7BEC8; stroke: var(--ink); stroke-width: 4; }
+.ship-barrel { fill: var(--ink); }
+.aim-choice .ship-barrel { fill: #10161F; }
+.aim-choice.chosen .ship-barrel, .aim-choice.chosen .ship-turret { stroke: var(--ink); }
 .aim-pick-ship { font-size: 26px; line-height: 40px; color: var(--muted); padding: 24px 0; }
 .ship-hull { fill: #8A93A0; stroke: var(--ink); stroke-width: 4; stroke-linejoin: round; }
 .ship-deck { fill: #B7BEC8; stroke: var(--ink); stroke-width: 4; }
@@ -163,3 +171,7 @@
 .bs-coord { font-size: 26px; font-family: var(--font-mono); font-weight: 700; }
 .bs-stamp { font-size: 70px; letter-spacing: 6px; }
 .gf-who-first { font-size: 34px; letter-spacing: 4px; }
+.aim-charge .ship-barrel { fill: var(--card); }
+.aim-charge.chosen .ship-barrel { fill: var(--ink); }
+.aim-charge .ship-turret { fill: #5B6370; stroke: var(--card); }
+.aim-charge.chosen .ship-turret { stroke: var(--ink); }

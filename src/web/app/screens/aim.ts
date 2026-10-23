@@ -13,6 +13,7 @@ import { COPY } from "../copy.ts";
 import { fillCard, fmt } from "../run/cards.ts";
 import { newRound, zones } from "../game/logic.ts";
 import { drawFlag, drawShip, drawZones, outerFeet } from "../game/zones.ts";
+import { gunIcon, shipIcon, warship, type Warship } from "../game/warship.ts";
 import { fetchScores } from "../net/api.ts";
 
 const W = 800;
@@ -46,11 +47,37 @@ export function aimScreen(app: App): Screen {
   drawZones(svg, game, round.target, X, GROUND, 60, GROUND + 68, round.hit);
   if (game.kind === "ship") drawShip(svg, X(round.target), GROUND, round.name || game.board.flag);
   else drawFlag(svg, X(round.target), GROUND, game.board.flag);
-  const barrel = s("g", { class: "aim-gun", transform: `translate(${X(0) + 26} ${GROUND - 18})` });
-  const tube = s("rect", { x: 0, y: -8, width: 78, height: 16, rx: 4, class: "aim-barrel" });
-  barrel.append(tube);
-  svg.append(s("circle", { cx: X(0) + 26, cy: GROUND - 18, r: 18, class: "aim-wheel" }), barrel);
-  const turn = () => barrel.setAttribute("transform", `translate(${X(0) + 26} ${GROUND - 18}) rotate(${-(game.elevations.find((e) => e.id === elevation)?.deg ?? 0)})`);
+  const deg = () => game.elevations.find((e) => e.id === elevation)?.deg ?? 0;
+  let turn: () => void;
+  // The ship draws as the visitor's own ship once chosen (Battleship); otherwise a field gun on its wheel.
+  const mine = s("g", { class: "aim-mine" });
+  const myShip = game.ships?.length ? { ref: null as Warship | null, id: "" } : null;
+  if (myShip) {
+    svg.append(mine);
+    const place = () => {
+      mine.replaceChildren();
+      if (!ship) {
+        myShip.ref = null;
+        myShip.id = "";
+        return;
+      }
+      if (myShip.id !== ship) {
+        myShip.ref = warship(ship);
+        myShip.id = ship;
+      }
+      const k = 0.62;
+      myShip.ref!.g.setAttribute("transform", `translate(${X(0) + 92} ${GROUND + 4}) scale(${k})`);
+      mine.append(myShip.ref!.g);
+      myShip.ref!.aim(deg());
+    };
+    turn = place;
+  } else {
+    const barrel = s("g", { class: "aim-gun", transform: `translate(${X(0) + 26} ${GROUND - 18})` });
+    const tube = s("rect", { x: 0, y: -8, width: 78, height: 16, rx: 4, class: "aim-barrel" });
+    barrel.append(tube);
+    svg.append(s("circle", { cx: X(0) + 26, cy: GROUND - 18, r: 18, class: "aim-wheel" }), barrel);
+    turn = () => barrel.setAttribute("transform", `translate(${X(0) + 26} ${GROUND - 18}) rotate(${-deg()})`);
+  }
   turn();
   const targetLine = h("div", { class: "aim-target" }, targetText(copy.target));
   const beat = h("div", { class: "aim-beat" });
@@ -89,11 +116,12 @@ export function aimScreen(app: App): Screen {
     feedback.textContent = "";
   };
   for (const sh of game.ships ?? []) {
-    const b = button(sh.label, "aim-choice aim-ship", () => {
+    const b = button("", "aim-choice aim-ship", () => {
       if (sent) return;
       ship = sh.id;
       refresh();
     });
+    b.append(shipIcon(sh.id) as unknown as HTMLElement, h("span", { class: "aim-big" }, sh.label));
     shipBtns.set(sh.id, b);
   }
   for (const c of game.charges) {
@@ -102,6 +130,7 @@ export function aimScreen(app: App): Screen {
       charge = c.id;
       refresh();
     });
+    if (game.ships?.length) b.append(gunIcon(c.speed) as unknown as HTMLElement);
     b.append(h("span", { class: "aim-big" }, c.label), h("span", { class: "aim-small" }, fillCard(copy.speed, { n: fmt(c.speed) })));
     chargeBtns.set(c.id, b);
   }
