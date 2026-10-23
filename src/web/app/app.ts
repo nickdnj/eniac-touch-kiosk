@@ -3,7 +3,7 @@
 // visitor flow, and recovery always returns to the start screen (FR-51).
 
 import type { YourTurnState } from "./yourturn/logic.ts";
-import type { GameRound } from "./game/logic.ts";
+import type { GameRound, GameVisit } from "./game/logic.ts";
 import type {
   ClientMsg,
   CompiledMission,
@@ -124,6 +124,8 @@ export class App {
   yourTurn: YourTurnState | null = null;
   /** Gunnery: this visitor's target and chosen shot. Null outside a game mission, and until the aim screen. */
   game: GameRound | null = null;
+  /** Gunnery: shots fired and the best score while this visitor keeps playing. Cleared when the visit ends. */
+  gameVisit: GameVisit = { shots: 0, best: 0 };
   view: View = { name: "boot" };
   /** Notebook tape for the current session (built from run.settled only). */
   tape: TapeRow[] = [];
@@ -475,6 +477,7 @@ export class App {
   }
 
   endSession(reason: "idle" | "menu" | "restart" | "done"): void {
+    this.gameVisit = { shots: 0, best: 0 };
     this.send({ t: "end_session", reason });
     this.resetVisitor();
   }

@@ -19,7 +19,7 @@ import { ArcPlot } from "../run/filmstage.ts";
 import { fillCard } from "../run/cards.ts";
 import { compare, question, readRows } from "../yourturn/logic.ts";
 import { fetchScores, postScore } from "../net/api.ts";
-import { judge, landingFeet, type Board, type Result, type ScoreEntry } from "../game/logic.ts";
+import { judge, landingFeet, placeOn, rankFor, type Board, type Result, type ScoreEntry } from "../game/logic.ts";
 import { COPY } from "../copy.ts";
 import { HONOR } from "../content/honor.ts";
 import { openHonor } from "./honor.ts";
@@ -104,7 +104,7 @@ export function resultScreen(app: App): Screen {
   if (yt && second) answer.querySelector(".takeaway")?.classList.add("hidden");
   if (yt) answer.append(compareBox);
   if (yourTurnBtn) answer.append(yourTurnBtn);
-  const right = h("div", { class: `result-right${yt && second ? " yt-second" : ""}` }, waiting, answer);
+  const right = h("div", { class: `result-right${yt && second ? " yt-second" : ""}${game ? " game" : ""}` }, waiting, answer);
 
   // ------------------------------------------------------------------ actions
   // After the visitor's own run, "Try again" becomes "Try another number" (another run of Your turn).
@@ -143,6 +143,7 @@ export function resultScreen(app: App): Screen {
   // ---- Gunnery scoring: worked out once, when the landing is on the cards.
   let scored: Result | null = null;
   let saved = false;
+  let counted = false;
   let board: Board | null = null;
   const letters = [0, 0, 0]; // A..Z for each of three initials
   const initials = () => letters.map((n) => String.fromCharCode(65 + n)).join("");
@@ -176,9 +177,19 @@ export function resultScreen(app: App): Screen {
       });
     }
     const b = game.board;
-    answerHead.textContent = scored.hit ? b.hit : fillCard(b.miss, { feet: scored.miss.toLocaleString("en-US") });
-    answerBody.textContent = scored.hit ? fillCard(b.landed, { feet: landed.toLocaleString("en-US") }) : `${fillCard(b.landed, { feet: landed.toLocaleString("en-US") })} ${scored.side === "short" ? b.short : b.long}`;
+    const ft = (n: number) => n.toLocaleString("en-US");
+    if (!counted) {
+      counted = true;
+      app.gameVisit.shots++;
+      app.gameVisit.best = Math.max(app.gameVisit.best, scored.score);
+    }
+    answerHead.textContent = rankFor(game, scored.score);
+    answerBody.textContent = scored.hit
+      ? fillCard(b.landed, { feet: ft(landed) })
+      : `${fillCard(b.landed, { feet: ft(landed) })} ${fillCard(b.miss, { feet: ft(scored.miss) })} ${scored.side === "short" ? b.short : b.long}`;
     const children: HTMLElement[] = [h("p", { class: "game-points" }, fillCard(b.score, { n: scored.score }))];
+    if (board) children.push(h("p", { class: "game-place" }, fillCard(b.rankToday, { n: placeOn(board.today, scored.score) })));
+    children.push(h("p", { class: "game-visit" }, `${fillCard(b.shots, { n: app.gameVisit.shots })}   ·   ${fillCard(b.best, { n: app.gameVisit.best })}`));
     if (!saved) {
       const pick = h("div", { class: "game-name" }, h("span", { class: "lbl" }, b.nameAsk));
       letters.forEach((_, i) => {

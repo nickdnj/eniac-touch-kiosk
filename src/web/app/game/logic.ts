@@ -69,3 +69,51 @@ export function shotSpeeds(game: Game, charge: string, elevation: string): { acr
   const rad = (e.deg * Math.PI) / 180;
   return { across: c.speed * Math.cos(rad), up: c.speed * Math.sin(rad) };
 }
+
+/** Plot x is in feet with four decimals. */
+export const FEET = FEET_SCALE;
+
+/** A band of ground around the flag worth a score: land inside it for at least `points`. */
+export interface Zone {
+  lo: number; // feet from the gun
+  hi: number;
+  points: number;
+  label: string;
+  cls: "gold" | "green" | "yellow" | "orange" | "red";
+}
+
+/** The miss at which the straight-line score falls to `points`. */
+function missFor(game: Game, points: number): number {
+  const r = game.score;
+  return r.hitFeet + (1 - points / r.max) * (r.zeroFeet - r.hitFeet);
+}
+
+/** The score zones around a target, outermost first (draw them in this order). Never reaches below the gun. */
+export function zones(game: Game, target: number): Zone[] {
+  const r = game.score;
+  const spec: [number, number, Zone["cls"], string][] = [
+    [missFor(game, 0), 0, "red", "1+"],
+    [missFor(game, r.max * 0.25), r.max * 0.25, "orange", `${r.max * 0.25}+`],
+    [missFor(game, r.max * 0.5), r.max * 0.5, "yellow", `${r.max * 0.5}+`],
+    [missFor(game, r.max * 0.75), r.max * 0.75, "green", `${r.max * 0.75}+`],
+    [r.hitFeet, r.max, "gold", `${r.max}`],
+  ];
+  return spec.map(([m, points, cls, label]) => ({ lo: Math.max(0, target - m), hi: target + m, points, label, cls }));
+}
+
+/** The title earned by a score (ranks are listed best first). */
+export function rankFor(game: Game, score: number): string {
+  const r = game.board.ranks.find((x) => score >= x.min);
+  return (r ?? game.board.ranks[game.board.ranks.length - 1]).title;
+}
+
+/** Where a score would stand on a list (1 is the top). */
+export function placeOn(list: ScoreEntry[], score: number): number {
+  return 1 + list.filter((e) => e.score >= score).length - list.filter((e) => e.score === score).length;
+}
+
+/** This visit's shots, kept while the visitor keeps playing (cleared when the visit ends). */
+export interface GameVisit {
+  shots: number;
+  best: number;
+}

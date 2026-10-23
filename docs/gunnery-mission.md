@@ -17,6 +17,14 @@
 
 The mission YAML carries a `game` block (charges, elevations, targets, score rule, all screen text). `internal/mission/game.go` validates it and checks that every shot's dial lines are legal core commands at load.
 
+## The game feel (2026-10-23, from Nick: "the flag runs through the whole mission")
+
+- The flag and the **score zones** are on every view of the shot: the aim ruler (with a colour legend), the live arc while ENIAC computes, and the result. Zones nest around the flag: gold (the hit radius, 1000), green (750+), yellow (500+), orange (250+), red (1+). Each zone's edge is exactly where the score line crosses that value (`game/logic.ts` `zones`, tested).
+- While the shell flies, a readout shows `Flag: 11,700 ft  ·  5,095 ft` (the shell's distance so far). At the landing the arc shows a pulse where it came down, a gold line to the flag with "770 ft long" or "short", and the points popping up. A bullseye adds a burst.
+- The headline is a **rank**: Bullseye!, Sharpshooter (750+), Good shot (500+), Close one (250+), Keep firing. Also shown: where the score would stand on today's list ("That is number 1 today"), and shots fired and best score this visit.
+- The aim screen shows "Score to beat today: N" once someone has scored today.
+- All of this text is in `content.game` in `missions/gunnery.yaml`.
+
 ## Scores
 
 `internal/scores`: one JSON file per mission under the state directory (`/var/lib/eniac-kiosk/scores/gunnery.json` on the kiosk). `GET /api/scores/{mission}` returns `{today, all}` (top 10 each). `POST` (same-origin only) takes `{name, score, missFeet, target, charge, elevation}`; the name is 1 to 8 of letters, digits, space, dot, dash. At most 200 entries are kept. To clear the board, delete that file. A staff "clear scores" button in the admin screen is not built.

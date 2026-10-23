@@ -106,6 +106,7 @@ content:
       button: "Lock in my shot"
       pick: "Pick a charge and an elevation first"
       dialled: "Your shot, set on the dials"
+      zones: "Land in a colour to score. The closer to the flag, the more points."
       across: "{n} ft/s along"
       up: "{n} ft/s up"
     board:
@@ -122,6 +123,20 @@ content:
       nameAsk: "Your initials"
       save: "Save my score"
       again: "Fire again"
+      ranks:
+        - { min: 1000, title: "Bullseye!" }
+        - { min: 750, title: "Sharpshooter" }
+        - { min: 500, title: "Good shot" }
+        - { min: 250, title: "Close one" }
+        - { min: 0, title: "Keep firing" }
+      beat: "Score to beat today: {n}"
+      rankToday: "That is number {n} today."
+      best: "Best this visit: {n}"
+      shots: "Shots fired: {n}"
+      flag: "Flag"
+      missBy: "{feet} ft {side}"
+      sideShort: "short"
+      sideLong: "long"
   briefing:                      # S3, step 0a
     headline: "You are the gunner"
     body: "ENIAC worked out where Army shells would land. Now you are the gunner. Pick how hard to fire and how high to aim, then let ENIAC fly the shell. Get as close to the flag as you can."

@@ -161,6 +161,7 @@ export interface AimCopy {
   button: string;
   pick: string;
   dialled: string; // run screen: the shot set on the dials, in place of card fields F and G
+  zones: string; // aim screen: what the colours mean
   across: string; // {n} feet per second, along the ground
   up: string; // {n} feet per second, straight up
 }
@@ -178,9 +179,25 @@ export interface BoardCopy {
   empty: string; // no scores yet
   nameAsk: string; // initials prompt
   save: string;
+  ranks: Rank[];
+  beat: string; // aim screen: {n} the best score today
+  rankToday: string; // {n}: where this score stands today
+  best: string; // {n}: best this visit
+  shots: string; // {n}: shots fired this visit
+  flag: string; // the flag, on the plot
+  missBy: string; // {feet} {side}
+  sideShort: string;
+  sideLong: string;
   again: string;
   today: string;
   allTime: string;
+}
+/**
+ * Rank is a title earned at a score of Min or more (listed best first).
+ */
+export interface Rank {
+  min: number /* int */;
+  title: string;
 }
 
 //////////

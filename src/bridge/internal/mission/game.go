@@ -62,25 +62,41 @@ type AimCopy struct {
 	Button   string `yaml:"button" json:"button"`
 	Pick     string `yaml:"pick" json:"pick"`
 	Dialled  string `yaml:"dialled" json:"dialled"` // run screen: the shot set on the dials, in place of card fields F and G
+	Zones    string `yaml:"zones" json:"zones"`     // aim screen: what the colours mean
 	Across   string `yaml:"across" json:"across"`   // {n} feet per second, along the ground
 	Up       string `yaml:"up" json:"up"`           // {n} feet per second, straight up
 }
 
 // BoardCopy is the result screen's scoring and top-scores text.
 type BoardCopy struct {
-	Landed  string `yaml:"landed" json:"landed"`   // {feet}
-	Hit     string `yaml:"hit" json:"hit"`         // direct hit
-	Miss    string `yaml:"miss" json:"miss"`       // {feet}, {side}
-	Short   string `yaml:"short" json:"short"`     // the shell fell short
-	Long    string `yaml:"long" json:"long"`       // the shell flew past
-	Score   string `yaml:"score" json:"score"`     // {n}
-	Top     string `yaml:"top" json:"top"`         // heading
-	Empty   string `yaml:"empty" json:"empty"`     // no scores yet
-	NameAsk string `yaml:"nameAsk" json:"nameAsk"` // initials prompt
-	Save    string `yaml:"save" json:"save"`
-	Again   string `yaml:"again" json:"again"`
-	Today   string `yaml:"today" json:"today"`
-	AllTime string `yaml:"allTime" json:"allTime"`
+	Landed    string `yaml:"landed" json:"landed"`   // {feet}
+	Hit       string `yaml:"hit" json:"hit"`         // direct hit
+	Miss      string `yaml:"miss" json:"miss"`       // {feet}, {side}
+	Short     string `yaml:"short" json:"short"`     // the shell fell short
+	Long      string `yaml:"long" json:"long"`       // the shell flew past
+	Score     string `yaml:"score" json:"score"`     // {n}
+	Top       string `yaml:"top" json:"top"`         // heading
+	Empty     string `yaml:"empty" json:"empty"`     // no scores yet
+	NameAsk   string `yaml:"nameAsk" json:"nameAsk"` // initials prompt
+	Save      string `yaml:"save" json:"save"`
+	Ranks     []Rank `yaml:"ranks" json:"ranks"`
+	Beat      string `yaml:"beat" json:"beat"`           // aim screen: {n} the best score today
+	RankToday string `yaml:"rankToday" json:"rankToday"` // {n}: where this score stands today
+	Best      string `yaml:"best" json:"best"`           // {n}: best this visit
+	Shots     string `yaml:"shots" json:"shots"`         // {n}: shots fired this visit
+	Flag      string `yaml:"flag" json:"flag"`           // the flag, on the plot
+	MissBy    string `yaml:"missBy" json:"missBy"`       // {feet} {side}
+	SideShort string `yaml:"sideShort" json:"sideShort"`
+	SideLong  string `yaml:"sideLong" json:"sideLong"`
+	Again     string `yaml:"again" json:"again"`
+	Today     string `yaml:"today" json:"today"`
+	AllTime   string `yaml:"allTime" json:"allTime"`
+}
+
+// Rank is a title earned at a score of Min or more (listed best first).
+type Rank struct {
+	Min   int    `yaml:"min" json:"min"`
+	Title string `yaml:"title" json:"title"`
 }
 
 // AimLines returns the core commands that dial the shot in. The launch speeds
@@ -158,6 +174,15 @@ func (m *Mission) checkGame() {
 	for _, s := range []string{g.Aim.Headline, g.Aim.Body, g.Aim.Button, g.Aim.Dialled, g.Aim.Across, g.Aim.Up, g.Board.Top, g.Board.Score, g.Board.Again} {
 		if strings.TrimSpace(s) == "" {
 			m.fail("game copy has an empty field")
+			break
+		}
+	}
+	if len(g.Board.Ranks) == 0 {
+		m.fail("game.board.ranks needs at least one rank")
+	}
+	for i, r := range g.Board.Ranks {
+		if strings.TrimSpace(r.Title) == "" || (i > 0 && r.Min >= g.Board.Ranks[i-1].Min) {
+			m.fail("game.board.ranks must be titled and listed best first")
 			break
 		}
 	}
