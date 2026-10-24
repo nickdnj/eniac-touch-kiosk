@@ -172,7 +172,7 @@ export interface TourStop {
   to: string;
   title: string;
   text: string;
-  bullets: string[]; // the docent\'s talking points for this unit
+  bullets: string[]; // the docent's talking points for this unit
 }
 /**
  * BuildCopy is the walk-the-room screen's text. {cables} and {switches} are the program's totals,
