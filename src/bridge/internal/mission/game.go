@@ -75,7 +75,6 @@ type TourStop struct {
 // {n} and {total} the stop.
 type BuildCopy struct {
 	Headline string `yaml:"headline" json:"headline"`
-	Notes    string `yaml:"notes" json:"notes"` // the label over the talking points
 	Intro    string `yaml:"intro" json:"intro"`
 	Count    string `yaml:"count" json:"count"`
 	Next     string `yaml:"next" json:"next"`

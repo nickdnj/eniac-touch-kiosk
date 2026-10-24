@@ -31,9 +31,15 @@ export function buildScreen(app: App): Screen {
 
   const title = h("h3", { class: "build-stop-title" });
   const text = h("p", { class: "build-stop-text" });
-  // The talking points: what a docent would say about this unit, bulleted under the room.
-  const noteList = h("ul", { class: "build-notes-list" });
-  const notes = h("div", { class: "build-notes" }, noteList);
+  // What a docent would say about this unit: a few bullets, in the rail with the unit's name.
+  const bullets = h("ul", { class: "build-bullets" });
+  // One tab per stop under the room: where we are, and a tap goes straight to any stop.
+  const tabs = tour.map((stop, k) => {
+    const t = button("", "build-tab", () => go(k));
+    t.append(h("span", { class: "n" }, String(k + 1)), h("span", { class: "nm" }, stop.title));
+    return t;
+  });
+  const tabRow = h("div", { class: "build-tabs", role: "tablist" }, ...tabs);
   const count = h("div", { class: "build-count" });
   const back = button(copy.back, "outline build-back", () => go(i - 1));
   const next = button(copy.next, "primary main build-next", () => (i >= tour.length - 1 ? finish() : go(i + 1)));
@@ -41,14 +47,14 @@ export function buildScreen(app: App): Screen {
   const rail = h(
     "div",
     { class: "build-rail" },
-    h("h2", { class: "screen-title" }, copy.headline),
+    h("h2", { class: "screen-title build-head" }, copy.headline),
     h("p", { class: "build-intro" }, fillCard(copy.intro, { cables: fmt(cables), switches: fmt(switches) })),
-    h("div", { class: "build-card" }, count, title, text),
+    h("div", { class: "build-card" }, count, title, text, bullets),
     h("div", { class: "build-buttons" }, back, next),
     skip,
   );
   const header = h("div", { class: "header" }, h("span", { class: "title" }, COPY.header.mission(mission.order, mission.title)));
-  const el = h("div", { class: "screen build" }, header, room, notes, rail);
+  const el = h("div", { class: "screen build" }, header, room, tabRow, rail);
 
   let i = 0;
   let gone = false;
@@ -67,12 +73,16 @@ export function buildScreen(app: App): Screen {
     if (a && b) {
       const at = Math.min(a.at, b.at);
       const end = Math.max(a.at + a.n, b.at + b.n);
-      pano.highlight(new Set(ROOM.filter((u) => used.has(u.id) && u.at >= at && u.at + u.n <= end).map((u) => u.id)));
+      pano.highlight(new Set(ROOM.filter((u) => (used.has(u.id) || u.id === stop.from || u.id === stop.to) && u.at >= at && u.at + u.n <= end).map((u) => u.id)));
       void pano.setX(centreOn(at, end - at), { ms: instant ? 0 : 900 });
     }
     title.textContent = stop.title;
     text.textContent = stop.text;
-    noteList.replaceChildren(...stop.bullets.map((x) => h("li", {}, x)));
+    bullets.replaceChildren(...stop.bullets.map((x) => h("li", {}, x)));
+    tabs.forEach((t, j) => {
+      t.classList.toggle("current", j === k);
+      t.setAttribute("aria-selected", String(j === k));
+    });
     count.textContent = fillCard(copy.count, { n: k + 1, total: tour.length });
     next.textContent = k >= tour.length - 1 ? copy.go : copy.next;
     back.classList.toggle("hidden", k === 0);

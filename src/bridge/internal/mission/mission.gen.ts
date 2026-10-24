@@ -180,7 +180,6 @@ export interface TourStop {
  */
 export interface BuildCopy {
   headline: string;
-  notes: string; // the label over the talking points
   intro: string;
   count: string;
   next: string;

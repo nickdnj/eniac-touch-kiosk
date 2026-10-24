@@ -202,7 +202,6 @@ content:
           - "In 1946 numbers went in and out of ENIAC on punched cards, not screens."
     build:
       headline: "ENIAC is setting itself up"
-      notes: "Talking points"
       intro: "Your shot is dialled in. ENIAC has placed {cables} cables and {switches} switches. Here is what it uses."
       count: "{n} of {total}"
       next: "Next"
