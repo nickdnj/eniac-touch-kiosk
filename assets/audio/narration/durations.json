@@ -1,0 +1,202 @@
+{
+ "voice": "Nick 2 6SxuwKUiBpZjFTc06v9Y",
+ "model": "eleven_multilingual_v2",
+ "settings": {
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "style": 0.4,
+  "speed": 1.12,
+  "use_speaker_boost": true
+ },
+ "aliases": {
+  "ENIAC": "Ennie-ack",
+  "ENIAC's": "Ennie-ack's",
+  "init": "in\u00b7it",
+  "recreation": "re-creation"
+ },
+ "total_narration_seconds": 119.49,
+ "vo12_plus_vo13": {
+  "seconds": 10.217,
+  "budget_s": 12.0,
+  "over_budget": false
+ },
+ "lines": [
+  {
+   "id": "VO01",
+   "seconds": 7.988,
+   "text": "That's a game of Battleship. Every shot is worked out by ENIAC, a computer from nineteen forty-six. Well, by a faithful simulation of it.",
+   "budget_s": 9.0,
+   "budget_note": "scene 2 0:04.0-0:13.0",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO02",
+   "seconds": 5.944,
+   "text": "I'm Nick, a docent at the Vintage Computer Federation museum. This is ENIAC. It filled a room.",
+   "budget_s": 7.0,
+   "budget_note": "scene 3 0:13.0-0:20.0",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO03",
+   "seconds": 9.845,
+   "text": "It was built for the U.S. Army, to work out where artillery shells would land, for the firing tables gun crews used. It was unveiled on February fifteenth, nineteen forty-six.",
+   "budget_s": 11.0,
+   "budget_note": "scene 4 0:20.0-0:31.0",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO04",
+   "seconds": 8.173,
+   "text": "So aiming a gun is the most ENIAC thing you can do. Our kiosk lets you, on a simulation that follows the real machine pulse by pulse.",
+   "budget_s": 9.0,
+   "budget_note": "scene 5 0:31.0-0:40.0",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO06",
+   "seconds": 8.545,
+   "text": "Here's the game. An enemy destroyer, just under eleven thousand feet away. I pick a destroyer, its quick gun, and the steepest angle: twenty degrees.",
+   "budget_s": 9.5,
+   "budget_note": "scene 7 0:40.0-0:49.5",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO07",
+   "seconds": 7.477,
+   "text": "Ships and guns are just the game. My gun and angle become two numbers on the Constant Transmitter. The simulated machine does the rest.",
+   "budget_s": 9.0,
+   "budget_note": "scene 8 0:49.5-0:58.5",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO08",
+   "seconds": 8.173,
+   "text": "The kiosk places every cable and switch for me. The Master Programmer is the conductor. The accumulators hold the numbers: which hop, how far along, how high.",
+   "budget_s": 9.5,
+   "budget_note": "scene 9 0:58.5-1:08.0",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO09",
+   "seconds": 5.526,
+   "text": "Press READ to take in the card. Then init: the initiating pulse button, as the simulator labels it.",
+   "budget_s": 7.0,
+   "budget_note": "scene 10 1:08.0-1:15.0",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO10",
+   "seconds": 16.068,
+   "text": "This is firing-table arithmetic: fifty tiny steps for every second of flight. The multiplier squares the speed. Function Table Two looks up how hard the air pushes back. The punch makes one card: one dot. Join the dots, and that's the shell's path.",
+   "budget_s": 23.0,
+   "budget_note": "scene 11 1:15.0-1:38.0",
+   "over_budget": false,
+   "over_by_s": 0,
+   "advisory_budget_s": 15.0,
+   "advisory_note": "scene is 23 s, but the uncut last-2-hops tail starts 1:42 (15 s in) and VO10 must clear before the last card",
+   "over_advisory": true
+  },
+  {
+   "id": "VO11",
+   "seconds": 6.687,
+   "text": "Short. Five hundred and fifteen feet short. That's the destroyer's fastest gun at the steepest angle. It can't reach.",
+   "budget_s": 10.0,
+   "budget_note": "scene 12 1:38.0-1:48.0",
+   "over_budget": false,
+   "over_by_s": 0,
+   "advisory_budget_s": 7.5,
+   "advisory_note": "VO11 starts ~1.0 s after the result appears (table: 1:52.5 to 2:00)",
+   "over_advisory": false
+  },
+  {
+   "id": "VO12",
+   "seconds": 5.991,
+   "text": "In this game, the same shot always lands in the same place. So I need more speed: a bigger ship.",
+   "budget_s": null,
+   "budget_note": "scene 13 1:48.0-2:00.0 shared, combined budget 12 s",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO13",
+   "seconds": 4.226,
+   "text": "The cruiser. Its long gun. With that speed, I aim lower: ten degrees.",
+   "budget_s": null,
+   "budget_note": "scene 13 1:48.0-2:00.0 shared, combined budget 12 s",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO14",
+   "seconds": 3.437,
+   "text": "Four feet off. Sunk. Type your name, and you're on today's board.",
+   "budget_s": 5.0,
+   "budget_note": "scene 17 2:28.0-2:33.0",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO15",
+   "seconds": 8.266,
+   "text": "The game is built on Brian Stuart's recreation of the trajectory program. Thank you, Brian L. Stuart, for the simulator that makes it possible.",
+   "budget_s": 9.0,
+   "budget_note": "scene 18 2:33.0-2:42.0",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "VO16",
+   "seconds": 13.143,
+   "text": "Come beat today's high score on a faithful simulation of an eighty-year-old computer. Vintage Computer Federation, at Info Age in Wall, New Jersey. Wednesdays, Saturdays and Sundays, noon to five.",
+   "budget_s": 13.0,
+   "budget_note": "scene 19 2:42.0-2:55.0",
+   "over_budget": true,
+   "over_by_s": 0.143
+  },
+  {
+   "id": "CUT30-01",
+   "seconds": 7.245,
+   "text": "ENIAC is from nineteen forty-six. This game runs on a faithful simulation of it. Let's sink a ship.",
+   "budget_s": 5.0,
+   "budget_note": "30s cut beat 0:00-0:05",
+   "over_budget": true,
+   "over_by_s": 2.245
+  },
+  {
+   "id": "CUT30-02",
+   "seconds": 6.687,
+   "text": "Every second of flight is fifty tiny steps of arithmetic, and one punched card. Each card is one dot.",
+   "budget_s": 12.0,
+   "budget_note": "30s cut beat 0:08-0:20",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "CUT30-03",
+   "seconds": 4.272,
+   "text": "Play it at the Vintage Computer Federation, Info Age, Wall, New Jersey.",
+   "budget_s": 6.0,
+   "budget_note": "30s cut beat 0:24-0:30",
+   "over_budget": false,
+   "over_by_s": 0
+  },
+  {
+   "id": "CUT8-01",
+   "seconds": 4.458,
+   "text": "Sink a ship on a simulated ENIAC. The real one's from nineteen forty-six.",
+   "budget_s": 5.0,
+   "budget_note": "8s cut beat 0:00-0:05",
+   "over_budget": false,
+   "over_by_s": 0
+  }
+ ]
+}
