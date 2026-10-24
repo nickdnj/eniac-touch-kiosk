@@ -1,4 +1,7 @@
-# Mission 5: Gunnery (draft)
+# Battleship (and Gunnery, removed 2026-10-24)
+
+> **2026-10-24:** the Gunnery mission (the flag game) was removed, and **Battleship is now mission 1** (Squares 2, Primes 3, Trajectory 4, Difference 5). Everything below about Gunnery is history; the design, scoring, firing table, docent mode and tour all live on in Battleship. `missions/programs/gunnery.e` keeps its name because Battleship uses it. The real-core test helpers keep the `GUNNERY_*` environment names.
+
 
 **Date:** 2026-10-22. **Status:** Draft, built overnight. The mission loads, the shot dials in, flights run on the real core, the score and the top lists work. Not yet seen on a screen by Nick; nothing fact-checked beyond what is below.
 **Idea (Nick, 2026-10-22):** turn Trajectory into a game. The visitor is given a target, chooses how to set up the gun, ENIAC flies the shell for real, and we score how close it landed. A top list of the day and of all time.

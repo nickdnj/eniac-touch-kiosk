@@ -7,14 +7,14 @@ import (
 	"testing"
 )
 
-// Gunnery loads, and a shot becomes the right dial settings.
-func TestGunneryValid(t *testing.T) {
+// A shot becomes the right dial settings.
+func TestAimLinesDialTheShot(t *testing.T) {
 	dir, up := paths(t)
-	m := Load(filepath.Join(dir, "gunnery.yaml"), up)
+	m := Load(filepath.Join(dir, "battleship.yaml"), up)
 	if !m.Available {
-		t.Fatalf("gunnery unavailable: %v", m.Errors)
+		t.Fatalf("battleship unavailable: %v", m.Errors)
 	}
-	lines, err := m.AimLines("c3", "e20")
+	lines, err := m.AimLines("g5", "e20")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -28,8 +28,8 @@ func TestGunneryValid(t *testing.T) {
 			t.Errorf("missing dial line %q in %v", w, strings.Join(lines, "; "))
 		}
 	}
-	if _, err := m.AimLines("c9", "e20"); err == nil {
-		t.Error("unknown charge accepted")
+	if _, err := m.AimLines("g9", "e20"); err == nil {
+		t.Error("unknown gun accepted")
 	}
 }
 

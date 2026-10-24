@@ -19,7 +19,7 @@
 schema: 1
 id: difference
 title: "Difference"
-order: 4
+order: 5
 summary: "Make ENIAC build a table, the way Babbage planned."
 minutes: 4
 program: difference-cubes.e

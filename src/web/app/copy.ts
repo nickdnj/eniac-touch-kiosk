@@ -252,7 +252,7 @@ export const COPY = {
       originalNote: "Brian L. Stuart's own screen for the simulator.",
       notInstalled: "Not installed on this box.",
       docent: "Docent mode",
-      docentNote: "For a tour: no visitor timeout, and the firing table shows on the Gunnery and Battleship aim screens. Ends after 15 quiet minutes.",
+      docentNote: "For a tour: no visitor timeout, and the firing table shows on the Battleship aim screen. Ends after 15 quiet minutes.",
       docentOn: "Turn on",
       docentOff: "Turn off",
       return: "Return to kiosk",

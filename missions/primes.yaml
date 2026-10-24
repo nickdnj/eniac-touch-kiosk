@@ -9,7 +9,7 @@
 schema: 1
 id: primes
 title: "Primes"
-order: 2
+order: 3
 summary: "Set ENIAC hunting for prime numbers."
 minutes: 4
 program: sieve.e

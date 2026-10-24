@@ -1,10 +1,11 @@
-# Mission 6: Battleship. The Gunnery game with a navy dress: the visitor picks a ship, one of its guns and an
-# elevation, ENIAC flies the shell for real on the Trajectory machine, and the score says how close it came to
-# the enemy ship. The same program and the same bridge as Gunnery (missions/programs/gunnery.e).
+# Mission 1: Battleship. A target game on the real Trajectory machine: the visitor picks a ship, one of its guns
+# and an elevation, ENIAC flies the shell for real, and the score says how close it came to the enemy ship. The
+# program is Brian Stuart's trajdemo.e with only the launch-speed loads re-pointed to the Constant Transmitter's
+# dials (missions/programs/gunnery.e; the bridge sets the dials from the aim).
 schema: 1
 id: battleship
 title: "Battleship"
-order: 6
+order: 1
 summary: "Pick your ship and gun. Sink the enemy."
 minutes: 3
 program: gunnery.e
@@ -139,7 +140,7 @@ content:
       use: "Use this shot"
       close: "Close"
     score: { max: 1000, hitFeet: 250, zeroFeet: 5000 }
-    blurb: "Pick a ship and a gun. Sink the enemy. A game."
+    blurb: "A game: aim and fire"
     tour:                        # the walk through the room after the shot is aimed; from and to are room ids (web/app/explore/room.ts). `text` is one line, `bullets` are the docent's talking points.
       - from: init
         to: init

@@ -50,7 +50,7 @@ func TestGunnerySweep(t *testing.T) {
 			t0 := time.Now()
 			mission := os.Getenv("GUNNERY_MISSION")
 			if mission == "" {
-				mission = "gunnery"
+				mission = "battleship"
 			}
 			cards := flyShot(t, mission, ce[0], ce[1])
 			n := len(cards)

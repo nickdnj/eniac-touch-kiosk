@@ -1,13 +1,13 @@
 // Battleship's front of house: the look of the old board-game TV commercials. A deep navy
 // room, the ten-by-ten ocean grid with lettered columns, grey warships, red and white
-// pegs, a starburst when a shell lands on the enemy ship. Flat SVG, like gunneryfig.ts.
+// pegs, a starburst when a shell lands on the enemy ship. Flat SVG.
 // The title figure (S3 briefing) lobs a shell from your ship at the enemy's on a loop and
 // shows today's best score; the plan figure shows the three choices (ship, gun, angle); the
 // picker card is a small banner over a grid.
 
 import { h, svgFromString } from "../ui/dom.ts";
 import type { Figure } from "./primesfig.ts";
-import { fillBest, scorePlate } from "./gunneryfig.ts";
+import { fillBest, scorePlate } from "./scoreplate.ts";
 
 const NAVY = "#0B2545";
 const SEA = "#1B4E8C";
