@@ -140,41 +140,87 @@ content:
       close: "Close"
     score: { max: 1000, hitFeet: 250, zeroFeet: 5000 }
     blurb: "Pick a ship and a gun. Sink the enemy. A game."
-    tour:
+    tour:                        # the walk through the room after the shot is aimed; from and to are room ids (web/app/explore/room.ts). `text` is one line, `bullets` are the docent's talking points.
       - from: init
         to: init
         title: "Initiating Unit"
-        text: "The initiating pulse button, which Stuart's simulator labels INIT, starts the flight. This unit also tells ENIAC when the card has been read."
+        text: "Where a job starts."
+        bullets:
+          - "Pressing the initiating pulse button sends out the first signal, and the program takes over."
+          - "The same unit holds CLEAR, which wipes the numbers back to zero."
+          - "It also holds the button that starts the card reader, and hears when the reader is done."
+      - from: cyc
+        to: cyc
+        title: "Cycling Unit"
+        text: "ENIAC's heartbeat."
+        bullets:
+          - "A clock ticking about 100,000 times a second."
+          - "Every unit follows this beat, so numbers and signals arrive at exactly the right moment."
+          - "One addition takes 20 ticks."
       - from: mp
         to: mp
         title: "Master Programmer"
-        text: "ENIAC's conductor. It runs 50 tiny steps for every hop, then asks: is the shell still in the air?"
+        text: "ENIAC's conductor."
+        bullets:
+          - "It counts, and it decides what happens next."
+          - "Here it runs 50 tiny steps for every hop, then a card is punched."
+          - "Then it asks: is the shell still in the air? If so, another hop."
+          - "Ten steppers, a bit like a music box with pins."
       - from: a4
         to: a6
         title: "Accumulators 4 and 6"
-        text: "They hold the shell's speed: up in Accumulator 4, along in Accumulator 6. The air slows both, and gravity pulls the up speed down."
+        text: "Adding machines that remember."
+        bullets:
+          - "Each holds one 10-digit number, shown in neon lamps."
+          - "ENIAC had no memory bank. Its 20 accumulators were its memory: 20 numbers at once."
+          - "An accumulator can pass its number on to another, so a result becomes the next step's input."
+          - "Here: up speed in Accumulator 4, along speed in Accumulator 6."
       - from: mult
         to: mult
         title: "High-Speed Multiplier"
-        text: "It squares the shell's speed. The answer picks a number from the air table."
+        text: "Times tables, fast."
+        bullets:
+          - "It multiplies two 10-digit numbers in about 3 thousandths of a second."
+          - "It does it digit by digit with a built-in one-digit times table, then adds up the partial products."
+          - "Here it squares the shell's speed, to look up how much the air slows it."
+          - "Far faster than adding again and again."
       - from: ft2
         to: ft2
         title: "Function Table 2"
-        text: "The air table: 100 numbers for how hard the air slows the shell at each speed."
+        text: "A look-up table, set with switches."
+        bullets:
+          - "Give it a number and it hands back the matching answer, like a dictionary."
+          - "Here it is the air-drag table: 100 numbers, one for each speed."
+          - "Set by hand with switches, nothing stored electronically."
+          - "Brian Stuart worked the drag numbers out himself, so they are his best attempt."
       - from: a15
         to: a20
         title: "Accumulators 15 to 20"
-        text: "More numbers on the move: the hop in Accumulator 15, how far along in 18, how high up in 20. Watch their lamps once the shell is flying."
+        text: "The flight, in numbers."
+        bullets:
+          - "Accumulator 15 counts the hops, 18 holds how far along, 20 how high up."
+          - "Accumulator 19 asks: is the shell still above ground?"
+          - "Each hop's numbers pass along to feed the next hop."
+          - "The cards you will see punched are these numbers, one card per hop."
       - from: ct
         to: ct
         title: "Constant Transmitter"
-        text: "Your gun and your angle are dialled in here: how fast the shell goes along the water, and how fast it goes up."
+        text: "Numbers in."
+        bullets:
+          - "Numbers that never change go in here: set on dials, or read from a punched card."
+          - "Your gun and your angle are dialled in here as two numbers: how fast along, how fast up."
+          - "The IBM card reader sits beside it."
       - from: pr
         to: pr
         title: "Card Reader and Punch"
-        text: "It reads the card of constants. Then it punches a card for every hop. Each card is one dot on your arc."
+        text: "Answers out, on cards."
+        bullets:
+          - "It reads the card of constants first."
+          - "Then it punches one card for every hop. Each card is one dot on your arc."
+          - "In 1946 numbers went in and out of ENIAC on punched cards, not screens."
     build:
       headline: "ENIAC is loading the guns"
+      notes: "Talking points"
       intro: "Your shot is dialled in. ENIAC has placed {cables} cables and {switches} switches. Here is what it uses."
       count: "{n} of {total}"
       next: "Next"

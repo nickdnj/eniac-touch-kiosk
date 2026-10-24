@@ -31,6 +31,10 @@ export function buildScreen(app: App): Screen {
 
   const title = h("h3", { class: "build-stop-title" });
   const text = h("p", { class: "build-stop-text" });
+  // The talking points: what a docent would say about this unit, bulleted under the room.
+  const noteHead = h("div", { class: "build-notes-head" });
+  const noteList = h("ul", { class: "build-notes-list" });
+  const notes = h("div", { class: "build-notes" }, noteHead, noteList);
   const count = h("div", { class: "build-count" });
   const back = button(copy.back, "outline build-back", () => go(i - 1));
   const next = button(copy.next, "primary main build-next", () => (i >= tour.length - 1 ? finish() : go(i + 1)));
@@ -45,7 +49,7 @@ export function buildScreen(app: App): Screen {
     skip,
   );
   const header = h("div", { class: "header" }, h("span", { class: "title" }, COPY.header.mission(mission.order, mission.title)));
-  const el = h("div", { class: "screen build" }, header, room, rail);
+  const el = h("div", { class: "screen build" }, header, room, notes, rail);
 
   let i = 0;
   let gone = false;
@@ -69,6 +73,8 @@ export function buildScreen(app: App): Screen {
     }
     title.textContent = stop.title;
     text.textContent = stop.text;
+    noteHead.textContent = `${stop.title}  ·  ${copy.notes}`;
+    noteList.replaceChildren(...stop.bullets.map((x) => h("li", {}, x)));
     count.textContent = fillCard(copy.count, { n: k + 1, total: tour.length });
     next.textContent = k >= tour.length - 1 ? copy.go : copy.next;
     back.classList.toggle("hidden", k === 0);

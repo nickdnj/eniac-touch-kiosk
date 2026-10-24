@@ -172,6 +172,7 @@ export interface TourStop {
   to: string;
   title: string;
   text: string;
+  bullets: string[]; // the docent\'s talking points for this unit
 }
 /**
  * BuildCopy is the walk-the-room screen's text. {cables} and {switches} are the program's totals,
@@ -179,6 +180,7 @@ export interface TourStop {
  */
 export interface BuildCopy {
   headline: string;
+  notes: string; // the label over the talking points
   intro: string;
   count: string;
   next: string;

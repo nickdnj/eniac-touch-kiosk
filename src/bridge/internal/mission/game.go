@@ -64,16 +64,18 @@ type FiringCopy struct {
 // TourStop is one stop of the walk through the room after the shot is aimed: the
 // unit (or run of units, From to To, by room id) to look at, and why it is used.
 type TourStop struct {
-	From  string `yaml:"from" json:"from"`
-	To    string `yaml:"to" json:"to"`
-	Title string `yaml:"title" json:"title"`
-	Text  string `yaml:"text" json:"text"`
+	From    string   `yaml:"from" json:"from"`
+	To      string   `yaml:"to" json:"to"`
+	Title   string   `yaml:"title" json:"title"`
+	Text    string   `yaml:"text" json:"text"`
+	Bullets []string `yaml:"bullets" json:"bullets"` // the docent's talking points for this unit
 }
 
 // BuildCopy is the walk-the-room screen's text. {cables} and {switches} are the program's totals,
 // {n} and {total} the stop.
 type BuildCopy struct {
 	Headline string `yaml:"headline" json:"headline"`
+	Notes    string `yaml:"notes" json:"notes"` // the label over the talking points
 	Intro    string `yaml:"intro" json:"intro"`
 	Count    string `yaml:"count" json:"count"`
 	Next     string `yaml:"next" json:"next"`
@@ -274,6 +276,15 @@ func (m *Mission) checkGame() {
 		if t.From == "" || t.To == "" || strings.TrimSpace(t.Title) == "" || strings.TrimSpace(t.Text) == "" {
 			m.fail("game.tour: every stop needs from, to, title and text")
 			break
+		}
+		if len(t.Bullets) < 2 || len(t.Bullets) > 5 {
+			m.fail("game.tour: %q needs 2 to 5 bullets", t.Title)
+			break
+		}
+		for _, b := range t.Bullets {
+			if w := len(strings.Fields(b)); w == 0 || w > 22 {
+				m.fail("game.tour: %q has a bullet of %d words (1 to 22)", t.Title, w)
+			}
 		}
 	}
 	for _, c := range []string{g.Build.Headline, g.Build.Intro, g.Build.Next, g.Build.Go, g.Build.Count} {
