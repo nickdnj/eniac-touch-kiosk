@@ -14,8 +14,9 @@
 #
 # difference.e is Stuart's file, shipped from missions/programs/ with his permission
 # (NOTICE.md); scripts/fetch-upstream.sh copies it next to his own programs.
-# [FC] tags are kept in `review.factCheck` (never shown); they must clear the
-# fact-check gate (#35, test plan 12) and Doug Crawford's copy approval first.
+# [FC] tags are kept in `review.factCheck` (never shown). We are in development:
+# build the mission and the video first, then show them to Doug Crawford as a
+# first draft, caveated as not yet fact-checked, and fold in his review (#35).
 schema: 1
 id: difference
 title: "Difference"

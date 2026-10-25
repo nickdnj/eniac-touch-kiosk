@@ -44,7 +44,7 @@ Everything else (35 cables and 76 switches, including the shifter adapters and t
 | D3 | Mission order. Drafted as 4th, after Trajectory. Trajectory's result button still says "Finish". | Nick |
 | T1 | Slow is about 1.2 s a row and Full about 0.6 s on the dev Mac (2026-10-19). Re-time on the Pi 5 and OptiPlex and confirm `stallMs`. | |
 | U1 | **Done** (PR #79): per-mission art in `missions/registry.ts`, finale sentences in the YAML, paged picker, honor roll. The run stage is configured by `content.run.chain` (accumulators 17 to 20 here). Still open: Difference has its own briefing (bars crossing zero) and plan (the table built by adding) animations. | |
-| F1 | Fact-check every `factCheck` field and get Doug Crawford's copy approval (#35). | |
+| F1 | **Not a blocker.** We are in development: build the mission and its video first, then send Doug Crawford the first draft, clearly caveated as not yet fact-checked, and fold in his review (#35). | |
 | V1 | New video segment. | |
 
 ## Kiosk change that came with it
