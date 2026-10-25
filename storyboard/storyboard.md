@@ -8,10 +8,10 @@
 
 ## Rules that apply to every scene
 
-- **Footage:** real 1920x1080 kiosk screen recordings from `gunnery-game` @ `56274b7` (includes the accumulator-lamp fix `52105ee`), `CLEAN=1`, no burned-in caption boxes. Never flip footage. Keep the kiosk footer credit visible in 16:9 shots.
+- **Footage:** real 1920x1080 kiosk screen recordings from kiosk `main` @ `9552c47` or later (draft 4 re-record; the header reads "Mission 1: Battleship", not draft 3's "Mission 6"), `CLEAN=1`, no burned-in caption boxes. **Never turn on Docent mode** (it adds the staff-only "Firing table" button to the aim screen). Never flip footage. Keep the kiosk footer credit visible in 16:9 shots.
 - **Overlays:** FFmpeg only, animated in. Never baked into images.
 - **Images:** public-domain period photos only (P1, P2, P4; P3 dropped in v3.1). No AI images at all in this video; never AI images of ENIAC.
-- **Kiosk copy K1 to K4** (fact-check §3) has gone to the kiosk team to fix. The scene notes keep a cut-around fallback in case a fix is not in the build we record.
+- **Kiosk copy K1 to K4** (fact-check §3) is fixed on kiosk `main` @ `9552c47`, so the old cut-arounds are retired. Still open: K8, the INIT sub-line "ENIAC's go signal" (needs Nick's OK; fact-check §3).
 - **Trademark:** no Hasbro catchphrase, logo, box art, commercial footage or audio anywhere (picture, voice, captions, title, tags, thumbnail).
 - **Numbers on screen:** only what the kiosk shows, plus the measured values in `research/fact-check.md` §5.
 
@@ -139,17 +139,17 @@ Nick's ask: the most dramatic finale possible, using only true, measured things.
 - **Music:** M3 game bed, ducked · **Out:** hard cut
 
 ## Scene 8: Two numbers (0:49.5 to 0:58.5, 9 s)
-- **Clip:** R2 "Your shot, set on the dials"; Load the guns; tour stop 7, Constant Transmitter (used out of tour order)
+- **Clip:** R2 "Your shot, set on the dials"; Load the guns; tour stop 8 of 9, Constant Transmitter (out of tour order: tap its tab, "8 Constant Transmitter", in the tab row under the room)
 - **Narration:** VO07 (24 words): the game-vs-history line, and "the simulated machine does the rest"
 - **Overlay:** callout "Constant Transmitter" · **Music:** M3, ducked · **Out:** hard cut
 
 ## Scene 9: The room walk (0:58.5 to 1:08, 9.5 s)
-- **Clip:** R2 build intro; tour stops 2 (Master Programmer) and 6 (Accumulators 15 to 20). Stop 1 (Initiating Unit) can be used once K1 is fixed.
+- **Clip:** R2 build intro; tour stops 3 (Master Programmer, "ENIAC's conductor.") and 7 (Accumulators 15 to 20, "The flight, in numbers."), out of the nine. Their rail bullets back VO08 word for word ("ENIAC's conductor"; "Accumulator 15 counts the hops, 18 holds how far along, 20 how high up").
 - **Narration:** VO08 (27 words)
 - **Overlay:** callouts "Master Programmer", "Accumulators" · **Music:** M3, ducked · **Out:** quick cuts
 
 ## Scene 10: READ, init (1:08 to 1:15, 7 s)
-- **Clip:** R2 READ, card read (Accumulator 1 = 97,367), INIT. Fallback if K2 is not fixed: cut in after the "GO button" sub-line leaves the frame.
+- **Clip:** R2 READ, card read (Accumulator 1 = 97,367), INIT. On screen: "Press READ" / "READ pulls the card of numbers into ENIAC.", then "Press INIT" / "INIT sends the initiating pulse, ENIAC's go signal." (K2 is fixed; the "go signal" wording is K8, pending Nick's OK. If he rejects it, cut in after the sub-line leaves the frame.)
 - **Narration:** VO09 (18 words) · **Music:** M3, tick on INIT · **Out:** hard cut
 
 ## Scene 11: Flight A (1:15 to 1:38, 23 s)
@@ -271,7 +271,7 @@ The one real cost is that the arc plot is wide. Pre-crop every source region to 
 ## Gate 1: what is settled, and what is still open
 
 Settled 2026-10-23 (Nick, via the coordinator):
-- **Q1 kiosk copy:** K1 to K4 went to the kiosk team. The cut-around fallback stays in the recording plan.
+- **Q1 kiosk copy:** K1 to K4 went to the kiosk team and are fixed on `main` @ `9552c47` (re-checked 2026-10-25). Only K8 ("ENIAC's go signal") is open.
 - **Q2 finale:** a miss, then a sink of the same destroyer, made as dramatic as possible. Default is **Option 1, "Outranged"**; Option 2 is the alternate.
 - **Q3 formats:** 30 s and 8 s vertical 9:16; a vertical short of about 45 s.
 - **Q4 board:** clear the test scores first. The name is **YOU NEXT**: "Try it here!" is 12 characters, and the keyboard takes at most 8 (letters, spaces).
