@@ -40,6 +40,7 @@ export type State = P.State;
 export type Frame = P.Frame;
 export type StepApplied = P.StepApplied;
 export type SetupComplete = P.SetupComplete;
+export type Aimed = P.Aimed;
 export type Run = P.Run;
 export type Checkpoint = P.Checkpoint;
 export type ErrorMsg = P.Error;
@@ -61,6 +62,7 @@ export type ServerMsg =
   | (P.Session & { t: "session" })
   | P.StepApplied
   | P.SetupComplete
+  | P.Aimed
   | P.Run
   | P.Checkpoint
   | (P.Health & { t: "health" })
@@ -76,6 +78,7 @@ export type MetricEv = P.Metric["ev"];
 export type ClientMsg =
   | P.StartMission
   | P.ApplyStep
+  | P.Aim
   | P.SkipSetup
   | P.Button
   | P.SetSpeed
@@ -97,6 +100,7 @@ export type Caption = M.Caption;
 export type PressCopy = M.PressCopy;
 export type RunContent = M.RunContent;
 export type Content = M.Content;
+export type YourTurn = M.YourTurn;
 export type MissionCompiled = M.Compiled;
 
 // =====================================================================

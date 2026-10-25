@@ -2,6 +2,8 @@
 // Decides which screen shows. Error states (S10) take precedence over the
 // visitor flow, and recovery always returns to the start screen (FR-51).
 
+import type { YourTurnState } from "./yourturn/logic.ts";
+import type { GameRound, GameVisit } from "./game/logic.ts";
 import type {
   ClientMsg,
   CompiledMission,
@@ -26,20 +28,20 @@ import { TapCounter, inZone } from "./admin/tapcount.ts";
 import { StaffLayer } from "./screens/admin.ts";
 import type { SwitchingOpen } from "./screens/switching.ts";
 
-export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "error" | "honor" | "explore" | "glossary" | "tubes" | "finale" | "switching";
+export type ViewName = "boot" | "start" | "picker" | "waking" | "mission" | "run" | "result" | "yourturn" | "aim" | "build" | "error" | "honor" | "explore" | "glossary" | "tubes" | "finale" | "switching";
 
 /**
  * Views that show the Home button (beside the wordmark, top left): every
  * visitor screen except S1 and the picker itself. Home goes to the picker.
  */
-export const HOME_VIEWS = new Set<ViewName>(["mission", "run", "result", "explore", "glossary", "tubes", "honor", "finale"]);
+export const HOME_VIEWS = new Set<ViewName>(["mission", "run", "result", "yourturn", "aim", "build", "explore", "glossary", "tubes", "honor", "finale"]);
 
 /** Views that keep a running attract session (S1, Explore with its glossary, honor and tubes links, and the finale's F2 room). */
 const ATTRACT_KEEPS = new Set<string>(["start", "explore", "glossary", "honor", "tubes", "finale"]);
 export interface View {
   name: ViewName;
-  /** Where a new session lands: the briefing, or straight to step 1 (retry). */
-  entry?: "briefing" | "step1";
+  /** Where a new session lands: the briefing, straight to step 1 (retry), or Your turn (choose a number, then run). */
+  entry?: "briefing" | "step1" | "yourturn";
   /** S11: the page to open (1 to 4). */
   page?: number;
   /** S8 Finale: the beat to open (1 to 5; 5 when coming back from Explore or S16). */
@@ -118,6 +120,12 @@ export class App {
   };
   missions: MissionSummary[] | null = null;
   mission: CompiledMission | null = null;
+  /** Your turn: the first table (from the first run's cards) and the number the visitor chose. Null outside Your turn. */
+  yourTurn: YourTurnState | null = null;
+  /** Gunnery: this visitor's target and chosen shot. Null outside a game mission, and until the aim screen. */
+  game: GameRound | null = null;
+  /** Gunnery: shots fired and the best score while this visitor keeps playing. Cleared when the visit ends. */
+  gameVisit: GameVisit = { shots: 0, best: 0 };
   view: View = { name: "boot" };
   /** Notebook tape for the current session (built from run.settled only). */
   tape: TapeRow[] = [];
@@ -146,6 +154,10 @@ export class App {
   private attractDown = false;
   /** A mission the bridge listed failed to load (E-MISSION until the next hello). */
   missionBroken = false;
+  /** Docent mode (switched on from the staff screen): no visitor timeout, and the firing table is on the game aim screens. */
+  docent = false;
+  private docentChip: HTMLElement | null = null;
+  private docentT: ReturnType<typeof setTimeout> | null = null;
   scale = 1;
   private offset = { x: 0, y: 0 };
   private screen: Screen | null = null;
@@ -185,7 +197,10 @@ export class App {
     const adminZone = h("div", { id: "admin-zone", "aria-hidden": "true" }, COPY.wordmark);
     onTap(adminZone, () => void this.startOver());
     this.adminZone = adminZone;
+    this.docentChip = h("div", { id: "docent-chip", class: "hidden", role: "button" }, COPY.docentChip);
+    onTap(this.docentChip, () => this.setDocent(false));
     root.append(
+      this.docentChip,
       this.screenHost,
       this.homeBtn,
       this.overlay,
@@ -237,6 +252,7 @@ export class App {
       "pointerdown",
       (e) => {
         if (!e.isPrimary) return;
+        this.docentTouch();
         if (this.tapCounter.down(inZone(this.toApp(e.clientX, e.clientY), this.config.admin.tapZone), this.now()) && !this.staff) this.openStaff();
       },
       { capture: true },
@@ -246,6 +262,22 @@ export class App {
     fit();
     this.show({ name: "boot" });
     this.link.start();
+  }
+
+  /** Turns docent mode on or off. It also ends by itself after 15 minutes without a touch (a docent who walks away). */
+  setDocent(on: boolean): void {
+    this.docent = on;
+    this.idle.setDocent(on);
+    this.docentChip?.classList.toggle("hidden", !on);
+    if (this.docentT) clearTimeout(this.docentT);
+    this.docentT = null;
+    this.docentTouch();
+  }
+
+  private docentTouch(): void {
+    if (!this.docent) return;
+    if (this.docentT) clearTimeout(this.docentT);
+    this.docentT = setTimeout(() => this.setDocent(false), 15 * 60 * 1000);
   }
 
   fit(): void {
@@ -435,15 +467,19 @@ export class App {
       return;
     }
     // The bridge ended the session under us (reaped, or ended elsewhere).
-    if (!s && !this.expectingSession && ["mission", "run", "result"].includes(this.view.name) && !this.errorCode) {
+    if (!s && !this.expectingSession && ["mission", "run", "result", "aim", "build"].includes(this.view.name) && !this.errorCode) {
       this.resetVisitor();
       this.show({ name: "start" });
     }
   }
 
   /** Start (or restart) a mission with a fresh core (ADR-002). */
-  async startMission(id: string, entry: "briefing" | "step1"): Promise<void> {
+  async startMission(id: string, entry: "briefing" | "step1" | "yourturn"): Promise<void> {
+    // Your turn keeps the first table across the restart; every other start clears it.
+    const keep = entry === "yourturn" ? this.yourTurn : null;
     this.resetVisitor();
+    this.yourTurn = keep;
+    if (this.yourTurn) this.yourTurn.steady = null;
     this.visit.begin();
     this.cards = new CardLog(null);
     this.expectingSession = true;
@@ -465,12 +501,15 @@ export class App {
   }
 
   endSession(reason: "idle" | "menu" | "restart" | "done"): void {
+    this.gameVisit = { shots: 0, best: 0 };
     this.send({ t: "end_session", reason });
     this.resetVisitor();
   }
 
   /** Clean slate for the next visitor (FR-33). */
   resetVisitor(): void {
+    this.yourTurn = null;
+    this.game = null;
     this.tape = [];
     this.checkpoints.clear();
     this.answerAt = null;
@@ -617,6 +656,9 @@ export class App {
   openTubes(open: TubesOpen = { from: "other" }): void {
     this.show({ name: "tubes", tubes: open });
   }
+
+  /** Dev builds only: `?target=<feet or id>` fixes the game target (to film a chosen shot). Null in a production build. */
+  readonly devTarget: string | null = DEV ? new URLSearchParams(location.search).get("target") : null;
 
   private devAutostart(): void {
     const id = new URLSearchParams(location.search).get("mission");

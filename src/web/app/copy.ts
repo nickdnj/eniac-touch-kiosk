@@ -73,19 +73,31 @@ export const COPY = {
     again: "↻ Again",
   },
   // Difference plan figure (stage/diffig.ts): the table built by adding.
+  // Your turn (Difference): labels only; the questions and answers are the mission's own copy.
+  yourTurn: {
+    back: "‹ Back",
+    row: "Row",
+    value: "Table value",
+    change: "Change",
+    notReady: "ENIAC has not punched enough rows yet. Go back and let it run a little longer.",
+  },
   difference: {
     heads: ["Row", "Table value", "Change", "Next change", "Steady"],
     start: (r: readonly number[]) => `Start: ${r[0]}, ${r[1]}, ${r[2]}, ${r[3]}`,
-    add: (f: number, d: number, next: number) => `${f} + (${d}) = ${next}`,
+    add: (f: number, d: number, next: number) => `${f} + ${d < 0 ? `(${d})` : d} = ${next}`,
     only: "Only adding. No multiplying.",
-    briefStart: "Start with 600.",
+    handTitle: "TABLE OF SQUARES",
+    hand: "People made number tables by hand. Mistakes crept in.",
+    babbage: "Charles Babbage planned a machine that only adds.",
+    cubeIs: "Today we build a table of cubes. A cube: a number times itself, and again.",
+    cube: (n: number) => `${n} × ${n} × ${n} = ${n ** 3} little blocks`,
+    briefStart: "Start with 0.",
     briefAdd: "Add the change. The change changes too.",
-    briefNegative: "Now it goes below zero.",
     change: (d: number) => (d < 0 ? `${d}` : `+${d}`),
   },
   run: {
     init: "INIT",
-    initSub: "Initiating Pulse: the GO button",
+    initSub: "Initiating pulse: ENIAC's go signal",
     clear: "CLEAR",
     clearSub: "Count from 0 again",
     slow: "Slow",
@@ -203,6 +215,7 @@ export const COPY = {
   },
   // Staff screens (UX 7.11, 7.12.2; docs/original-ui-switch.md 6.7). No
   // keyboard anywhere: the PIN is entered on the S12 pad.
+  docentChip: "DOCENT MODE · tap to end",
   admin: {
     pin: {
       title: "Staff PIN",
@@ -238,6 +251,10 @@ export const COPY = {
       original: "Original UI",
       originalNote: "Brian L. Stuart's own screen for the simulator.",
       notInstalled: "Not installed on this box.",
+      docent: "Docent mode",
+      docentNote: "For a tour: no visitor timeout, and the firing table shows on the Battleship aim screen. Ends after 15 quiet minutes.",
+      docentOn: "Turn on",
+      docentOff: "Turn off",
       return: "Return to kiosk",
       confirmTitle: "Switch to the original screen?",
       confirmBody: 'The kiosk will close for now. Tap "Back to kiosk" in the top-left corner to bring it back.',

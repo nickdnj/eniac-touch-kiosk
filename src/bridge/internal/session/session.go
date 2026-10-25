@@ -117,6 +117,7 @@ type sess struct {
 	stop      chan struct{}
 	startedAt time.Time
 	speed     string
+	aim       string // "charge/elevation" once a game mission's gun is aimed
 	frozen    bool // the clock was stopped at run.freezeAt (no more speed changes)
 	stall     *machine.StallGuard
 }
@@ -315,6 +316,8 @@ func (m *Manager) Handle(ctx context.Context, c *server.Client, msg any) []any {
 		return m.startMission(ctx, x)
 	case protocol.ApplyStep:
 		return m.applyStep(x)
+	case protocol.Aim:
+		return m.aim(x)
 	case protocol.SkipSetup:
 		return m.skipSetup(x)
 	case protocol.Button:
@@ -463,8 +466,14 @@ func (s *sess) remaining() int { return len(s.m.StepIDs()) - len(s.applied) }
 
 // sendStep writes one step line and records it. It faults the session on
 // any core error (the config must never diverge silently).
-func (m *Manager) sendStep(s *sess, id string) error {
+func (m *Manager) sendStep(s *sess, id, value string) error {
 	text, _ := s.m.StepText(id)
+	if value != "" {
+		var err error
+		if text, err = s.m.FreeStepText(id, value); err != nil {
+			return err
+		}
+	}
 	cmd, err := core.StepLine(text)
 	if err != nil {
 		return err
@@ -497,7 +506,12 @@ func (m *Manager) applyStep(x protocol.ApplyStep) []any {
 	if s.m.File.Ordered && s.nextStep() != x.Step {
 		return errMsg(x.ID, protocol.ErrNotAllowed, "step %s is out of order (next is %s)", x.Step, s.nextStep())
 	}
-	if err := m.sendStep(s, x.Step); err != nil {
+	if x.Value != "" {
+		if _, err := s.m.FreeStepText(x.Step, x.Value); err != nil {
+			return errMsg(x.ID, protocol.ErrNotAllowed, "%v", err)
+		}
+	}
+	if err := m.sendStep(s, x.Step, x.Value); err != nil {
 		return nil // the fault path reports it (health + session failed)
 	}
 	m.hub.Broadcast(protocol.StepApplied{T: "step_applied", Re: x.ID, Step: x.Step, Assisted: x.Assisted, Remaining: s.remaining()})
@@ -506,6 +520,37 @@ func (m *Manager) applyStep(x protocol.ApplyStep) []any {
 	} else {
 		m.broadcastSession(s)
 	}
+	return nil
+}
+
+// aim dials a game mission's shot into the Constant Transmitter. It may be
+// repeated until the card is read (the visitor can change their mind).
+func (m *Manager) aim(x protocol.Aim) []any {
+	s, e := m.requireState(x.ID, protocol.StateSetup, protocol.StateArmed)
+	if e != nil {
+		return e
+	}
+	if s.run.Inits() > 0 || s.cps.Fired("card-read") {
+		return errMsg(x.ID, protocol.ErrNotAllowed, "the gun cannot be re-aimed once the card is read")
+	}
+	lines, err := s.m.AimLines(x.Charge, x.Elevation)
+	if err != nil {
+		return errMsg(x.ID, protocol.ErrNotAllowed, "%v", err)
+	}
+	for _, text := range lines {
+		cmd, err := core.StepLine(text)
+		if err != nil {
+			return errMsg(x.ID, protocol.ErrNotAllowed, "%v", err)
+		}
+		if _, err := s.core.Do(cmd); err != nil {
+			m.fault(s, core.Fault{Code: core.CodeCmd, Detail: "aim"})
+			return nil
+		}
+	}
+	m.mu.Lock()
+	s.aim = x.Charge + "/" + x.Elevation
+	m.mu.Unlock()
+	m.hub.Broadcast(protocol.Aimed{T: "aimed", Re: x.ID, Charge: x.Charge, Elevation: x.Elevation})
 	return nil
 }
 
@@ -519,7 +564,7 @@ func (m *Manager) skipSetup(x protocol.SkipSetup) []any {
 		if s.done[id] {
 			continue
 		}
-		if err := m.sendStep(s, id); err != nil {
+		if err := m.sendStep(s, id, ""); err != nil {
 			return nil
 		}
 		n++
@@ -549,6 +594,9 @@ func (m *Manager) button(x protocol.Button) []any {
 		return errMsg(x.ID, protocol.ErrBusy, "the machine is still running")
 	}
 	run := s.m.File.Run
+	if s.m.File.Content.Game != nil && s.aim == "" && (x.B == "read" || x.B == "init") {
+		return errMsg(x.ID, protocol.ErrNotAllowed, "aim the gun first")
+	}
 	switch x.B {
 	case "init":
 		// Primes and Trajectory run until they finish: a second INIT would

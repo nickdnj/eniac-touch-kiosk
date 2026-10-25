@@ -231,6 +231,11 @@ Two limits to keep in mind. Every historical claim about Babbage rests on Stuart
 | G12 | The last card of a 100-row run shows the first row, because the counter has already reset | result "more" | **Correct** (Stuart's own note) | [BLS-T] last paragraph |
 | G13 | "Make ENIAC build a table, the way Babbage planned" (picker) and the honor-roll line that the method is what Babbage's engine "was designed around" | picker, honor roll | **Correct as attributed to Stuart; Babbage part unchecked** | [BLS-T] p.1 |
 | G14 | On the real ENIAC, data connectors are rectangular with 12 terminals; control (program) connectors are round with two terminals | video, panel art (PR #76) | **Correct** (Stuart, about the real machine; the kiosk draws them that way) | Stuart's email, 2026-10-19 (his note on the video at 5:02) |
+| G15 | The table of cubes 0, 1, 8, 27, 64, 125 is built by adding down a chain of four accumulators: table value 0, change 1, next change 6, steady 6 | briefing, plan, run, Your turn | **Correct** (f = x cubed has differences 1, 7, 19, 37; 6, 12, 18, 24; 6). Run on the real core: cards 0, 1, 8, 27, 64 | `docs/difference-mission.md`; `selftest` |
+| G16 | "Charles Babbage was an English mathematician. In the 1820s he began designing a machine of gears, the Difference Engine, to make tables of numbers without mistakes." | briefing "more" | **Needs a museum-grade source** (widely documented; cite the Science Museum or the Charles Babbage Institute before this is final) | Science Museum Group; CBI |
+| G17 | "In 1991 the Science Museum in London finished one built from his plans, and it works." | briefing "more" | **Needs a museum-grade source** (Difference Engine No. 2, calculating section completed 1991; the printer followed in 2002) | Science Museum Group |
+| G18 | "Squares work the same way, with 1, 3, 5, 7 as the changes (Mission 1)" | plan "more" | **Correct** (the differences of the squares 1, 4, 9, 16 are 3, 5, 7) | arithmetic |
+| G19 | Your turn: every number on the prediction screen and in the comparison is read from the visitor's own punched cards; a row is asked only if the cards agree with row = row above + its change | Your turn | **Correct by construction** (tests/web/yourturn.test.ts) | `src/web/app/yourturn/logic.ts` |
 
 Sources are listed with the others at the end.
 

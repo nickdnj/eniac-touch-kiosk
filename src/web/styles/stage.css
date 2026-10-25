@@ -100,8 +100,28 @@
 .diff-cell.c0 { text-align: center; color: #9AA0A8; background: transparent; border-color: transparent; }
 .diff-cell.c1 { color: var(--lamp-on); }
 .diff-cell.on { opacity: 1; }
-.diff-caption { font-family: var(--font-mono); }
+.diff-caption { font-family: var(--font-mono); line-height: 1.3; }
 /* Difference briefing figure: bars either side of a zero line. */
+.diffb-stage { position: relative; width: 1200px; height: 386px; }
+.diffb-stage > .diffb-plot { transition: opacity 500ms; }
+.diffb-plot.hidden { opacity: 0; }
+.diffb-blocks { position: absolute; left: 0; top: 0; width: 1200px; height: 386px; transition: opacity 400ms; }
+.diffb-blocks.hidden { opacity: 0; }
+.diffb-hand, .diffb-engine { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; transition: opacity 500ms; }
+.diffb-hand.hidden, .diffb-engine.hidden { opacity: 0; }
+.diffb-paper { background: #F4EFE3; color: #16181c; border-radius: 8px; padding: 14px 40px 12px; width: 380px; font-family: var(--font-mono); box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+.diffb-paper-title { font-size: 20px; font-weight: 700; letter-spacing: 2px; color: #555; margin-bottom: 6px; }
+.diffb-paper-row { display: flex; justify-content: space-between; font-size: 28px; line-height: 34px; position: relative; }
+.diffb-paper-row.slip::after { content: ""; position: absolute; right: -14px; top: 0; width: 120px; height: 34px; border: 4px solid #E8604C; border-radius: 20px; opacity: 0; transform: scaleX(0.3); transform-origin: left; transition: opacity 400ms, transform 500ms; }
+.diffb-hand.slipped .diffb-paper-row.slip::after, .diffb.still .diffb-paper-row.slip::after { opacity: 1; transform: none; }
+.diffb-hand.slipped .diffb-paper-row.slip { color: #E8604C; font-weight: 700; }
+.diffb-engine { gap: 14px; }
+.diffb-wheels { display: flex; flex-direction: column; gap: 10px; background: #1B1D21; border: 2px solid #2c3036; border-radius: 12px; padding: 12px; }
+.diffb-wheel { width: 84px; height: 70px; background: #0a0b0d; border-radius: 8px; color: var(--lamp-on); font-family: var(--font-mono); font-weight: 700; font-size: 46px; display: flex; align-items: center; justify-content: center; }
+.diffb-plus { width: 40px; height: 40px; border-radius: 50%; background: var(--lamp-on); color: #101215; font-family: var(--font-mono); font-weight: 700; font-size: 30px; display: flex; align-items: center; justify-content: center; }
+.diffb-block { opacity: 0; transform: translateY(-22px); transition: opacity 300ms, transform 300ms; }
+.diffb-block.on { opacity: 1; transform: none; }
+.diffb.still .diffb-block { opacity: 1; transform: none; }
 .diffb-plot { position: relative; width: 1200px; display: flex; flex-direction: column; gap: 10px; }
 .diffb-row { position: relative; display: flex; align-items: center; height: 56px; opacity: 0.1; transition: opacity 400ms; }
 .diffb-row.on { opacity: 1; }

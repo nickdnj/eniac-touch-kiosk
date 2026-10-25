@@ -17,10 +17,17 @@ import { button, tellMore } from "../ui/overlays.ts";
 import { BarsPane, StackPane } from "../run/cardpane.ts";
 import { ArcPlot } from "../run/filmstage.ts";
 import { fillCard } from "../run/cards.ts";
+import { compare, question, readRows } from "../yourturn/logic.ts";
+import { fetchScores, postScore } from "../net/api.ts";
+import { namePad } from "../game/namepad.ts";
+import { judge, landingFeet, placeOn, rankFor, type Board, type Result, type ScoreEntry } from "../game/logic.ts";
 import { COPY } from "../copy.ts";
 import { HONOR } from "../content/honor.ts";
 import { openHonor } from "./honor.ts";
 import { EXPLORE } from "../explore/content.ts";
+
+/** How many rows of the two tables sit side by side (Your turn). */
+const COMPARE_ROWS = 8;
 
 function reduceMotion(): boolean {
   return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -36,6 +43,10 @@ export function resultScreen(app: App): Screen {
   const allDone = available.length > 0 && !next;
   const cardMission = !!mission.run.cards;
   const live = r.live;
+  // Your turn (Difference): after the first run, a button; after the visitor's own run, the two tables side by side.
+  const yt = mission.content.yourTurn;
+  const second = !!yt && app.yourTurn?.steady != null;
+  const ytRows = () => readRows(app.cards.cards, mission.run.cards?.value ?? [], yt?.predict.change ?? []);
 
   // ------------------------------------------------------------------ left
   let left!: HTMLElement;
@@ -78,10 +89,32 @@ export function resultScreen(app: App): Screen {
       ? button(`${HONOR.resultLink.text} ›`, "link honor-link", () => openHonor(app, HONOR.resultLink.page, { name: "result" }))
       : null,
   );
-  const right = h("div", { class: "result-right" }, waiting, answer);
+  // Gunnery: the score, the initials and the top lists, from the visitor's own cards (below).
+  const game = mission.content.game;
+  const gameBox = h("div", { class: "game-score hidden" });
+  if (game) {
+    answer.append(gameBox);
+    answer.querySelector(".takeaway")?.classList.add("hidden");
+    answer.querySelectorAll(".more-btn, .explore-btn, .honor-link").forEach((b) => b.classList.add("hidden"));
+  }
+  // The name pad: a full-screen keyboard, opened by "Save my score".
+  let pad: ReturnType<typeof namePad> | null = null;
+  // Your turn: the headline and body change after the visitor's own run; a table shows how the two runs differ.
+  const answerHead = answer.querySelector("h2") as HTMLElement;
+  const answerBody = answer.querySelector("p") as HTMLElement;
+  const compareBox = h("div", { class: "yt-compare hidden", role: "table" });
+  const yourTurnBtn = yt && !second ? button(`${yt.button} ›`, "yt-btn hidden", () => app.show({ name: "yourturn" })) : null;
+  if (yt && second) answer.querySelector(".takeaway")?.classList.add("hidden");
+  if (yt) answer.append(compareBox);
+  if (yourTurnBtn) answer.append(yourTurnBtn);
+  const right = h("div", { class: `result-right${yt && second ? " yt-second" : ""}${game ? " game" : ""}` }, waiting, answer);
 
   // ------------------------------------------------------------------ actions
-  const tryAgain = button(labels[1] ?? COPY.result.tryAgain, "try-again", () => void app.startMission(mission.id, "step1"));
+  // After the visitor's own run, "Try again" becomes "Try another number" (another run of Your turn).
+  const tryAgain =
+    yt && second
+      ? button(yt.compare.button, "try-again", () => void app.startMission(mission.id, "yourturn"))
+      : button(mission.content.game?.board.again ?? labels[1] ?? COPY.result.tryAgain, "try-again", () => void app.startMission(mission.id, "step1"));
   const menu = () => {
     app.endSession("menu");
     app.show({ name: "picker" });
@@ -110,6 +143,99 @@ export function resultScreen(app: App): Screen {
   const header = h("div", { class: "header" }, h("span", { class: "title" }, COPY.header.mission(mission.order, mission.title)));
   const el = h("div", { class: `screen result${cardMission ? " cards" : ""}` }, header, left, right, actions);
 
+  // ---- Gunnery scoring: worked out once, when the landing is on the cards.
+  let scored: Result | null = null;
+  let saved = false;
+  let counted = false;
+  let board: Board | null = null;
+  let myName = ""; // the name typed on the pad, once saved
+
+  function listFor(title: string, rows: ScoreEntry[], mine: string | null): HTMLElement {
+    const box = h("div", { class: "game-list" }, h("h3", {}, title));
+    if (!rows.length) box.append(h("p", { class: "game-empty" }, game!.board.empty));
+    rows.slice(0, 3).forEach((e, i) =>
+      box.append(
+        h(
+          "div",
+          { class: `game-row${mine && e.at === mine ? " mine" : ""}` },
+          h("span", { class: "n" }, String(i + 1)),
+          h("span", {}, e.name),
+          h("span", { class: "pts" }, String(e.score)),
+        ),
+      ),
+    );
+    return box;
+  }
+
+  function renderGame(): void {
+    if (!game) return;
+    const landed = landingFeet(app.cards.crossing());
+    if (landed === null || !app.game) return;
+    if (!scored) {
+      scored = judge(game, app.game.target, landed, app.game.hit);
+      void fetchScores(mission.id).then((b) => {
+        board = b;
+        renderGame();
+      });
+    }
+    const b = game.board;
+    const ft = (n: number) => n.toLocaleString("en-US");
+    if (!counted) {
+      counted = true;
+      app.gameVisit.shots++;
+      app.gameVisit.best = Math.max(app.gameVisit.best, scored.score);
+    }
+    answerHead.textContent = rankFor(game, scored.score);
+    answerBody.textContent = scored.hit
+      ? fillCard(b.landed, { feet: ft(landed) })
+      : `${fillCard(b.landed, { feet: ft(landed) })} ${fillCard(b.miss, { feet: ft(scored.miss) })} ${scored.side === "short" ? b.short : b.long}`;
+    const children: HTMLElement[] = [h("p", { class: "game-points" }, fillCard(b.score, { n: scored.score }))];
+    if (board) children.push(h("p", { class: "game-place" }, fillCard(b.rankToday, { n: placeOn(board.today, scored.score) })));
+    children.push(h("p", { class: "game-visit" }, `${fillCard(b.shots, { n: app.gameVisit.shots })}   ·   ${fillCard(b.best, { n: app.gameVisit.best })}`));
+    if (!saved) {
+      children.push(
+        h("div", { class: "game-name" }, button(b.save, "game-save", () => pad?.open())),
+      );
+    }
+    if (board) {
+      const mineAt = saved ? board.all.concat(board.today).find((e) => e.name === myName && e.score === scored!.score)?.at ?? null : null;
+      children.push(h("div", { class: "game-board" }, h("div", { class: "game-cols" }, listFor(`${b.top}: ${b.today}`, board.today, mineAt), listFor(`${b.top}: ${b.allTime}`, board.all, mineAt))));
+    }
+    gameBox.replaceChildren(...children);
+    gameBox.classList.remove("hidden");
+  }
+
+  if (game) {
+    const b = game.board;
+    pad = namePad({
+      ask: b.nameAsk,
+      save: b.nameSave,
+      skip: b.nameSkip,
+      onSkip: () => pad?.close(),
+      onSave: (name) => {
+        if (saved || !scored || !app.game) return;
+        pad!.busy(true);
+        void postScore(mission.id, {
+          name,
+          score: scored.score,
+          missFeet: scored.miss,
+          target: app.game.target,
+          charge: app.game.charge ?? "c0",
+          elevation: app.game.elevation ?? "e0",
+        }).then((nb) => {
+          if (nb === "name") return pad!.message(b.nameBad);
+          if (!nb) return pad!.message(b.nameFail);
+          saved = true;
+          myName = name;
+          board = nb;
+          pad!.close();
+          renderGame();
+        });
+      },
+    });
+    el.append(pad.el);
+  }
+
   let idleMode: "run" | "setup" = cardMission && live?.doneAt && !app.checkpoints.has(live.doneAt) ? "run" : "setup";
 
   /** The answer shows once the result checkpoint fired; until then a real count. */
@@ -132,6 +258,32 @@ export function resultScreen(app: App): Screen {
     pane?.update();
     bars?.update();
     arc?.update();
+    refreshYourTurn();
+    if (reached) renderGame();
+  }
+
+  /** The Your turn button and the comparison, from the visitor's real cards only. */
+  function refreshYourTurn(): void {
+    if (!yt) return;
+    const rows = ytRows();
+    if (!second) {
+      // Offer it only once the real cards can support the question (never a made-up row).
+      yourTurnBtn?.classList.toggle("hidden", !app.checkpoints.has(mission.result) || !question(rows, yt.predict.show));
+      return;
+    }
+    const first = app.yourTurn!.first;
+    const steady = app.yourTurn!.steady!;
+    const cmp = compare(first, rows, COMPARE_ROWS);
+    const same = steady === app.yourTurn!.firstSteady && cmp.identical;
+    answerHead.textContent = yt.compare.headline;
+    answerBody.textContent = fillCard(same ? yt.compare.same : yt.compare.body, { n: steady, k: cmp.matching });
+    compareBox.classList.remove("hidden");
+    compareBox.replaceChildren(
+      h("div", { class: "yt-chead" }, h("div", { class: "yt-n" }, COPY.yourTurn.row), h("div", {}, yt.compare.first), h("div", {}, yt.compare.yours)),
+      ...cmp.rows.map((r) =>
+        h("div", { class: `yt-crow${r.differs ? " differs" : ""}` }, h("div", { class: "yt-n" }, String(r.n)), h("div", {}, String(r.first)), h("div", {}, r.yours === null ? "…" : String(r.yours))),
+      ),
+    );
   }
 
   return {

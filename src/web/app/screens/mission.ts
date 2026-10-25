@@ -3,7 +3,7 @@
 // All mission copy comes from the mission JSON.
 
 import type { App, Screen, View } from "../app.ts";
-import type { ConfigItem, MissionStep, ServerMsg } from "../protocol.ts";
+import type { CompiledMission, ConfigItem, MissionStep, ServerMsg, YourTurn } from "../protocol.ts";
 import { Runner, type Feedback } from "../mission/runner.ts";
 import { hitTest } from "../mission/hit.ts";
 import { unitOf, termId } from "../mission/ids.ts";
@@ -61,12 +61,31 @@ function reduceMotion(): boolean {
   return REDUCE_MOTION || (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches);
 }
 
+/**
+ * Your turn: a copy of the mission in which the free step reads as the
+ * "pick any number" step (its own copy, from content.yourTurn.dial). A copy,
+ * because choosing a number rewrites that step's value (Runner.pick).
+ */
+function yourTurnMission(base: CompiledMission, yt: YourTurn): CompiledMission {
+  return {
+    ...base,
+    steps: base.steps.map((st) =>
+      st.id === yt.step
+        ? { ...st, text: { ...st.text, ...yt.dial, hints: { ...st.text.hints, ...yt.dial.hints } } }
+        : { ...st },
+    ),
+  };
+}
+
 export function missionScreen(app: App, view: View): Screen {
-  const mission = app.mission!;
+  const yt = app.mission!.content.yourTurn;
+  const yourTurnMode = view.entry === "yourturn" && !!yt;
+  const mission = yourTurnMode ? yourTurnMission(app.mission!, yt!) : app.mission!;
   const content = mission.content;
   const planUnits = unitsForPlan(mission.units);
   const runner = new Runner(mission, () => app.now(), app.mirror.session?.applied ?? []);
-  let phase: Phase = view.entry === "step1" ? "step" : "briefing";
+  if (yourTurnMode) runner.freeStep = yt!.step;
+  let phase: Phase = view.entry === "step1" || yourTurnMode ? "step" : "briefing";
   let windows: StepWindows | null = null;
   let figure: Figure | null = null; // the mission's explanation figure on the briefing / plan stage
   let animGen = 0; // bumps to cancel a running success choreography
@@ -219,7 +238,7 @@ export function missionScreen(app: App, view: View): Screen {
     setIdle();
     leader.replaceChildren();
     stopFigure();
-    skipBtn.classList.toggle("hidden", phase === "briefing" || phase === "rest");
+    skipBtn.classList.toggle("hidden", phase === "briefing" || phase === "rest" || yourTurnMode || (!!content.game && phase === "plan"));
     exploreBtn.classList.toggle("hidden", phase !== "briefing");
     if (phase === "briefing") return renderBriefing();
     if (phase === "plan") return renderPlan();
@@ -404,6 +423,8 @@ export function missionScreen(app: App, view: View): Screen {
       return render();
     }
     if (phase === "plan") {
+      // Gunnery: the gun is aimed before the first cable (screens/aim.ts comes back to step 1).
+      if (content.game && !app.game?.charge) return app.show({ name: "aim" });
       phase = "step";
       return render();
     }
@@ -413,6 +434,14 @@ export function missionScreen(app: App, view: View): Screen {
     }
     // step phase
     if (runner.phase === "done") {
+      if (yourTurnMode) {
+        // The visitor's number is set; the bridge applies the rest of the preset. Remember what they chose.
+        if (app.yourTurn) {
+          const cur = runner.step;
+          app.yourTurn.steady = runner.chosen ?? (cur && cur.kind === "switch" ? cur.value : null);
+        }
+        return skipSetup();
+      }
       settleStep();
       if (runner.isLast) {
         runner.next();
@@ -489,8 +518,9 @@ export function missionScreen(app: App, view: View): Screen {
       if (c && c.kind === "plug") workbench.setPending(c, false);
     }
     setFeedback("ok", assistedNow ? `${COPY.rail.doneForYou}. ${st.text.done}` : st.text.done);
-    setMain(runner.isLast ? (st.text.button ?? COPY.rail.finish) : COPY.rail.next, "filled");
-    skipBtn.classList.toggle("hidden", runner.isLast);
+    const yourTurnStep = yourTurnMode && st.id === yt!.step;
+    setMain(runner.isLast || yourTurnStep ? (st.text.button ?? (yourTurnStep ? COPY.rail.next : COPY.rail.finish)) : COPY.rail.next, "filled");
+    skipBtn.classList.toggle("hidden", runner.isLast || yourTurnMode);
     renderDots();
   }
 
@@ -608,6 +638,11 @@ export function missionScreen(app: App, view: View): Screen {
     idle: "setup",
     home: () => void backToMissions(),
     mount: () => {
+      // Gunnery retry: a fresh session starts at step 1, but the gun still has to be aimed.
+      if (content.game && phase === "step" && !app.game?.charge) {
+        queueMicrotask(() => app.show({ name: "aim" }));
+        return;
+      }
       if (app.mirror.session && ["armed", "running", "result"].includes(app.mirror.session.state)) setupComplete = true;
       render();
       renderer.invalidate(null);

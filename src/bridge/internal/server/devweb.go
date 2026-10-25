@@ -30,6 +30,8 @@ func DevWebHandler(webSrc string) http.Handler {
 			Sourcemap:   api.SourceMapInline,
 			Write:       false,
 			LogLevel:    api.LogLevelSilent,
+			// The dev server only (never in a release): turns on the ?mission= and ?target= shortcuts.
+			Define: map[string]string{"__DEV__": "true"},
 		})
 		if len(res.Errors) > 0 {
 			w.Header().Set("Content-Type", "text/plain; charset=utf-8")

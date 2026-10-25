@@ -89,6 +89,10 @@ export function adminPanel(app: App, staff: StaffHost, token: string): StaffPane
   const restart = button(C.restart, "adm-btn secondary", () => void doRestart());
   const original = button(C.original, "adm-btn secondary", () => askSwitch());
   setDisabled(original, !available);
+  const docentBtn = button(app.docent ? C.docentOff : C.docentOn, "adm-btn secondary", () => {
+    app.setDocent(!app.docent);
+    docentBtn.textContent = app.docent ? C.docentOff : C.docentOn;
+  });
   const ret = button(C.return, "adm-btn return", () => leave());
 
   const el = h(
@@ -97,6 +101,7 @@ export function adminPanel(app: App, staff: StaffHost, token: string): StaffPane
     h("div", { class: "adm-header" }, h("span", { class: "adm-title" }, C.header), h("span", { class: "spacer" }), exits),
     row("r1", C.restart, C.restartNote, restart),
     row("r2", C.original, available ? C.originalNote : C.notInstalled, original),
+    row("r2b", C.docent, C.docentNote, docentBtn),
     status,
     h("div", { class: "adm-row r3" }, ret),
   );

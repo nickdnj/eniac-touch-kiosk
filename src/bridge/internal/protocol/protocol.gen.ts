@@ -243,6 +243,15 @@ export interface StepApplied {
   remaining: number /* int */;
 }
 /**
+ * Aimed follows the core's ack of the dialled-in shot.
+ */
+export interface Aimed {
+  t: 'aimed';
+  re?: number /* int64 */;
+  charge: string;
+  elevation: string;
+}
+/**
  * SetupComplete: all steps applied, normally or via skip_setup.
  */
 export interface SetupComplete {
@@ -383,6 +392,21 @@ export interface ApplyStep {
   id?: number /* int64 */;
   step: string;
   assisted: boolean;
+  /**
+   * Value is a chosen setting for the one step a mission lets the visitor set
+   * freely (Your turn). Empty means the step's own value.
+   */
+  value?: string;
+}
+/**
+ * Aim sets the gun of a game mission (Gunnery): a charge and an elevation from
+ * the mission's game block. The bridge dials the launch speeds in.
+ */
+export interface Aim {
+  t: 'aim';
+  id?: number /* int64 */;
+  charge: string;
+  elevation: string;
 }
 export interface SkipSetup {
   t: 'skip_setup';

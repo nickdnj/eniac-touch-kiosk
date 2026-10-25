@@ -93,6 +93,7 @@ type Summary struct {
 	Available bool        `json:"available"`
 	Reason    string      `json:"reason,omitempty"`
 	Finale    *FinaleCopy `json:"finale,omitempty"`
+	Blurb     string      `json:"blurb,omitempty"` // picker: replaces "You wire N steps" (a game has no wiring)
 }
 
 func (m *Mission) compile() *Compiled {
@@ -235,5 +236,12 @@ func isNum(s string) bool {
 // SummaryOf returns the /api/missions entry for a mission.
 func SummaryOf(m *Mission) Summary {
 	return Summary{ID: m.File.ID, Title: m.File.Title, Order: m.File.Order, Summary: m.File.Summary,
-		Minutes: m.File.Minutes, Steps: len(m.File.Steps), Buttons: m.File.Run.Buttons, Available: m.Available, Reason: m.Reason, Finale: m.File.Finale}
+		Minutes: m.File.Minutes, Steps: len(m.File.Steps), Buttons: m.File.Run.Buttons, Available: m.Available, Reason: m.Reason, Finale: m.File.Finale, Blurb: blurbOf(m)}
+}
+
+func blurbOf(m *Mission) string {
+	if g := m.File.Content.Game; g != nil {
+		return g.Blurb
+	}
+	return ""
 }

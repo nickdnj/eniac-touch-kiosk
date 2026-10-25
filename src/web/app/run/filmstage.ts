@@ -18,6 +18,9 @@ import { cardSvg } from "./cardart.ts";
 import { cardValue, fieldText, fillCard, fmt, type CardLog, type Dot } from "./cards.ts";
 import type { RunStage } from "./stackstage.ts";
 import { COPY } from "../copy.ts";
+import { FEET, judge, shotSpeeds } from "../game/logic.ts";
+import { drawBurst, drawFlag, drawShip, drawZones, outerFeet } from "../game/zones.ts";
+import type { Game } from "../../../bridge/internal/mission/mission.gen.ts";
 
 /** How long a tapped film-strip card stays large before the newest returns. */
 export const FILM_HOLD_MS = 10_000;
@@ -36,14 +39,14 @@ export interface Scale {
  * readable; `stretch` says how much the height is stretched (UX 8.3.3:
  * "Height stretched so you can see it").
  */
-export function plotScale(dots: Dot[], w: number, ht: number, prev: Scale | null = null): Scale {
+export function plotScale(dots: Dot[], w: number, ht: number, prev: Scale | null = null, minX = 0): Scale {
   const nice = (v: number) => {
     if (v <= 0) return 1;
     const p = Math.pow(10, Math.floor(Math.log10(v)));
     for (const m of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p;
     return 10 * p;
   };
-  const xs = dots.map((d) => d.x), ys = dots.map((d) => d.y);
+  const xs = dots.map((d) => d.x).concat(minX > 0 ? [minX] : []), ys = dots.map((d) => d.y);
   const xMax = Math.max(prev?.xMax ?? 0, nice(Math.max(1, ...xs) * 1.08));
   const yMax = Math.max(prev?.yMax ?? 0, nice(Math.max(1, ...ys) * 1.12));
   const stretch = (ht / yMax) / (w / xMax);
@@ -71,12 +74,17 @@ export class ArcPlot {
   private shown = -1;
   private shownLog: CardLog | null = null;
   private src: ArcSource;
+  private app: App;
+  private game: Game | null = null; // Gunnery: the flag and the zones, when this plot is the visitor's game mission
+  private hud: HTMLElement | null = null;
   private w: number;
   private ht: number;
   private readonly pad: { l: number; r: number; t: number; b: number };
   onDot?: (n: number) => void;
 
   constructor(app: App, w: number, height: number, src?: ArcSource, pad = { l: 70, r: 30, t: 24, b: 54 }) {
+    this.app = app;
+    this.game = !src ? (app.mission?.content.game ?? null) : null;
     this.src = src ?? { log: () => app.cards, copy: app.mission!.content.run.plot! };
     this.pad = pad;
     this.w = w;
@@ -105,6 +113,11 @@ export class ArcPlot {
       (this.note = h("div", { class: "dot-note" }, P.dot)),
       this.chip,
     );
+    if (this.game) {
+      this.el.classList.add("game");
+      this.hud = h("div", { class: "arc-hud" });
+      this.el.append(this.hud);
+    }
     this.el.style.width = `${w}px`;
     this.el.style.height = `${hgt}px`;
   }
@@ -123,13 +136,31 @@ export class ArcPlot {
     const dots = log.dots;
     const P = this.src.copy;
     this.layer.replaceChildren();
-    if (!dots.length) return;
+    const G = this.game;
+    const tgt = G && this.app.game ? this.app.game.target : null;
+    const hitFt = this.app.game?.hit ?? G?.score.hitFeet;
+    const label = this.app.game?.name || G?.board.flag || "";
+    if (!dots.length && tgt === null) return;
     const pw = this.w - this.pad.l - this.pad.r, ph = this.ht - this.pad.t - this.pad.b;
-    this.scale = plotScale(dots, pw, ph, this.scale);
+    // The flag and its zones are always in view: the plot is at least as wide as the farthest zone.
+    this.scale = plotScale(dots, pw, ph, this.scale, G && tgt !== null ? outerFeet(G, tgt, hitFt) * FEET * 1.04 : 0);
     const X = (x: number) => this.pad.l + (x / this.scale!.xMax) * pw;
     const Y = (y: number) => this.ht - this.pad.b - (y / this.scale!.yMax) * ph;
     this.chip.classList.toggle("hidden", this.scale.stretch < 1.2);
     const cross = log.crossing();
+    const gy = this.ht - this.pad.b;
+    const FX = (feet: number) => X(feet * FEET);
+    if (G && tgt !== null) {
+      drawZones(this.layer, G, tgt, FX, gy, this.pad.t, gy + 24, hitFt);
+      if (G.kind === "ship") drawShip(this.layer, FX(tgt), gy, label);
+      else drawFlag(this.layer, FX(tgt), gy, label);
+    }
+    this.hud?.classList.toggle("hidden", !!cross);
+    if (this.hud && G && tgt !== null) {
+      const here = dots.length ? Math.round(dots[dots.length - 1].x / FEET) : 0;
+      this.hud.textContent = `${label}: ${tgt.toLocaleString("en-US")} ft   ·   ${here.toLocaleString("en-US")} ft`;
+    }
+    if (!dots.length) return;
     // The path: from the cannon through every dot (above ground), then to the crossing.
     let d = `M${X(0)} ${Y(0)}`;
     for (const p of dots) if (p.y >= 0) d += `L${X(p.x).toFixed(1)} ${Y(p.y).toFixed(1)}`;
@@ -153,6 +184,18 @@ export class ArcPlot {
     if (cross) {
       tag(X(cross.x), Y(0), P.landed, "landed");
       this.layer.append(s("circle", { cx: X(cross.x), cy: Y(0), r: 9, class: "arc-cross" }));
+      if (G && tgt !== null) {
+        // Where it landed against the flag: a line along the ground, how far off, and the points.
+        const landed = Math.round(cross.x / FEET);
+        const res = judge(G, tgt, landed, hitFt);
+        const lx = X(cross.x), fx = FX(tgt);
+        this.layer.append(s("circle", { cx: lx, cy: Y(0), r: 16, class: "land-pulse" }));
+        if (Math.abs(lx - fx) > 14) this.layer.append(s("path", { d: `M${lx} ${gy - 34}H${fx}M${lx} ${gy - 42}V${gy - 26}M${fx} ${gy - 42}V${gy - 26}`, class: "miss-line" }));
+        if (res.hit) drawBurst(this.layer, fx, gy - 70);
+        const text = res.hit ? G.board.hit : G.board.missBy.replace("{feet}", res.miss.toLocaleString("en-US")).replace("{side}", res.side === "short" ? G.board.sideShort : G.board.sideLong);
+        if (!res.hit) tag((lx + fx) / 2, gy - 86, text, "miss");
+        this.layer.append(s("text", { x: lx, y: gy - 175, "text-anchor": "middle", class: "score-pop" }, `+${res.score}`));
+      }
     }
   }
 }
@@ -193,13 +236,25 @@ class FilmStrip {
 /** The card reader with the real input card, until the first card is punched. */
 function readerArt(app: App): HTMLElement {
   const rc = app.mission!.readCard;
-  const card = rc ? (svgFromString(cardSvg(rc.text, { w: 840, h: 150, first: 1, last: 70, cls: "input-card" })) as unknown as HTMLElement) : h("div", {});
-  const nums = rc ? readCardNumbers(rc.text) : [];
+  // Gunnery: the launch speeds come from the dials, not from card fields F and G, so those two are not shown as card numbers.
+  const game = app.mission!.content.game;
+  const shot = game && app.game?.charge && app.game.elevation ? shotSpeeds(game, app.game.charge, app.game.elevation) : null;
+  const card = rc ? (svgFromString(cardSvg(rc.text, { w: 840, h: 150, first: 1, last: game ? 50 : 70, cls: "input-card" })) as unknown as HTMLElement) : h("div", {});
+  const nums = rc ? readCardNumbers(game ? rc.text.slice(0, 50) : rc.text) : [];
   return h(
     "div",
     { class: "reader-art" },
     h("div", { class: "reader-hopper" }, h("div", { class: "pane-title" }, COPY.traj.reader), card),
     nums.length ? h("div", { class: "reader-nums" }, h("span", { class: "pane-title" }, COPY.traj.onTheCard), ...nums.map((v) => h("span", { class: "reader-num" }, v))) : null,
+    game && shot
+      ? h(
+          "div",
+          { class: "reader-nums" },
+          h("span", { class: "pane-title" }, game.aim.dialled),
+          h("span", { class: "reader-num" }, fillCard(game.aim.across, { n: fmt(Math.round(shot.across)) })),
+          h("span", { class: "reader-num" }, fillCard(game.aim.up, { n: fmt(Math.round(shot.up)) })),
+        )
+      : null,
   );
 }
 

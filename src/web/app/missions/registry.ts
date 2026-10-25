@@ -12,6 +12,7 @@ import { CheckersFigure, SharingFigure } from "../stage/primesfig.ts";
 import { TileFigure } from "../stage/tiles.ts";
 import { DotsFigure, HopFigure } from "../stage/trajfig.ts";
 import { DifferenceBriefFigure, DifferenceFigure } from "../stage/diffig.ts";
+import { BattleshipPlanFigure, BattleshipTitleFigure, battleshipPicker } from "../stage/battleshipfig.ts";
 
 export interface MissionArt {
   /** The picker card picture: SVG elements for a 480 x 200 canvas on the panel colour. */
@@ -78,6 +79,12 @@ const ART: Record<string, MissionArt> = {
     },
     briefing: (reduce) => new DifferenceBriefFigure(reduce),
     plan: (_math, reduce) => new DifferenceFigure(reduce),
+  },
+  battleship: {
+    // The old board-game commercial: navy room, ocean grid, grey warships, a starburst (stage/battleshipfig.ts).
+    picker: battleshipPicker,
+    briefing: (reduce) => new BattleshipTitleFigure(reduce),
+    plan: (math, reduce) => new BattleshipPlanFigure(math, reduce),
   },
 };
 

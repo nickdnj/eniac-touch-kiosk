@@ -25,6 +25,8 @@ export class IdleTimer {
   mode: IdleMode = "none";
   warning = false;
   paused = false;
+  /** Docent mode: a docent is talking, so the visitor timeout is off. */
+  docent = false;
   private cfg: HelloConfig["idle"] = { setupS: 90, runS: 180, countdownS: 15, exploreS: 120 };
   private t: unknown = null;
   private pauseCap: unknown = null;
@@ -46,6 +48,12 @@ export class IdleTimer {
     if (m === this.mode) return;
     this.mode = m;
     if (this.warning && m === "none") this.dismiss();
+    this.restart();
+  }
+
+  setDocent(on: boolean): void {
+    this.docent = on;
+    if (on && this.warning) this.dismiss();
     this.restart();
   }
 
@@ -93,7 +101,7 @@ export class IdleTimer {
 
   private restart(): void {
     this.clearT();
-    if (this.mode === "none" || this.paused || this.warning) return;
+    if (this.mode === "none" || this.paused || this.warning || this.docent) return;
     const s = this.mode === "run" ? this.cfg.runS : this.mode === "explore" ? this.cfg.exploreS || 120 : this.cfg.setupS;
     this.t = this.clock.setTimeout(() => this.warn(), s * 1000);
   }

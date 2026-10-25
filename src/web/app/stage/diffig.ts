@@ -1,7 +1,7 @@
 // S3b plan figure for the Difference mission: the table built by adding. Each
 // row's numbers come from the row above by adding the difference below them,
 // which is what the four accumulators do. The numbers are computed here from
-// the starting values (600, -89, -34, 6), the same ones the mission's program
+// the starting values (0, 1, 6, 6), the same ones the mission's program
 // loads, so the figure cannot drift from them.
 
 import { h } from "../ui/dom.ts";
@@ -9,8 +9,8 @@ import { button } from "../ui/overlays.ts";
 import { COPY } from "../copy.ts";
 import type { Figure } from "./primesfig.ts";
 
-/** f(x) = x^3 - 20x^2 - 70x + 600 by the Method of Differences: f, change, next change, steady. */
-export const DIFF_START = [600, -89, -34, 6] as const;
+/** The cubes, f(x) = x^3, by the Method of Differences: f, change, next change, steady. (Stuart's own table starts 600, -89, -34, 6 and goes below zero; cubes only climb.) */
+export const DIFF_START = [0, 1, 6, 6] as const;
 
 /** `n` rows of the table, each from the one before by adding down the chain (f += d1, d1 += d2, d2 += d3). */
 export function differenceTable(n: number): number[][] {
@@ -98,21 +98,70 @@ export class DifferenceFigure implements Figure {
 }
 
 
-const BARS = 8;
+const SVGNS = "http://www.w3.org/2000/svg";
+const FACES = ["#8fd0f2", "#3c8fc0", "#2a6a94"]; // top, right, left: the data-cable blue, lit from above
+
+/** An n x n x n stack of little blocks as an isometric drawing. Cubes are in painter's order (bottom up, back to front), so showing them in array order builds the block up. */
+export function blockCube(n: number, unit: number, cx: number, cy: number): { svg: SVGSVGElement; blocks: SVGGElement[] } {
+  const svg = document.createElementNS(SVGNS, "svg");
+  svg.setAttribute("viewBox", "0 0 1200 386");
+  svg.setAttribute("class", "diffb-blocks");
+  svg.setAttribute("aria-hidden", "true");
+  const P = (x: number, y: number, z: number) => `${cx + (x - y) * unit * 0.866},${cy + (x + y) * unit * 0.5 - z * unit}`;
+  const face = (g: SVGGElement, pts: string[], fill: string) => {
+    const e = document.createElementNS(SVGNS, "polygon");
+    e.setAttribute("points", pts.join(" "));
+    e.setAttribute("fill", fill);
+    e.setAttribute("stroke", "#101215");
+    e.setAttribute("stroke-width", "3");
+    e.setAttribute("stroke-linejoin", "round");
+    g.appendChild(e);
+  };
+  const blocks: SVGGElement[] = [];
+  for (let z = 0; z < n; z++)
+    for (let d = 0; d <= 2 * (n - 1); d++)
+      for (let x = 0; x < n; x++) {
+        const y = d - x;
+        if (y < 0 || y >= n) continue;
+        const g = document.createElementNS(SVGNS, "g");
+        face(g, [P(x, y, z + 1), P(x + 1, y, z + 1), P(x + 1, y + 1, z + 1), P(x, y + 1, z + 1)], FACES[0]);
+        face(g, [P(x + 1, y, z), P(x + 1, y + 1, z), P(x + 1, y + 1, z + 1), P(x + 1, y, z + 1)], FACES[1]);
+        face(g, [P(x, y + 1, z), P(x + 1, y + 1, z), P(x + 1, y + 1, z + 1), P(x, y + 1, z + 1)], FACES[2]);
+        g.setAttribute("class", "diffb-block");
+        svg.appendChild(g);
+        blocks.push(g);
+      }
+  return { svg, blocks };
+}
+
+const BLOCK_STEP_MS = 210;       // one little block of the 2 x 2 x 2 appears
+const BLOCK_STEP3_MS = 85;       // ... and of the 3 x 3 x 3
+const HAND_AT = 500;             // the problem: tables made by hand
+const BABBAGE_AT = HAND_AT + 5600;  // the idea: a machine that only adds
+const CUBE2_AT = BABBAGE_AT + 5600; // what we will build: cubes, as blocks
+const CUBE3_AT = CUBE2_AT + 8 * BLOCK_STEP_MS + 2400;
+const BARS_AT = CUBE3_AT + 27 * BLOCK_STEP3_MS + 2800;
+
+const BARS = 6;
 const BAR_MS = 1500;
-const BAR_LOOP_MS = 1200 + BARS * BAR_MS + 3500;
-const SCALE = 0.62; // px per unit of f(x): 600 -> 372 px, -527 -> 327 px
+const BAR_LOOP_MS = BARS_AT + 1200 + BARS * BAR_MS + 3500;
+const SCALE = 2.4; // px per unit of f(x): 125 -> 300 px, 8 -> 19 px
 
 /**
- * S3 briefing figure: the table's values as bars either side of a zero line,
- * each one built from the one above by adding a change that itself changes.
- * The bars shrink, cross zero and grow the other way (f goes negative at row
- * 5). Numbers from differenceTable(), so they are the program's.
+ * S3 briefing figure: the table's values as bars, each one built from the
+ * one above by adding a change that itself grows. The bars climb faster and
+ * faster (the cubes: 0, 1, 8, 27, 64, 125). Numbers from differenceTable(),
+ * so they are the program's.
  */
 export class DifferenceBriefFigure implements Figure {
   readonly el: HTMLElement;
   private bars: HTMLElement[] = [];
   private caption: HTMLElement;
+  private plot: HTMLElement;
+  private hand: HTMLElement;
+  private engine: HTMLElement;
+  private cube2: { svg: SVGSVGElement; blocks: SVGGElement[] };
+  private cube3: { svg: SVGSVGElement; blocks: SVGGElement[] };
   private timers: ReturnType<typeof setTimeout>[] = [];
   private data = differenceTable(BARS);
 
@@ -132,8 +181,21 @@ export class DifferenceBriefFigure implements Figure {
       this.bars.push(row);
       plot.append(row);
     });
+    this.plot = plot;
+    this.cube2 = blockCube(2, 88, 600, 193);
+    this.cube3 = blockCube(3, 58, 600, 193);
+    const squares = [1, 4, 9, 16, 25, 36, 94, 64, 81]; // 7 x 7 = 49 copied as 94: a slip, the kind a hand-made table has
+    this.hand = h("div", { class: "diffb-hand hidden" }, h("div", { class: "diffb-paper" },
+      h("div", { class: "diffb-paper-title" }, D.handTitle),
+      ...squares.map((v, i) => h("div", { class: `diffb-paper-row${i === 6 ? " slip" : ""}` }, h("span", {}, String(i + 1)), h("span", {}, String(v))))));
+    this.engine = h("div", { class: "diffb-engine hidden" }, ...[[0, 8, 3], [7, 1, 9], [2, 5, 6], [4, 4, 0]].flatMap((col, i) => [
+      h("div", { class: "diffb-wheels" }, ...col.map((d) => h("div", { class: "diffb-wheel" }, String(d)))),
+      ...(i < 3 ? [h("div", { class: "diffb-plus" }, "+")] : []),
+    ]));
+    const stage = h("div", { class: "diffb-stage" }, plot, this.hand, this.engine);
+    stage.append(this.cube2.svg as unknown as Node, this.cube3.svg as unknown as Node);
     this.caption = h("div", { class: "tiles-caption diff-caption", "aria-live": "polite" });
-    const kids: HTMLElement[] = [plot, this.caption];
+    const kids: HTMLElement[] = [stage, this.caption];
     if (!reduceMotion) kids.push(button(COPY.tiles.again, "light outline tiles-again", () => this.play()));
     this.el = h("div", { class: "tiles diff-fig diffb", "data-figure": "difference-briefing" }, ...kids);
   }
@@ -142,20 +204,60 @@ export class DifferenceBriefFigure implements Figure {
     this.clear();
     this.el.classList.remove("still");
     for (const r of this.bars) r.classList.remove("on");
+    for (const g of [...this.cube2.blocks, ...this.cube3.blocks]) g.classList.remove("on");
+    this.plot.classList.add("hidden");
+    this.cube2.svg.classList.add("hidden");
+    this.cube3.svg.classList.add("hidden");
+    this.hand.classList.add("hidden");
+    this.engine.classList.add("hidden");
+    this.hand.classList.remove("slipped");
     const D = COPY.difference;
+    const at = (ms: number, fn: () => void) => this.timers.push(setTimeout(fn, ms));
     this.caption.textContent = "";
-    this.bars.forEach((r, i) => this.timers.push(setTimeout(() => {
+    // The problem, then the idea: tables made by hand have mistakes; Babbage planned a machine that only adds.
+    at(HAND_AT, () => {
+      this.hand.classList.remove("hidden");
+      this.caption.textContent = D.hand;
+    });
+    at(HAND_AT + 2600, () => this.hand.classList.add("slipped"));
+    at(BABBAGE_AT - 400, () => this.hand.classList.add("hidden"));
+    at(BABBAGE_AT, () => {
+      this.engine.classList.remove("hidden");
+      this.caption.textContent = D.babbage;
+    });
+    at(CUBE2_AT - 400, () => this.engine.classList.add("hidden"));
+    at(CUBE2_AT - 300, () => this.cube2.svg.classList.remove("hidden"));
+    // What we will build: a table of cubes. A cube, as blocks: 2 x 2 x 2, then 3 x 3 x 3.
+    at(CUBE2_AT - 300, () => (this.caption.textContent = D.cubeIs));
+    this.cube2.blocks.forEach((g, i) => at(CUBE2_AT + i * BLOCK_STEP_MS, () => g.classList.add("on")));
+    at(CUBE2_AT + 8 * BLOCK_STEP_MS, () => (this.caption.textContent = D.cube(2)));
+    at(CUBE3_AT - 400, () => this.cube2.svg.classList.add("hidden"));
+    at(CUBE3_AT, () => {
+      this.cube3.svg.classList.remove("hidden");
+      this.caption.textContent = D.cubeIs;
+    });
+    this.cube3.blocks.forEach((g, i) => at(CUBE3_AT + i * BLOCK_STEP3_MS, () => g.classList.add("on")));
+    at(CUBE3_AT + 27 * BLOCK_STEP3_MS, () => (this.caption.textContent = D.cube(3)));
+    // Then the table of cubes, by adding.
+    at(BARS_AT - 400, () => this.cube3.svg.classList.add("hidden"));
+    at(BARS_AT, () => this.plot.classList.remove("hidden"));
+    this.bars.forEach((r, i) => at(BARS_AT + 1200 + i * BAR_MS, () => {
       r.classList.add("on");
-      this.caption.textContent = i === 0 ? D.briefStart : this.data[i][0] < 0 && this.data[i - 1][0] >= 0 ? D.briefNegative : D.briefAdd;
-    }, 1200 + i * BAR_MS)));
-    this.timers.push(setTimeout(() => (this.caption.textContent = D.only), 1200 + BARS * BAR_MS));
-    this.timers.push(setTimeout(() => this.play(), BAR_LOOP_MS));
+      this.caption.textContent = i === 0 ? D.briefStart : D.briefAdd;
+    }));
+    at(BARS_AT + 1200 + BARS * BAR_MS, () => (this.caption.textContent = D.only));
+    at(BAR_LOOP_MS, () => this.play());
   }
 
   /** Reduced motion: every bar at once. */
   showFinal(): void {
     this.clear();
     this.el.classList.add("still");
+    this.plot.classList.remove("hidden");
+    this.hand.classList.add("hidden");
+    this.engine.classList.add("hidden");
+    this.cube2.svg.classList.add("hidden");
+    this.cube3.svg.classList.add("hidden");
     for (const r of this.bars) r.classList.add("on");
     this.caption.textContent = COPY.difference.only;
   }

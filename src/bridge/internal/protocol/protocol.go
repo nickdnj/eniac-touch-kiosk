@@ -157,6 +157,14 @@ type StepApplied struct {
 	Remaining int    `json:"remaining"`
 }
 
+// Aimed follows the core's ack of the dialled-in shot.
+type Aimed struct {
+	T         string `json:"t" tstype:"'aimed'"`
+	Re        *int64 `json:"re,omitempty"`
+	Charge    string `json:"charge"`
+	Elevation string `json:"elevation"`
+}
+
 // SetupComplete: all steps applied, normally or via skip_setup.
 type SetupComplete struct {
 	T       string `json:"t" tstype:"'setup_complete'"`
@@ -285,6 +293,18 @@ type ApplyStep struct {
 	ID       *int64 `json:"id,omitempty"`
 	Step     string `json:"step"`
 	Assisted bool   `json:"assisted"`
+	// Value is a chosen setting for the one step a mission lets the visitor set
+	// freely (Your turn). Empty means the step's own value.
+	Value string `json:"value,omitempty"`
+}
+
+// Aim sets the gun of a game mission (Gunnery): a charge and an elevation from
+// the mission's game block. The bridge dials the launch speeds in.
+type Aim struct {
+	T         string `json:"t" tstype:"'aim'"`
+	ID        *int64 `json:"id,omitempty"`
+	Charge    string `json:"charge"`
+	Elevation string `json:"elevation"`
 }
 
 type SkipSetup struct {

@@ -32,6 +32,8 @@ type Options struct {
 	// Admin serves /api/admin/ (internal/admin), with the websocket's
 	// Origin check (nil: no admin routes).
 	Admin AdminAPI
+	// Scores serves /api/scores/ (internal/scores); POSTs follow the websocket's Origin rule.
+	Scores ScoresAPI
 	// Listener overrides Config.Listen (tests).
 	Listener net.Listener
 	// Ready is called with the bound address once listening.
@@ -40,6 +42,11 @@ type Options struct {
 
 // AdminAPI is the staff API (internal/admin.Admin).
 type AdminAPI interface {
+	Handler(originOK func(origin string) bool) http.Handler
+}
+
+// ScoresAPI is the high-score store (internal/scores.Store).
+type ScoresAPI interface {
 	Handler(originOK func(origin string) bool) http.Handler
 }
 
@@ -70,6 +77,9 @@ func buildMux(ctx context.Context, o Options, addr string) (*http.ServeMux, *srv
 	if o.Admin != nil {
 		// Same Origin rule as /ws: only the kiosk page itself.
 		mux.Handle("/api/admin/", o.Admin.Handler(func(origin string) bool { return originAllowed(origin, s.origins) }))
+	}
+	if o.Scores != nil {
+		mux.Handle("/api/scores/", o.Scores.Handler(func(origin string) bool { return originAllowed(origin, s.origins) }))
 	}
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		doc := protocol.Healthz{Status: "ok"}

@@ -132,3 +132,27 @@ test("Explore ENIAC: 120 s (exploreS), longer than the picker's 90 s (FR-32 v0.4
   b.clock.advance(1);
   assert.deepEqual(b.ev, ["warn:3"]);
 });
+
+test("docent mode: no overlay however long the screen sits, and the timer comes back when it ends", () => {
+  const { clock, ev, t } = mk();
+  t.setMode("setup");
+  t.setDocent(true);
+  clock.advance(10 * 60_000);
+  assert.deepEqual(ev, [], "a docent talking does not time out");
+  t.setDocent(false);
+  clock.advance(89_999);
+  assert.deepEqual(ev, []);
+  clock.advance(1);
+  assert.deepEqual(ev, ["warn:15"]);
+});
+
+test("docent mode turned on while the warning is up dismisses it", () => {
+  const { clock, ev, t } = mk();
+  t.setMode("setup");
+  clock.advance(90_000);
+  assert.deepEqual(ev, ["warn:15"]);
+  t.setDocent(true);
+  assert.equal(ev.at(-1), "dismiss");
+  clock.advance(60_000);
+  assert.equal(ev.filter((e: string) => e === "expire").length, 0);
+});
