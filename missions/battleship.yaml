@@ -9,10 +9,9 @@ order: 1
 summary: "Pick your ship and gun. Sink the enemy."
 minutes: 3
 program: gunnery.e
-programSha256: "358efd90da2763112e2755fb20bfd1afe743d2d2beeaca2399e4911a7e3ab8b7"
+programSha256: "8778acc5cad05c09fa06027deea58b6ab6f65602990fadefc02b4deb92729306"
 includes: { drag.e: "66d42fed31297875080da7cf30780fff03d70d43c09aaa4e957adaa02abf194e" }
 assets: { demo.card: "86ae09c103ba0af54b982cb5be78fb7707014397067801da3c9c68036bc1b4d8" }   # the file holds the same card twice; the first is read
-requires: [0003-acc-1pp-race]    # without it the "up" numbers can come out a few units low (spike S2)
 ordered: true
 
 steps:
@@ -100,31 +99,31 @@ content:
       - { id: t6, feet: 15550, name: "Enemy cruiser", hit: 300 }
       - { id: t7, feet: 19700, name: "Enemy battleship", hit: 400 }
       - { id: t8, feet: 24500, name: "Enemy battleship", hit: 400 }
-    table:                       # worked out on the real core through the bridge, 2026-10-22/23 (docs/gunnery-mission.md); seconds are the interpolated landing time
+    table:                       # worked out on the real core through the bridge, 2026-10-22/23, re-measured 2026-10-27 after Stuart's trajdemo.e fix (docs/gunnery-mission.md); seconds are the interpolated landing time
       - { gun: g1, elevation: e5, feet: 1888, secs: 3.2 }
-      - { gun: g1, elevation: e10, feet: 3709, secs: 6.4 }
-      - { gun: g1, elevation: e15, feet: 5377, secs: 9.5 }
-      - { gun: g1, elevation: e20, feet: 6844, secs: 12.6 }
+      - { gun: g1, elevation: e10, feet: 3708, secs: 6.4 }
+      - { gun: g1, elevation: e15, feet: 5376, secs: 9.5 }
+      - { gun: g1, elevation: e20, feet: 6842, secs: 12.6 }
       - { gun: g2, elevation: e5, feet: 2971, secs: 4.0 }
-      - { gun: g2, elevation: e10, feet: 5753, secs: 8.0 }
-      - { gun: g2, elevation: e15, feet: 8254, secs: 11.9 }
-      - { gun: g2, elevation: e20, feet: 10435, secs: 15.6 }
-      - { gun: g3, elevation: e5, feet: 4234, secs: 4.8 }
-      - { gun: g3, elevation: e10, feet: 8170, secs: 9.6 }
-      - { gun: g3, elevation: e15, feet: 11694, secs: 14.2 }
-      - { gun: g3, elevation: e20, feet: 14721, secs: 18.7 }
-      - { gun: g4, elevation: e5, feet: 5705, secs: 5.6 }
-      - { gun: g4, elevation: e10, feet: 10954, secs: 11.1 }
-      - { gun: g4, elevation: e15, feet: 15550, secs: 16.5 }
-      - { gun: g4, elevation: e20, feet: 19472, secs: 21.6 }
-      - { gun: g5, elevation: e5, feet: 7380, secs: 6.4 }
-      - { gun: g5, elevation: e10, feet: 13996, secs: 12.6 }
-      - { gun: g5, elevation: e15, feet: 19721, secs: 18.7 }
-      - { gun: g5, elevation: e20, feet: 24532, secs: 24.4 }
-      - { gun: g6, elevation: e5, feet: 8604, secs: 6.9 }
-      - { gun: g6, elevation: e10, feet: 16124, secs: 13.6 }
-      - { gun: g6, elevation: e15, feet: 22592, secs: 20.1 }
-      - { gun: g6, elevation: e20, feet: 27966, secs: 26.2 }
+      - { gun: g2, elevation: e10, feet: 5752, secs: 8.0 }
+      - { gun: g2, elevation: e15, feet: 8252, secs: 11.9 }
+      - { gun: g2, elevation: e20, feet: 10432, secs: 15.6 }
+      - { gun: g3, elevation: e5, feet: 4233, secs: 4.8 }
+      - { gun: g3, elevation: e10, feet: 8168, secs: 9.6 }
+      - { gun: g3, elevation: e15, feet: 11691, secs: 14.2 }
+      - { gun: g3, elevation: e20, feet: 14716, secs: 18.7 }
+      - { gun: g4, elevation: e5, feet: 5703, secs: 5.6 }
+      - { gun: g4, elevation: e10, feet: 10951, secs: 11.1 }
+      - { gun: g4, elevation: e15, feet: 15545, secs: 16.5 }
+      - { gun: g4, elevation: e20, feet: 19466, secs: 21.6 }
+      - { gun: g5, elevation: e5, feet: 7377, secs: 6.4 }
+      - { gun: g5, elevation: e10, feet: 13992, secs: 12.6 }
+      - { gun: g5, elevation: e15, feet: 19716, secs: 18.7 }
+      - { gun: g5, elevation: e20, feet: 24526, secs: 24.4 }
+      - { gun: g6, elevation: e5, feet: 8601, secs: 6.9 }
+      - { gun: g6, elevation: e10, feet: 16120, secs: 13.6 }
+      - { gun: g6, elevation: e15, feet: 22586, secs: 20.1 }
+      - { gun: g6, elevation: e20, feet: 27959, secs: 26.2 }
     firing:
       button: "Firing table"
       title: "FIRING TABLE"

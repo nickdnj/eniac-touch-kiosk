@@ -28,7 +28,7 @@ func TestRealCoreTrajdemoDeterministic(t *testing.T) {
 	const runs, minCards = 4, 12
 	// Hop 1 from a clean CLEAR, READ, INIT (spike S2): columns 26-30 hop,
 	// 51-60 "along" (Acc 18), 71-80 "up" (Acc 20).
-	first := strings.Repeat(" ", 25) + "00001     00000          0014128681          0005693229"
+	first := strings.Repeat(" ", 25) + "00001     00000          0014128681          0005693175"
 	h := newHarness(t)
 	root, _ := testenv.RepoRoot()
 	gold, err := os.ReadFile(filepath.Join(root, "tests", "golden", "traj-patched.punch"))

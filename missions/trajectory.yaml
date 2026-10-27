@@ -15,10 +15,9 @@ order: 4
 summary: "Fire a cannon shell, one dot at a time."
 minutes: 5
 program: trajdemo.e
-programSha256: "b21c3635b1febd4b35169d1f5647b89e94d9b7b2dee2ffcbf9b5e2b3f17c6857"
+programSha256: "6f6b5d6ac16be25869a498e439edab9364ddfa7a0e009e6bb030b32b3a084dc4"
 includes: { drag.e: "66d42fed31297875080da7cf30780fff03d70d43c09aaa4e957adaa02abf194e" }
 assets: { demo.card: "86ae09c103ba0af54b982cb5be78fb7707014397067801da3c9c68036bc1b4d8" }   # the file holds the same card twice; the first is read
-requires: [0003-acc-1pp-race]    # without it the "up" numbers can come out a few units low (spike S2)
 ordered: true
 
 steps:
@@ -119,7 +118,7 @@ checkpoints:
   - { id: landed,    when: { punchField: { index: 14, startsWith: "-" } } }   # "up" turns negative: card 34
 result: landed
 
-selftest:                        # rule 8: READ (b c, b r), INIT, the first hop on a clean core [V, S2 with 0003]
+selftest:                        # rule 8: READ (b c, b r), INIT, the first hop on a clean core [V, S2]
   read: true
   inits: 1
   until: { punchCount: { gte: 1 } }
@@ -128,7 +127,7 @@ selftest:                        # rule 8: READ (b c, b r), INIT, the first hop 
     - { index: 10, values: ["00141"] }
     - { index: 11, values: ["28681"] }
     - { index: 14, values: ["00056"] }
-    - { index: 15, values: ["93229"] }
+    - { index: 15, values: ["93175"] }
 
 content:
   briefing:                      # S3, step 0a

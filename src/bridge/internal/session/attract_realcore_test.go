@@ -26,7 +26,7 @@ import (
 
 // Two attract flights on the real core (test-realcore, about 2 min): each
 // flight is a fresh session and core, punches the 34 cards of trajdemo.e's
-// first flight (hop 1 = along 14128681, up 5693229, spike S2), lands on
+// first flight (hop 1 = along 14128681, up 5693175, spike S2), lands on
 // hop 34 with "up" below zero, freezes, and recycles. Then a hand-off in
 // mid-flight kills the core at once.
 func TestAttractRealCoreTwoFlights(t *testing.T) {
@@ -73,7 +73,7 @@ func TestAttractRealCoreTwoFlights(t *testing.T) {
 			os.WriteFile(filepath.Join(root, "tests", "fixtures", "protocol", "attract.json"), append(b, '\n'), 0o644)
 		}
 		f := cards[0]["fields"].([]any)
-		if f[5] != "00001" || f[10] != "00141" || f[11] != "28681" || f[14] != "00056" || f[15] != "93229" {
+		if f[5] != "00001" || f[10] != "00141" || f[11] != "28681" || f[14] != "00056" || f[15] != "93175" {
 			t.Fatalf("flight %d first card %v", flight, cards[0]["text"])
 		}
 		cl.wait(5*time.Second, "recycling", phase("recycling"))
