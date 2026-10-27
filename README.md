@@ -84,7 +84,6 @@ Do this on a branch, as its own PR. Never bump the pin automatically.
    |---|---|
    | ~~`0001-mult-stage-format`~~ | Retired 2026-10-19: Stuart fixed it upstream (9da94de, `eniactk` now parses with `strings.Fields`). It was `make upstream-unpatched`, then `build/unpatched/eniac-core` still prints `m  0` (two spaces): the `traj-unpatched-m` golden |
    | ~~`0002-ft-repeat-default`~~ | Retired 2026-10-19: Stuart took the fix upstream (ad9a7a7, same change). It was `TestRealCoreSieveCanary` fails in about 1.5 s with "function-table ring ran away" |
-   | `0003-acc-1pp-race` | `go build -race ./src` in `build/upstream` and run `trajdemo.e` for 40 s: the race detector reports `accrecv` against `doonepp`. (`TestRealCoreTrajdemoDeterministic` is too weak to rely on here; see spike S2.) |
 4. **Rebuild and re-record the goldens.**
    ```sh
    make upstream-unpatched   # patched cores plus build/unpatched/eniac-core

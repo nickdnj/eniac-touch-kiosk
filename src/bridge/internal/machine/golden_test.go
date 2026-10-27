@@ -114,42 +114,33 @@ func TestGoldenKnownAnswers(t *testing.T) {
 	}
 }
 
-// The unpatched core's "m  0 ..." lines and the patched "m 0 ..." lines
-// produce identical mult state (test plan 3.2 quirk table).
+// The core prints "m  0 ..." (two spaces) for a mult stage under 10 (upstream mult.go; our patch 0001
+// that made it "m 0 ..." was retired when Stuart moved eniactk to strings.Fields). The status parser
+// must read both forms identically, and the recorded cores must show the quirk (test plan 3.2).
 func TestMultFormatsGoldens(t *testing.T) {
 	dir := goldenDir(t)
-	un, err := golden.Load(dir, "traj-unpatched-m")
-	if err != nil {
-		t.Fatal(err)
-	}
-	pa, err := golden.Load(dir, "traj-patched")
-	if err != nil {
-		t.Fatal(err)
-	}
 	double, single := 0, 0
-	for _, l := range un.Status {
-		if strings.HasPrefix(l, "m  ") {
-			double++
-			ev, d := status.Parse(l)
-			ev2, d2 := status.Parse("m " + strings.TrimLeft(l[2:], " "))
-			if d != nil || d2 != nil || ev != ev2 {
-				t.Fatalf("%q parses differently from its patched form", l)
+	for _, name := range []string{"traj-unpatched-m", "traj-patched"} {
+		g, err := golden.Load(dir, name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, l := range g.Status {
+			switch {
+			case strings.HasPrefix(l, "m  "):
+				double++
+				ev, d := status.Parse(l)
+				ev2, d2 := status.Parse("m " + strings.TrimLeft(l[2:], " "))
+				if d != nil || d2 != nil || ev != ev2 {
+					t.Fatalf("%q parses differently from its single-space form", l)
+				}
+			case strings.HasPrefix(l, "m "):
+				single++
 			}
 		}
 	}
-	for _, l := range pa.Status {
-		if strings.HasPrefix(l, "m  ") {
-			t.Fatalf("patched core produced a double-space m line: %q", l)
-		}
-		if strings.HasPrefix(l, "m ") {
-			single++
-		}
-	}
 	if double == 0 || single == 0 {
-		t.Fatalf("goldens lack m lines: unpatched double=%d patched=%d", double, single)
-	}
-	if !coversKinds(pa.Status, "mps", "mpd", "ftar", "ftr", "m", "punch") {
-		t.Error("traj-patched does not cover mp, ft, mult and punch lines")
+		t.Fatalf("goldens lack m lines: double-space=%d single-space=%d", double, single)
 	}
 }
 

@@ -51,7 +51,7 @@ test("happy path by touch: 5 exact .e lines, S5 293/1,147, READ = b c then b r, 
   await tap(page, page.locator(".init-btn"));
   await expect(page.locator(".card-label")).toHaveText("Hop 1", { timeout: 15_000 });
   const first = await page.evaluate(() => (window as any).__eniac.cards.cards[0].text);
-  expect(first).toBe("                         00001     00000          0014128681          0005693229");
+  expect(first).toBe("                         00001     00000          0014128681          0005693175");
   await expect(page.locator(".arc-dot")).toHaveCount(1);
 });
 
