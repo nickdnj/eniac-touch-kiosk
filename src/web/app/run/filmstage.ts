@@ -19,7 +19,7 @@ import { cardValue, fieldText, fillCard, fmt, type CardLog, type Dot } from "./c
 import type { RunStage } from "./stackstage.ts";
 import { COPY } from "../copy.ts";
 import { FEET, judge, shotSpeeds } from "../game/logic.ts";
-import { drawBurst, drawFlag, drawShip, drawZones, outerFeet } from "../game/zones.ts";
+import { drawArmyTarget, drawBurst, drawFlag, drawShip, drawZones, outerFeet } from "../game/zones.ts";
 import type { Game } from "../../../bridge/internal/mission/mission.gen.ts";
 
 /** How long a tapped film-strip card stays large before the newest returns. */
@@ -152,7 +152,8 @@ export class ArcPlot {
     const FX = (feet: number) => X(feet * FEET);
     if (G && tgt !== null) {
       drawZones(this.layer, G, tgt, FX, gy, this.pad.t, gy + 24, hitFt);
-      if (G.kind === "ship") drawShip(this.layer, FX(tgt), gy, label);
+      if (G.kind === "army") drawArmyTarget(this.layer, FX(tgt), gy, label, this.app.game?.art ?? "");
+      else if (G.kind === "ship") drawShip(this.layer, FX(tgt), gy, label);
       else drawFlag(this.layer, FX(tgt), gy, label);
     }
     this.hud?.classList.toggle("hidden", !!cross);

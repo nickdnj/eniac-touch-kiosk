@@ -12,8 +12,9 @@ import { button } from "../ui/overlays.ts";
 import { COPY } from "../copy.ts";
 import { fillCard, fmt } from "../run/cards.ts";
 import { newRound, zones } from "../game/logic.ts";
-import { drawFlag, drawShip, drawZones, outerFeet } from "../game/zones.ts";
+import { drawArmyTarget, drawFlag, drawShip, drawZones, outerFeet } from "../game/zones.ts";
 import { gunIcon, shipIcon, warship, type Warship } from "../game/warship.ts";
+import { howitzer, howitzerIcon } from "../game/howitzer.ts";
 import { fetchScores } from "../net/api.ts";
 import { firingTable } from "../game/firingtable.ts";
 
@@ -47,7 +48,9 @@ export function aimScreen(app: App): Screen {
     svg.append(s("text", { x: X(f), y: GROUND + 40, class: "aim-tick-text", "text-anchor": "middle" }, f === 0 ? "0" : `${fmt(f)}`));
   }
   drawZones(svg, game, round.target, X, GROUND, 60, GROUND + 68, round.hit);
-  if (game.kind === "ship") drawShip(svg, X(round.target), GROUND, round.name || game.board.flag);
+  const army = game.kind === "army";
+  if (army) drawArmyTarget(svg, X(round.target), GROUND, round.name || game.board.flag, round.art);
+  else if (game.kind === "ship") drawShip(svg, X(round.target), GROUND, round.name || game.board.flag);
   else drawFlag(svg, X(round.target), GROUND, game.board.flag);
   const deg = () => game.elevations.find((e) => e.id === elevation)?.deg ?? 0;
   let turn: () => void;
@@ -64,7 +67,7 @@ export function aimScreen(app: App): Screen {
         return;
       }
       if (myShip.id !== ship) {
-        myShip.ref = warship(ship);
+        myShip.ref = army ? howitzer(ship) : warship(ship);
         myShip.id = ship;
       }
       const k = 0.62;
@@ -82,6 +85,10 @@ export function aimScreen(app: App): Screen {
   }
   turn();
   const targetLine = h("div", { class: "aim-target" }, targetText(copy.target));
+  const sp = game.board.spotter;
+  const call = round.spotter && sp ? fillCard(round.spotter.side === "short" ? sp.short : sp.long, { feet: fmt(round.spotter.feet) }) : "";
+  const roundLine = sp ? h("div", { class: "aim-round" }, round.round === 1 ? copy.round1 ?? "" : copy.round2 ?? "") : null;
+  const spotLine = call ? h("div", { class: "aim-spotter" }, h("b", {}, copy.spotter ?? ""), " ", call) : null;
   const beat = h("div", { class: "aim-beat" });
   const visit = app.gameVisit;
   const visitLine = h("div", { class: "aim-visit" }, visit.shots ? `${fillCard(game.board.shots, { n: visit.shots })}   ·   ${fillCard(game.board.best, { n: visit.best })}` : "");
@@ -94,7 +101,7 @@ export function aimScreen(app: App): Screen {
     { class: "aim-legend" },
     ...zones(game, round.target, round.hit).slice().reverse().map((z) => h("span", { class: `aim-chip z-${z.cls}` }, z.label)),
   );
-  const left = h("div", { class: "aim-left" }, targetLine, beat, visitLine, svg, h("div", { class: "aim-legend-text" }, copy.zones), legend, h("div", { class: "aim-unit" }, "feet from the gun"));
+  const left = h("div", { class: "aim-left" }, ...(roundLine ? [roundLine] : []), targetLine, ...(spotLine ? [spotLine] : []), beat, visitLine, svg, h("div", { class: "aim-legend-text" }, copy.zones), legend, h("div", { class: "aim-unit" }, "feet from the gun"));
 
   // ------------------------------------------------------------------ right: the two choices
   const feedback = h("p", { class: "aim-feedback", "aria-live": "polite" });
@@ -123,7 +130,7 @@ export function aimScreen(app: App): Screen {
       ship = sh.id;
       refresh();
     });
-    b.append(shipIcon(sh.id) as unknown as HTMLElement, h("span", { class: "aim-big" }, sh.label));
+    b.append((army ? howitzerIcon(sh.id) : shipIcon(sh.id)) as unknown as HTMLElement, h("span", { class: "aim-big" }, sh.label));
     shipBtns.set(sh.id, b);
   }
   for (const c of game.charges) {

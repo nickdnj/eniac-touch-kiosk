@@ -77,3 +77,43 @@ export function drawBurst(parent: SVGElement, cx: number, cy: number): void {
   }
   parent.append(place);
 }
+
+/**
+ * An Army target standing on the ground at x (Fire Mission). `art` picks the picture; the text is
+ * the target's name. Colours are CSS (`army-*`) so the dark and light themes can each have them.
+ */
+export function drawArmyTarget(parent: SVGElement, x: number, gy: number, label: string, art: string): void {
+  const g = s("g", { class: `army-target army-${art || "depot"}` });
+  const r = (rx: number, ry: number, w: number, h: number, cls: string, round = 3) => s("rect", { x: x + rx, y: gy + ry, width: w, height: h, rx: round, class: cls });
+  switch (art) {
+    case "nest": // sandbag mound with a machine gun
+      g.append(s("path", { d: `M${x - 64} ${gy}Q${x - 40} ${gy - 46} ${x} ${gy - 48}Q${x + 40} ${gy - 46} ${x + 64} ${gy}Z`, class: "army-sand" }), r(0, -42, 54, 8, "army-dark", 3), r(-8, -52, 12, 22, "army-dark", 2));
+      break;
+    case "truck":
+      g.append(r(-58, -42, 70, 30, "army-metal"), r(12, -34, 34, 22, "army-metal"), r(18, -30, 18, 12, "army-glass", 2), s("circle", { cx: x - 36, cy: gy - 10, r: 11, class: "army-tyre" }), s("circle", { cx: x + 2, cy: gy - 10, r: 11, class: "army-tyre" }), s("circle", { cx: x + 32, cy: gy - 10, r: 11, class: "army-tyre" }));
+      break;
+    case "bridge":
+      g.append(r(-96, -34, 192, 12, "army-metal", 2), r(-76, -22, 14, 22, "army-dark", 1), r(62, -22, 14, 22, "army-dark", 1), s("path", { d: `M${x - 96} ${gy - 34}L${x - 60} ${gy - 68}H${x + 60}L${x + 96} ${gy - 34}`, class: "army-truss" }), s("path", { d: `M${x - 60} ${gy - 34}L${x - 30} ${gy - 68}L${x} ${gy - 34}L${x + 30} ${gy - 68}L${x + 60} ${gy - 34}`, class: "army-truss" }));
+      break;
+    case "bunker":
+      g.append(s("path", { d: `M${x - 72} ${gy}V${gy - 26}Q${x - 60} ${gy - 54} ${x} ${gy - 54}Q${x + 60} ${gy - 54} ${x + 72} ${gy - 26}V${gy}Z`, class: "army-concrete" }), r(-34, -34, 68, 8, "army-dark", 2));
+      break;
+    case "tanks":
+      for (const dx of [-54, 54]) {
+        g.append(r(dx - 44, -22, 88, 20, "army-metal", 8), r(dx - 24, -40, 46, 20, "army-metal", 5), r(dx + 18, -34, 52, 7, "army-dark", 3));
+        for (let i = -3; i <= 3; i++) g.append(s("circle", { cx: x + dx + i * 12, cy: gy - 9, r: 6, class: "army-tyre" }));
+      }
+      break;
+    case "battery":
+      for (const dx of [-60, 60]) g.append(s("circle", { cx: x + dx, cy: gy - 16, r: 16, class: "army-tyre" }), r(dx - 8, -50, 70, 10, "army-dark", 3), r(dx - 14, -36, 30, 16, "army-metal", 3));
+      break;
+    case "railyard":
+      g.append(r(-100, -4, 200, 4, "army-dark", 1));
+      for (const dx of [-86, -18, 50]) g.append(r(dx, -40, 58, 34, "army-metal", 3), r(dx + 8, -32, 12, 14, "army-glass", 1), s("circle", { cx: x + dx + 12, cy: gy - 4, r: 6, class: "army-tyre" }), s("circle", { cx: x + dx + 46, cy: gy - 4, r: 6, class: "army-tyre" }));
+      break;
+    default: // depot: stacked crates
+      for (const [dx, dy] of [[-46, 0], [-4, 0], [38, 0], [-25, -40], [17, -40]]) g.append(r(dx, dy - 40, 40, 40, "army-crate", 2), s("path", { d: `M${x + dx} ${gy + dy - 40}l40 40M${x + dx + 40} ${gy + dy - 40}l-40 40`, class: "army-crate-x" }));
+  }
+  g.append(s("text", { x: x - 84, y: gy - 84, class: "flag-text" }, label));
+  parent.append(g);
+}

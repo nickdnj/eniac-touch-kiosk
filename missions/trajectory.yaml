@@ -11,7 +11,7 @@
 schema: 1
 id: trajectory
 title: "Trajectory"
-order: 4
+order: 5
 summary: "Fire a cannon shell, one dot at a time."
 minutes: 5
 program: trajdemo.e

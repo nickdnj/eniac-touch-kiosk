@@ -111,7 +111,8 @@ export interface Summary {
  */
 export interface Game {
   /**
-   * Kind is how the target is drawn: "flag" (Gunnery, the default) or "ship" (Battleship).
+   * Kind is how the target is drawn: "flag" (Gunnery, the default), "ship" (Battleship) or "army" (Fire Mission:
+   * howitzers, ground targets and a forward observer's spotting calls).
    */
   kind?: string;
   /**
@@ -219,6 +220,10 @@ export interface Target {
   feet: number /* int */;
   name?: string;
   hit?: number /* int */;
+  /**
+   * Art picks the picture of an Army target (nest, truck, bridge, bunker, tanks, depot, battery, railyard).
+   */
+  art?: string;
 }
 /**
  * ScoreRule: a miss of HitFeet or less scores Max; the score falls in a straight line to 0 at ZeroFeet.
@@ -249,6 +254,27 @@ export interface AimCopy {
   zones: string; // aim screen: what the colours mean
   across: string; // {n} feet per second, along the ground
   up: string; // {n} feet per second, straight up
+  /**
+   * Spotter, when the mission has a forward observer, is the line shown on the aim screen of an adjusted round:
+   * {call} is the observer's last call ("OVER 340 ft"), {n} the round number.
+   */
+  spotter?: string;
+  round1?: string;
+  round2?: string;
+}
+/**
+ * SpotterCopy is the forward observer's radio calls after a round ({feet} is the miss). Present only in Army games.
+ */
+export interface SpotterCopy {
+  who: string; // "Forward observer"
+  short: string; // landed short: {feet}
+  long: string; // landed over: {feet}
+  hit: string;
+  /**
+   * Adjust is the result screen's button for the second round; Final is shown once the adjusted round is fired.
+   */
+  adjust: string;
+  final: string;
 }
 /**
  * BoardCopy is the result screen's scoring and top-scores text.
@@ -280,6 +306,10 @@ export interface BoardCopy {
   again: string;
   today: string;
   allTime: string;
+  /**
+   * Spotter turns on the forward observer's calls and the "adjust fire" second round (Army games).
+   */
+  spotter?: SpotterCopy;
 }
 /**
  * Rank is a title earned at a score of Min or more (listed best first).

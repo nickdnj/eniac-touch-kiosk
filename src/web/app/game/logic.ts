@@ -18,11 +18,17 @@ export interface GameRound {
   ship: string | null;
   charge: string | null;
   elevation: string | null;
+  /** Which picture an Army target has ("tanks", "bridge"); "" otherwise. */
+  art: string;
+  /** 1 for the first shot at a target; 2 once the forward observer has called a correction (Army). */
+  round: number;
+  /** The observer's call after round 1, carried into round 2; null on round 1. */
+  spotter: { feet: number; side: "short" | "long" } | null;
 }
 
 export function newRound(game: Game, rnd: () => number = Math.random, forced?: Game["targets"][number]): GameRound {
   const t = forced ?? game.targets[Math.min(game.targets.length - 1, Math.floor(rnd() * game.targets.length))];
-  return { target: t.feet, hit: t.hit || game.score.hitFeet, name: t.name ?? "", ship: null, charge: null, elevation: null };
+  return { target: t.feet, hit: t.hit || game.score.hitFeet, name: t.name ?? "", ship: null, charge: null, elevation: null, art: t.art ?? "", round: 1, spotter: null };
 }
 
 /** Where the shell landed, in whole feet, from the cards' crossing; null before the landing. */
