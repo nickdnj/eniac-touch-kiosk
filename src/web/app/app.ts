@@ -131,8 +131,10 @@ export class App {
   tape: TapeRow[] = [];
   /** Which checkpoints fired in this session. */
   checkpoints = new Set<string>();
-  /** Watched accumulator values when the result checkpoint fired. */
+  /** Watched accumulator values when the result checkpoint fired (the settled values of that press). */
   answerAt: Record<string, number> | null = null;
+  /** The result checkpoint fired; the next idle `run` carries the final values to remember. */
+  private answerPending = false;
   /** Punched cards of the current session (missions with run.cards). */
   cards: CardLog = new CardLog(null);
   /** This visit's missions and their real results (state/visit.ts); reset when S1 shows. */
@@ -371,6 +373,13 @@ export class App {
       }
       case "run":
         this.mirror.onRun(m);
+        // The frame at checkpoint time can lag (Full speed): take the answer from the settled values.
+        if (this.answerPending && m.state !== "busy" && m.settled) {
+          this.answerPending = false;
+          const at: Record<string, number> = {};
+          for (const w of this.mission?.run.watch ?? []) if (typeof m.settled[w] === "number") at[w] = m.settled[w];
+          this.answerAt = at;
+        }
         break;
       case "checkpoint":
         this.checkpoints.add(m.id);
@@ -382,6 +391,7 @@ export class App {
             if (typeof v === "number") at[w] = v;
           }
           this.answerAt = at;
+          this.answerPending = true;
         }
         break;
     }
@@ -514,6 +524,7 @@ export class App {
     this.tape = [];
     this.checkpoints.clear();
     this.answerAt = null;
+    this.answerPending = false;
     this.expectingSession = false;
     this.cards.reset();
   }

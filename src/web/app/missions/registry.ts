@@ -14,6 +14,7 @@ import { DotsFigure, HopFigure } from "../stage/trajfig.ts";
 import { DifferenceBriefFigure, DifferenceFigure } from "../stage/diffig.ts";
 import { BattleshipPlanFigure, BattleshipTitleFigure, battleshipPicker } from "../stage/battleshipfig.ts";
 import { ArmyPlanFigure, ArmyTitleFigure, armyPicker } from "../stage/armyfig.ts";
+import { HeatBriefFigure, HeatPlanFigure, heatPicker } from "../stage/heatfig.ts";
 
 export interface MissionArt {
   /** The picker card picture: SVG elements for a 480 x 200 canvas on the panel colour. */
@@ -86,6 +87,12 @@ const ART: Record<string, MissionArt> = {
     picker: armyPicker,
     briefing: (reduce) => new ArmyTitleFigure(reduce),
     plan: (math, reduce) => new ArmyPlanFigure(math, reduce),
+  },
+  topsecret: {
+    // A classified manila folder and a rod of heat bars (stage/heatfig.ts).
+    picker: heatPicker,
+    briefing: (reduce) => new HeatBriefFigure(reduce),
+    plan: (math, reduce) => new HeatPlanFigure(math, reduce),
   },
   battleship: {
     // The old board-game commercial: navy room, ocean grid, grey warships, a starburst (stage/battleshipfig.ts).
