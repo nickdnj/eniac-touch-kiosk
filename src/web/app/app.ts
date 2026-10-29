@@ -474,11 +474,12 @@ export class App {
   }
 
   /** Start (or restart) a mission with a fresh core (ADR-002). */
-  async startMission(id: string, entry: "briefing" | "step1" | "yourturn"): Promise<void> {
+  async startMission(id: string, entry: "briefing" | "step1" | "yourturn", adjust?: GameRound): Promise<void> {
     // Your turn keeps the first table across the restart; every other start clears it.
     const keep = entry === "yourturn" ? this.yourTurn : null;
     this.resetVisitor();
     this.yourTurn = keep;
+    if (adjust) this.game = adjust; // Fire Mission: the same target, one correction later
     if (this.yourTurn) this.yourTurn.steady = null;
     this.visit.begin();
     this.cards = new CardLog(null);

@@ -115,6 +115,15 @@ export function resultScreen(app: App): Screen {
     yt && second
       ? button(yt.compare.button, "try-again", () => void app.startMission(mission.id, "yourturn"))
       : button(mission.content.game?.board.again ?? labels[1] ?? COPY.result.tryAgain, "try-again", () => void app.startMission(mission.id, "step1"));
+  // Fire Mission: after a miss on the first round the forward observer calls a correction and the visitor fires again
+  // at the same target (renderGame shows the button once the landing is known).
+  const adjustBtn = mission.content.game?.board.spotter
+    ? button(mission.content.game.board.spotter.adjust, "primary main adjust-btn hidden", () => {
+        const r = app.game;
+        if (!r || !scored || scored.hit) return;
+        void app.startMission(mission.id, "step1", { ...r, charge: null, elevation: null, round: 2, spotter: { feet: scored.miss, side: scored.side === "long" ? "long" : "short" } });
+      })
+    : null;
   const menu = () => {
     app.endSession("menu");
     app.show({ name: "picker" });
@@ -139,6 +148,7 @@ export function resultScreen(app: App): Screen {
   } else {
     actions.append(button(labels[2] ?? COPY.result.menu, "primary main menu-btn", menu), tryAgain);
   }
+  if (adjustBtn) actions.prepend(adjustBtn);
 
   const header = h("div", { class: "header" }, h("span", { class: "title" }, COPY.header.mission(mission.order, mission.title)));
   const el = h("div", { class: `screen result${cardMission ? " cards" : ""}` }, header, left, right, actions);
@@ -189,6 +199,13 @@ export function resultScreen(app: App): Screen {
     answerBody.textContent = scored.hit
       ? fillCard(b.landed, { feet: ft(landed) })
       : `${fillCard(b.landed, { feet: ft(landed) })} ${fillCard(b.miss, { feet: ft(scored.miss) })} ${scored.side === "short" ? b.short : b.long}`;
+    const spk = b.spotter;
+    if (spk) {
+      const callText = scored.hit ? spk.hit : fillCard(scored.side === "short" ? spk.short : spk.long, { feet: ft(scored.miss) });
+      answerBody.textContent += ` ${spk.who}: ${callText}`;
+      if (app.game.round > 1 && !scored.hit) answerBody.textContent += ` ${spk.final}`;
+      adjustBtn?.classList.toggle("hidden", scored.hit || app.game.round > 1);
+    }
     const children: HTMLElement[] = [h("p", { class: "game-points" }, fillCard(b.score, { n: scored.score }))];
     if (board) children.push(h("p", { class: "game-place" }, fillCard(b.rankToday, { n: placeOn(board.today, scored.score) })));
     children.push(h("p", { class: "game-visit" }, `${fillCard(b.shots, { n: app.gameVisit.shots })}   ·   ${fillCard(b.best, { n: app.gameVisit.best })}`));
