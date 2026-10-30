@@ -1,0 +1,18 @@
+{
+ "id": "C2",
+ "text": "Come try it at Info Age, home of the Vintage Computer Federation.",
+ "sent": "Come try it at Info Age, home of the Vintage Computer Federation.",
+ "voice": "6SxuwKUiBpZjFTc06v9Y",
+ "model": "eleven_multilingual_v2",
+ "settings": {
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "style": 0.4,
+  "speed": 1.12,
+  "use_speaker_boost": true
+ },
+ "pronunciation": "inline:{\"ENIAC\": \"Ennie-ack\"}",
+ "endpoint": "with-timestamps",
+ "seed": null,
+ "generated": "2026-10-12T15:55:40"
+}
