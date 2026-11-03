@@ -1,0 +1,17 @@
+# ENIAC, Part 1 — Chapter marks
+#
+# Measured from the mastered audio (publish/episode.mp3), sourced from
+# assets/audio/durations.json segment offsets. Total runtime 38:46 (2326.25s).
+# Chapters are also embedded in episode.mp3 as ID3v2 CHAP/CTOC frames; this
+# sidecar file is the format most podcast hosts read directly.
+
+00:00 Cold Open
+01:40 Segment 1 — What This Is
+04:27 Segment 2 — The Forcing Function
+08:46 Segment 3 — The Computers Were People
+13:38 Segment 4 — Two Men and a Memo
+15:58 Segment 5 — Eighteen Thousand Chances to Fail
+23:28 Segment 6 — Programming Wasn't a Word Yet
+28:10 Segment 7 — Too Late
+30:51 Payoff / Close — The Two Documents, Again
+37:50 Outro

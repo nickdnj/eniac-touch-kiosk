@@ -1,0 +1,126 @@
+{
+  "_readme": "Host-agnostic episode metadata for ENIAC Part 1. Fields with a value of null are audio-dependent and cannot be filled until the voice pass, mastering, and hosting decision are complete — see the sibling '<field>_pending' key for what produces each one and publish/README.md for the full checklist. Do not invent numbers for these; leave them null until measured.",
+
+  "show": {
+    "title": "ENIAC",
+    "subtitle": "A four-part series on how credit for a machine gets assigned, reassigned, and taken away",
+    "author": "Nick",
+    "ownerName": "Nick",
+    "ownerEmail": "nickd@demarconet.com",
+    "ownerEmail_pending": "Confirm this is the email Nick wants published in the RSS <itunes:owner> block before this goes out on any host — it is currently inherited from session context, not explicitly supplied for publication.",
+    "copyright": null,
+    "copyright_pending": "Nick to supply copyright line, e.g. '© 2026 Nick D.' — not asserted here.",
+    "language": "en-us",
+    "explicit": false,
+    "podcastType": "serial",
+    "podcastType_note": "Four chronological parts sharing one thesis; 'serial' is the more accurate iTunes podcast-type than 'episodic'. Confirm against whatever host Nick eventually picks — hosts vary in how strictly they enforce listen order for 'serial'.",
+    "categories": [
+      { "primary": "History" },
+      { "secondary": "Technology" }
+    ],
+    "coverArt": {
+      "path": "publish/cover-art-draft.png",
+      "status": "draft — 1024x1024, needs upscaling to 3000x3000 and Nick's approval",
+      "designNote": "Deliberately abstract and typographic. Generating a synthetic 'historical' photograph of ENIAC or of real people would fabricate exactly the kind of evidence this series spends its runtime correcting, and the audience includes museum docents.",
+      "spec": "3000x3000px, RGB (not CMYK), JPEG or PNG, under 500KB (iTunes/Spotify safe threshold; brief said <512KB, Apple's own minimum enforced ceiling is 512000 bytes so treat 500KB as the practical target)",
+      "note": "No cover art exists anywhere in this project. This is the single most likely blocker to an actual upload, independent of audio. Flagged in publish/README.md."
+    }
+  },
+
+  "episode": {
+    "seriesPart": 1,
+    "seriesPartOf": 4,
+    "season": 1,
+    "episodeNumber": 1,
+    "episodeType": "full",
+    "title": "Part 1 — What They Built, and Who Got Named",
+    "titleFull": "ENIAC, Part 1 — What They Built, and Who Got Named",
+    "subtitle": "The machine, the press release, and the photographs judged unsuitable for publication",
+    "description": "Credit for ENIAC was assigned four separate times, by four different mechanisms, over roughly thirty years: a press office in January 1946, an institution — in job titles and pay grades — for years afterward, a market in the 1950s, and a federal court in 1973. This series is about that machinery of assignment, not about naming a single inventor. Part 1 covers the first two documents. On January 17, 1946, Herman Goldstine sent the Army a batch of photographs of the machine and the people who ran it; the captions name them, by name and hometown, and describe them setting switches and plugging cables. Thirteen days later, the War Department's Bureau of Public Relations issued a release naming three men — Eckert, Mauchly, Goldstine — as primarily responsible for the difficult technical phases of the work. It went to every newsroom in the country. The photographs were judged unsuitable for publication.\n\nIn between: why the machine got built (the Army's firing-table backlog), who built it (Eckert and Mauchly, and the hundred-plus women employed as human computers before there was a machine at all), how it worked reliably despite eighteen thousand vacuum tubes (digital pulse regeneration, not better tubes), and what it actually ran first — a classified hydrogen-bomb feasibility calculation, not an artillery trajectory. The episode corrects roughly fifteen widely repeated claims about ENIAC along the way and says, at each point, exactly where the documented record runs out. It never calls ENIAC \"the first computer,\" and explains why that word describes a definition, not a fact.",
+    "description_source": "Synced verbatim from publish/show-notes.md § Description on 2026-08-08, and matching publish/episode.xml. If any one of the three changes, re-sync the other two.",
+    "explicit": false,
+    "format": "solo-narrated-essay",
+    "voice": "OpenAI TTS (gpt-4o-mini-tts), voice 'onyx'",
+    "voice_note": "NOT Nick's cloned voice. The project's locked rule specifies 'Nick 2' via ElevenLabs; ELEVENLABS_API_KEY and VOICE_ID were unset, the pipeline was stopped, Nick was asked, and he directed the use of an OpenAI stock voice and chose 'onyx' from three samples. Explicit and chosen, not a silent fallback. See project.json -> phases.voice.deviation. If this ships as the published version rather than a draft, decide whether to re-render in Nick 2 first — the script is unchanged by the voice choice, so a re-render costs synthesis time only.",
+    "level": "informed enthusiast",
+    "primaryAudience": "Nick",
+    "secondaryAudience": "Fellow docents at the Vintage Computer Federation museum",
+    "keywords": [
+      "ENIAC",
+      "history of computing",
+      "vintage computing",
+      "vacuum tubes",
+      "women in computing",
+      "ENIAC programmers",
+      "ballistics research laboratory",
+      "Moore School of Electrical Engineering",
+      "firing tables",
+      "Eckert and Mauchly",
+      "Herman Goldstine",
+      "Adele Goldstine",
+      "World War II computing",
+      "computer history podcast"
+    ],
+    "sourceScript": "script/part-1.md",
+    "sourceVerification": "research/part-1-verification.md",
+    "wordCount": 6623,
+    "estimatedRuntimeMinutes": "~44 (script author's estimate at 150 wpm; see Runtime note at the top of script/part-1.md — NOT a measured duration)",
+
+    "pubDate": null,
+    "pubDate_pending": "Placeholder. Set when Nick schedules publication; not before then.",
+
+    "duration": "00:38:46",
+    "durationSeconds": 2326.25,
+    "duration_measured": "Measured off the mastered publish/episode.mp3 on 2026-08-08, and an exact match to the total in assets/audio/durations.json. Not an estimate.",
+
+    "fileSize": 37221757,
+    "fileSize_measured": "Bytes of publish/episode.mp3 as mastered 2026-08-08 (mono, 44.1kHz, 128kbps CBR). Re-measure if the file is ever re-encoded.",
+
+    "loudness": {
+      "integrated": "-16.50 LUFS",
+      "truePeak": "-1.59 dBTP",
+      "lra": "3.30 LU",
+      "target": "-16 LUFS integrated, true peak <= -1.0 dBTP (project standard for mono spoken word)",
+      "note": "Two-pass ffmpeg loudnorm, measured off the final encode rather than the intermediate. The pre-encode true-peak target was set to -1.5 dBTP because targeting -1.0 exactly produced post-encode overshoot above spec — a known lossy-codec reconstruction artefact."
+    },
+
+    "audioFile": {
+      "path": "publish/episode.mp3",
+      "path_note": "Does not exist yet. Expected filename once the pipeline completes; nothing has been written there.",
+      "mimeType": "audio/mpeg",
+      "targetLoudness": "-16 LUFS",
+      "targetLoudness_note": "Per project.json / CLAUDE.md production rule. Not yet verified against any file because no mastered file exists."
+    },
+
+    "enclosureUrl": null,
+    "enclosureUrl_pending": "Depends entirely on which host Nick picks (Spotify for Podcasters, Transistor, Buzzsprout, self-hosted RSS + object storage, etc.). Host-agnostic by design — this package deliberately does not assume a host. Fill in once Nick names one.",
+
+    "guid": "1dbb984c-85d9-4883-bd33-ee54d54abec0",
+    "guid_note": "Generated now as a stable UUID, independent of the audio file, so the RSS item has a permanent identifier that will not change when the enclosure URL is assigned later. This is a valid and common guid strategy (isPermaLink=false) and does not need to be regenerated after mastering — do not replace it with a URL-derived guid unless Nick's chosen host requires that convention instead.",
+
+    "chapters": {
+      "status": "not_started",
+      "owner": "Podcast Show Notes Writer",
+      "path_expected": "publish/chapters-part-1.txt",
+      "note": "Chapter marks are timestamp-based and cannot be written until assets/audio/durations.json exists from the voice pass. Not this agent's file to write — referenced only."
+    },
+
+    "showNotes": {
+      "status": "not_started",
+      "owner": "Podcast Show Notes Writer",
+      "path_expected": "publish/show-notes.md"
+    },
+
+    "transcript": {
+      "status": "complete",
+      "owner": "Podcast Show Notes Writer",
+      "path": "publish/transcript-part-1.md"
+    },
+
+    "factCard": {
+      "status": "complete",
+      "path": "publish/fact-card-part-1.md",
+      "note": "Docent floor reference, not a listener-facing artifact. Source of the promo copy in publish/promo/."
+    }
+  }
+}

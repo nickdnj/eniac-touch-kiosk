@@ -1,0 +1,19 @@
+# Video and marketing live with the code; rendered media does not go to GitHub.
+*.mp3
+*.wav
+*.mp4
+*.mov
+*.m4a
+*.aac
+*.mkv
+*.webm
+*.png
+*.jpg
+*.jpeg
+*.gif
+output/
+**/assets/audio/
+**/assets/video/
+**/assets/images/
+**/kiosk-recording/
+.claude/worktrees/
