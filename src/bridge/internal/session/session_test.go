@@ -555,7 +555,7 @@ func TestTrajectoryReadThenInit(t *testing.T) {
 	cl.wait(3*time.Second, "run busy", is("run", "state", "busy"))
 	p := cl.wait(10*time.Second, "hop 1", is("punch"))
 	f := p["fields"].([]any)
-	if f[5] != "00001" || f[10] != "00141" || f[11] != "28681" || f[14] != "00056" || f[15] != "93229" {
+	if f[5] != "00001" || f[10] != "00141" || f[11] != "28681" || f[14] != "00056" || f[15] != "93175" {
 		t.Fatalf("first card %v", p["text"])
 	}
 	cl.send(`{"t":"button","b":"read","id":8}`)

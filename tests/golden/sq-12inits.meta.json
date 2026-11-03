@@ -4,9 +4,9 @@
   "rate": 0,
   "inits": 12,
   "patched": true,
-  "upstream": "c4b94f2ca9ea59dd3fdb05ddf5e29a08c7ce569a",
+  "upstream": "896a92dce9e432e8d5e1bd4cf232d53b646cf005",
   "commands": [
-    "f p /Users/nickd/Workspaces/eniac-touch-kiosk/build/run/s/rec60032/punch.txt",
+    "f p /Users/nickd/Workspaces/eniac-touch-kiosk/.claude/worktrees/upbump/build/run/s/rec66325/punch.txt",
     "s cy.rate 0",
     "b i",
     "b i",
@@ -23,6 +23,6 @@
     "D",
     "q"
   ],
-  "recordedAt": "2026-09-30T20:08:30Z",
+  "recordedAt": "2026-10-27T20:39:55Z",
   "settled": true
 }

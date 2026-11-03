@@ -232,7 +232,6 @@ upstream.lock
     GOTOOLCHAIN=go1.26.<n>                  # upstream go.mod requires >= 1.26 (U8)
     RUNTIME_FILES=auto                      # derived from missions (4.3)
 patches/
-    0003-acc-1pp-race.patch                 # src/accumulator.go: mutex for the 1PP correction vs accrecv
     series                                  # apply order (all three, in number order)
 ```
 
@@ -269,7 +268,7 @@ Each patch file starts with a mail-style header saying what it fixes and why. Th
 |---|---|---|---|---|---|
 | `0001-mult-stage-format` (**retired 2026-10-19**: Stuart changed `eniactk` to `strings.Fields`, 9da94de) | `src/mult.go:66` | `multstat()` pads the stage with `%2d`, which crashes `eniactk` at `eniactk.go:785` | PRD R2, before M1 | golden `traj-unpatched-m` vs `traj-patched`; `test-fetch.sh` | Not yet reported (#34) |
 | `0002-ft-repeat-default` (**retired 2026-10-19**: Stuart took the same fix, ad9a7a7) | `src/ft.go` `ftunit()` | Since `f611c7f` an unset FT repeat switch is 0, which no stage matches; `sieve.e` and `lehmer.e` run away (U1) | Spike S3 (#32), decision #36 | `sieve-canary` (`TestRealCoreSieveCanary`, `…Full`); fails in about 1.5 s without it | Not yet reported (#34) |
-| `0003-acc-1pp-race` | `src/accumulator.go` | `doonepp()` correction and `accrecv()` both increment `val[0]` from different goroutines; a lost increment makes trajdemo's cards differ run to run | Spike S2 (#31), under this policy | Race detector (`go build -race`, trajdemo); `TestRealCoreTrajdemoDeterministic` (weak: the race is environment dependent) | Not yet reported (#34) |
+| ~~`0003-acc-1pp-race`~~ | `src/accumulator.go` | **Retired 2026-10-27.** Stuart's answer (2026-10-18): the race is a bug in trajdemo.e's programming (the 1'P pulse set on the same unit as a subtractive transmission), not in the simulator, and he keeps the code mutex-free by design. He changed three CC switches in trajdemo.e (896a92d, pushed 2026-10-25). With the pin at 896a92d and no patch, `go build -race` plus 40 s of trajdemo.e shows no accrecv/doonepp report in 3 of 3 runs (the old pin: 3 of 3). Battleship's gunnery.e carries the same three switch changes. |
 
 **Considered and not patched:**
 

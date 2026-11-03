@@ -1,198 +1,203 @@
+cy 1
 cm C
 ftar 0 00
 ftar 1 00
 ftar 2 00
 ftr 2 -3
+m  0 000000000000000000000000 0 0
 d 0 0 00000000 000000001000000000000000000000
-cy 16
+cy 17
 ftr 0 -3
 ftr 1 -3
-cy 26
-cy 20
+cy 9
+cy 1
 cy 22
+cy 10
+cy 38
+cy 11
+cy 7
+cy 8
+cy 14
+cy 15
+cy 22
+cy 38
+cy 9
+cy 4
+cy 7
+cy 13
+cy 7
+cy 8
+cy 2
+cy 18
+cy 17
+cy 8
 cy 26
 cy 12
-cy 34
-cy 19
-cy 17
-cy 6
-cy 34
+cy 1
 cy 3
-cy 16
-cy 15
-cy 9
-cy 26
-cy 38
 cy 5
-cy 18
-cy 5
-cy 11
-cy 6
-cy 38
-cy 2
-cy 8
-cy 4
-cy 9
-cy 10
 cy 7
 cy 17
-cy 26
+cy 5
+cy 15
+cy 4
+cy 12
 ad 0 10 1
 ad 1 10 1
-cy 2
-cy 13
-cy 8
-cy 2
-cy 22
+cy 34
+cy 10
 cy 26
-cy 13
-cy 7
+cy 1
+cy 5
+cy 38
+cy 9
+cy 15
+cy 9
 cy 22
 ad 0 10 2
 ad 1 10 4
-cy 38
-cy 14
-cy 38
+cy 5
+cy 2
+cy 5
 cy 15
-cy 7
+cy 13
+cy 16
+cy 38
+cy 10
+cy 16
 cy 3
-cy 14
-cy 3
-cy 34
-cy 22
 ad 0 10 3
 ad 1 10 9
-cy 2
-cy 11
-cy 26
-cy 15
-cy 12
-cy 34
+cy 4
+cy 8
+cy 6
 cy 1
+cy 5
+cy 14
+cy 19
 cy 38
-cy 34
-cy 13
 ad 0 10 4
 ad 1 9 1
 ad 1 10 6
-cy 26
-cy 17
-cy 20
-cy 18
 cy 5
+cy 22
+cy 2
+cy 1
+cy 19
 cy 12
-cy 3
-cy 16
-cy 14
-cy 6
+cy 13
+cy 17
+cy 18
+cy 2
 ad 0 10 5
 ad 1 9 2
 ad 1 10 5
-cy 12
-cy 10
 cy 34
-cy 12
-cy 18
-cy 16
+cy 22
+cy 4
 cy 6
-cy 8
+cy 1
+cy 5
+cy 18
 cy 34
+cy 17
 ad 0 10 6
 ad 1 9 3
 ad 1 10 6
-cy 19
-cy 18
-cy 22
-cy 18
+cy 15
+cy 1
 cy 19
 cy 8
-cy 13
-cy 17
 cy 26
-cy 10
+cy 19
+cy 11
+cy 17
+cy 1
+cy 20
 ad 0 10 7
 ad 1 9 4
 ad 1 10 9
-cy 3
-cy 7
-cy 22
-cy 3
-cy 14
-cy 15
-cy 26
-cy 17
 cy 1
+cy 13
+cy 6
 cy 4
+cy 20
+cy 1
+cy 3
+cy 6
 ad 0 10 8
 ad 1 9 6
 ad 1 10 4
-cy 5
-cy 18
-cy 26
 cy 12
-cy 6
-cy 2
-cy 13
-cy 22
-cy 16
+cy 17
+cy 26
+cy 7
+cy 8
+cy 34
 cy 20
+cy 7
 ad 0 10 9
 ad 1 9 8
 ad 1 10 1
-cy 11
-cy 8
-cy 10
-cy 0
-cy 18
-cy 1
-cy 11
-cy 20
+cy 19
 cy 16
+cy 1
+cy 13
+cy 7
+cy 19
+cy 12
+cy 26
+cy 19
+cy 4
 ad 0 9 1
 ad 0 10 0
 ad 1 8 1
 ad 1 9 0
 ad 1 10 0
-cy 10
+cy 11
 cy 38
-cy 10
-cy 15
-cy 16
 cy 1
-cy 20
 cy 12
-cy 22
+cy 11
 cy 1
+cy 11
+cy 26
+cy 2
+cy 34
 ad 0 10 1
 ad 1 9 2
 ad 1 10 1
-cy 12
 cy 14
+cy 26
 cy 34
-cy 18
-cy 22
+cy 2
+cy 38
+cy 9
+cy 17
+cy 3
 cy 12
-cy 11
-cy 34
-cy 12
+cy 6
 ad 0 10 2
 ad 1 9 4
 ad 1 10 4
-cy 5
-cy 15
-cy 8
-cy 15
-cy 1
-cy 3
-cy 22
-cy 34
-cy 38
+cy 7
 cy 10
-cy 16
-cy 38
-cy 12
-cy 14
+cy 7
+cy 18
+cy 3
+cy 5
+cy 13
+cy 4
+cy 10
 cy 6
 cy 4
-cy 3
+cy 22
+cy 13
+cy 22
+cy 18
+cy 9
+cy 5
+cy 1
+cy 11
+cy 38
 cy 5

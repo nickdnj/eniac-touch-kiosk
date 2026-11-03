@@ -60,7 +60,7 @@ func TestPrimesSelftest(t *testing.T) {
 }
 
 // Trajectory (UX 8.3.6 v0.4, rule 8): READ sends b c then b r, INIT, and the
-// first card is hop 1 at 0014128681 / 0005693229 (spike S2, with patch 0003).
+// first card is hop 1 at 0014128681 / 0005693175 (spike S2; re-measured 2026-10-27 after Stuart's trajdemo.e fix, 896a92d).
 func TestTrajectorySelftest(t *testing.T) {
 	m, corePath, rt := loadMission(t, "trajectory")
 	self, _ := os.Executable()

@@ -92,6 +92,7 @@ func TestFiringTableMatchesCore(t *testing.T) {
 			f := pu / (pu - lu)
 			feet := (pa + f*(la-pa)) / 10000
 			secs := float64(n-1) + f
+			t.Logf("MEASURED %s/%s feet=%.1f secs=%.2f", row.Gun, row.Elevation, feet, secs)
 			if d := feet - float64(row.Feet); d > 2 || d < -2 {
 				t.Errorf("range %.1f ft, table says %d", feet, row.Feet)
 			}
