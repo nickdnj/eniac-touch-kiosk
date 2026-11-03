@@ -1,0 +1,335 @@
+diff --git a/docs/video/narration.md b/docs/video/narration.md
+index e96686e..c486e71 100644
+--- a/docs/video/narration.md
++++ b/docs/video/narration.md
+@@ -60,6 +60,7 @@ Voice-over scripts for the narrated videos in `docs/video/`, keyed to the `card(
+ | Short on time? Skip ahead — the rest is wired automatically | 14 s | Short on time? Skip ahead, and the rest gets wired for you. On the real ENIAC, programmers placed hundreds of cables by hand. Setting up a new problem could take a day or more. [FC] |
+ | Press INIT — ENIAC's GO button. Lamps show the simulator's real accumulators. | about 55 s in all (4 s, then three presses) | Press INIT, ENIAC's go button. Those lamps are the simulator's real accumulators. |
+ | (same beat, during press 1) | about 15 s | One times one is one. [pause: let the lamps play] |
++| (squares: room view) | about 8 s, during press 2 | Tap See the whole room, and the mission steps back: there's your program, lit up across the real ENIAC panels, live, as it runs. |
+ | (same beat, during press 2) | about 15 s | Press again. Two times two is four. [pause: let the lamps play] |
+ | (same beat, during press 3) | about 15 s | And again. Three times three is nine. [pause: let the lamps play] |
+ | 1, 4, 9 … each press adds a row, a column and a corner | 4 s | One, four, nine. Each press adds a row, a column, and a corner. |
+@@ -98,10 +99,10 @@ Voice-over scripts for the narrated videos in `docs/video/`, keyed to the `card(
+ 
+ | Beat (exact caption) | About | Narration |
+ |---|---|---|
+-| title card | 5 s | Mission three: one cannon shell, from Brian L. Stuart's recreation of the nineteen forty-six demo. [FC] |
++| title card | 5 s | Mission three: one cannon shell, from Brian L. Stuart's reconstruction of the shell trajectory from ENIAC's February nineteen forty-six unveiling. [FC] |
+ | Three missions in a suggested order. Trajectory is number 3 | 5 s | Three missions now, and trajectory is the last of them. |
+-| Each card ENIAC punches is one dot. Join the dots: the path | 9 s | A shell flies in an arc. ENIAC finds it hop by hop, and punches a card for each. Each card is one dot. |
+-| One hop: the air slows the shell, gravity pulls it down, a card is punched | 11 s | One hop: the air slows the shell, gravity pulls it down, a card is punched. ENIAC was built to work out firing tables for Army guns. [FC] |
++| Each card ENIAC punches is one dot. Join the dots: the path | 9 s | A shell flies in an arc. ENIAC works out the flight in tiny time steps, and punches a card for every second of flight. Each card is one dot. |
++| Each hop: one second of flight, in 50 tiny steps, then a card is punched | 11 s | Each hop is one second of flight, worked out in fifty tiny steps. Every step, the air slows the shell and gravity pulls it down. Then a card is punched. ENIAC was built to work out firing tables for Army guns. [FC] |
+ | Step 1: the card reader tells ENIAC it is done | 7 s | Step one. The card reader tells ENIAC it is done. One cable carries the news. |
+ | Step 2: punch the hop number on every card | 7 s | Step two. Punch the hop number on every card, so each dot knows its place. |
+ | Skip ahead: 293 cables and 1,147 switches, most of them the drag table | 12 s | Skip ahead: two hundred ninety-three cables and one thousand one hundred forty-seven switches, most of them the drag table, where ENIAC looks up how much the air slows the shell. |
+@@ -112,7 +113,7 @@ Voice-over scripts for the narrated videos in `docs/video/`, keyed to the `card(
+ | Highest point: from here the shell comes down | about 24 s | The highest point. From here, the shell comes down. [pause: let the dots draw] Gravity, as ever, wins. [pause: let the dots draw] |
+ | Landed: the height dropped below zero, and ENIAC stops on that card | 5 s | Landed. The height has dropped below zero, and ENIAC stops on that card. |
+ | 34 hops, 34 cards: the whole flight, drawn from the punched cards | 9 s | Thirty-four hops, thirty-four cards: one shell's whole flight, drawn from the dots. [pause: let the dots play] |
+-| end card | 6 s | Warm thanks to Brian L. Stuart, whose recreation we borrowed one shell path from. |
++| end card | 6 s | Warm thanks to Brian L. Stuart, whose reconstruction we borrowed one shell path from. |
+ 
+ ---
+ 
+@@ -124,30 +125,31 @@ The flagship, about five minutes: S1 attract live, the picker, Explore ENIAC, th
+ |---|---|---|
+ | title card | 9 s | Hi, I'm Nick, a docent at the Vintage Computer Federation museum. Come take a tour of our new ENIAC exhibit with me. Everything you'll see runs live, on Brian L. Stuart's ENIAC simulator. |
+ | Nobody is touching it, so ENIAC flies a shell, live | 10 s | When nobody's at the screen, the kiosk doesn't play a canned video. It runs ENIAC. Right now it's working out the path of a cannon shell, and every lamp in this room is the simulator's real state. |
+-| Every dot is a real punched card from the simulator | 8 s | Every dot is a real punched card. ENIAC was built to work out firing tables for Army guns, so a cannon shell is just the right thing to keep it busy. [FC] |
++| Every dot is a card the simulator punches | 8 s | Every dot is a card the simulator punches. ENIAC was built to work out firing tables for Army guns, so a cannon shell is just the right thing to keep it busy. [FC] |
+ | A visitor walks up and touches the screen | 3 s | But the moment someone touches the screen... |
+ | Three missions, a walk around the room, and an honor roll | 6 s | you're in. Three missions, in a suggested order. But first, let's look around the room itself. |
+-| Explore ENIAC: the real room, with live lamps | 10 s | This is ENIAC, the way it stood. Forty panels in a U shape. Laid in a line, they'd stretch about eighty feet. And these lamps are live: that shell is still flying while we look around. [FC] |
++| Explore ENIAC: the real room, with live lamps | 10 s | This is ENIAC. Forty panels stood in a U shape, about eighty feet long along the front. And these lamps are live: that shell is still flying while we look around. [FC] |
+ | (tour: pan) | 5 s | Tap the arrows, or the map along the bottom, to walk down the room. |
+ | Walk the room: one card for each kind of unit | 10 s | Or press Walk the room, and meet the units one at a time. The Cycling Unit is ENIAC's clock. It ticks about a hundred thousand times a second, and one addition takes twenty ticks. [FC] |
+ | (tour: master programmer) | 8 s | The Master Programmer is the conductor. It counts, and decides what happens next. It has ten steppers, a bit like a music box with pins. [FC] |
+ | Right now: a live number from the simulator | 10 s | Here's one of ENIAC's twenty accumulators. Each one adds, and remembers one ten-digit number. And that number on the card is live. It changes as the shell flies. [FC] |
+-| Tap a mission to light up the units it uses | 9 s | Tap a mission, and the room lights up every unit it uses. The cannon shell needs nineteen accumulators, a function table, and the multiplier, which works on every hop. |
++| Tap a mission to light up the units it uses | 9 s | Tap a mission, and the room lights up every unit it uses. The cannon shell needs nineteen accumulators, a function table, and the multiplier, which works on every step. |
+ | The glossary: ENIAC's words, in plain English | 5 s | Stuck on a word? The glossary explains them all, in plain English. |
++| (tour: original room tour) | 10 s | And for anyone curious how it looked before the touch screen: the Original room tour tile hands the screen to the simulator's own original display, which walks through the room on its own. |
+ | Keeping ENIAC alive: about 18,000 vacuum tubes | 13 s | Now, my favorite part: keeping ENIAC alive. It had about eighteen thousand vacuum tubes. Each dot here is one. A radio had about ten! And here's a surprise: the glowing lamps you see are neon. The tubes sat inside. [FC] |
+ | About 150 kilowatts: as much as 1,500 bright bulbs | 8 s | ENIAC used about a hundred and fifty kilowatts, as much as fifteen hundred bright light bulbs. More than half of it just kept the tubes hot. [FC] |
+ | Myth check: did the lights of Philadelphia dim? | 8 s | So, did ENIAC dim the lights of Philadelphia when it switched on? It's a great story. But Eckert, who built it, called it total fiction. [FC] |
+ | Why tubes burned out | 7 s | Tubes wear out like light bulbs, and switching on and off is hard on them. So early on, the crew left the heaters on overnight. [FC] |
+ | The hunt: which unit, which circuit, which tube? | 7 s | When an answer came out wrong, the crew went hunting. Which unit? Which circuit? Which tube? Let's try it. [FC] |
+-| Find the dead tube: a re-enactment | 9 s | This part is a re-enactment. The panels are drawn and the fault is made up, but the steps follow the nineteen forty-six maintenance manual. First, run a test problem. [FC] |
+-| Every accumulator should show 5555555555 | 5 s | Every accumulator should end up showing all fives. One of them doesn't. Which one? |
++| Find the dead tube: a re-enactment | 9 s | This part is a re-enactment. The panels are drawn and the fault is made up, but the steps follow the nineteen forty-six maintenance manual. First, run a test problem with a known answer. [FC] |
++| Every accumulator should show the same lamps | 5 s | Every accumulator should show the same lamps. One of them doesn't. Which one? |
+ | (tour: not that one) | 3 s | Hmm, not that one. It lines up with the others. |
+ | (tour: acc 3) | 4 s | There it is, the third one. One of its lamps is out of line. |
+ | (tour: place 4) | 5 s | Place four shows a nine instead of a five. So out comes its plug-in unit. |
+ | (tour: warm) | 4 s | Now touch the tubes. Warm means that one works. |
+ | (tour: cold) | 3 s | Cold! That's our dead tube. |
+ | Fixed! Every lamp lines up again | 8 s | Plug in a fresh unit, run the test again, and every lamp lines up. Eckert said a hunt like this took up to fifteen minutes. [FC] |
+-| The honor roll: Brian L. Stuart | 12 s | None of this would exist without Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it follows the real machine pulse by pulse. Without his work, this exhibit would be an empty screen. [FC] |
++| The honor roll: Brian L. Stuart | 12 s | None of this would exist without Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it simulates ENIAC at the level of individual pulses. Without his work, this exhibit would be an empty screen. [FC] |
+ | ENIAC's first programmers | 16 s | And these are ENIAC's first programmers: Kay McNulty, Betty Jean Jennings, Betty Snyder, Marlyn Wescoff, Fran Bilas, and Ruth Lichterman. There was no programming language and no manual yet. They learned the machine from its diagrams, and worked out every cable by hand. [FC] |
+ | Mission 1, Squares: now I program ENIAC | 7 s | Now it's my turn to program ENIAC. Mission one is Squares. Picture tiles on a floor: three rows of three make nine. |
+ | (tour: the trick) | 7 s | To grow the square, add a row, a column, and one corner tile. ENIAC never multiplies here. It just adds. |
+@@ -159,8 +161,8 @@ The flagship, about five minutes: S1 attract live, the picker, Explore ENIAC, th
+ | Skip to the answer: every square up to 12 × 12 | 6 s | Or skip to the answer: every square up to twelve times twelve, a hundred forty-four, all by adding. |
+ | Fast-forward: Missions 2 and 3, the quick way | 6 s | I'll fast-forward through missions two and three, the primes and the cannon shell. They each have their own video. |
+ | All three missions done: Finish | 5 s | And we're back. The shell has landed, all three missions are done, and the button says Finish. |
+-| (tour: f1) | 9 s | The finale. You programmed ENIAC, and it shows what this visit really did: the squares, the primes ENIAC punched, and the shell's flight. |
+-| (tour: f2) | 6 s | Here's every unit we used, lit up in the room. That's almost the whole machine. |
++| (tour: f1) | 9 s | The finale. You programmed ENIAC, and the kiosk remembers what your visit did: the squares, the primes ENIAC punched, and the shell's flight. |
++| (tour: f2) | 6 s | Then every unit you used lights up in the room. After all three missions, that's almost the whole machine. |
+ | (tour: f3) | 6 s | And again, Brian L. Stuart, who wrote this simulator. Every lamp we saw was run by his program. |
+ | (tour: f4) | 9 s | The people who made ENIAC. Six women were its first programmers. Engineers and an Army team built it. Thank you to all of them. [FC] |
+ | (tour: f5) | 4 s | Thanks for visiting! From here, a visitor can start over, or go exploring. |
+@@ -176,7 +178,7 @@ About a minute: one whole live flight on S1, its landing, the next flight, and a
+ |---|---|---|
+ | title card | 5 s | When nobody's using the kiosk, it doesn't play a canned video. It runs ENIAC, live. |
+ | The ENIAC room, lit by the live simulator | 9 s | This is the ENIAC room, panel by panel, and every lamp is the simulator's real state. The room drifts slowly, so people walking by see the whole machine. |
+-| Each dot is a real punched card: one hop of the shell | 11 s | ENIAC is working out the path of a cannon shell, one hop at a time. Each hop, it punches a card, and each card becomes a dot. ENIAC was built to work out firing tables for Army guns. [FC] |
++| Each dot is a punched card: one second of the shell's flight | 11 s | ENIAC is working out the path of a cannon shell in tiny time steps, and punches a card for every second of flight. Each card becomes a dot. ENIAC was built to work out firing tables for Army guns. [FC] |
+ | Landed: the hop and the card count, held for a moment | 6 s | Landed! The kiosk holds the landing for a moment, with the hop it landed on and the cards it punched. |
+ | Then a fresh flight, on a fresh run of the simulator | 4 s | Then it starts over, on a fresh run of the simulator. |
+ | One touch, and the visitor is in | 5 s | And the moment someone touches the screen, the flight stops and the missions appear. |
+@@ -191,7 +193,7 @@ About a minute and a half: the room, a pan, Walk the room, a live accumulator, t
+ | Beat (exact caption) | About | Narration |
+ |---|---|---|
+ | title card | 5 s | Explore ENIAC lets a visitor walk around the whole machine, panel by panel. |
+-| Forty panels in a U, with live lamps | 10 s | ENIAC's forty panels stood in a U shape. Laid in a line, they'd stretch about eighty feet. And the lamps are live: ENIAC is flying a cannon shell while we look. [FC] |
++| Forty panels in a U, with live lamps | 10 s | ENIAC's forty panels stood in a U shape, about eighty feet long along the front. And the lamps are live: ENIAC is flying a cannon shell while we look. [FC] |
+ | (explore: pan) | 5 s | Tap the arrows, or the map along the bottom, to walk down the room. |
+ | Walk the room: twelve cards, one for each kind of unit | 7 s | Walk the room, and you meet each kind of unit. The Initiating Unit has ENIAC's go button, called INIT. |
+ | (explore: cycling) | 5 s | The Cycling Unit is the clock. It ticks about a hundred thousand times a second. [FC] |
+@@ -217,7 +219,7 @@ About a minute and a half: Keeping ENIAC alive (four cards and the myth check),
+ | Why tubes burned out | 9 s | Switching on and off is hard on tubes, so early on, the crew left the heaters on overnight. Eckert remembered losing about one tube every two days. [FC] |
+ | The hunt: which unit, which circuit, which tube? | 5 s | So when an answer came out wrong, the crew went hunting. Let's try it. |
+ | A re-enactment that follows the 1946 maintenance manual | 8 s | This is a re-enactment: drawn panels and a made-up fault, but the real steps from the nineteen forty-six maintenance manual. Run the test. [FC] |
+-| (tubes: which panel) | 4 s | Every accumulator should show all fives. Which one doesn't? |
++| (tubes: which panel) | 4 s | Every accumulator should show the same lamps. Which one doesn't? |
+ | (tubes: the ring) | 5 s | Two misses, so the kiosk helps: a glowing ring around the right panel. |
+ | (tubes: which place) | 4 s | Now, which digit place? Look for the lamp that's lit at the wrong number. |
+ | (tubes: which tube) | 6 s | Place four shows nine, not five. Its plug-in unit slides out. Now touch each tube. |
+@@ -229,14 +231,14 @@ About a minute and a half: Keeping ENIAC alive (four cards and the myth check),
+ 
+ ## Clip D: Finale
+ 
+-About a minute: a real visit's finale. The three missions are done off camera first (cut).
++About a minute: what the finale shows after all three missions. The three missions are done off camera first (cut).
+ 
+ | Beat (exact caption) | About | Narration |
+ |---|---|---|
+-| title card | 6 s | Finish all three missions, and the kiosk ends with a finale. Here's one, from a real visit. |
+-| Mission 3 done: all three missions, so the button says Finish | 6 s | This visitor just landed the cannon shell, the last of the three missions, so the button says Finish. |
+-| (finale: f1) | 9 s | First: you programmed ENIAC. The kiosk remembers what this visit really did: the squares counted, the cards ENIAC punched, the shell's flight. |
+-| (finale: f2) | 6 s | Then every unit the visitor used, lit up in the room. Almost the whole machine. |
++| title card | 6 s | Finish all three missions, and the kiosk ends with a finale. |
++| Mission 3 done: all three missions, so the button says Finish | 6 s | Land the cannon shell, the last of the three missions, and the button says Finish. |
++| (finale: f1) | 9 s | First: you programmed ENIAC. The kiosk remembers what your visit did: the squares you counted, the cards ENIAC punched, the shell's flight. |
++| (finale: f2) | 6 s | Then every unit you used lights up in the room. After all three missions, that's almost the whole machine. |
+ | (finale: f3) | 8 s | Then the person who made it all possible: Brian L. Stuart, who wrote the simulator. Scan the code to visit his page. |
+ | (finale: f4) | 9 s | Then the people who made ENIAC. Six women were its first programmers. Engineers and an Army team built it. Thank you to all of them. [FC] |
+ | (finale: f5) | 3 s | And finally: thanks for visiting! |
+@@ -246,11 +248,11 @@ About a minute: a real visit's finale. The three missions are done off camera fi
+ 
+ ## Notes for reviewers
+ 
+-- **Trajectory scope.** The mission flies one shell path of 34 cards. The narration says "one shell path" and "one shell's whole flight" and never claims the full six-part 1946 demo. The title line says "recreation of the nineteen forty-six demo", which mirrors the on-screen title card, and it is tagged [FC].
++- **Trajectory scope.** The mission flies one shell path of 34 cards. The narration says "one shell path" and "one shell's whole flight" and never claims the full six-part 1946 demo. The title line says "reconstruction of the shell trajectory from ENIAC's February nineteen forty-six unveiling" (pre-share fact-check R4), which mirrors the on-screen title card, and it is tagged [FC].
+ - **No units on trajectory numbers.** The narration gives no feet or seconds. The only numbers are the card count (34), the number on the first card (97,367) and the cable and switch counts.
+ - **Punch pace.** "About one hundred cards a minute" is historical and tagged [FC]. The simulator's 0.6 seconds per card is a project fact, and it equals one hundred cards a minute.
+ - **"About three thousand additions."** This is arithmetic from two doc claims: an addition took one five-thousandth of a second (ux-spec 8.1.4, tagged [FC] there), and a card takes 0.6 seconds. It is tagged [FC] and is easy to cut: remove that one line and the pause after it.
+-- **No claims about Professor Stuart's views.** He is only credited as the author of the simulator and the programs, and as the source of the recreation.
++- **No claims about Professor Stuart's views.** He is only credited as the author of the simulator and the programs, and as the source of the reconstruction.
+ - **Possible tight spots.** The title card lines are a little longer than the 5 to 6 second cards. Hold each card for an extra second, or let the voice start as the card fades in.
+ - **Left out of the three mission videos on purpose:** the 18,000 vacuum tubes, the six women programmers, "adding is what it did best" (flagged in the tiles handoff), any sieve of Eratosthenes remarks, and the claim that ENIAC could fly a shell faster than the shell flies.
+ - **The tour and the clips** follow the kiosk's own screens: the tube, power and myth lines are S16's copy (fact-check group E; Eckert's figures are always said as his memory, never as a plain fact), and the six names are the honor roll's, as on screen (fact-check B11: Marlyn, Betty Jean). The finale lines are the F1 to F5 copy (B13). Nothing in them is new history.
+diff --git a/tests/web/video/clip-attract.spec.ts b/tests/web/video/clip-attract.spec.ts
+index c0e771f..ce0e16d 100644
+--- a/tests/web/video/clip-attract.spec.ts
++++ b/tests/web/video/clip-attract.spec.ts
+@@ -22,7 +22,7 @@ test("clip: attract", async ({ page }) => {
+ 
+   await cap(page, "The ENIAC room, lit by the live simulator");
+   await expect.poll(() => attractCards(page), { timeout: 60_000 }).toBeGreaterThanOrEqual(4);
+-  await cap(page, "Each dot is a real punched card: one hop of the shell");
++  await cap(page, "Each dot is a punched card: one second of the shell's flight");
+   await cap(page, null);
+   await trimWait(page, "the rest of the flight", () => expect(scene(page)).toHaveAttribute("data-scene", "landed", { timeout: 300_000 }), 8000, 8000);
+   await cap(page, "Landed: the hop and the card count, held for a moment");
+diff --git a/tests/web/video/clip-finale.spec.ts b/tests/web/video/clip-finale.spec.ts
+index b3a4051..b3ed09d 100644
+--- a/tests/web/video/clip-finale.spec.ts
++++ b/tests/web/video/clip-finale.spec.ts
+@@ -1,5 +1,5 @@
+-// Feature clip: the S8 finale (docs/video/finale.mp4), after a real visit
+-// on the REAL bridge and core. The three missions are done off camera (the
++// Feature clip: the S8 finale (docs/video/finale.mp4), after all three
++// missions on the REAL bridge and core. The three missions are done off camera (the
+ // cut is logged and removed by the mux; the narration says so). Not part of
+ // CI. From src/web:
+ //   NARRATE=1 npx playwright test -c ../../tests/web/video/playwright.config.ts clip-finale
+diff --git a/tests/web/video/config.video.yaml b/tests/web/video/config.video.yaml
+index bb1a44e..11967b0 100644
+--- a/tests/web/video/config.video.yaml
++++ b/tests/web/video/config.video.yaml
+@@ -7,6 +7,10 @@ idle: { setupS: 300, runS: 300, countdownS: 15, exploreS: 300 }
+ admin: { sessionTimeoutS: 120, allowPowerActions: false, allowUpdates: false }
+ metrics: { retentionDays: 400 }
+ assets: { upstreamPhotos: false }
++# The Original room tour tile (UX 7.12.4) needs hello.config.originalUi.available:
++# enabled, a writable switch dir, <paths.originalUi>/bin/eniactk and wish. On a Mac
++# no kiosk session reads the request, so the switching page times out (the video cuts it).
++originalUi: { enabled: true, wish: /Users/nickd/anaconda3/bin/wish }
+ paths:
+   release: ../../..
+   core: ../../../build/darwin-arm64/eniac-core
+@@ -16,3 +20,5 @@ paths:
+   webSrc: ../../../src/web
+   run: /tmp/eniac-kiosk-video/run
+   state: ../../../build/video/state
++  uiSwitch: /tmp/eniac-kiosk-video/ui
++  originalUi: ../../../build/video/original-ui
+diff --git a/tests/web/video/overlay.ts b/tests/web/video/overlay.ts
+index 89d32a6..38e86b0 100644
+--- a/tests/web/video/overlay.ts
++++ b/tests/web/video/overlay.ts
+@@ -5,9 +5,13 @@ import type { Page } from "@playwright/test";
+ import { afterSpeech, lineMs, speak, speakNoWait } from "./narrate.ts";
+ 
+ // Overlay helpers: title/end cards, captions, and a visible tap ripple.
++// CLEAN=1: captions are still set and timed (cap() and the narration run
++// exactly as before) but #vid-cap is never shown: clean kiosk screens and the
++// voice only. Tap ripples and title/end cards stay.
+ export async function overlays(page: Page) {
+-  await page.addInitScript(() => {
+-    const css = `
++  const clean = process.env.CLEAN === "1";
++  await page.addInitScript((clean: boolean) => {
++    const css = (clean ? "#vid-cap{display:none!important}\n" : "") + `
+       #vid-card{position:fixed;inset:0;z-index:99999;background:#0e1013;color:#f2ede1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;font-family:'Atkinson Hyperlegible',sans-serif;text-align:center;transition:opacity .6s}
+       #vid-card h1{font-size:84px;margin:0;letter-spacing:.06em;color:#e8dcb5}
+       #vid-card p{font-size:34px;margin:0;max-width:1300px;line-height:1.35;color:#cfc8b6}
+@@ -25,7 +29,7 @@ export async function overlays(page: Page) {
+         document.body.append(d); setTimeout(() => d.remove(), 800);
+       }
+     }, { capture: true, passive: true });
+-  });
++  }, clean);
+ }
+ export async function card(page: Page, html: string, ms: number) {
+   await page.evaluate((html) => {
+diff --git a/tests/web/video/playwright.config.ts b/tests/web/video/playwright.config.ts
+index 2329d78..c924666 100644
+--- a/tests/web/video/playwright.config.ts
++++ b/tests/web/video/playwright.config.ts
+@@ -23,7 +23,7 @@ export default defineConfig({
+   },
+   webServer: {
+     command:
+-      "make -C ../../.. bridge-dev && mkdir -p ../../../build/video && exec ../../../build/dev/eniac-bridge serve --dev --config config.video.yaml 2> ../../../build/video/bridge.log",
++      "make -C ../../.. bridge-dev && mkdir -p ../../../build/video ../../../build/video/original-ui/bin /tmp/eniac-kiosk-video/ui && rm -f /tmp/eniac-kiosk-video/ui/* && cp ../../../build/darwin-arm64/eniactk ../../../build/video/original-ui/bin/eniactk && exec ../../../build/dev/eniac-bridge serve --dev --config config.video.yaml 2> ../../../build/video/bridge.log",
+     cwd: __dirname,
+     url: "http://127.0.0.1:8762/healthz",
+     reuseExistingServer: false,
+diff --git a/tests/web/video/walkthrough-tour.spec.ts b/tests/web/video/walkthrough-tour.spec.ts
+index a96cd2b..c8f0225 100644
+--- a/tests/web/video/walkthrough-tour.spec.ts
++++ b/tests/web/video/walkthrough-tour.spec.ts
+@@ -34,7 +34,7 @@ test("ENIAC touch kiosk: the whole tour", async ({ page }) => {
+   // S1: the live attract flight.
+   await cap(page, "Nobody is touching it, so ENIAC flies a shell, live");
+   await expect.poll(() => attractCards(page), { timeout: 60_000 }).toBeGreaterThanOrEqual(3);
+-  await cap(page, "Every dot is a real punched card from the simulator");
++  await cap(page, "Every dot is a card the simulator punches");
+   await pause(page, 4000);
+   await cap(page, "A visitor walks up and touches the screen");
+   await tap(page, page.locator(".screen.start"));
+@@ -80,6 +80,27 @@ test("ENIAC touch kiosk: the whole tour", async ({ page }) => {
+   await tapSlow(page, page.locator(".gl-close"));
+   await expect(view(page)).toHaveAttribute("data-view", "explore");
+ 
++  // The Original room tour tile (UX 7.12.4; the video config makes it
++  // available). Tap it and let the switching page draw; on a Mac nothing
++  // takes the request, so the 15 s wait, the failure page and "Back to
++  // Explore" are cut.
++  await tapSlow(page, page.locator(".ex-mchips .mchip.clear"));
++  await expect(page.locator(".ex-tour")).toBeVisible();
++  sayOver(page, "(tour: original room tour)");
++  await page.waitForTimeout(3500);
++  await tapSlow(page, page.locator(".ex-tour"));
++  const ask = page.locator(".confirm-scrim .dialog-actions .primary").first();
++  if (await ask.isVisible().catch(() => false)) await tapSlow(page, ask);
++  await expect(view(page)).toHaveAttribute("data-view", "switching");
++  await expect(page.locator(".sw-title")).toHaveText("Starting the room tour...");
++  await page.waitForTimeout(1500);
++  await cutFrom(page, "the room tour request: nothing switches on a Mac");
++  await expect(page.locator(".sw-back")).toBeVisible({ timeout: 30_000 });
++  await tapSlow(page, page.locator(".sw-back"));
++  await expect(view(page)).toHaveAttribute("data-view", "explore");
++  await page.waitForTimeout(1000);
++  await cutTo(page);
++
+   // S16 Keeping ENIAC alive.
+   await cap(page, null);
+   await tapSlow(page, page.locator(".ex-tubes-btn"));
+@@ -103,7 +124,7 @@ test("ENIAC touch kiosk: the whole tour", async ({ page }) => {
+   await cap(page, "Find the dead tube: a re-enactment");
+   await tapSlow(page, rail(page).locator(".tb-run"));
+   await expect(rail(page).locator("h2")).toHaveText("Which panel is wrong?");
+-  await cap(page, "Every accumulator should show 5555555555");
++  await cap(page, "Every accumulator should show the same lamps");
+   await tap(page, target(page, 0));
+   await expect(rail(page).locator(".tb-fb")).toContainText("Not quite");
+   await say(page, "(tour: not that one)");
+diff --git a/tests/web/video/walkthrough-trajectory.spec.ts b/tests/web/video/walkthrough-trajectory.spec.ts
+index 85b94fd..ba1b833 100644
+--- a/tests/web/video/walkthrough-trajectory.spec.ts
++++ b/tests/web/video/walkthrough-trajectory.spec.ts
+@@ -14,7 +14,7 @@ test("ENIAC touch kiosk walkthrough: Trajectory", async ({ page }) => {
+   await narration(page, "trajectory");
+   await page.goto("/");
+   await expect(view(page)).toHaveAttribute("data-view", "start");
+-  await card(page, "<h1>Mission 3: Trajectory</h1><p>ENIAC works out the path of a cannon shell, one hop at a time, from Brian L. Stuart's recreation of the February 15, 1946 demo.</p><small>Prototype · Trajectory mission · recorded live on the real simulator</small>", 5000);
++  await card(page, "<h1>Mission 3: Trajectory</h1><p>ENIAC works out the path of a cannon shell, a punched card for every second of flight, from Brian L. Stuart's reconstruction of the shell trajectory from ENIAC's February 15, 1946 unveiling.</p><small>Prototype · Trajectory mission · recorded live on the real simulator</small>", 5000);
+ 
+   await tap(page, page.locator(".screen.start"));
+   await expect(page.locator('.mission-card[data-mission="trajectory"]')).toBeVisible();
+@@ -27,7 +27,7 @@ test("ENIAC touch kiosk walkthrough: Trajectory", async ({ page }) => {
+   await pause(page, 7500);
+   await tapSlow(page, mainBtn(page));
+   await expect(page.locator(".step-card h2")).toHaveText("Hop by hop");
+-  await cap(page, "One hop: the air slows the shell, gravity pulls it down, a card is punched");
++  await cap(page, "Each hop: one second of flight, in 50 tiny steps, then a card is punched");
+   await pause(page, 9000);
+   await tapSlow(page, mainBtn(page));
+ 
+diff --git a/tests/web/video/walkthrough.spec.ts b/tests/web/video/walkthrough.spec.ts
+index 23293dd..b791758 100644
+--- a/tests/web/video/walkthrough.spec.ts
++++ b/tests/web/video/walkthrough.spec.ts
+@@ -1,7 +1,7 @@
+ // The Squares walkthrough (docs/video/eniac-touch-walkthrough-squares.mp4).
+ import { test, expect } from "@playwright/test";
+ import { tap, tapSlow, hit, mainBtn, feedback, view } from "../e2e/helpers.ts";
+-import { card, cap, overlays, pause } from "./overlay.ts";
++import { card, cap, overlays, pause, say } from "./overlay.ts";
+ import { finishNarration, narration, speakDuring } from "./narrate.ts";
+ 
+ test("ENIAC touch kiosk walkthrough", async ({ page }) => {
+@@ -74,6 +74,16 @@ test("ENIAC touch kiosk walkthrough", async ({ page }) => {
+   for (let i = 0; i < 3; i++) {
+     await tap(page, page.locator(".init-btn"));
+     await expect(page.locator(".init-btn")).toHaveClass(/busy/);
++    if (i === 1) {
++      // During press 2's lamp play: the whole room (run/roomview.ts), live, then back.
++      await tapSlow(page, page.locator(".hdr-room"));
++      await expect(page.locator(".screen.run")).toHaveClass(/room-view/);
++      const t = Date.now();
++      await say(page, "(squares: room view)");
++      await page.waitForTimeout(Math.max(0, 7000 - (Date.now() - t)));
++      await tapSlow(page, page.locator(".hdr-room"));
++      await expect(page.locator(".screen.run")).not.toHaveClass(/room-view/);
++    }
+     await expect(page.locator(".init-btn")).not.toHaveClass(/busy/, { timeout: 30_000 });
+     await speakDuring(page);
+     await pause(page, 3500);

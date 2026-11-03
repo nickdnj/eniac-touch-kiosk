@@ -1,0 +1,88 @@
+<!--
+  ENIAC, Part 1 — RSS <item> block. Host-agnostic: paste this <item> into any
+  RSS 2.0 / iTunes-namespaced <channel> (Spotify for Podcasters, Transistor,
+  Buzzsprout, self-hosted feed.xml, etc.).
+
+  STILL REQUIRED BEFORE THIS CAN GO LIVE — nothing below is invented, these
+  are placeholders and every one is marked. In order:
+
+    1. <enclosure url="..."> — the hosted URL of publish/episode.mp3, which
+       does not exist yet. Depends on the voice pass + mastering + Nick's
+       host choice. Currently a placeholder string.
+    2. RESOLVED 2026-08-08 — <enclosure length> is the measured byte size
+       of the mastered publish/episode.mp3 (37,221,757 bytes; mono, 44.1kHz,
+       128kbps CBR). Re-measure if the file is ever re-encoded.
+    3. RESOLVED 2026-08-08 — <itunes:duration> is 00:38:46, measured off the
+       mastered file and an exact match to assets/audio/durations.json.
+       Mastered to -16.50 LUFS integrated, -1.59 dBTP, LRA 3.30 LU.
+       NOTE ON VOICE: this episode is narrated by an OpenAI stock voice
+       ('onyx'), NOT Nick's cloned voice. Explicitly chosen by Nick after the
+       ElevenLabs credentials were found unset. See project.json ->
+       phases.voice.deviation before publishing.
+    4. <pubDate> — set when Nick schedules publication.
+    5. RESOLVED 2026-08-08 — <description> and <itunes:summary> are now the
+       final copy, synced verbatim from publish/show-notes.md § Description.
+       No longer a draft. Re-sync if show-notes.md is edited.
+    6. <itunes:image> at the channel level — a DRAFT cover exists at
+       publish/cover-art-draft.png (1024x1024). Two things before it ships:
+       most hosts require 3000x3000, and it is a draft nobody has approved.
+       It is deliberately abstract — generating a synthetic "historical"
+       photograph of ENIAC or of real people would fabricate exactly the
+       kind of evidence this series spends its runtime correcting.
+
+  The xmlns:itunes and xmlns:content declarations are repeated on this
+  <item> element (rather than only on a parent <rss>) so this file is
+  independently well-formed XML and can be validated on its own. If your
+  channel's root <rss> element already declares these namespaces, the
+  repeated declaration here is harmless and can be left as-is or stripped.
+-->
+<item
+    xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+    xmlns:content="http://purl.org/rss/1.0/modules/content/">
+
+  <title>ENIAC, Part 1 — What They Built, and Who Got Named</title>
+
+  <itunes:title>Part 1 — What They Built, and Who Got Named</itunes:title>
+
+  <itunes:episode>1</itunes:episode>
+  <itunes:season>1</itunes:season>
+  <itunes:episodeType>full</itunes:episodeType>
+
+  <!-- FINAL — synced verbatim from publish/show-notes.md § Description on
+       2026-08-08. If show-notes.md changes, re-sync this block; do not let
+       the two diverge. -->
+  <description><![CDATA[
+Credit for ENIAC was assigned four separate times, by four different mechanisms, over roughly thirty years: a press office in January 1946, an institution — in job titles and pay grades — for years afterward, a market in the 1950s, and a federal court in 1973. This series is about that machinery of assignment, not about naming a single inventor. Part 1 covers the first two documents. On January 17, 1946, Herman Goldstine sent the Army a batch of photographs of the machine and the people who ran it; the captions name them, by name and hometown, and describe them setting switches and plugging cables. Thirteen days later, the War Department's Bureau of Public Relations issued a release naming three men — Eckert, Mauchly, Goldstine — as primarily responsible for the difficult technical phases of the work. It went to every newsroom in the country. The photographs were judged unsuitable for publication.
+
+In between: why the machine got built (the Army's firing-table backlog), who built it (Eckert and Mauchly, and the hundred-plus women employed as human computers before there was a machine at all), how it worked reliably despite eighteen thousand vacuum tubes (digital pulse regeneration, not better tubes), and what it actually ran first — a classified hydrogen-bomb feasibility calculation, not an artillery trajectory. The episode corrects roughly fifteen widely repeated claims about ENIAC along the way and says, at each point, exactly where the documented record runs out. It never calls ENIAC "the first computer," and explains why that word describes a definition, not a fact.
+]]></description>
+
+  <itunes:summary><![CDATA[Credit for ENIAC was assigned four separate times, by four different mechanisms, over roughly thirty years — a press office in 1946, an institution in job titles and pay grades, a market in the 1950s, and a federal court in 1973. Part 1 covers the first two documents: the Army photographs whose captions named the women setting switches, and the War Department release thirteen days later that named three men and went to every newsroom in the country. Corrects roughly fifteen widely repeated ENIAC claims against the machine's own 1946 documentation.]]></itunes:summary>
+
+  <itunes:explicit>false</itunes:explicit>
+
+  <!-- length is MEASURED off the mastered publish/episode.mp3 (2026-08-08).
+       url still depends on Nick's host choice — see note 1 above. -->
+  <enclosure
+      url="PENDING_HOST_UPLOAD_URL"
+      length="37221757"
+      type="audio/mpeg" />
+
+  <!-- MEASURED off the mastered file, 38:46.25. Not the script's word-count estimate. -->
+  <itunes:duration>00:38:46</itunes:duration>
+
+  <!-- Stable identifier, independent of the audio file or eventual host URL.
+       See publish/metadata.json → episode.guid_note. Safe to keep as-is. -->
+  <guid isPermaLink="false">1dbb984c-85d9-4883-bd33-ee54d54abec0</guid>
+
+  <!-- Placeholder — see note 4 above. RFC 822 format once set, e.g.:
+       Fri, 01 Jan 2027 09:00:00 -0500 -->
+  <pubDate>PENDING_SCHEDULED_DATE</pubDate>
+
+  <link>PENDING_EPISODE_LANDING_PAGE_URL_IF_ANY</link>
+
+  <author>nickd@demarconet.com (Nick)</author>
+
+  <itunes:keywords>ENIAC, history of computing, vintage computing, vacuum tubes, women in computing, Eckert Mauchly Goldstine</itunes:keywords>
+
+</item>

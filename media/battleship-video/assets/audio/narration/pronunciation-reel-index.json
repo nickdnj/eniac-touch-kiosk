@@ -1,0 +1,58 @@
+[
+ {
+  "n": 1,
+  "line": "VO01",
+  "token": "ENIAC",
+  "heard_as": "Ennie-ack",
+  "clip_start": 2.25,
+  "clip_end": 4.17
+ },
+ {
+  "n": 2,
+  "line": "VO02",
+  "token": "ENIAC",
+  "heard_as": "Ennie-ack",
+  "clip_start": 3.48,
+  "clip_end": 5.39
+ },
+ {
+  "n": 3,
+  "line": "VO04",
+  "token": "ENIAC",
+  "heard_as": "Ennie-ack",
+  "clip_start": 0.83,
+  "clip_end": 2.58
+ },
+ {
+  "n": 4,
+  "line": "VO09",
+  "token": "init",
+  "heard_as": "in\u00b7it",
+  "clip_start": 1.16,
+  "clip_end": 2.87
+ },
+ {
+  "n": 5,
+  "line": "VO15",
+  "token": "recreation",
+  "heard_as": "re-creation",
+  "clip_start": 1.62,
+  "clip_end": 3.74
+ },
+ {
+  "n": 6,
+  "line": "CUT30-01",
+  "token": "ENIAC",
+  "heard_as": "Ennie-ack",
+  "clip_start": 0,
+  "clip_end": 1.37
+ },
+ {
+  "n": 7,
+  "line": "CUT8-01",
+  "token": "ENIAC",
+  "heard_as": "Ennie-ack",
+  "clip_start": 0.96,
+  "clip_end": 2.94
+ }
+]

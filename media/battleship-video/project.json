@@ -1,0 +1,68 @@
+{
+  "project": "ENIAC Plays Battleship",
+  "type": "youtube",
+  "created": "2026-10-23",
+  "brief": {
+    "source": "BRIEF.md (Phase 0), confirmed with Nick 2026-10-23",
+    "title": "ENIAC Plays Battleship",
+    "title_alternates_rejected": [
+      "Can a 1946 Computer Sink a Battleship?",
+      "Fire! A 1946 Computer Does the Math"
+    ],
+    "spoken_wink_at_commercial": false,
+    "trademark_rule": "No Hasbro catchphrase/logo/box art/commercial audio or footage in title, thumbnail, tags, captions; no spoken wink (Nick did not opt in).",
+    "finale": "Option 1 'Outranged' approved by Nick 2026-10-23 (Destroyer/Quick/20deg miss at 10,435 ft vs 10,950 ft target, then Cruiser/Long/10deg sinks at 10,954 ft)",
+    "music_tracks": "Hot Swing, Private Eye, Bumbly March (Kevin MacLeod, CC BY 4.0) downloaded to assets/audio/music/ (untracked); credit block in storyboard/music-plan.md section 5",
+    "length": "about 2.5-3 min main + 30 s cut + 8 s cut + vertical short",
+    "on_camera": "none - screen recording and voice only",
+    "music": "playful naval swing, light, ducked, royalty-free",
+    "voice": "Nick 2 (ElevenLabs 6SxuwKUiBpZjFTc06v9Y), ENIAC spoken 'Ennie-ack', INIT spoken 'init'",
+    "call_to_action": "VCF, InfoAge Science and History Museums, 2201 Marconi Rd, Wall NJ. Wed, Sat & Sun, 12 to 5.",
+    "publish": "DRAFT ONLY. No upload/publish without Nick's explicit go. Run youtube-whoami.py before any upload. No emails."
+  },
+  "open_items": {
+    "kiosk_install_date": "DONE 2026-10-25: game installed on the museum OptiPlex (release 0.1.0-dev+ge0aaaddf79); Nick says the floor kiosk is ready. Code merged to main of nickdnj/eniac-touch-kiosk (PR #82, merge 9552c47). Install precondition MET. Public publish still needs Nick's explicit go, the VCF-channel token + whoami check, and a footage re-record from 9552c47 or later (draft 3 footage shows 'Mission 6').",
+    "review_upload": "Draft 3 + VCF intro uploaded UNLISTED to @nickdnj 2026-10-23 (https://www.youtube.com/watch?v=M1wEmi7-t1c) for PRELIMINARY team review (Nick D and Jay) - Nick sends the link himself. Metadata: output/upload-metadata-draft3.json. Title still has '(DRAFT for team review)'.",
+    "final_channel": "VCF channel (not @nickdnj). Final publish needs the token on the VCF channel + whoami check, Nick's explicit go, and the game installed on the museum kiosk. Verify SFX licences (Wikimedia files) before public.",
+    "kiosk_update_2026-10-24": "Kiosk session reports gunnery-game changed (latest on origin: e0aaadd 'Remove the Gunnery mission; Battleship is mission 1'). Header now 'Mission 1: Battleship'; Squares 2, Primes 3, Trajectory 4, Difference 5; ship/gun pictures on aim screen; docent firing table (staff PIN, Docent mode); room tour reworded (nine stops, bulleted talking points, Cycling Unit stop, tab per stop); touch keyboard + name filter for scores. IMPLICATIONS: (1) the HQ re-record must film from the current commit, not 7884d02; (2) narration quoting old tour lines (VO08/VO09 room walk) must be re-checked against missions/battleship.yaml content.game.tour; (3) draft 3 footage still shows 'Mission 6'; the re-record fixes that; (4) never turn on Docent mode when filming; (5) ?target= hook still works in make dev.",
+    "kiosk_copy_fixes": "K1-K4 fixed by kiosk session; FILM FROM commit 7884d02 on gunnery-game (nickd/eniac-touch-kiosk, pushed). Dev hook: http://localhost:8740/?target=<feet|id> (dev only; targets 3700, 5400, 8200, 10950, 14000, 15550, 19700, 24500). Film only Gunnery/Battleship (missions 1-4 still say 'GO button' in their YAML). New INIT sub-label: 'Initiating pulse: ENIAC's go signal' (generic wording, not 'GO button'; Nick to OK).",
+    "stuart_review": "NOT a gate (Nick 2026-10-23: has Stuart's verbal approval; will share the cut, no review required).",
+    "review_upload_draft4": "Draft 4 (HQ footage, real-time flights, VCF intro) uploaded UNLISTED to @nickdnj 2026-10-25: https://www.youtube.com/watch?v=y8Qdv_SCn3M (HD processed). Earlier review copy M1wEmi7-t1c left up. Metadata: output/upload-metadata-draft4.json. Not yet public; final goes on the VCF channel."
+  },
+  "phases": {
+    "creative_brief": {
+      "status": "approved"
+    },
+    "storyboard_review": {
+      "status": "approved",
+      "note": "Nick 2026-10-23: go with team recommendations, no gating; he reviews the whole video draft. Audio gate waived the same way (pronunciation reel still produced). Publish gate NOT waived.",
+      "files": [
+        "storyboard/storyboard.md",
+        "storyboard/script.md",
+        "storyboard/storyboard-data.json",
+        "storyboard/recording-plan.md",
+        "research/fact-check.md"
+      ]
+    },
+    "audio_review": {
+      "status": "generated_waived_gate",
+      "files": "assets/audio/narration/ (VO01-16.wav, review-all.mp3, durations.json, pronunciation-reel.mp3)",
+      "ear_check": [
+        "ENIAC/init reel",
+        "Marlyn (VO05)",
+        "Bilas/Wescoff/Lichterman",
+        "InfoAge (VO16)"
+      ]
+    },
+    "visuals": {
+      "status": "not_started"
+    },
+    "assembly": {
+      "status": "not_started"
+    },
+    "publish": {
+      "status": "precondition_met_awaiting_nicks_go",
+      "note": "Final goes on the VCF channel; review copy is unlisted on @nickdnj."
+    }
+  }
+}

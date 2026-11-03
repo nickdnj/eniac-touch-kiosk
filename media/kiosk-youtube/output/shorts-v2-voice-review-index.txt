@@ -1,0 +1,9 @@
+Shorts v2 voice review. 0.6 s between clips. Order: Q, Y (pick), C, then three alternative Y takes.
+Pick for 'Yes. With your fingertip.': Y (the first one). Alts are offered, none reads as a question.
+
+  0.00 s  Q: Could you program a computer from nineteen forty-six?  (shared by 30 s and 8 s)  (2.833 s)
+  3.43 s  Y (PICK): Yes. With your fingertip.  (1.533 s)
+  5.57 s  C: Come try it, at the Vintage Computer Federation.  (2.647 s)
+  8.81 s  Y alt 1 (seed 11): Yes. With your fingertip.  (1.300 s)
+ 10.71 s  Y alt 2 (seed 22)  (1.440 s)
+ 12.75 s  Y alt 3 (seed 33)  (1.486 s)

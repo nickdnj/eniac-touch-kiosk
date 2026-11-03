@@ -1,0 +1,10 @@
+{
+  "_readme": "LOCKED 2026-10-23 from Nick's audition2 picks: ENIAC=E1, init=I6, recreation=R2. Spoken-form respellings sent to ElevenLabs in place of the written word; the written text in .txt/.json/captions is never changed. Matching is whole-word and case-insensitive (so 'init' never touches 'initiating'/'Initiating Unit'; 'Init' becomes 'In·it', 'INIT' becomes 'IN·IT'). 'init' uses a middle dot U+00B7 exactly as in the audition. 'Info Age' is written as two words in the script and is not aliased. To change a pronunciation: edit the value here, then run  zsh -ic 'python3 scripts/gen_narration.py --alias <TOKEN>'  (re-records only lines containing that token). Keep ENIAC and ENIAC's in step.",
+  "aliases": {
+    "ENIAC": "Ennie-ack",
+    "ENIAC's": "Ennie-ack's",
+    "init": "in·it",
+    "recreation": "re-creation"
+  },
+  "reel_tokens": ["ENIAC", "init", "recreation"]
+}

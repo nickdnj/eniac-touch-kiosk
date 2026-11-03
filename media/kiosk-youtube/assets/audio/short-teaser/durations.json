@@ -1,0 +1,26 @@
+{
+  "voice": "Nick 2",
+  "voice_id": "6SxuwKUiBpZjFTc06v9Y",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.5,
+    "similarity_boost": 0.75,
+    "style": 0.4,
+    "speed": 1.12
+  },
+  "format": "pcm_s16le 44100 Hz mono",
+  "hook": "A",
+  "lines": {
+    "line-01": 5.526,
+    "line-02": 3.994,
+    "line-03": 4.69,
+    "line-04": 3.344,
+    "line-05": 3.158,
+    "line-06": 4.272,
+    "line-07": 4.04,
+    "line-08": 10.263
+  },
+  "total_speech_s": 39.287,
+  "gap_s": 0.35,
+  "total_with_gaps_s": 41.737
+}

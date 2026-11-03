@@ -1,0 +1,1 @@
+Press READ to take in the card. Then init: the initiating pulse button, as the simulator labels it.

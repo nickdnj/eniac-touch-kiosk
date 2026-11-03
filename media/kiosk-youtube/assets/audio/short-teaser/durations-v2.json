@@ -1,0 +1,36 @@
+{
+  "voice": "Nick 2",
+  "voice_id": "6SxuwKUiBpZjFTc06v9Y",
+  "model": "eleven_multilingual_v2",
+  "settings": {
+    "stability": 0.5,
+    "similarity_boost": 0.75,
+    "style": 0.4,
+    "speed": 1.12
+  },
+  "format": "pcm_s16le 44100 Hz mono",
+  "direction": "trajectory",
+  "order": [
+    "line-01",
+    "traj-02",
+    "traj-03",
+    "traj-04",
+    "traj-05",
+    "traj-06",
+    "traj-07",
+    "line-08"
+  ],
+  "lines": {
+    "line-01": 5.526,
+    "traj-02": 4.133,
+    "traj-03": 2.554,
+    "traj-04": 2.786,
+    "traj-05": 4.412,
+    "traj-06": 2.461,
+    "traj-07": 7.105,
+    "line-08": 10.263
+  },
+  "total_speech_s": 39.24,
+  "gap_s": 0.35,
+  "total_with_gaps_s": 41.69
+}

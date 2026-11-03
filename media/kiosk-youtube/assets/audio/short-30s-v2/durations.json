@@ -1,0 +1,60 @@
+{
+ "voice": "6SxuwKUiBpZjFTc06v9Y",
+ "pick_for_Y": "Y",
+ "lines": {
+  "Q": {
+   "file": "Q.wav",
+   "text": "Could you program a computer from nineteen forty-six?",
+   "words": 8,
+   "duration_s": 2.833,
+   "storyboard_est_s": 2.9,
+   "start_s": 0.1,
+   "ends_s": 2.933,
+   "slot_end_s": 3.05,
+   "slot_basis": "duck release 3.05 (hook off 3.20, S1 ends 3.333)",
+   "headroom_s": 0.117,
+   "overflows": false
+  },
+  "Y": {
+   "file": "Y.wav",
+   "text": "Yes. With your fingertip.",
+   "words": 4,
+   "duration_s": 1.533,
+   "storyboard_est_s": 1.6,
+   "start_s": 18.45,
+   "ends_s": 19.983,
+   "slot_end_s": 20.1,
+   "slot_basis": "duck end 20.10 (S6 ends 21.667)",
+   "headroom_s": 0.117,
+   "overflows": false
+  },
+  "C": {
+   "file": "C.wav",
+   "text": "Come try it, at the Vintage Computer Federation.",
+   "words": 8,
+   "duration_s": 2.647,
+   "storyboard_est_s": 2.9,
+   "start_s": 21.75,
+   "ends_s": 24.397,
+   "slot_end_s": 24.75,
+   "slot_basis": "duck end 24.75 (music up 24.8)",
+   "headroom_s": 0.353,
+   "overflows": false
+  },
+  "Y-alt1": {
+   "file": "Y-alt1.wav",
+   "duration_s": 1.3,
+   "note": "alternative take of Y, seed 11"
+  },
+  "Y-alt2": {
+   "file": "Y-alt2.wav",
+   "duration_s": 1.44,
+   "note": "alternative take of Y, seed 22"
+  },
+  "Y-alt3": {
+   "file": "Y-alt3.wav",
+   "duration_s": 1.486,
+   "note": "alternative take of Y, seed 33"
+  }
+ }
+}

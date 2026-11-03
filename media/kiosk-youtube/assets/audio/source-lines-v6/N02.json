@@ -1,0 +1,20 @@
+{
+ "id": "N02",
+ "text": "And that card punch? You'll meet it at the museum. In Mission Two, ENIAC hunts for prime numbers, and punches a card for every one it finds.",
+ "sent": "And that card punch? You'll meet it at the museum. In Mission Two, Ennie-ack hunts for prime numbers, and punches a card for every one it finds.",
+ "voice": "6SxuwKUiBpZjFTc06v9Y",
+ "model": "eleven_multilingual_v2",
+ "settings": {
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "style": 0.4,
+  "speed": 1.12,
+  "use_speaker_boost": true
+ },
+ "pronunciation": "inline:{\"ENIAC\": \"Ennie-ack\"}",
+ "endpoint": "with-timestamps",
+ "seed": null,
+ "previous_text": null,
+ "next_text": null,
+ "generated": "2026-10-12T08:36:21"
+}

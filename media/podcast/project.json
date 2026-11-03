@@ -1,0 +1,97 @@
+{
+  "projectName": "ENIAC",
+  "projectType": "podcast",
+  "team": "content-studio",
+  "source": "research/research-brief.md",
+  "outsideReview": "research/review/codex-outside-review-2026-08-08.md",
+
+  "format": {
+    "decision": "solo-narrated-essay",
+    "decidedAt": "2026-08-08",
+    "decidedBy": "content-studio orchestrator, confirmed by Nick",
+    "supersedes": "The research brief header specifies a two-host series. That was an inherited assumption from the research phase, not an editorial decision, and it is overridden here.",
+    "rationale": "The brief is already written in one person's voice carrying one argument — 'that's a better episode than heroic-rediscovery,' 'the real story is hard enough.' Its defining editorial move is the refusal of tidy stories, which is an essayist's move, not a dialogue's. Two-host was rejected on two grounds. First, craft: dialogue resolves disagreement by having one speaker be wrong, so a series built on three genuine disputes would spend four episodes manufacturing a strawman host to be corrected — the exact NotebookLM failure mode the production rules forbid. Second, and decisive: §5.3 is a set of precision-critical guardrails (never quote the Atanasoff sentence, never cite a statute, never say 'as a matter of law', never let the listener conclude a court settled the invention question). Conversational back-and-forth is where hedged claims get rounded into confident ones. A single narrator can hold 'here is what is contested and here is why I am not resolving it' as a sustained position; two hosts talking cannot, without one of them becoming the person who does not know. Host-plus-guest was the strongest option for Dispute A and Part 4, and is rejected only because no historian is booked — scripting a synthetic expert would fabricate an attribution, violating §5.3 rule 5 directly."
+  },
+
+  "structure": {
+    "status": "delegated",
+    "note": "§6 adopted the outside review's two structural notes (open on a scene, not on hardware; retitle Part 4) but left the review's proposed episode REORDER unresolved. Script Writer to return a recommended order with rationale as part of the GATE 1 package.",
+    "optionA": "§6 as written — P1 The Machine / P2 The Programmers / P3 What Came Next / P4 How to Manufacture an Inventor",
+    "optionB": "Outside review reorder — P1 1946 debut + the six women + what ENIAC was / P2 wartime build + what programming meant / P3 EDVAC, the split, EMCC/UNIVAC, 1952 / P4 the patent fight"
+  },
+
+  "audience": {
+    "primary": "Nick",
+    "secondary": "Fellow docents at the Vintage Computer Federation museum, if Nick chooses to share it",
+    "decidedAt": "2026-08-08",
+    "consequence": "Docents repeat what they hear to visitors and then field follow-up questions, so a confident wrong number propagates into a museum's public interpretation. Verifiability outranks polish. An acknowledged gap is strictly better than a plausible-sounding filled one.",
+    "level": "informed-enthusiast",
+    "levelNote": "Assume the listener knows what a vacuum tube, a plugboard, and a stored program are. Do not assume ENIAC-specific history or any of the historiography. Cut definitional scaffolding from Segment 1 and spend the recovered runtime on sourced specifics.",
+    "uncertaintyHandling": "ON AIR, in the narration. When a figure traces only to received wisdom, the narrator says so out loud — 'this number is in every account of the machine and I could not find where it originally comes from.' For a docent this is among the highest-value content in the episode: it marks exactly which claims not to make confidently on the floor. It also matches the established narrator voice, which is already self-correcting and allergic to tidy stories.",
+    "companionArtifact": "One sourced fact card per episode: checkable numbers with citations, claims to avoid making, and the two or three questions a visitor is most likely to ask with a defensible answer to each. Built for floor use, not for listeners."
+  },
+
+  "constraints": {
+    "guardrails": "research-brief.md §5.3 rules 1-6 are binding on all four scripts. Rule 6 governs listener inference, not wording, and is the one a compliant script can still fail.",
+    "unverified": "Anything marked [UNVERIFIED] in the brief must not be asserted on air.",
+    "openItems": [
+      "McTiernan, 'The ENIAC Patent', IEEE Annals 1998 — REQUIRED before Part 4 is scripted. Not yet obtained.",
+      "Stern, From ENIAC to UNIVAC — out of print, not yet obtained.",
+      "Unanswered by the brief: why programming was demoted to clerical 'operator' work. Part 2 scope decision pending."
+    ]
+  },
+
+  "verification": {
+    "status": "complete",
+    "doc": "research/part-1-verification.md",
+    "completedAt": "2026-08-08",
+    "summary": "Full primary-source pass. All five volumes of A Report on the ENIAC (1946) located free at archive.org and read in full, plus the War Department press release, BRL reports, oral histories, and the Classification Act of 1923. All nine [NEEDS SOURCE] markers answered or explicitly closed. Roughly two dozen widely repeated claims overturned — see §10.2. Corrections applied back to research-brief.md §2 and §7 on 2026-08-08."
+  },
+
+  "phases": {
+    "format": { "status": "approved" },
+    "seriesBible": { "status": "complete", "file": "script/series-bible.md" },
+    "verification": { "status": "complete" },
+    "script": {
+      "status": "complete",
+      "scope": "Part 1 only",
+      "file": "script/part-1.md",
+      "runtime": "~44 min estimated at 150 wpm, 6,623 spoken words",
+      "runtimeDecision": "Shipped long. The ~30 min target came from the research brief header, which also assumed a two-host general-audience series — an assumption already discarded. The overshoot is verified material replacing the nine [NEEDS SOURCE] gaps. For an audience of the client plus museum docents, length is not the binding constraint; usefulness is. A costed cut menu is preserved at the head of the script if the call is revisited."
+    },
+    "factCard": { "status": "complete", "file": "publish/fact-card-part-1.md" },
+    "showNotes": { "status": "in_progress" },
+    "publishPackage": { "status": "in_progress", "note": "Everything not dependent on the audio file." },
+    "voice": {
+      "status": "complete",
+      "output": "assets/audio/seg-01..10 WAVs, episode-vo.mp3 (review), durations.json (measured), text/ (audit copies of exactly what was sent to the API)",
+      "measured": "38:46.25 total, 170.8 wpm, 30 API calls, zero failures. Cleaned narration came to exactly 6,623 words, matching the script's declared spoken word count — confirming no text was lost and no stage directions leaked into the audio.",
+      "surgicalRerender": "assets/audio/generate_narration.py <segment#> [<segment#>...] re-renders individual segments without touching the rest.",
+      "unverified": "Pronunciation. Neither the orchestrator nor the producer can hear audio. Flagged for a human listening check: 'Homé McAllister Reitwiesner' (Segment 5, accented character) and the period proper nouns — Ursinus, Aberdeen, Narberth, Rockaway, Goucher, Bryn Mawr, Gregg.",
+      "engine": "OpenAI TTS (gpt-4o-mini-tts), voice 'onyx'",
+      "deviation": "DOCUMENTED DEPARTURE FROM A LOCKED PRODUCTION RULE. CLAUDE.md specifies Nick's cloned voice 'Nick 2' via ElevenLabs, and requires a STOP-and-ask if VOICE_ID is unset rather than a silent stock-voice fallback. ELEVENLABS_API_KEY and VOICE_ID were verified unset on 2026-08-08, the pipeline was halted, and Nick was asked. He directed the use of OpenAI voice and selected 'onyx' from three samples. The rule was therefore honoured — the fallback is explicit and chosen, not silent. This episode is narrated by a stock voice and is NOT in Nick's cloned voice.",
+      "revisit": "If this becomes the published version rather than a draft, decide whether to re-render in Nick 2 once ElevenLabs credentials are available. The script is unchanged by the voice choice, so a re-render costs synthesis time only.",
+      "sampleDate": "2026-08-08",
+      "samplesConsidered": ["onyx (~210 wpm)", "ash (~178 wpm)", "sage (~178 wpm)"]
+    },
+    "master": {
+      "status": "complete",
+      "file": "publish/episode.mp3",
+      "measured": "-16.50 LUFS integrated, -1.59 dBTP, LRA 3.30 LU, 38:46.25, 37,221,757 bytes, mono 44.1kHz 128kbps CBR",
+      "process": "Mastered from the raw 48kHz WAVs, not the lossy review MP3. Two-pass ffmpeg loudnorm measured off the final encode. 80Hz high-pass; de-essing skipped after measurement showed sibilance ~20dB down and not harsh. Pre-encode true-peak target set to -1.5 dBTP because targeting -1.0 exactly produced post-encode overshoot — a lossy-codec reconstruction artefact.",
+      "music": "NONE, deliberately. No licensed assets exist in this project and a package that may reach museum docents should not carry a rights problem. Adding a bed later is a sourcing decision, not a mixing one.",
+      "chapters": "10, embedded as ID3v2 CHAP/CTOC frames and written to publish/chapters-part-1.txt with measured timestamps."
+    },
+    "publish": {
+      "status": "package_ready",
+      "complete": "episode.mp3, chapters (measured), show-notes.md, transcript, fact card, episode.xml, metadata.json, promo drafts, draft cover art. Description synced verbatim across show-notes.md, metadata.json and episode.xml.",
+      "remaining": [
+        "Cover art: publish/cover-art-draft.png is 1024x1024 and unapproved. Hosts want 3000x3000 under ~500KB.",
+        "Host choice — enclosureUrl is null by design; this package is host-agnostic.",
+        "pubDate and copyright line — Nick's calls, deliberately not asserted.",
+        "Human listening check on pronunciation before this is treated as final.",
+        "Decide whether to re-render in Nick 2 if this ships as published rather than draft."
+      ]
+    }
+  }
+}

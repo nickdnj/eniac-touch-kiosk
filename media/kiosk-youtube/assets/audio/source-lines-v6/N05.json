@@ -1,0 +1,20 @@
+{
+ "id": "N05",
+ "text": "And the person who made all of this possible: Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it simulates ENIAC at the level of individual pulses. Brian, thank you.",
+ "sent": "And the person who made all of this possible: Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it simulates Ennie-ack at the level of individual pulses. Brian, thank you.",
+ "voice": "6SxuwKUiBpZjFTc06v9Y",
+ "model": "eleven_multilingual_v2",
+ "settings": {
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "style": 0.4,
+  "speed": 1.12,
+  "use_speaker_boost": true
+ },
+ "pronunciation": "inline:{\"ENIAC\": \"Ennie-ack\"}",
+ "endpoint": "with-timestamps",
+ "seed": null,
+ "previous_text": null,
+ "next_text": null,
+ "generated": "2026-10-12T08:36:26"
+}

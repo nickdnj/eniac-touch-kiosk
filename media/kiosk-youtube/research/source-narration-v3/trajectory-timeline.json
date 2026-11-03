@@ -1,0 +1,96 @@
+{
+ "video": "trajectory",
+ "said": [
+  {
+   "idx": 0,
+   "file": "trajectory-00.wav",
+   "at": 414.60009765625,
+   "dur": 8.59
+  },
+  {
+   "idx": 1,
+   "file": "trajectory-01.wav",
+   "at": 10198.60009765625,
+   "dur": 3.25
+  },
+  {
+   "idx": 2,
+   "file": "trajectory-02.wav",
+   "at": 15047.60009765625,
+   "dur": 9.01
+  },
+  {
+   "idx": 3,
+   "file": "trajectory-03.wav",
+   "at": 24872.60009765625,
+   "dur": 14.12
+  },
+  {
+   "idx": 4,
+   "file": "trajectory-04.wav",
+   "at": 39819.60009765625,
+   "dur": 4.97
+  },
+  {
+   "idx": 5,
+   "file": "trajectory-05.wav",
+   "at": 46583.60009765625,
+   "dur": 4.04
+  },
+  {
+   "idx": 6,
+   "file": "trajectory-06.wav",
+   "at": 53258.60009765625,
+   "dur": 11.01
+  },
+  {
+   "idx": 7,
+   "file": "trajectory-07.wav",
+   "at": 72823.60009765625,
+   "dur": 2.97
+  },
+  {
+   "idx": 8,
+   "file": "trajectory-08.wav",
+   "at": 76850.60009765625,
+   "dur": 7.29
+  },
+  {
+   "idx": 9,
+   "file": "trajectory-09.wav",
+   "at": 88351.60009765625,
+   "dur": 6.92
+  },
+  {
+   "idx": 10,
+   "file": "trajectory-10.wav",
+   "at": 97358.60009765625,
+   "dur": 7.85
+  },
+  {
+   "idx": 11,
+   "file": "trajectory-11.wav",
+   "at": 147206.60009765625,
+   "dur": 5.25
+  },
+  {
+   "idx": 12,
+   "file": "trajectory-12.wav",
+   "at": 214448.60009765625,
+   "dur": 3.58
+  },
+  {
+   "idx": 13,
+   "file": "trajectory-13.wav",
+   "at": 218387.60009765625,
+   "dur": 5.8
+  },
+  {
+   "idx": 14,
+   "file": "trajectory-14.wav",
+   "at": 225394.60009765625,
+   "dur": 5.02
+  }
+ ],
+ "cuts": []
+}

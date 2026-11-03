@@ -1,0 +1,10 @@
+# Image credits: ENIAC Plays Battleship
+
+All public domain. No AI images anywhere in this video. On-screen credit line for P1 to P3: **U.S. Army Photo** (courtesy; not legally required).
+
+| ID | File | Source URL | License / PD basis | Notes |
+|---|---|---|---|---|
+| P1 | `P1-beck-snyder-eniac.jpg` | https://commons.wikimedia.org/wiki/File:Glen_Beck_and_Betty_Snyder_program_the_ENIAC_in_building_328_at_the_Ballistic_Research_Laboratory.jpg | Public domain: work of a U.S. Army soldier or employee in official duties (US federal government work). Checked 2026-10-03 (first project) | Glen Beck and Betty Snyder, Aberdeen, c. 1947-1955. Never caption it 1946. 1340x1024: keep zoom gentle. Copied unmodified from `~/Workspaces/eniac-kiosk-youtube/assets/images/photos/`. |
+| P2 | `P2-changing-a-tube-clean.jpg` | https://commons.wikimedia.org/wiki/File:ENIAC-changing_a_tube.jpg | Public domain (US federal government work), same basis | Clean crop (bottom 69 px removed): the original has a baked-in "19,000" caption. 1239x955. Copied from the first project. |
+| P3 | `P3-two-women-operating-eniac.jpg` | https://commons.wikimedia.org/wiki/File:Two_women_operating_ENIAC_(full_resolution).jpg | Public domain (US federal government work), same basis | Betty Jean Jennings (left) and Frances Bilas (right), Feb 1946. 5682x3899. Copied from the first project. |
+| P4 | `P4-firing-table-tm6-215-tableA.jpg` | https://archive.org/details/1941TM6-215 (PDF https://archive.org/download/1941TM6-215/1941TM6-215.pdf, PDF page 27, printed p. 29) | Internet Archive metadata: Public Domain Mark 1.0 (http://creativecommons.org/publicdomain/mark/1.0/); War Department publication (1941) | TM 6-215 Abbreviated Firing Tables, "Table A, Continued". Rendered at 300 dpi and cropped (1662x2716) to remove the "Digitized by Google / Original from University of California" footer and the left binding edge. A 1941 hand-made table, not ENIAC output. Credit line: War Department, TM 6-215 (1941) · Internet Archive. |

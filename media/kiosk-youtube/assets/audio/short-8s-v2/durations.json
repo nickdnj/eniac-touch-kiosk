@@ -1,0 +1,19 @@
+{
+ "voice": "6SxuwKUiBpZjFTc06v9Y",
+ "lines": {
+  "Q": {
+   "file": "Q.wav",
+   "text": "Could you program a computer from nineteen forty-six?",
+   "words": 8,
+   "duration_s": 2.833,
+   "storyboard_est_s": 2.9,
+   "start_s": 0.1,
+   "ends_s": 2.933,
+   "slot_end_s": 3.05,
+   "slot_basis": "duck release 3.05 (stop gap starts 3.54)",
+   "headroom_s": 0.117,
+   "overflows": false,
+   "note": "same file as short-30s-v2/Q.wav (generated once, copied)"
+  }
+ }
+}

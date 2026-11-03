@@ -1,0 +1,96 @@
+{
+ "video": "tubes",
+ "said": [
+  {
+   "idx": 0,
+   "file": "tubes-00.wav",
+   "at": 3017,
+   "dur": 4.92
+  },
+  {
+   "idx": 1,
+   "file": "tubes-01.wav",
+   "at": 9926,
+   "dur": 14.95
+  },
+  {
+   "idx": 2,
+   "file": "tubes-02.wav",
+   "at": 25696,
+   "dur": 10.31
+  },
+  {
+   "idx": 3,
+   "file": "tubes-03.wav",
+   "at": 36823,
+   "dur": 10.68
+  },
+  {
+   "idx": 4,
+   "file": "tubes-04.wav",
+   "at": 48788,
+   "dur": 8.92
+  },
+  {
+   "idx": 5,
+   "file": "tubes-05.wav",
+   "at": 58524,
+   "dur": 3.81
+  },
+  {
+   "idx": 6,
+   "file": "tubes-06.wav",
+   "at": 63158,
+   "dur": 9.06
+  },
+  {
+   "idx": 7,
+   "file": "tubes-07.wav",
+   "at": 73038,
+   "dur": 3.3
+  },
+  {
+   "idx": 8,
+   "file": "tubes-08.wav",
+   "at": 77185,
+   "dur": 3.9
+  },
+  {
+   "idx": 9,
+   "file": "tubes-09.wav",
+   "at": 81914,
+   "dur": 4.18
+  },
+  {
+   "idx": 10,
+   "file": "tubes-10.wav",
+   "at": 86911,
+   "dur": 5.34
+  },
+  {
+   "idx": 11,
+   "file": "tubes-11.wav",
+   "at": 94019,
+   "dur": 3.58
+  },
+  {
+   "idx": 12,
+   "file": "tubes-12.wav",
+   "at": 98416,
+   "dur": 7.15
+  },
+  {
+   "idx": 13,
+   "file": "tubes-13.wav",
+   "at": 105922,
+   "dur": 4.27
+  }
+ ],
+ "cuts": [
+  {
+   "from": 64,
+   "to": 2971,
+   "why": "loading"
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+{
+ "id": "N01",
+ "text": "Hi, I'm Nick, a docent at the Vintage Computer Federation museum, and I want to introduce you to our new ENIAC exhibit: the room-sized computer of nineteen forty-six, on a touch screen you can program yourself.",
+ "sent": "Hi, I'm Nick, a docent at the Vintage Computer Federation museum, and I want to introduce you to our new Ennie-ack exhibit: the room-sized computer of nineteen forty-six, on a touch screen you can program yourself.",
+ "voice": "6SxuwKUiBpZjFTc06v9Y",
+ "model": "eleven_multilingual_v2",
+ "settings": {
+  "stability": 0.5,
+  "similarity_boost": 0.75,
+  "style": 0.4,
+  "speed": 1.12,
+  "use_speaker_boost": true
+ },
+ "pronunciation": "inline:{\"ENIAC\": \"Ennie-ack\"}",
+ "endpoint": "with-timestamps",
+ "seed": null,
+ "previous_text": null,
+ "next_text": null,
+ "generated": "2026-10-12T08:36:22"
+}

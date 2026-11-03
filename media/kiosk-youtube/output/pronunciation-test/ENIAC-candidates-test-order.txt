@@ -1,0 +1,44 @@
+ENIAC-candidates-test.mp3: respelling candidates (not the dictionary run), 0.4 s gaps, 1 s between groups
+
+GROUP Enny ack
+   0.00 s  cand_enny_A0
+   0.98 s  cand_enny_A1
+   2.13 s  cand_enny_B0
+   3.20 s  cand_enny_B1
+   4.31 s  cand_enny_B2
+GROUP Eh-nee-ack
+   6.30 s  cand_ehnee_A0
+   7.31 s  cand_ehnee_A1
+   8.29 s  cand_ehnee_B0
+   9.45 s  cand_ehnee_B1
+  10.56 s  cand_ehnee_B2
+GROUP en ee ack
+  12.57 s  cand_enee_A0
+  13.52 s  cand_enee_A1
+  14.60 s  cand_enee_B0
+  15.70 s  cand_enee_B1
+  16.69 s  cand_enee_B2
+GROUP Eh-nee-ak
+  18.82 s  cand_ehneeak_B0
+  19.83 s  cand_ehneeak_B1
+  20.90 s  cand_ehneeak_B2
+  22.03 s  cand_ehneeak_C0
+  23.04 s  cand_ehneeak_C1
+GROUP Enny-ak
+  25.04 s  cand_ennyak_B0
+  25.93 s  cand_ennyak_B1
+  26.92 s  cand_ennyak_B2
+  27.79 s  cand_ennyak_C0
+  28.67 s  cand_ennyak_C1
+GROUP En-ee-ack
+  30.58 s  cand_eneeack_B0
+  31.68 s  cand_eneeack_B1
+  32.72 s  cand_eneeack_B2
+  33.63 s  cand_eneeack_C0
+  34.67 s  cand_eneeack_C1
+GROUP Ennie-ack  <- chosen
+  36.66 s  cand_ennieack_B0
+  37.76 s  cand_ennieack_B1
+  38.75 s  cand_ennieack_B2
+  39.68 s  cand_ennieack_C0
+  40.61 s  cand_ennieack_C1

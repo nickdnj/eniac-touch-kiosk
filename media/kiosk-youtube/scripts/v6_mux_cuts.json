@@ -1,0 +1,20 @@
+{
+ "_status": "FINAL: hand --cut values of the final v6 mux (kiosk main 62ef8d7 build video-v6b, new-voice takes, surgical INIT retakes); verified 2026-10-12, joints checked frame by frame (assets/video/source-v6/_verify/joints). See notes/m1-rerecord-2026-10-12.md section 4.",
+ "_format": "clip: [[from_s, to_s], ...] in seconds of the RAW recording, as passed to narration-mux.py --cut. Cuts logged by the specs in <clip>-timeline.json are read automatically; only hand cuts go here.",
+ "primes": [
+  [
+   142.3,
+   163.3
+  ]
+ ],
+ "trajectory": [
+  [
+   114.1,
+   140.5
+  ],
+  [
+   160.2,
+   196.9
+  ]
+ ]
+}

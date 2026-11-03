@@ -1,0 +1,1 @@
+That's a game of Battleship. Every shot is worked out by ENIAC, a computer from nineteen forty-six. Well, by a faithful simulation of it.

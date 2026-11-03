@@ -1,0 +1,11 @@
+live reel: every spoken 'live' in the final v6 audio (kiosk-baked lines + standalone N04), then 'alive' (tour-13) and the OLD wrong N04 for comparison. 8 clips, 16 s, 0.5 s gaps.
+Right = /laɪv/ ('live from New York'), wrong = /lɪv/ ('where do you live').
+Number | clip | line | time in line WAV (s) | time in muxed clip (s) | vowel read by the proxy | phones around
+01 | squares | squares-00 | 9.20 | 9.6 | aɪ | l aɪ v
+02 | squares | squares-13 | 7.54 | 117.2 | aɪ | l aɪ v
+03 | tour | tour-00 | 7.94 | 8.1 | aɪ | ɹ ʌ n z l aɪ v
+04 | tour | tour-05 | 8.07 | 52.0 | aɪ (final v read as ð by the recogniser) | ɑːɹ l aɪ ð ð æ
+05 | tour | tour-09 | 7.34 | 92.9 | aɪ | ɪ z l aɪ v
+06 | tour | tour-13 | 2.28 | 132.1 | aɪ | æ k ɐ l aɪ v
+07 | standalone | N04 (new take) | 5.24 | n/a (standalone) | aɪ | l aɪ v
+08 | standalone | N04 (old take, wrong) | 5.48 | n/a (standalone) | ɪ | l ɪ v

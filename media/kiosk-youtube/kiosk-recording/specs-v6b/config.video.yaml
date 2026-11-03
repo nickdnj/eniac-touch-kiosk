@@ -1,0 +1,24 @@
+profile: dev
+listen: 127.0.0.1:8762
+health: { listen: "127.0.0.1:8763" }
+core: { gomaxprocs: 2, nice: 5, readyTimeout: 5s, ackTimeout: 1.5s, silenceTimeout: 2s, probeEvery: 5s }
+recovery: { budget: 3, window: 5m, backoff: [2s, 5s, 10s], slowRetry: 10m }
+idle: { setupS: 300, runS: 300, countdownS: 15, exploreS: 300 }
+admin: { sessionTimeoutS: 120, allowPowerActions: false, allowUpdates: false }
+metrics: { retentionDays: 400 }
+assets: { upstreamPhotos: false }
+# The Original room tour tile (UX 7.12.4) needs hello.config.originalUi.available:
+# enabled, a writable switch dir, <paths.originalUi>/bin/eniactk and wish. On a Mac
+# no kiosk session reads the request, so the switching page times out (the video cuts it).
+originalUi: { enabled: true, wish: /Users/nickd/anaconda3/bin/wish }
+paths:
+  release: ../../..
+  core: ../../../build/darwin-arm64/eniac-core
+  upstream: ../../../build/upstream
+  missions: ../../../missions
+  web: ../../../build/web
+  webSrc: ../../../src/web
+  run: /tmp/eniac-kiosk-video/run
+  state: ../../../build/video/state
+  uiSwitch: /tmp/eniac-kiosk-video/ui
+  originalUi: ../../../build/video/original-ui

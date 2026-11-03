@@ -1,0 +1,8 @@
+v5 (NARRATE=1 CLEAN=1, kiosk a8bbf3a + c897ac3 + v5 edits) hand cuts passed to narration-mux.py (seconds of the raw recording):
+primes:     --cut 140.5-161.5                       (silent gap this take 132.0-173.0; v4 margins: ~8.5 s after the line, ~11.5 s before the next)
+trajectory: --cut 113.1-134.3 --cut 153.6-188.1     (silent gaps this take 105.1-140.3 and 145.6-194.1; v4 margins: 8 s after, 6 s before)
+others:     none. Spec-logged cuts only:
+  tour:   0-1.6 loading; 128.0-137.1 the Original room tour request (switching page timeout, failure page, Back to Explore);
+          340.5-548.6 Missions 2 and 3 off camera
+  finale: 0-212.7 the three missions off camera
+Edit note: the tour's 128.0 cut point (mux ~126.4 s) is where original-ui-tour.mp4 can be inserted.
