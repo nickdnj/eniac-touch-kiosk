@@ -1,0 +1,87 @@
+ENIAC reel, kiosk-baked clips (videos squares, primes, trajectory, tour, finale). Spoken form is the alias 'Ennie-ack'. Gate 2: listen for a long-i (EN-eye-ack).
+42 clips, 65 s. Each clip is the word with 0.25 s before and 0.25 s after, 0.5 s silence between, no speech added.
+Number | clip | line | time in WAV (s) | time in the muxed clip (s) | heard by whisper (locator only) | phoneme proxy window | flag
+01 | squares | squares-00 | 4.53 | 4.9 | any-ac-touch-key-osk, | ɛ n i æ k t ʌ tʃ | -
+    line: Hi, I'm Nick, a docent at the Vintage Computer Federation museum. This is our ENIAC Touch Kiosk, running Brian L. Stuart's ENIAC simulator, live.
+02 | squares | squares-00 | 7.67 | 8.1 | any-ac-simulator | t s ɛ n i æ k | -
+    line: Hi, I'm Nick, a docent at the Vintage Computer Federation museum. This is our ENIAC Touch Kiosk, running Brian L. Stuart's ENIAC simulator, live.
+03 | squares | squares-04 | 7.68 | 34.0 | Any act | t iː n ɛ n i æ k t n | -
+    line: To grow the square one size, add a row, a column, and one corner tile. Nine, plus three, plus three, plus one, makes sixteen. ENIAC never multiplies h
+04 | squares | squares-09 | 3.05 | 65.4 | any acts | v ɛ n i æ k s æ d ɪ | -
+    line: Step three. Carry the number to Accumulator One, one of ENIAC's adding machines.
+05 | squares | squares-10 | 3.74 | 73.4 | ENIAC, | iː l ɛ n i æ k p ɹ oʊ ɡ | -
+    line: Short on time? Skip ahead, and the rest gets wired for you. On the real ENIAC, programmers placed hundreds of cables by hand. Setting up a new problem
+06 | squares | squares-11 | 2.16 | 87.6 | Any acts | s ɛ n i æ k s ɡ oʊ s | -
+    line: Press init. It sends the initiating pulse, ENIAC's go signal. Those lamps are the simulator's real accumulators.
+07 | squares | squares-13 | 6.29 | 116.0 | ENIAC | l ɛ n i æ k p æ | -
+    line: Tap See the whole room, and the mission steps back: there's your program, lit up across the real ENIAC panels, live, as it runs.
+08 | squares | squares-18 | 4.83 | 158.0 | any AC | m ɛ n i æ k m iː | -
+    line: There is the whole table, up to one hundred forty-four. The cables were the program. And next time, ENIAC meets a card punch, and learns patience.
+09 | primes | primes-00 | 0.04 | 0.3 | Any act | ɛ n i æ k h ʌ n t | -
+    line: ENIAC hunts for primes, in a program based on a real run from July nineteen forty-six.
+10 | primes | primes-03 | 0.06 | 26.6 | Any act | ɛ n i æ k t ɹ aɪ | -
+    line: ENIAC tries groups of three, five, seven and more, all at once. If any size fits, the number is out. If none fit, it is prime.
+11 | primes | primes-04 | 2.87 | 41.1 | any act | s oʊ ɛ n i æ k t | -
+    line: Step one. Only odd numbers need testing, so ENIAC counts up by two.
+12 | primes | primes-06 | 2.46 | 55.8 | any ex-conductor, | m ɚ ɛ n i æ k s k ə n d ʌ k t ɚ l ɪ s ə n | -
+    line: Step three. The Master Programmer, ENIAC's conductor, listens for that call. Pick the wrong jack and you only get a hint.
+13 | primes | primes-13 | 6.64 | 124.1 | any act | ɛ n i æ k t k ʊ | -
+    line: On the real machine an addition took one five-thousandth of a second. So while the punch finishes a single card, ENIAC could add about three thousand 
+14 | primes | primes-15 | 2.90 | 156.7 | Any act | ɛ n i æ k t | -
+    line: Let us skip ahead to the first one hundred primes. ENIAC taps its foot a little longer.
+15 | primes | primes-16 | 2.57 | 167.7 | any act | æ n d ɛ n i æ k t k iː p | -
+    line: Card one hundred is five hundred forty-seven, and ENIAC keeps counting up to twenty-eight oh one. Same machine as Squares, different cables.
+16 | trajectory | trajectory-00 | 5.54 | 6.0 | any act's | f ɹ ʌ m ɛ n i æ k s f ɛ b j uː | -
+    line: Mission three: one cannon shell, from Brian L. Stuart's reconstruction of the shell trajectory from ENIAC's February nineteen forty-six unveiling.
+17 | trajectory | trajectory-02 | 2.48 | 18.4 | Any act | ɛ n i æ k w ɜː k | -
+    line: A shell flies in an arc. ENIAC works out the flight in tiny time steps, and punches a card for every second of flight. Each card is one dot.
+18 | trajectory | trajectory-03 | 9.10 | 36.6 | Any act | tʃ t ɛ n i æ k w ʌ z b ɪ | -
+    line: Each hop is one second of flight, worked out in fifty tiny steps. Every step, the air slows the shell and gravity pulls it down. Then a card is punche
+19 | trajectory | trajectory-04 | 2.29 | 43.8 | any act | i æ k ɪ ɾ ɪ z d ʌ | -
+    line: Step one. The card reader tells ENIAC it is done. One cable carries the news.
+20 | trajectory | trajectory-06 | 7.05 | 62.6 | any act | w ɜː ɹ ɛ n i æ k l ʊ k s ʌ p h aʊ | -
+    line: Skip ahead: two hundred ninety-three cables and one thousand one hundred forty-seven switches, most of them the drag table, where ENIAC looks up how m
+21 | trajectory | trajectory-07 | 3.22 | 76.6 | any act. | ɛ n i æ k | -
+    line: Press READ, and a card of numbers goes into ENIAC.
+22 | trajectory | trajectory-12 | 2.08 | 141.9 | any act | ɹ oʊ æ n d ɛ n i æ k s t ɑː | -
+    line: Landed. The height has dropped below zero, and ENIAC stops on that card.
+23 | tour | tour-00 | 5.55 | 5.7 | Anyac | n uː ɛ n i æ k ɛ ɡ | -
+    line: Hi, I'm Nick, a docent at the Vintage Computer Federation museum. Come take a tour of our new ENIAC exhibit with me. Everything you'll see runs live, 
+24 | tour | tour-00 | 9.83 | 10.0 | Anyac | ɚ t s ɛ n i æ k s ɪ m | -
+    line: Hi, I'm Nick, a docent at the Vintage Computer Federation museum. Come take a tour of our new ENIAC exhibit with me. Everything you'll see runs live, 
+25 | tour | tour-01 | 4.05 | 16.2 | any act. | ʌ n z ɛ n i æ k ɹ aɪ | -
+    line: When nobody's at the screen, the kiosk doesn't play a canned video. It runs ENIAC. Right now it's working out the path of a cannon shell, and every la
+26 | tour | tour-02 | 3.16 | 26.4 | Any act | ɛ n i æ k w ʌ z | -
+    line: Every dot is a card the simulator punches. ENIAC was built to work out firing tables for Army guns, so a cannon shell is just the right thing to keep 
+27 | tour | tour-05 | 0.80 | 44.7 | Eniac, | æ n i ɑː k f ɔːɹ ɾ i | -
+    line: This is ENIAC. Forty panels stood in a U shape, about eighty feet long along the front. And these lamps are live: that shell is still flying while we 
+28 | tour | tour-07 | 4.32 | 68.1 | any axe | ɛ n i æ k s k l ɑː | -
+    line: Or press Walk the room, and meet the units one at a time. The Cycling Unit is ENIAC's clock. It ticks about a hundred thousand times a second, and one
+29 | tour | tour-09 | 0.71 | 86.3 | NEX | ə ʌ v ɛ n i æ k s t | -
+    line: Here's one of ENIAC's twenty accumulators. Each one adds, and remembers one ten-digit number. And that number on the card is live. It changes as the s
+30 | tour | tour-13 | 2.03 | 131.9 | any act | ŋ ɛ n i æ k ɐ l aɪ v | -
+    line: Now, my favorite part: keeping ENIAC alive. It had about eighteen thousand vacuum tubes. Each dot here is one. A radio had about ten! And here's a sur
+31 | tour | tour-14 | 0.09 | 146.0 | Any egg | ɛ n i æ k j uː | -
+    line: ENIAC used about a hundred and fifty kilowatts, as much as fifteen hundred bright light bulbs. More than half of it just kept the tubes hot.
+32 | tour | tour-15 | 0.31 | 154.9 | any act | s oʊ d ɪ d ɛ n i æ k | -
+    line: So, did ENIAC dim the lights of Philadelphia when it switched on? It's a great story. But Eckert, who built it, called it total fiction.
+33 | tour | tour-26 | 7.57 | 232.5 | any act | m uː l eɪ t s ɛ n i æ k æ t | -
+    line: None of this would exist without Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it simulates ENIAC at
+34 | tour | tour-27 | 0.77 | 240.2 | any acts | ɹ ɛ n i æ k s f ɜː s t | -
+    line: And these are ENIAC's first programmers: Kay McNulty, Betty Jean Jennings, Betty Snyder, Marlyn Wescoff, Fran Bilas, and Ruth Lichterman. There was no
+35 | tour | tour-28 | 1.88 | 259.8 | any act. | æ k m ɪ | -
+    line: Now it's my turn to program ENIAC. Mission one is Squares. Picture tiles on a floor: three rows of three make nine.
+36 | tour | tour-29 | 3.72 | 270.8 | Any act | ɛ n i æ k t n | -
+    line: To grow the square, add a row, a column, and one corner tile. ENIAC never multiplies here. It just adds.
+37 | tour | tour-38 | 1.70 | 338.6 | any act, | d ɛ n i æ k æ n d ð ə | -
+    line: The finale. You programmed ENIAC, and the kiosk remembers what your visit did: the squares, the primes ENIAC punched, and the shell's flight.
+38 | tour | tour-38 | 6.98 | 343.9 | any act | aɪ m z ɛ n i æ | -
+    line: The finale. You programmed ENIAC, and the kiosk remembers what your visit did: the squares, the primes ENIAC punched, and the shell's flight.
+39 | tour | tour-41 | 1.40 | 362.6 | NEAC, | j æ k s ɪ k | -
+    line: The people who made ENIAC. Six women were its first programmers. Engineers and an Army team built it. Thank you to all of them.
+40 | finale | finale-02 | 1.61 | 12.0 | any act. | n i æ k ð ə k | -
+    line: First: you programmed ENIAC. The kiosk remembers what your visit did: the squares you counted, the cards ENIAC punched, the shell's flight.
+41 | finale | finale-02 | 6.71 | 17.1 | any act | d z ɛ n i æ k p ʌ n tʃ | -
+    line: First: you programmed ENIAC. The kiosk remembers what your visit did: the squares you counted, the cards ENIAC punched, the shell's flight.
+42 | finale | finale-05 | 1.71 | 36.3 | any act. | n i æ k s | -
+    line: Then the people who made ENIAC. Six women were its first programmers. Engineers and an Army team built it. Thank you to all of them.

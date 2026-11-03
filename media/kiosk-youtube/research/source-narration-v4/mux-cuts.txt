@@ -1,0 +1,5 @@
+v4 (CLEAN=1) hand cuts passed to narration-mux.py (seconds of the raw recording):
+trajectory: --cut 113.7-147.7 --cut 167-216.3   (re-fitted: this take's silent gaps were 105.7-153.7 and 159.0-222.3;
+            v3's 113-141 / 160.5-208.5 would have left ~13 s of dead flight before apex and landing. Same margins as v3: ~8 s after the line, ~6 s before the next.)
+primes:     --cut 140-160                        (unchanged; silent gap 131.4-171.5, same as v3)
+others:     none (only the spec-logged cuts)

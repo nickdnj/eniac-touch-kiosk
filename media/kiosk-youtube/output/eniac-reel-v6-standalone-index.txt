@@ -1,0 +1,13 @@
+eniac-reel-v6-standalone.mp3: every spoken ENIAC in the new standalone lines (alias Ennie-ack), cut by character timestamps +/-0.08 s, 0.5 s gaps.
+Short lines (30 s L1, L2; 8 s L1) speak no ENIAC.
+
+  0.00s  N01#1  window 6.178-6.953 s in the line  variant: alias Ennie-ack, take 1  (Hi, I'm Nick, a docent at the Vintage Computer Federation mu...)
+  1.27s  tour-27#1  window 1.720-2.483 s in the line  variant: alias Ennie-ack, take 1  (Now it's my turn to program ENIAC. Mission one is Squares. P...)
+  2.54s  N02#1  window 4.134-4.724 s in the line  variant: alias Ennie-ack, take 1  (And that card punch? You'll meet it at the museum. In Missio...)
+  3.63s  N03#1  window 1.801-2.472 s in the line  variant: alias Ennie-ack, take 1  (Then, in Mission Three, you wire ENIAC to fly a cannon shell...)
+  4.80s  N04#1  window 2.834-3.412 s in the line  variant: alias Ennie-ack, take 1  (The primes hunt, and Brian Stuart's reconstruction of ENIAC'...)
+  5.88s  N05#1  window 8.117-8.834 s in the line  variant: alias Ennie-ack, take 1  (And the person who made all of this possible: Brian L. Stuar...)
+  7.09s  N06#1  window 0.779-1.392 s in the line  variant: alias Ennie-ack, take 1  (So that's our new ENIAC exhibit. Come see it in person, and ...)
+  8.21s  N06#2  window 3.612-4.167 s in the line  variant: alias Ennie-ack, take 1  (So that's our new ENIAC exhibit. Come see it in person, and ...)
+
+8 clips, 8.8s

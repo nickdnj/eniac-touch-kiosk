@@ -1,0 +1,12 @@
+narration-review-v6.mp3  (Gate 2 listening review, v6 standalone lines, v5 timeline order, 0.6 s gaps)
+
+   0.00s  N01         12.96s  N01
+  13.56s  tour-27      2.64s  tour-27 (timeline bridge excerpt, 0 to 2.64 s of the 8.92 s line; rest is baked in the kiosk recording)
+  16.80s  N02          8.92s  N02
+  26.31s  N03          7.62s  N03
+  34.53s  N04          9.75s  N04
+  44.88s  finale-00    3.44s  finale-00
+  48.92s  N05         12.45s  N05
+  61.96s  N06         15.33s  N06
+
+total 77.29s, gaps 0.6s

@@ -1,0 +1,24 @@
+{
+  "title": "Program ENIAC: Our New Touch-Screen Exhibit",
+  "description": "Meet the newest exhibit at the Vintage Computer Federation museum: a touch-screen kiosk where you get to program ENIAC, the room-sized computer of 1946. I built it as a docent, and in this video I'll walk you through it, from the live attract screen to the full Squares mission.\n\nChapters\n0:00 Meet the kiosk\n0:53 Explore ENIAC\n1:58 Keeping ENIAC alive\n3:22 The first programmers\n3:41 Mission 1: Squares\n6:11 Only at the museum\n6:38 The finale\n7:20 Come see it\n\nCome see it at the Vintage Computer Federation, InfoAge Science and History Museums, Wall, New Jersey: https://vcfed.org\n\nCredits\nExhibit by Nick DeMarco, Docent and Exhibit Developer, Vintage Computer Federation.\nBuilt on Brian L. Stuart's ENIAC simulator (Drexel University): https://www.cs.drexel.edu/~bls96/eniac/simulator.html and https://github.com/blstuart/eniac-simulator\nPeriod photographs: U.S. Army Photo, public domain (via Wikimedia Commons).\nMusic: \"Hot Swing\", \"In Your Arms\" and \"Long Stroll\" by Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttp://creativecommons.org/licenses/by/4.0/\n",
+  "tags": [
+    "ENIAC",
+    "ENIAC exhibit",
+    "vintage computing",
+    "computer history",
+    "history of computing",
+    "Vintage Computer Federation",
+    "VCF",
+    "InfoAge",
+    "InfoAge Science and History Museums",
+    "first programmers",
+    "ENIAC programmers",
+    "vacuum tube computer",
+    "touch screen kiosk",
+    "computer museum",
+    "New Jersey museum"
+  ],
+  "category": "Education",
+  "visibility": "private",
+  "defaultLanguage": "en"
+}

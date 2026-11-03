@@ -1,0 +1,20 @@
+--- a/docs/video/narration.md
++++ b/docs/video/narration.md
+@@ -106,7 +106,7 @@
+ | Step 2: punch the hop number on every card | 7 s | Step two. Punch the hop number on every card, so each dot knows its place. |
+ | Skip ahead: 293 cables and 1,147 switches, most of them the drag table | 12 s | Skip ahead: two hundred ninety-three cables and one thousand one hundred forty-seven switches, most of them the drag table, where ENIAC looks up how much the air slows the shell. |
+ | First READ: the real card of numbers goes into ENIAC | 6 s | Press READ, and a card of numbers goes into ENIAC. |
+-| 97,367 is in Accumulator 1. Now INIT: one press flies the shell | 6 s | Ninety-seven thousand three hundred sixty-seven is in Accumulator One. One press of INIT flies the shell. |
++| 97,367 is in Accumulator 1. Now INIT: one press flies the shell | 6 s | Ninety-seven thousand three hundred sixty-seven is in Accumulator One. One press of init flies the shell. |
+ | Each card is one hop: how far along, how high up. Each dot is a real card | 10 s | Each card is one hop: how far along, and how high up. Every dot is a card from the simulator. No cookies this time, just shells. [pause: let the dots draw] |
+ | The multiplier and the drag table work between cards | about 20 s | Between cards, the multiplier and the drag table do the heavy lifting. Squares never needed the multiplier. This flight does. [pause: let the lamps play] |
+ | Highest point: from here the shell comes down | about 24 s | The highest point. From here, the shell comes down. [pause: let the dots draw] Gravity, as ever, wins. [pause: let the dots draw] |
+@@ -154,7 +154,7 @@
+ | Step 1: set a dial to 1 | 4 s | Step one: set a dial on the Constant Transmitter to one. |
+ | Step 2: plug a cable, one jack, then the other | 4 s | Step two: plug in a cable. Tap one jack, then the other. |
+ | Short on time? Skip: the rest is wired for you | 7 s | In nineteen forty-six, setting up a new problem could take a day or more. I'll let the kiosk wire the rest for me. [FC] |
+-| Press INIT, ENIAC's GO button | 3 s | Now press INIT, ENIAC's go button. |
++| Press INIT, ENIAC's GO button | 3 s | Now press init. |
+ | (tour: one) | 3 s | One times one is one. [pause: let the lamps play] |
+ | Skip to the answer: every square up to 12 × 12 | 6 s | Or skip to the answer: every square up to twelve times twelve, a hundred forty-four, all by adding. |
+ | Fast-forward: Missions 2 and 3, the quick way | 6 s | I'll fast-forward through missions two and three, the primes and the cannon shell. They each have their own video. |

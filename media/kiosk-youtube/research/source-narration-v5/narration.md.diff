@@ -1,0 +1,51 @@
+diff --git a/docs/video/narration.md b/docs/video/narration.md
+index da86a90..c486e71 100644
+--- a/docs/video/narration.md
++++ b/docs/video/narration.md
+@@ -60,6 +60,7 @@ Voice-over scripts for the narrated videos in `docs/video/`, keyed to the `card(
+ | Short on time? Skip ahead — the rest is wired automatically | 14 s | Short on time? Skip ahead, and the rest gets wired for you. On the real ENIAC, programmers placed hundreds of cables by hand. Setting up a new problem could take a day or more. [FC] |
+ | Press INIT — ENIAC's GO button. Lamps show the simulator's real accumulators. | about 55 s in all (4 s, then three presses) | Press INIT, ENIAC's go button. Those lamps are the simulator's real accumulators. |
+ | (same beat, during press 1) | about 15 s | One times one is one. [pause: let the lamps play] |
++| (squares: room view) | about 8 s, during press 2 | Tap See the whole room, and the mission steps back: there's your program, lit up across the real ENIAC panels, live, as it runs. |
+ | (same beat, during press 2) | about 15 s | Press again. Two times two is four. [pause: let the lamps play] |
+ | (same beat, during press 3) | about 15 s | And again. Three times three is nine. [pause: let the lamps play] |
+ | 1, 4, 9 … each press adds a row, a column and a corner | 4 s | One, four, nine. Each press adds a row, a column, and a corner. |
+@@ -134,6 +135,7 @@ The flagship, about five minutes: S1 attract live, the picker, Explore ENIAC, th
+ | Right now: a live number from the simulator | 10 s | Here's one of ENIAC's twenty accumulators. Each one adds, and remembers one ten-digit number. And that number on the card is live. It changes as the shell flies. [FC] |
+ | Tap a mission to light up the units it uses | 9 s | Tap a mission, and the room lights up every unit it uses. The cannon shell needs nineteen accumulators, a function table, and the multiplier, which works on every step. |
+ | The glossary: ENIAC's words, in plain English | 5 s | Stuck on a word? The glossary explains them all, in plain English. |
++| (tour: original room tour) | 10 s | And for anyone curious how it looked before the touch screen: the Original room tour tile hands the screen to the simulator's own original display, which walks through the room on its own. |
+ | Keeping ENIAC alive: about 18,000 vacuum tubes | 13 s | Now, my favorite part: keeping ENIAC alive. It had about eighteen thousand vacuum tubes. Each dot here is one. A radio had about ten! And here's a surprise: the glowing lamps you see are neon. The tubes sat inside. [FC] |
+ | About 150 kilowatts: as much as 1,500 bright bulbs | 8 s | ENIAC used about a hundred and fifty kilowatts, as much as fifteen hundred bright light bulbs. More than half of it just kept the tubes hot. [FC] |
+ | Myth check: did the lights of Philadelphia dim? | 8 s | So, did ENIAC dim the lights of Philadelphia when it switched on? It's a great story. But Eckert, who built it, called it total fiction. [FC] |
+@@ -159,8 +161,8 @@ The flagship, about five minutes: S1 attract live, the picker, Explore ENIAC, th
+ | Skip to the answer: every square up to 12 × 12 | 6 s | Or skip to the answer: every square up to twelve times twelve, a hundred forty-four, all by adding. |
+ | Fast-forward: Missions 2 and 3, the quick way | 6 s | I'll fast-forward through missions two and three, the primes and the cannon shell. They each have their own video. |
+ | All three missions done: Finish | 5 s | And we're back. The shell has landed, all three missions are done, and the button says Finish. |
+-| (tour: f1) | 9 s | The finale. You programmed ENIAC, and it shows what this visit really did: the squares, the primes ENIAC punched, and the shell's flight. |
+-| (tour: f2) | 6 s | Here's every unit we used, lit up in the room. That's almost the whole machine. |
++| (tour: f1) | 9 s | The finale. You programmed ENIAC, and the kiosk remembers what your visit did: the squares, the primes ENIAC punched, and the shell's flight. |
++| (tour: f2) | 6 s | Then every unit you used lights up in the room. After all three missions, that's almost the whole machine. |
+ | (tour: f3) | 6 s | And again, Brian L. Stuart, who wrote this simulator. Every lamp we saw was run by his program. |
+ | (tour: f4) | 9 s | The people who made ENIAC. Six women were its first programmers. Engineers and an Army team built it. Thank you to all of them. [FC] |
+ | (tour: f5) | 4 s | Thanks for visiting! From here, a visitor can start over, or go exploring. |
+@@ -229,14 +231,14 @@ About a minute and a half: Keeping ENIAC alive (four cards and the myth check),
+ 
+ ## Clip D: Finale
+ 
+-About a minute: a real visit's finale. The three missions are done off camera first (cut).
++About a minute: what the finale shows after all three missions. The three missions are done off camera first (cut).
+ 
+ | Beat (exact caption) | About | Narration |
+ |---|---|---|
+-| title card | 6 s | Finish all three missions, and the kiosk ends with a finale. Here's one, from a real visit. |
+-| Mission 3 done: all three missions, so the button says Finish | 6 s | This visitor just landed the cannon shell, the last of the three missions, so the button says Finish. |
+-| (finale: f1) | 9 s | First: you programmed ENIAC. The kiosk remembers what this visit really did: the squares counted, the cards ENIAC punched, the shell's flight. |
+-| (finale: f2) | 6 s | Then every unit the visitor used, lit up in the room. Almost the whole machine. |
++| title card | 6 s | Finish all three missions, and the kiosk ends with a finale. |
++| Mission 3 done: all three missions, so the button says Finish | 6 s | Land the cannon shell, the last of the three missions, and the button says Finish. |
++| (finale: f1) | 9 s | First: you programmed ENIAC. The kiosk remembers what your visit did: the squares you counted, the cards ENIAC punched, the shell's flight. |
++| (finale: f2) | 6 s | Then every unit you used lights up in the room. After all three missions, that's almost the whole machine. |
+ | (finale: f3) | 8 s | Then the person who made it all possible: Brian L. Stuart, who wrote the simulator. Scan the code to visit his page. |
+ | (finale: f4) | 9 s | Then the people who made ENIAC. Six women were its first programmers. Engineers and an Army team built it. Thank you to all of them. [FC] |
+ | (finale: f5) | 3 s | And finally: thanks for visiting! |

@@ -1,0 +1,72 @@
+{
+  "ENIAC": {
+    "alias": "EN-ee-ack",
+    "status": "VERIFIED",
+    "source": "Brian L. Stuart's review (video-briefing-2026-10-12 M2); Stuart, 'Brian Stuart — The Eniac', VCF, https://www.youtube.com/watch?v=tEOFDA6nOOA 0:00:04. Alias text to be tested under the M2 listening gate; also covers 'ENIAC's'."
+  },
+  "Stuart": {
+    "alias": "Stuart",
+    "status": "VERIFIED",
+    "source": "Stuart himself: https://www.youtube.com/watch?v=tEOFDA6nOOA 0:00:19 ('My name is Brian Stuart'). STOO-ert; no respelling needed."
+  },
+  "Drexel": {
+    "alias": "Drexel",
+    "status": "VERIFIED",
+    "source": "Stuart: https://www.youtube.com/watch?v=tEOFDA6nOOA 0:00:22 ('professor at Drexel University')."
+  },
+  "Eckert": {
+    "alias": "Eckert",
+    "status": "VERIFIED",
+    "source": "Bill Mauchly, https://www.youtube.com/watch?v=EcWsNdyl264 ~0:20:00; Jean Bartik, CHM oral history https://www.youtube.com/watch?v=jU7ZwcrsBbw ~1:03:43-1:03:55. EK-ert."
+  },
+  "McNulty": {
+    "alias": "McNulty",
+    "status": "VERIFIED",
+    "source": "Bill Mauchly (her son), https://www.youtube.com/watch?v=EcWsNdyl264 ~0:32:44-0:32:46; Jean Bartik, https://www.youtube.com/watch?v=jU7ZwcrsBbw ~0:54:47. mək-NUL-tee."
+  },
+  "Jennings": {
+    "alias": "Jennings",
+    "status": "VERIFIED",
+    "source": "Jean Jennings Bartik herself, https://www.youtube.com/watch?v=jU7ZwcrsBbw 0:17:08."
+  },
+  "Snyder": {
+    "alias": "Snyder",
+    "status": "VERIFIED",
+    "source": "Jean Bartik, https://www.youtube.com/watch?v=jU7ZwcrsBbw ~0:54:47 and ~1:49:06; https://www.youtube.com/watch?v=buAYHonF968 0:22:52. SNY-der, not SHNY-der."
+  },
+  "Marlyn": {
+    "alias": "Marlin",
+    "status": "PROBABLE",
+    "source": "Jean Bartik, https://www.youtube.com/watch?v=jU7ZwcrsBbw ~0:54:50 and https://www.youtube.com/watch?v=buAYHonF968 0:34:24; Kleiman TEDx https://www.youtube.com/watch?v=Zevt2blQyVs 0:04:07. Conflict: Bill Mauchly 0:32:34 (ASR 'Marilyn'). Ear-check pending."
+  },
+  "Wescoff": {
+    "alias": "Wess-koff",
+    "status": "VERIFIED",
+    "source": "Jean Bartik, https://www.youtube.com/watch?v=buAYHonF968 0:34:24; Bill Mauchly, https://www.youtube.com/watch?v=EcWsNdyl264 ~0:32:34."
+  },
+  "Bilas": {
+    "alias": "Bee-luss",
+    "status": "VERIFIED",
+    "source": "Kay McNulty, https://www.youtube.com/watch?v=9Jh5SCM75Xg 0:01:09-0:01:16; Jean Bartik, https://www.youtube.com/watch?v=jU7ZwcrsBbw ~1:12:04; Bill Mauchly ~0:32:28. Kleiman (cA6tKzZtbhc 0:04:24) differs; ear-check pending."
+  },
+  "Lichterman": {
+    "alias": "Lick-ter-man",
+    "status": "PROBABLE",
+    "source": "Kathy Kleiman, https://www.youtube.com/watch?v=cA6tKzZtbhc 0:20:36-0:20:42; Bill Mauchly, https://www.youtube.com/watch?v=EcWsNdyl264 ~0:32:42. No recording of Ruth or her family found."
+  },
+  "InfoAge": {
+    "alias": "Info Age",
+    "status": "VERIFIED",
+    "source": "InfoAge Science & History Museums, 'Welcome to InfoAge', https://www.youtube.com/watch?v=MhWqgJi15pE 0:00:01."
+  },
+  "vcfed.org": {
+    "alias": "V C F E D dot org",
+    "status": "VERIFIED",
+    "source": "Jeff Brace (VCF East showrunner), https://www.youtube.com/watch?v=V93m5bFmTnk ~0:12:07; he also says 'V C fed dot org' at https://www.youtube.com/watch?v=myVo0ujf3SE 0:00:43. Jeff to pick."
+  },
+  "Mauchly": {
+    "alias": "Mawk-lee",
+    "status": "VERIFIED",
+    "source": "NLS 'Say How?' (Library of Congress): 'Mauchly, Dr. John (MÔK-lē)', https://www.loc.gov/nls/other/sayhow.html. Not spoken in v5/v5b or the Short; for future cuts."
+  }
+}

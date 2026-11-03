@@ -1,0 +1,68 @@
+--- a/tests/web/video/narration-gen.py
++++ b/tests/web/video/narration-gen.py
+@@ -21,9 +21,15 @@
+ (a .json sidecar next to each WAV holds the hash); --force renders them all.
+ 
+ Text-to-speech notes: [FC] and [pause: ...] markers are stripped. Kokoro gets
+-"ENIAC" as "Eniac" because it spells the all-caps form oddly; ElevenLabs says
+-the all-caps form as a word (both checked with whisper.cpp), so it gets the
+-text as written. Lehmer's name is never spoken (pronunciation unverified,
++"ENIAC" as "Eniac" because it spells the all-caps form oddly. ElevenLabs gets
++the text as written PLUS a pronunciation fix: "ENIAC" is said EN-ee-ack, and
++unfixed it drifted to a long-i variant in roughly 1 take in 15-30 (M2, 2026-10-12;
++whisper cannot tell the variants apart, so the old "needs no respelling" check
++proved nothing). The fix is a pronunciation dictionary (env PRONUNCIATION_DICT_ID
++and PRONUNCIATION_DICT_VERSION_ID, sent as pronunciation_dictionary_locators) or,
++when those are unset, the same alias applied here as text ("Ennie-ack").
++eleven_multilingual_v2 honours alias rules, not phoneme rules. The dictionary id
++and version are part of the clip hash. Lehmer's name is never spoken (pronunciation unverified,
+ fact-check C10); a line that contains it stops the run."""
+ import argparse, concurrent.futures, hashlib, json, os, re, subprocess, sys, tempfile, urllib.error, urllib.request
+ 
+@@ -45,6 +51,9 @@
+ NICK_VOICE = "6SxuwKUiBpZjFTc06v9Y"  # ElevenLabs "Nick 2"
+ EL_MODEL = "eleven_multilingual_v2"
+ EL_SETTINGS = {"stability": 0.5, "similarity_boost": 0.75, "style": 0.4, "speed": 1.12}
++PD_ID = os.environ.get("PRONUNCIATION_DICT_ID", "")
++PD_VERSION = os.environ.get("PRONUNCIATION_DICT_VERSION_ID", "")
++INLINE_ALIASES = {} if PD_ID else {"ENIAC": "Ennie-ack"}  # same rule as the dictionary alias
+ 
+ 
+ def sections(md: str):
+@@ -74,15 +83,23 @@
+     subprocess.check_call(["ffmpeg", "-loglevel", "error", "-y", "-i", src, "-ar", "44100", "-ac", "1", dst])
+ 
+ 
++def aliased(text: str) -> str:
++    for a, b in INLINE_ALIASES.items():
++        text = text.replace(a, b)
++    return text
++
++
+ def elevenlabs(text: str, dst: str, voice_id: str, prev: str, nxt: str) -> None:
+     key = os.environ.get("ELEVENLABS_API_KEY")
+     if not key:
+         sys.exit("narration-gen: ELEVENLABS_API_KEY is not set (run through zsh -ic so ~/.zshrc exports it)")
+-    body = {"text": text, "model_id": EL_MODEL, "voice_settings": EL_SETTINGS}
++    body = {"text": aliased(text), "model_id": EL_MODEL, "voice_settings": EL_SETTINGS}
++    if PD_ID:
++        body["pronunciation_dictionary_locators"] = [{"pronunciation_dictionary_id": PD_ID, "version_id": PD_VERSION}]
+     if prev:
+-        body["previous_text"] = prev
++        body["previous_text"] = aliased(prev)
+     if nxt:
+-        body["next_text"] = nxt
++        body["next_text"] = aliased(nxt)
+     req = urllib.request.Request(
+         f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}?output_format=mp3_44100_128",
+         data=json.dumps(body).encode(),
+@@ -135,7 +152,8 @@
+             sys.exit(f"narration-gen: unknown video {v!r}; known: {', '.join(VIDEOS)}")
+     respell = a.engine == "kokoro"
+     voice = a.voice_id if a.engine == "elevenlabs" else a.voice
+-    settings = {"model": EL_MODEL, **EL_SETTINGS} if a.engine == "elevenlabs" else {"url": a.url}
++    pron = f"dict:{PD_ID}:{PD_VERSION}" if PD_ID else "inline:" + json.dumps(INLINE_ALIASES, sort_keys=True)
++    settings = {"model": EL_MODEL, **EL_SETTINGS, "pronunciation": pron} if a.engine == "elevenlabs" else {"url": a.url}
+     os.makedirs(OUT, exist_ok=True)
+     md = open(os.path.join(ROOT, "docs", "video", "narration.md"), encoding="utf8").read()
+ 

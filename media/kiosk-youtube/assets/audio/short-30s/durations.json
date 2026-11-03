@@ -1,0 +1,20 @@
+{
+ "cut": "30s",
+ "option": "A",
+ "voice": "Nick 2 6SxuwKUiBpZjFTc06v9Y",
+ "spoken_eniac": 0,
+ "lines": {
+  "L1": {
+   "text": "Touch the screen.",
+   "duration_s": 1.068,
+   "plan_s": "4.60 to about 5.8 (1.2 est)",
+   "ends_at_plan_start_s": 5.67
+  },
+  "L2": {
+   "text": "Watch a nineteen forty-six computer work, lamp by lamp.",
+   "duration_s": 3.065,
+   "plan_s": "8.90 to about 12.2 (3.3 est)",
+   "ends_at_plan_start_s": 11.96
+  }
+ }
+}

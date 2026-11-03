@@ -1,0 +1,27 @@
+ENIAC-reel-test.mp3: 10 takes WITHOUT, 1 s silence, 10 takes WITH. Clip = the spoken word only, ~0.4 s gaps, each clip loudness-normalised. Listen for: EN-ee-ack (right) vs ee-NYE-ack / eh-NIGH-ack (wrong, long i).
+
+BLOCK 1: WITHOUT pronunciation fix (plain text 'ENIAC')
+   0.00 s   1  base_A00
+   0.94 s   2  base_A01
+   1.83 s   3  base_A02
+   2.66 s   4  base_B00
+   3.68 s   5  base_B01
+   4.64 s   6  base_B02
+   5.59 s   7  base_D1_00
+   6.66 s   8  base_D1_01
+   7.83 s   9  base_D2_00
+   8.91 s  10  base_D2_01
+  10.04 s  -- 1 s silence --
+BLOCK 2: WITH respelling 'Ennie-ack' (what the pronunciation dictionary alias does)
+  11.04 s   1  with_A00
+  11.99 s   2  with_A01
+  12.97 s   3  with_A02
+  13.89 s   4  with_B00
+  14.97 s   5  with_B01
+  15.95 s   6  with_B02
+  16.91 s   7  with_D1_00
+  18.06 s   8  with_D1_01
+  19.15 s   9  with_D2_00
+  20.21 s  10  with_D2_01
+
+Total 21.3 s

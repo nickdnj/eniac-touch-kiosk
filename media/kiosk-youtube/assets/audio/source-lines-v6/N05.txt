@@ -1,0 +1,1 @@
+And the person who made all of this possible: Brian L. Stuart of Drexel University. He wrote the simulator behind every lamp you've seen, and it simulates ENIAC at the level of individual pulses. Brian, thank you.

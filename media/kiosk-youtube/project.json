@@ -1,0 +1,320 @@
+{
+  "title": "Program ENIAC: Our New Touch-Screen Exhibit",
+  "branch": "video",
+  "brief": {
+    "source": "BRIEF.md (pre-filled 2026-10-03), confirmed with Nick 2026-10-03",
+    "arc": [
+      "attract screen",
+      "Explore ENIAC",
+      "tubes + Find the dead tube",
+      "first programmers honor roll",
+      "Squares mission in full",
+      "Primes + Trajectory teaser: come to the museum to see them live",
+      "finale",
+      "close (single Brian L. Stuart thank-you, near end)"
+    ],
+    "audience": "VCF docent team first, then the public on YouTube; curious non-experts",
+    "tone": "warm, curious, fun, first-person docent voice (Nick)",
+    "target_length": "6-8 min",
+    "visual_style": "real 1920x1080 kiosk screen recordings + branded title open, chapter cards/lower thirds, clean transitions, ducked background music, end screen",
+    "period_photos": "yes: 2-4 public-domain US Army ENIAC photos, sourced and credited, gentle Ken Burns; no AI images of ENIAC",
+    "voice": {
+      "name": "Nick 2",
+      "voice_id": "6SxuwKUiBpZjFTc06v9Y",
+      "model": "eleven_multilingual_v2",
+      "stability": 0.5,
+      "similarity": 0.75,
+      "style": 0.4,
+      "speed": 1.12,
+      "never_speak": [
+        "Lehmer"
+      ],
+      "pronunciation_dictionary": {
+        "status": "pending: ElevenLabs API key lacks pronunciation_dictionaries_write (see notes/m2-pronunciation-2026-10-12.md). Run scripts/create_pronunciation_dictionary.py once the key has it; it fills id and version_id.",
+        "id": null,
+        "version_id": null,
+        "rules": [
+          {
+            "type": "alias",
+            "string_to_replace": "ENIAC's",
+            "alias": "Ennie-ack's"
+          },
+          {
+            "type": "alias",
+            "string_to_replace": "ENIAC",
+            "alias": "Ennie-ack"
+          }
+        ],
+        "inline_alias_fallback": {
+          "ENIAC": "Ennie-ack"
+        },
+        "note": "Until id/version_id are set, gen_narration.py applies the same alias as a text substitution (what the dictionary does server-side). Proven 2026-10-12: notes/m2-pronunciation-2026-10-12.md. Phoneme rules are NOT honoured by eleven_multilingual_v2. The old note 'ElevenLabs needs no respelling' is superseded.",
+        "listening_check": "Nick listened to output/pronunciation-test/ENIAC-reel-test.mp3 on 2026-10-12 (voice): second half (alias Ennie-ack) 'sounds good'. Final-audio reel gate still required."
+      }
+    },
+    "channel": "Nick's personal channel first, hopefully moved to the VCF channel later",
+    "publish": "v5b public on @nickdnj 2026-10-08 (Nick's go)",
+    "purpose": "Introduce the museum's new ENIAC exhibit (the touch kiosk) at VCF; say so in the docent intro, echo it in the close"
+  },
+  "editorial_rules": [
+    "Thank Brian L. Stuart exactly once, near the end; spell it Stuart; keep the kiosk UI footer",
+    "Trim redundancy: each idea once",
+    "Include the full Squares mission",
+    "Tease Primes/Trajectory only (a few seconds each) + cool come-to-the-museum invite",
+    "Facts per research/fact-check.md and research/tubes.md",
+    "Don't link the private kiosk repo; link Stuart's simulator page and github.com/blstuart/eniac-simulator",
+    "Intro states the video's purpose: introducing our new ENIAC exhibit (added by Nick 2026-10-03)",
+    "No burned-in caption boxes: record kiosk sources with CLEAN=1; voiceover carries it (Nick 2026-10-05)"
+  ],
+  "sources": {
+    "video": "assets/video/source/",
+    "narration_script": "research/narration.md",
+    "narration_manifest": "research/source-narration/manifest.json",
+    "per_line_wavs": "assets/audio/source-lines/ (285 files, copied 2026-10-03)"
+  },
+  "phases": {
+    "creative_brief": {
+      "status": "approved",
+      "date": "2026-10-03"
+    },
+    "storyboard": {
+      "status": "approved",
+      "runtime": "7:55",
+      "scenes": 21,
+      "chapters": 8
+    },
+    "storyboard_review": {
+      "status": "approved",
+      "date": "2026-10-03",
+      "notes": "Nick: 'all approved. open the mp4 when done.' N04 primary; music = YouTube Audio Library swing (option 1). Gate 2 folded into the final-MP4 review per Nick's go-to-done instruction; review MP3 still produced."
+    },
+    "audio": {
+      "status": "complete",
+      "notes": "6 new lines + N04_ALT + N-ALT1 in assets/audio/narration; review MP3 output/narration-review.mp3; music = Kevin MacLeod CC BY stand-in, swap for YouTube Audio Library before publish"
+    },
+    "audio_review": {
+      "status": "folded_into_final_review"
+    },
+    "visuals": {
+      "status": "complete",
+      "notes": "3 PD US Army photos in assets/images/photos (use P2 clean crop)"
+    },
+    "assembly": {
+      "status": "v1_complete",
+      "file": "output/eniac-kiosk-v1.mp4",
+      "duration": "7:54.2",
+      "loudness": "-14.1 LUFS, TP -1.7",
+      "chapters": [
+        "0:00 Meet the kiosk",
+        "0:49 Explore ENIAC",
+        "1:56 Keeping ENIAC alive",
+        "3:21 The first programmers",
+        "3:40 Mission 1: Squares",
+        "6:10 Only at the museum",
+        "6:36 The finale",
+        "7:17 Come see it"
+      ],
+      "with_intro": {
+        "file": "output/eniac-kiosk-v1-with-intro.mp4",
+        "duration": "8:02.4",
+        "intro": "VCF Power-On intro from ~/Workspaces/vcf-intro-redesign (prototype for Jeff Brace's review; VCF owns the brand), title card held to 8.1 s; build in output/build/intro/",
+        "chapters": [
+          "0:00 Meet the kiosk",
+          "0:57 Explore ENIAC",
+          "2:04 Keeping ENIAC alive",
+          "3:29 The first programmers",
+          "3:47 Mission 1: Squares",
+          "6:18 Only at the museum",
+          "6:44 The finale",
+          "7:25 Come see it"
+        ]
+      },
+      "v2": {
+        "file": "output/eniac-kiosk-v2.mp4",
+        "duration": "7:58",
+        "notes": "VCF intro prepended, S01 title open removed, overlay overlaps fixed"
+      },
+      "v3": {
+        "file": "output/eniac-kiosk-v3.mp4",
+        "date": "2026-10-05",
+        "duration": "7:57.08",
+        "loudness": "-14.1 LUFS, TP -1.5",
+        "notes": "Re-recorded against kiosk 30e67b6 (attract plates, Home button, switch racks); 13 source narration lines fact-fixed (R1-R4, N1, N2) and N03/N04/N05 re-voiced; sources in assets/video/source-v3; kiosk worktree .claude/worktrees/video-v3 (uncommitted)",
+        "metadata": "output/upload/metadata-v3.json"
+      },
+      "v4": {
+        "file": "output/eniac-kiosk-v4.mp4",
+        "date": "2026-10-05",
+        "duration": "8:01.00",
+        "loudness": "-14.1 LUFS, TP -1.5",
+        "notes": "v3 re-recorded with CLEAN=1 (no burned-in caption box, per Nick); sources assets/video/source-v4; Nick: keep screens clean, voiceover only",
+        "metadata": "output/upload/metadata-v4.json"
+      },
+      "v5": {
+        "file": "output/eniac-kiosk-v5.mp4",
+        "date": "2026-10-07",
+        "duration": "8:20.92",
+        "loudness": "-14.1 LUFS, TP -1.5",
+        "notes": "Kiosk as deployed (a8bbf3a, original-ui-switch). New: Original room tour tile + 15 s of Stuart's original eniactk -D display (captured via Docker/Xvfb), Squares 'See the whole room' beat, generic finale (typical visit). Sources assets/video/source-v5; worktree eniac-touch-kiosk/.claude/worktrees/video-v5 (uncommitted, c897ac3 cherry-picked). Music bed extended: swing-bed-v5.wav",
+        "metadata": "output/upload/metadata-v5.json",
+        "published_cut": {
+          "file": "output/eniac-kiosk-v5b.mp4",
+          "duration": "8:02.40",
+          "loudness": "-14.1 LUFS",
+          "notes": "v5 with the 20 s S21 end-screen panel removed (Nick 2026-10-08); ends on the vcfed.org card with a 1.2 s fade. Re-add the end screen for a VCF-channel repost."
+        }
+      },
+      "v6": {
+        "video_id": "eZE-r3WcyVI",
+        "url": "https://www.youtube.com/watch?v=eZE-r3WcyVI",
+        "published_url": "https://www.youtube.com/watch?v=eZE-r3WcyVI",
+        "status": "public on @nickdnj",
+        "uploaded": "2026-10-12T10:55:30-04:00",
+        "thumbnail": "output/upload/thumbnail.jpg",
+        "metadata": "output/upload/metadata-v6.json"
+      }
+    },
+    "publish": {
+      "status": "public",
+      "date": "2026-10-08",
+      "channel": "Nick DeMarco (@nickdnj) UCkTzb0IcgeDYWT0ahsZ16OQ",
+      "video_id": "KoWgoNo3F1k",
+      "url": "https://www.youtube.com/watch?v=KoWgoNo3F1k",
+      "version": "v5b",
+      "thumbnail": "output/upload/thumbnail-alt.jpg",
+      "previous": {
+        "v4": "mAW7AuKXLBE (unlisted)",
+        "v2": "RCvTUH0kJxI (private, superseded)"
+      },
+      "email": "2026-10-08: 'Some social media ideas' SENT to jeffrey@vcfed.org (v5b + Short links, framed as ideas, not final). Doug follow-up draft with public links was deleted by Nick, not sent.",
+      "open_items": [
+        "music is Kevin MacLeod CC BY stand-in (credited)",
+        "VCF intro is a prototype pending Jeff Brace's review; VCF owns the brand",
+        "kiosk worktree video-v3 has uncommitted narration/caption/CLEAN changes to bring into the kiosk branch"
+      ]
+    }
+  },
+  "gate1_decisions": {
+    "date": "2026-10-03",
+    "kiosk_installed": "installed at the museum 2026-10-07",
+    "trajectory": "say it is Brian Stuart's recreation",
+    "kiosk_ui_stuart_elements": "fine as is",
+    "title": "Program ENIAC: Our New Touch-Screen Exhibit",
+    "music": "1940s-period royalty-free bed",
+    "runtime": "keep it tight; Squares untouched"
+  },
+  "shorts": {
+    "teaser": {
+      "status": "public",
+      "date": "2026-10-08",
+      "brief": {
+        "length": "~45 s vertical 1080x1920",
+        "voice": "Nick 2 voiceover with a hook",
+        "text": "minimal: a big hook line at the start and the 'VCF museum, Wall, NJ' invite at the end; no subtitles",
+        "publish": "@nickdnj Short, related video set to KoWgoNo3F1k; Reels/TikTok exports for Nick to post",
+        "goal": "drive museum visits to try the ENIAC exhibit"
+      },
+      "gate1": {
+        "date": "2026-10-08",
+        "hook": "A",
+        "stuart_not_named_in_short": "fine",
+        "music": "Hot Swing (stand-in) ok",
+        "script": "storyboard/short-teaser.md"
+      },
+      "angle": "Trajectory mission, history angle (Nick 2026-10-08); no Stuart name; nod to the other two missions",
+      "file": "output/short-teaser.mp4",
+      "duration": "45.0",
+      "loudness": "-14.1 LUFS, TP -4.2",
+      "script": "storyboard/short-teaser.md (v1 squares: short-teaser.v1.md)",
+      "assembly": "scripts/assemble_short_teaser.py",
+      "video_id": "pPPE7gik7Es",
+      "url": "https://youtube.com/shorts/pPPE7gik7Es",
+      "metadata": "output/upload/metadata-short-teaser.json",
+      "open_items": [
+        "set related video to KoWgoNo3F1k in YouTube Studio (not in the API)",
+        "optional v2: tighter arc crops, hide cut-off kiosk text, raise the invite"
+      ]
+    },
+    "v6_cuts": {
+      "date": "2026-10-12",
+      "source": "research/video-briefing-2026-10-12.md M4",
+      "30s": {
+        "status": "public",
+        "option": "A",
+        "hook": "PROGRAM ENIAC / WITH YOUR FINGERTIP",
+        "voice": "Touch the screen. Watch a nineteen forty-six computer work, lamp by lamp.",
+        "spoken_eniac": false,
+        "script": "storyboard/short-30s.md",
+        "video_id": "FknKT7MEsrU",
+        "url": "https://www.youtube.com/watch?v=FknKT7MEsrU",
+        "uploaded": "2026-10-12T10:55:30-04:00",
+        "metadata": "output/upload/metadata-short-30s-v2.json"
+      },
+      "8s": {
+        "status": "public",
+        "option": "A",
+        "voice": "Come watch a nineteen forty-six computer work, at the Vintage Computer Federation.",
+        "spoken_eniac": false,
+        "script": "storyboard/short-8s.md",
+        "video_id": "BY7A2aVB524",
+        "url": "https://www.youtube.com/watch?v=BY7A2aVB524",
+        "uploaded": "2026-10-12T10:55:30-04:00",
+        "metadata": "output/upload/metadata-short-8s-v2.json"
+      },
+      "hours": "Wed, Sat & Sun, 12 to 5 (Nick confirmed 2026-10-12)",
+      "open_items": [
+        "want 10 s CLEAN=1 full-speed Squares clip from v6 build for continuous lamp motion",
+        "Stuart not named (Nick's call for description)",
+        "set related video to eZE-r3WcyVI in YouTube Studio for both Shorts (not in the API)",
+        "2026-10-12: Nick cannot set 'Related video' in Studio; YouTube account is in identity verification (face scan), ~24 h. Retry after verification clears. Shorts descriptions already link the v6 long cut."
+      ]
+    },
+    "panels": {
+      "status": "draft, not uploaded",
+      "date": "2026-10-12",
+      "brief": "New 9:16 short, not cut from the long form: full panels (portrait) as the point of interest, close-ups tell the story. Existing narration only.",
+      "file": "output/short-panels.mp4",
+      "duration": "32.5",
+      "format": "1080x1920, 30 fps",
+      "loudness": "about -16 LUFS (target -14, not yet raised)",
+      "footage": "live kiosk simulator (eniac-touch-kiosk main 62ef8d7), virtual camera over the Explore panorama, clean (no UI, captions or badges)",
+      "voice": [
+        "short-30s-v2/Q",
+        "kiosk-lines-v6/explore-04",
+        "explore-05",
+        "explore-06 (1.38-4.76 s only)",
+        "explore-07",
+        "explore-08",
+        "short-30s-v2/C2"
+      ],
+      "spoken_eniac": false,
+      "new_voice_line": "C2: 'Come try it at Info Age, home of the Vintage Computer Federation.' (Nick 2, same settings; original C kept)",
+      "music": "Hot Swing (stand-in), ducked under voice",
+      "end_card": "Come try it / Vintage Computer Federation / InfoAge Science and History Museums / Wall, NJ - Wed, Sat & Sun 12 to 5",
+      "assembly": "scripts/shorts-panels/ (rec.mjs, camlib.mjs, build.sh); recorder ran in a throwaway worktree of the kiosk repo",
+      "previous_cut": "output/short-panels-v1-vfcd.mp4 (closing line without InfoAge)",
+      "open_items": [
+        "Nick to review; confirm 'home of the Vintage Computer Federation' wording",
+        "raise loudness toward -14 LUFS",
+        "not uploaded; run youtube-whoami.py before any upload"
+      ]
+    }
+  },
+  "v6_review": {
+    "date": "2026-10-12",
+    "decided_by": "Nick (chat)",
+    "reviewers_watched": "the public cut on @nickdnj (KoWgoNo3F1k, v5b). The briefing's unlisted link mAW7AuKXLBE is v4 and is not what they watched.",
+    "visibility": "public on Nick's own channel. His channel is the review channel: public = easy to share and reshare for early feedback before the VCF channel. 'Published' (VCF / InfoAge sites and social) is separate and still gated.",
+    "preconditions": "Nick's Gate 2 listening (ENIAC reel + init reel) done; youtube-whoami.py run first; Stuart second pass before anything is called final or goes to VCF / InfoAge / VCF channel.",
+    "names": "No reviewer flagged Marlyn or Ruth Lichterman; the only voice issue reported was ENIAC. Kept as is (sheet status PROBABLE).",
+    "eniac_alias": "Nick heard the Ennie-ack alias reel and accepted it (twice: 2026-10-12).",
+    "gate2_eniac": "Nick (chat, 2026-10-12): 'we're okay with the ENIAC pronunciation... go live.' Final-audio ENIAC ear gate waived by Nick; phoneme proxy still runs and is reported. The 'init' reel is still offered, not blocking.",
+    "go_live": "Authorized by Nick: upload v6 review cut PUBLIC on @nickdnj as soon as it is assembled and passes technical checks (lamps by eye, one audio stream, loudness, duration, youtube-whoami.py first). Not VCF / InfoAge / VCF channel. No emails from Claude.",
+    "short_recommendations_taken": "8s: wait for continuous full-speed lamp clip re-recorded from kiosk main; music per approved storyboard (seeked big ending).",
+    "published_url": "https://www.youtube.com/watch?v=eZE-r3WcyVI",
+    "video_id": "eZE-r3WcyVI",
+    "status": "public on @nickdnj",
+    "published_date": "2026-10-12T10:55:30-04:00",
+    "hours_locked": "LOCKED by Nick 2026-10-12: Wed, Sat & Sun, 12 to 5 (2201 Marconi Rd, Wall NJ). Do not ask anyone to confirm; do not re-open."
+  }
+}

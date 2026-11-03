@@ -1,0 +1,57 @@
+diff --git a/tests/web/video/clip-attract.spec.ts b/tests/web/video/clip-attract.spec.ts
+index c0e771f..ce0e16d 100644
+--- a/tests/web/video/clip-attract.spec.ts
++++ b/tests/web/video/clip-attract.spec.ts
+@@ -22,7 +22,7 @@ test("clip: attract", async ({ page }) => {
+ 
+   await cap(page, "The ENIAC room, lit by the live simulator");
+   await expect.poll(() => attractCards(page), { timeout: 60_000 }).toBeGreaterThanOrEqual(4);
+-  await cap(page, "Each dot is a real punched card: one hop of the shell");
++  await cap(page, "Each dot is a punched card: one second of the shell's flight");
+   await cap(page, null);
+   await trimWait(page, "the rest of the flight", () => expect(scene(page)).toHaveAttribute("data-scene", "landed", { timeout: 300_000 }), 8000, 8000);
+   await cap(page, "Landed: the hop and the card count, held for a moment");
+diff --git a/tests/web/video/walkthrough-tour.spec.ts b/tests/web/video/walkthrough-tour.spec.ts
+index a96cd2b..3488b23 100644
+--- a/tests/web/video/walkthrough-tour.spec.ts
++++ b/tests/web/video/walkthrough-tour.spec.ts
+@@ -34,7 +34,7 @@ test("ENIAC touch kiosk: the whole tour", async ({ page }) => {
+   // S1: the live attract flight.
+   await cap(page, "Nobody is touching it, so ENIAC flies a shell, live");
+   await expect.poll(() => attractCards(page), { timeout: 60_000 }).toBeGreaterThanOrEqual(3);
+-  await cap(page, "Every dot is a real punched card from the simulator");
++  await cap(page, "Every dot is a card the simulator punches");
+   await pause(page, 4000);
+   await cap(page, "A visitor walks up and touches the screen");
+   await tap(page, page.locator(".screen.start"));
+@@ -103,7 +103,7 @@ test("ENIAC touch kiosk: the whole tour", async ({ page }) => {
+   await cap(page, "Find the dead tube: a re-enactment");
+   await tapSlow(page, rail(page).locator(".tb-run"));
+   await expect(rail(page).locator("h2")).toHaveText("Which panel is wrong?");
+-  await cap(page, "Every accumulator should show 5555555555");
++  await cap(page, "Every accumulator should show the same lamps");
+   await tap(page, target(page, 0));
+   await expect(rail(page).locator(".tb-fb")).toContainText("Not quite");
+   await say(page, "(tour: not that one)");
+diff --git a/tests/web/video/walkthrough-trajectory.spec.ts b/tests/web/video/walkthrough-trajectory.spec.ts
+index 85b94fd..ba1b833 100644
+--- a/tests/web/video/walkthrough-trajectory.spec.ts
++++ b/tests/web/video/walkthrough-trajectory.spec.ts
+@@ -14,7 +14,7 @@ test("ENIAC touch kiosk walkthrough: Trajectory", async ({ page }) => {
+   await narration(page, "trajectory");
+   await page.goto("/");
+   await expect(view(page)).toHaveAttribute("data-view", "start");
+-  await card(page, "<h1>Mission 3: Trajectory</h1><p>ENIAC works out the path of a cannon shell, one hop at a time, from Brian L. Stuart's recreation of the February 15, 1946 demo.</p><small>Prototype · Trajectory mission · recorded live on the real simulator</small>", 5000);
++  await card(page, "<h1>Mission 3: Trajectory</h1><p>ENIAC works out the path of a cannon shell, a punched card for every second of flight, from Brian L. Stuart's reconstruction of the shell trajectory from ENIAC's February 15, 1946 unveiling.</p><small>Prototype · Trajectory mission · recorded live on the real simulator</small>", 5000);
+ 
+   await tap(page, page.locator(".screen.start"));
+   await expect(page.locator('.mission-card[data-mission="trajectory"]')).toBeVisible();
+@@ -27,7 +27,7 @@ test("ENIAC touch kiosk walkthrough: Trajectory", async ({ page }) => {
+   await pause(page, 7500);
+   await tapSlow(page, mainBtn(page));
+   await expect(page.locator(".step-card h2")).toHaveText("Hop by hop");
+-  await cap(page, "One hop: the air slows the shell, gravity pulls it down, a card is punched");
++  await cap(page, "Each hop: one second of flight, in 50 tiny steps, then a card is punched");
+   await pause(page, 9000);
+   await tapSlow(page, mainBtn(page));
+ 

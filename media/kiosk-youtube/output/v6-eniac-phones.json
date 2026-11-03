@@ -1,0 +1,88 @@
+{
+ "N01": [
+  {
+   "window": [
+    6.218,
+    6.913
+   ],
+   "phones": "ɛ n i æ k",
+   "long_i": false,
+   "ee_ack": true
+  }
+ ],
+ "N02": [
+  {
+   "window": [
+    4.174,
+    4.684
+   ],
+   "phones": "ɛ n i æ k",
+   "long_i": false,
+   "ee_ack": true
+  }
+ ],
+ "N03": [
+  {
+   "window": [
+    1.841,
+    2.432
+   ],
+   "phones": "ɛ n i æ k",
+   "long_i": false,
+   "ee_ack": true
+  }
+ ],
+ "N04": [
+  {
+   "window": [
+    2.874,
+    3.372
+   ],
+   "phones": "ɛ n i æ k",
+   "long_i": false,
+   "ee_ack": true
+  }
+ ],
+ "N05": [
+  {
+   "window": [
+    8.157,
+    8.794
+   ],
+   "phones": "ɛ n i æ k",
+   "long_i": false,
+   "ee_ack": true
+  }
+ ],
+ "N06": [
+  {
+   "window": [
+    0.819,
+    1.352
+   ],
+   "phones": "ɛ n i æ k ɛ",
+   "long_i": false,
+   "ee_ack": true
+  },
+  {
+   "window": [
+    3.652,
+    4.127
+   ],
+   "phones": "ɛ n i æ k j",
+   "long_i": false,
+   "ee_ack": true
+  }
+ ],
+ "tour-27": [
+  {
+   "window": [
+    1.76,
+    2.443
+   ],
+   "phones": "ɛ n i æ k",
+   "long_i": false,
+   "ee_ack": true
+  }
+ ]
+}
