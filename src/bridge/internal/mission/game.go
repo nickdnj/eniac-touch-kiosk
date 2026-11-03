@@ -14,7 +14,8 @@ import (
 // and ENIAC flies the shell for real. The score is worked out by the UI from
 // the visitor's own punched cards.
 type Game struct {
-	// Kind is how the target is drawn: "flag" (Gunnery, the default) or "ship" (Battleship).
+	// Kind is how the target is drawn: "flag" (Gunnery, the default), "ship" (Battleship) or "army" (Fire Mission:
+	// howitzers, ground targets and a forward observer's spotting calls).
 	Kind string `yaml:"kind,omitempty" json:"kind,omitempty"`
 	// Ships, when present, are the visitor's own ships: each carries some of the charges (its guns), so choosing
 	// a ship narrows the guns. Without them every charge is on offer.
@@ -110,6 +111,8 @@ type Target struct {
 	Feet int    `yaml:"feet" json:"feet"`
 	Name string `yaml:"name,omitempty" json:"name,omitempty"`
 	Hit  int    `yaml:"hit,omitempty" json:"hit,omitempty"`
+	// Art picks the picture of an Army target (nest, truck, bridge, bunker, tanks, depot, battery, railyard).
+	Art string `yaml:"art,omitempty" json:"art,omitempty"`
 }
 
 // ScoreRule: a miss of HitFeet or less scores Max; the score falls in a straight line to 0 at ZeroFeet.
@@ -138,6 +141,22 @@ type AimCopy struct {
 	Zones    string `yaml:"zones" json:"zones"`     // aim screen: what the colours mean
 	Across   string `yaml:"across" json:"across"`   // {n} feet per second, along the ground
 	Up       string `yaml:"up" json:"up"`           // {n} feet per second, straight up
+	// Spotter, when the mission has a forward observer, is the line shown on the aim screen of an adjusted round:
+	// {call} is the observer's last call ("OVER 340 ft"), {n} the round number.
+	Spotter string `yaml:"spotter,omitempty" json:"spotter,omitempty"`
+	Round1  string `yaml:"round1,omitempty" json:"round1,omitempty"`
+	Round2  string `yaml:"round2,omitempty" json:"round2,omitempty"`
+}
+
+// SpotterCopy is the forward observer's radio calls after a round ({feet} is the miss). Present only in Army games.
+type SpotterCopy struct {
+	Who   string `yaml:"who" json:"who"`     // "Forward observer"
+	Short string `yaml:"short" json:"short"` // landed short: {feet}
+	Long  string `yaml:"long" json:"long"`   // landed over: {feet}
+	Hit   string `yaml:"hit" json:"hit"`
+	// Adjust is the result screen's button for the second round; Final is shown once the adjusted round is fired.
+	Adjust string `yaml:"adjust" json:"adjust"`
+	Final  string `yaml:"final" json:"final"`
 }
 
 // BoardCopy is the result screen's scoring and top-scores text.
@@ -168,6 +187,8 @@ type BoardCopy struct {
 	Again     string `yaml:"again" json:"again"`
 	Today     string `yaml:"today" json:"today"`
 	AllTime   string `yaml:"allTime" json:"allTime"`
+	// Spotter turns on the forward observer's calls and the "adjust fire" second round (Army games).
+	Spotter *SpotterCopy `yaml:"spotter,omitempty" json:"spotter,omitempty"`
 }
 
 // Rank is a title earned at a score of Min or more (listed best first).
@@ -242,8 +263,19 @@ func (m *Mission) checkGame() {
 			m.fail("game.targets: %q out of range", t.ID)
 		}
 	}
-	if g.Kind != "" && g.Kind != "flag" && g.Kind != "ship" {
-		m.fail("game.kind must be flag or ship, got %q", g.Kind)
+	if g.Kind != "" && g.Kind != "flag" && g.Kind != "ship" && g.Kind != "army" {
+		m.fail("game.kind must be flag, ship or army, got %q", g.Kind)
+	}
+	if sp := g.Board.Spotter; sp != nil {
+		if g.Kind != "army" {
+			m.fail("game.board.spotter is for army games")
+		}
+		for _, c := range []string{sp.Who, sp.Short, sp.Long, sp.Hit, sp.Adjust, sp.Final, g.Aim.Spotter, g.Aim.Round1, g.Aim.Round2} {
+			if strings.TrimSpace(c) == "" {
+				m.fail("game.board.spotter copy has an empty field")
+				break
+			}
+		}
 	}
 	for _, sh := range g.Ships {
 		if !idRe.MatchString(sh.ID) || strings.TrimSpace(sh.Label) == "" || len(sh.Guns) == 0 {

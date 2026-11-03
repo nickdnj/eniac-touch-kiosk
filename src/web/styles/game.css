@@ -244,3 +244,30 @@
 .build-tab .nm { font-size: 21px; line-height: 26px; text-align: center; }
 .build-tab.current { background: var(--lamp-on); color: var(--ink); border-color: var(--lamp-on); }
 .build-tab.current .n { color: var(--ink); }
+
+/* Fire Mission (Army): the guns, the ground targets and the forward observer's calls. */
+.unit-trail { fill: #5A6B33; stroke: var(--ink); stroke-width: 4; stroke-linejoin: round; }
+.unit-barrel { fill: #E3D9B0; }
+.unit-recoil { fill: #5A6B33; stroke: var(--ink); stroke-width: 3; }
+.unit-shield { fill: #3E4A22; stroke: var(--ink); stroke-width: 4; stroke-linejoin: round; }
+.unit-wheel { fill: #E3D9B0; stroke: #10161F; stroke-width: 3; }
+.unit-hub { fill: #10161F; }
+.unit-spoke { stroke: #10161F; stroke-width: 3; }
+.aim-choice.chosen .unit-barrel { fill: #10161F; }
+.aim-choice.chosen .unit-wheel { fill: #8C8F78; }
+.aim-choice.chosen .unit-shield { fill: #5A6B33; }
+.aim-choice .unit-icon { display: block; }
+.army-sand { fill: #B5A878; stroke: var(--ink); stroke-width: 4; }
+.army-dark { fill: #10161F; stroke: var(--ink); stroke-width: 2; }
+.army-metal { fill: #5A6B33; stroke: var(--ink); stroke-width: 4; stroke-linejoin: round; }
+.army-glass { fill: #9DB7C9; stroke: var(--ink); stroke-width: 2; }
+.army-tyre { fill: #10161F; stroke: #E3D9B0; stroke-width: 2; }
+.army-truss { fill: none; stroke: #10161F; stroke-width: 5; stroke-linejoin: round; }
+.army-concrete { fill: #A9A79A; stroke: var(--ink); stroke-width: 4; }
+.army-crate { fill: #C49A5A; stroke: var(--ink); stroke-width: 3; }
+.army-crate-x { stroke: var(--ink); stroke-width: 2; }
+.army-title { font-size: 150px; letter-spacing: 10px; }
+.army-radio { font-size: 44px; letter-spacing: 3px; }
+.aim-round { font-size: 26px; line-height: 32px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+.aim-spotter { font-size: 32px; line-height: 42px; padding: 8px 16px; margin: 6px 0; background: #E3D9B0; color: #1D2210; border-left: 10px solid #C8432B; border-radius: 6px; }
+.adjust-btn { min-height: 96px; }
