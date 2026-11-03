@@ -25,7 +25,7 @@ def ff(*args):
     return run(["ffmpeg", "-y", "-v", "error", "-nostdin"] + [str(a) for a in args])
 
 
-VENC = ["-r", str(FPS), "-c:v", "libx264", "-preset", "veryfast", "-crf", "17", "-pix_fmt", "yuv420p", "-an"]
+VENC = ["-r", str(FPS), "-c:v", "libx264", "-preset", "veryfast", "-crf", "12", "-pix_fmt", "yuv420p", "-an"]
 
 
 def nfr(dur):
@@ -193,7 +193,7 @@ def overlay_pass(base, overlays, out, total_dur, chunk=15.0):
         cp = "%s.chunk%02d.mp4" % (out, ci)
         if not act:
             ff("-ss", "%.3f" % c0, "-i", base, "-t", "%.3f" % (c1 - c0), "-r", FPS, "-c:v", "libx264",
-               "-preset", "veryfast", "-crf", "17", "-pix_fmt", "yuv420p", "-an", cp)
+               "-preset", "veryfast", "-crf", "12", "-pix_fmt", "yuv420p", "-an", cp)
         else:
             inputs = ["-ss", "%.3f" % c0, "-t", "%.3f" % (c1 - c0), "-i", base]
             fparts, last = [], "0:v"
@@ -217,7 +217,7 @@ def overlay_pass(base, overlays, out, total_dur, chunk=15.0):
             gp = cp + ".filter.txt"
             open(gp, "w").write(";".join(fparts))
             ff(*inputs, "-filter_complex_script", gp, "-map", "[%s]" % last, "-t", "%.3f" % (c1 - c0),
-               "-r", FPS, "-c:v", "libx264", "-preset", "veryfast", "-crf", "17", "-pix_fmt", "yuv420p", "-an", cp)
+               "-r", FPS, "-c:v", "libx264", "-preset", "veryfast", "-crf", "12", "-pix_fmt", "yuv420p", "-an", cp)
         parts.append(cp)
     concat(parts, out)
 
