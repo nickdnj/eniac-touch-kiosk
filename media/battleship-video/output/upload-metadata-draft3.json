@@ -1,0 +1,18 @@
+{
+  "title": "ENIAC Plays Battleship (DRAFT for team review)",
+  "description": "We built a new game for the ENIAC touch kiosk at the Vintage Computer Federation museum: pick a ship, work out two numbers, and fire. It runs on a faithful SIMULATION of ENIAC (Brian Stuart's simulator), not the 1946 machine itself. This is a draft cut shared for team review.\n\nCome play it: Vintage Computer Federation, InfoAge Science and History Museums, 2201 Marconi Rd, Wall NJ. Wed, Sat & Sun, 12 to 5.\n\nThe full story of ENIAC, and of the people who built and programmed it, is told at the museum. Come see it in person.\n\nChapters\n0:00 A new game for the ENIAC kiosk\n0:17 Meet ENIAC\n0:44 Pick a ship and set two numbers\n1:12 Loading the program and the first shot\n1:42 A short splash, so we add speed\n2:07 The second shot\n2:25 Ship sunk\n2:37 Thank you, Brian Stuart, and where to play\n\nBrian Stuart's ENIAC simulator\nhttps://www.cs.drexel.edu/~bls96/eniac/simulator.html\nhttps://github.com/blstuart/eniac-simulator\n\nCredits\nMusic: \"Hot Swing\", \"Private Eye\" and \"Bumbly March\" by Kevin MacLeod (incompetech.com)\nLicensed under Creative Commons: By Attribution 4.0 License\nhttps://creativecommons.org/licenses/by/4.0/\nSound effects: public-domain files from Wikimedia Commons (\"Bathtub water splashes\" and \"Explosion 10\").\nPhotographs: U.S. Army photographs (public domain), via Wikimedia Commons. Firing table: War Department, TM 6-215 (1941), via Internet Archive.\n",
+  "tags": [
+    "retro computing",
+    "ENIAC",
+    "vintage computer federation",
+    "InfoAge",
+    "history of computing",
+    "artillery firing tables",
+    "museum",
+    "New Jersey"
+  ],
+  "category": "Science & Technology",
+  "visibility": "unlisted",
+  "privacyStatus": "unlisted",
+  "defaultLanguage": "en"
+}
