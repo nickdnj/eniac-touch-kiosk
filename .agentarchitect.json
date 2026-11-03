@@ -3,7 +3,8 @@
   "kind": "project",
   "team": "software-project",
   "teams": [
-    "software-project"
+    "software-project",
+    "content-studio"
   ],
   "projectType": "software",
   "projectName": "ENIAC Touch Kiosk",
@@ -11,19 +12,32 @@
     "dev-planning",
     "legal",
     "marketing",
+    "podcast-audio-engineer",
+    "podcast-publisher",
+    "podcast-script-writer",
+    "podcast-show-notes",
+    "podcast-voice-producer",
     "product-requirements",
     "qa-strategy",
     "sales",
+    "short-form-video",
+    "social-distributor",
     "software-architecture",
     "software-developer",
     "ux-design",
+    "video-assembler",
+    "video-asset-generator",
+    "video-publisher",
+    "video-script-writer",
     "wiki-ingest"
   ],
   "skills": [
-    "software-project"
+    "software-project",
+    "content-studio"
   ],
   "mcp": [],
   "provisionedAt": "2026-09-30",
-  "aaCommit": "19c3b9c47dd378b3d548413263353685b9de1272",
-  "syncedAt": "2026-11-03"
+  "aaCommit": "c9920201bcace3b292851cb49ed5e8aaf1fb0f9c",
+  "syncedAt": "2026-11-03",
+  "adopted": true
 }
