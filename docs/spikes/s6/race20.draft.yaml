@@ -1,0 +1,75 @@
+# DRAFT for spike S6 only (not a real mission). Checks that a local .e passes
+# rules 1-8 when it sits in the runtime programs/ dir.
+schema: 1
+id: race20
+title: "Beat ENIAC"
+order: 4
+summary: "Race ENIAC to 20. Can you win?"
+minutes: 4
+program: race20.e
+programSha256: "64a2a1604c0d5f4bccf085977e17d6f26fe5746c086d6e1ec0f2401edbb311bc"
+includes: {}
+ordered: true
+steps:
+  - id: k-four
+    line: "s c.k1 4"
+    expect: { switch: c.k1, value: "4" }
+    choices: ["0","1","2","3","4","5","6","7","8","9"]
+    text:
+      headline: "Give ENIAC its secret number"
+      body: "Dial 4 on the K dials. ENIAC will use it to pick its move."
+      done: "ENIAC now knows the number 4."
+      hints: { wrongValue: "We need a 4." }
+  - id: a1-subtract
+    line: "p a1.S 2"
+    expect: { from: a1.S, to: "2" }
+    text:
+      headline: "Wire up a subtraction"
+      body: "S sends a number as its opposite. Plug S on Accumulator 1 into Trunk 2."
+      done: "Now Accumulator 1 can subtract."
+      hints: { wrongFrom: "We want S, the subtract output." }
+  - id: init-to-1-1
+    line: "p i.io 1-1"
+    expect: { from: i.io, to: 1-1 }
+    text:
+      headline: "Wire up the START button"
+      body: "Tap the GO output, then program trunk 1-1."
+      done: "Now the GO button is wired in."
+      hints: { wrongTo: "Try program trunk 1-1." }
+  - id: first-move
+    line: "s c.j1 1"
+    expect: { switch: c.j1, value: "1" }
+    choices: ["1","2","3"]
+    text:
+      headline: "Your first move"
+      body: "Pick 1, 2 or 3. That is how much you add to the total."
+      done: "Your move is set. Press INIT to play it."
+      hints: { wrongValue: "Pick 1, 2 or 3." }
+withheld: []
+run:
+  buttons: [init, clear]
+  watch: ["1", "2", "3"]
+  idle: { quietMs: auto }
+  speeds:
+    slow: { rate: 25 }
+    full: { rate: 0 }
+  defaultSpeed: slow
+checkpoints:
+  - id: round-one
+    when: { acc: "3", eq: 4 }
+  - id: twenty
+    when: { acc: "3", eq: 20 }
+result: twenty
+selftest:
+  inits: 5
+  expect: { "1": 1, "2": 3, "3": 20 }
+content:
+  briefing: { headline: "Can you beat ENIAC?", body: "You and ENIAC take turns adding 1, 2 or 3 to a total. Whoever makes it 20 wins.", buttons: ["Let's go"] }
+  plan: { headline: "How ENIAC plays", body: "ENIAC subtracts your move from 4 and plays that.", buttons: ["Next step"] }
+  rest: { headline: "The rest is done for you", body: "We place the other cables and switches now.", buttons: ["Continue"] }
+  run:
+    before: { headline: "Press INIT", sub: "INIT plays your move." }
+    tape: "you {a1}, ENIAC {a2}, total {a3}"
+  result: { headline: "ENIAC made 20", body: "Every round added up to 4.", buttons: ["Menu"] }
+credits:
+  - "Program race20.e by the exhibit team (draft), running on Brian L. Stuart's ENIAC simulator"

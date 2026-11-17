@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kiosk-dev",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd /Users/nickd/Workspaces/eniac-touch-kiosk/.claude/worktrees/manhattan-spike && exec make dev"],
+      "port": 8740
+    }
+  ]
+}
